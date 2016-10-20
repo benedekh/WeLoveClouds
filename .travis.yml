@@ -1,0 +1,6 @@
+language: java
+jdk:
+  - oraclejdk7
+script:
+  - cd Echo\ Client/
+  - ant build-jar
