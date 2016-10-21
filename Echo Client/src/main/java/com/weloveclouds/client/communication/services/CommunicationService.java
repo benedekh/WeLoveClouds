@@ -1,6 +1,7 @@
 package main.java.com.weloveclouds.client.communication.services;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import main.java.com.weloveclouds.client.communication.SocketFactory;
 import main.java.com.weloveclouds.client.communication.exceptions.UnableToSendRequestToServerException;
@@ -43,10 +44,23 @@ public class CommunicationService {
             UnableToSendRequestToServerException {
         if (connectionToServer.getState() == CONNECTED) {
             connectionToServer.getSocket().getOutputStream().write(request.toBytes());
+            return waitAndReadServerResponse();
         } else {
             throw new UnableToSendRequestToServerException();
         }
+    }
 
-        return null;
+    private Response waitAndReadServerResponse() throws IOException{
+        byte[] receivedData = null;
+
+        InputStream socketDataReader = connectionToServer.getSocket().getInputStream();
+
+        while(receivedData == null){
+            if(socketDataReader.available() != 0){
+                receivedData = new byte[socketDataReader.available()];
+                socketDataReader.read(receivedData);
+            }
+        }
+        return new Response().withContent(receivedData);
     }
 }
