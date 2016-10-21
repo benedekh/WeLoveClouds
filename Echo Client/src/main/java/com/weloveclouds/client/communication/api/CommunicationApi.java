@@ -8,6 +8,10 @@ import main.java.com.weloveclouds.client.communication.models.Response;
  * Created by Benoit on 2016-10-21.
  */
 public interface CommunicationApi {
-    public double getVersion();
-    public Response sendRequest(Request request, RemoteServer remoteServer);
+    double getVersion();
+
+    void connectTo(RemoteServer remoteServer);
+    void disconnect();
+    Response send(Request request);
+    String getHelp();
 }

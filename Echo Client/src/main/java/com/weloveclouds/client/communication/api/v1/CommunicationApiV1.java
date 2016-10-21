@@ -24,7 +24,22 @@ public class CommunicationApiV1 implements CommunicationApi {
     }
 
     @Override
-    public Response sendRequest(Request request, RemoteServer remoteServer) {
+    public void connectTo(RemoteServer remoteServer) {
+
+    }
+
+    @Override
+    public void disconnect() {
+
+    }
+
+    @Override
+    public Response send(Request request) {
+        return null;
+    }
+
+    @Override
+    public String getHelp() {
         return null;
     }
 }
