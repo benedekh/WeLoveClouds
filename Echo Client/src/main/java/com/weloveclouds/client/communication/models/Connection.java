@@ -2,7 +2,6 @@ package main.java.com.weloveclouds.client.communication.models;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Optional;
 import static main.java.com.weloveclouds.client.communication.models.ConnectionState.*;
 /**
  * Created by Benoit on 2016-10-21.
@@ -20,7 +19,7 @@ public class Connection {
     }
 
     public ConnectionState getState() {
-        if(!Optional.ofNullable(socket).isPresent()){
+        if(socket != null){
             return DISCONNECTED;
         }
         return socket.isConnected() == true ? CONNECTED:DISCONNECTED;
