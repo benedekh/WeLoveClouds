@@ -10,7 +10,6 @@ import main.java.com.weloveclouds.client.communication.models.RemoteServer;
 import main.java.com.weloveclouds.client.communication.models.Request;
 import main.java.com.weloveclouds.client.communication.models.Response;
 import main.java.com.weloveclouds.client.communication.models.builders.ConnectionBuilder;
-import main.java.com.weloveclouds.client.communication.models.validators.RequestValidator;
 
 import static main.java.com.weloveclouds.client.communication.models.ConnectionState.*;
 
@@ -19,13 +18,11 @@ import static main.java.com.weloveclouds.client.communication.models.ConnectionS
  */
 public class CommunicationService {
     private Connection connectionToServer;
-    private RequestValidator requestValidator;
     private SocketFactory socketFactory;
 
-    public CommunicationService(SocketFactory socketFactory, RequestValidator requestValidator) {
+    public CommunicationService(SocketFactory socketFactory) {
         this.connectionToServer = new Connection();
         this.socketFactory = socketFactory;
-        this.requestValidator = requestValidator;
     }
 
     public void connectTo(RemoteServer remoteServer) throws IOException {
