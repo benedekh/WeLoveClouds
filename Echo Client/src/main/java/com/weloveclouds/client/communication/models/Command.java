@@ -5,7 +5,7 @@ package main.java.com.weloveclouds.client.communication.models;
  */
 public enum Command {
 
-    SEND("send");
+    SEND("send"),CONNECT("connect"),DISCONNECT("disconnect");
 
     private String description;
 

@@ -19,7 +19,7 @@ public class Connection {
     }
 
     public ConnectionState getState() {
-        if(socket != null){
+        if(socket == null){
             return DISCONNECTED;
         }
         return socket.isConnected() == true ? CONNECTED:DISCONNECTED;

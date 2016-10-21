@@ -1,5 +1,7 @@
 package main.java.com.weloveclouds.client.communication.api.v1;
 
+import com.google.inject.Inject;
+
 import java.io.IOException;
 
 import main.java.com.weloveclouds.client.communication.api.CommunicationApi;
@@ -19,6 +21,7 @@ public class CommunicationApiV1 implements CommunicationApi {
 
     private CommunicationService communicationService;
 
+    @Inject
     public CommunicationApiV1(CommunicationService communicationService) {
         this.communicationService = communicationService;
     }

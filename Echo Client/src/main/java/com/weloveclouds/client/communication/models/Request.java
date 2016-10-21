@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 public class Request {
     private static final String MESSAGE_DELIMITER = "\n";
     private Command command;
-    private String payload;
+    private String argument;
 
     public Command getCommand() {
         return command;
@@ -20,12 +20,12 @@ public class Request {
         this.command = command;
     }
 
-    public String getPayload() {
-        return payload;
+    public String getArgument() {
+        return argument;
     }
 
-    public void setPayload(String payload) {
-        this.payload = payload;
+    public void setArgument(String argument) {
+        this.argument = argument;
     }
 
     public Request withCommand(Command command){
@@ -34,12 +34,12 @@ public class Request {
     }
 
     public Request withPayload(String payload){
-        setPayload(payload);
+        setArgument(payload);
         return this;
     }
 
     public String toString(){
-        return Joiner.on(" ").join(command.toString(),  payload, MESSAGE_DELIMITER);
+        return Joiner.on(" ").join(command.toString(), argument, MESSAGE_DELIMITER);
     }
 
     public byte[] toBytes(){

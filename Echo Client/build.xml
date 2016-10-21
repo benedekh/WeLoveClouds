@@ -12,9 +12,9 @@
   <property name="jar.file"      value="echoClient.jar"/>
   <property name="manifest.file" value="MANIFEST.MF"/>
 
-  <!-- The main class of your application should be named according to the 
+  <!-- The main class of your ui should be named according to the
      following -->
-  <property name="main.class" value="main.java.com.weloveclouds.client.application.Application"/>
+  <property name="main.class" value="main.java.com.weloveclouds.client.ui.Application"/>
 
   <path id="external.jars">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
