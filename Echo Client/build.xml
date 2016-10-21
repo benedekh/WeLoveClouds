@@ -14,7 +14,7 @@
 
   <!-- The main class of your application should be named according to the 
      following -->
-  <property name="main.class" value="ui.Application"/>
+  <property name="main.class" value="main.java.com.weloveclouds.client.application.Application"/>
 
   <path id="external.jars">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
