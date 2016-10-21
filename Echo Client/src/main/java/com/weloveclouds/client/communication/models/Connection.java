@@ -10,18 +10,20 @@ import static main.java.com.weloveclouds.client.communication.models.ConnectionS
 public class Connection {
     private ConnectionState state;
     private RemoteServer remoteServer;
-    private Socket socketToRemoteServer;
+    private Socket socket;
 
-    public Connection(RemoteServer remoteServer, Socket socketToRemoteServer){
+    public Connection(){}
+
+    public Connection(RemoteServer remoteServer, Socket socket){
         this.remoteServer = remoteServer;
-        this.socketToRemoteServer = socketToRemoteServer;
+        this.socket = socket;
     }
 
     public ConnectionState getState() {
-        if(!Optional.ofNullable(socketToRemoteServer).isPresent()){
+        if(!Optional.ofNullable(socket).isPresent()){
             return DISCONNECTED;
         }
-        return socketToRemoteServer.isConnected() == true ? CONNECTED:DISCONNECTED;
+        return socket.isConnected() == true ? CONNECTED:DISCONNECTED;
     }
 
     public RemoteServer getRemoteServer() {
@@ -32,15 +34,15 @@ public class Connection {
         this.remoteServer = remoteServer;
     }
 
-    public Socket getSocketToRemoteServer() {
-        return socketToRemoteServer;
+    public Socket getSocket() {
+        return socket;
     }
 
-    public void setSocketToRemoteServer(Socket socketToRemoteServer) {
-        this.socketToRemoteServer = socketToRemoteServer;
+    public void setSocket(Socket socket) {
+        this.socket = socket;
     }
 
     public void kill() throws IOException {
-        socketToRemoteServer.close();
+        socket.close();
     }
 }

@@ -1,15 +1,13 @@
 package main.java.com.weloveclouds.client.communication.services;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import main.java.com.weloveclouds.client.communication.SocketFactory;
-import main.java.com.weloveclouds.client.communication.exceptions.UnableToCloseConnectionException;
-import main.java.com.weloveclouds.client.communication.exceptions.UnableToConnectException;
+import main.java.com.weloveclouds.client.communication.exceptions.UnableToSendRequestToServerException;
 import main.java.com.weloveclouds.client.communication.models.Connection;
-import main.java.com.weloveclouds.client.communication.models.ConnectionState;
 import main.java.com.weloveclouds.client.communication.models.RemoteServer;
 import main.java.com.weloveclouds.client.communication.models.Request;
+import main.java.com.weloveclouds.client.communication.models.Response;
 import main.java.com.weloveclouds.client.communication.models.builders.ConnectionBuilder;
 import main.java.com.weloveclouds.client.communication.models.validators.RequestValidator;
 
@@ -24,31 +22,31 @@ public class CommunicationService {
     private SocketFactory socketFactory;
 
     public CommunicationService(SocketFactory socketFactory, RequestValidator requestValidator) {
+        this.connectionToServer = new Connection();
         this.socketFactory = socketFactory;
         this.requestValidator = requestValidator;
     }
 
-    public void connectTo(RemoteServer remoteServer) throws UnableToConnectException {
-        try {
-            connectionToServer = new ConnectionBuilder().withRemoteServer(remoteServer)
-                    .withSocketToRemoteServer(socketFactory.createTcpSocketFromServerInfos
-                            (remoteServer.getIpAddress(), remoteServer.getPort())).build();
-        } catch (IOException e) {
-            throw new UnableToConnectException(remoteServer);
-        }
+    public void connectTo(RemoteServer remoteServer) throws IOException {
+        connectionToServer = new ConnectionBuilder()
+                .withRemoteServer(remoteServer)
+                .withSocketToRemoteServer(socketFactory.createTcpSocketFromServerInfos
+                        (remoteServer.getIpAddress(), remoteServer.getPort()))
+                .build();
     }
 
-    public void disconnect() throws UnableToCloseConnectionException {
-        if(Optional.ofNullable(connectionToServer).isPresent()){
-            try {
-                connectionToServer.kill();
-            }catch(IOException e){
-                throw new UnableToCloseConnectionException(connectionToServer.getRemoteServer());
-            }
-        }
+    public void disconnect() throws IOException {
+        connectionToServer.kill();
     }
 
-    public void sendRequest(Request request){
+    public Response sendRequest(Request request) throws IOException,
+            UnableToSendRequestToServerException {
+        if (connectionToServer.getState() == CONNECTED) {
+            connectionToServer.getSocket().getOutputStream().write(request.toBytes());
+        } else {
+            throw new UnableToSendRequestToServerException();
+        }
 
+        return null;
     }
 }

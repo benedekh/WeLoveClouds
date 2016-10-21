@@ -2,11 +2,13 @@ package main.java.com.weloveclouds.client.communication.models;
 
 import com.google.common.base.Joiner;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Created by Benoit on 2016-10-21.
  */
 public class Request {
-
+    private static final String MESSAGE_DELIMITER = "\n";
     private Command command;
     private String payload;
 
@@ -37,6 +39,10 @@ public class Request {
     }
 
     public String toString(){
-        return Joiner.on(" ").join(command.toString(),  payload);
+        return Joiner.on(" ").join(command.toString(),  payload, MESSAGE_DELIMITER);
+    }
+
+    public byte[] toBytes(){
+        return this.toString().getBytes(StandardCharsets.UTF_8);
     }
 }
