@@ -3,8 +3,8 @@ package main.java.com.weloveclouds.client.communication.exceptions;
 /**
  * Created by Benoit on 2016-10-21.
  */
-public class ClientNotConnectedException extends ClientSideException{
-    public ClientNotConnectedException(String message){
+public class ClientNotConnectedException extends ClientSideException {
+    public ClientNotConnectedException(String message) {
         super(message);
     }
 }

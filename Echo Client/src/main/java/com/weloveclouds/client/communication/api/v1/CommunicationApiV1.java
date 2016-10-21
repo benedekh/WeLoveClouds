@@ -1,6 +1,7 @@
 package main.java.com.weloveclouds.client.communication.api.v1;
 
 import main.java.com.weloveclouds.client.communication.api.CommunicationApi;
+import main.java.com.weloveclouds.client.communication.exceptions.UnableToConnectException;
 import main.java.com.weloveclouds.client.communication.models.RemoteServer;
 import main.java.com.weloveclouds.client.communication.models.Request;
 import main.java.com.weloveclouds.client.communication.models.Response;
@@ -24,8 +25,8 @@ public class CommunicationApiV1 implements CommunicationApi {
     }
 
     @Override
-    public void connectTo(RemoteServer remoteServer) {
-
+    public void connectTo(RemoteServer remoteServer) throws UnableToConnectException {
+        communicationService.connectTo(remoteServer);
     }
 
     @Override
