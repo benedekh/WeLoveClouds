@@ -1,7 +1,7 @@
 package weloveclouds.communication.exceptions;
 
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit, Benedek
  */
 public class UnableToSendRequestToServerException extends ClientSideException {
 
@@ -9,5 +9,9 @@ public class UnableToSendRequestToServerException extends ClientSideException {
 
   public UnableToSendRequestToServerException() {
     super("Unable to send request to server.");
+  }
+
+  public UnableToSendRequestToServerException(String message) {
+    super(message);
   }
 }

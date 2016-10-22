@@ -3,7 +3,7 @@ package weloveclouds.communication.exceptions;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit, Benedek
  */
 public class UnableToConnectException extends ClientSideException {
 
@@ -12,5 +12,9 @@ public class UnableToConnectException extends ClientSideException {
   public UnableToConnectException(ServerConnectionInfo remoteServer) {
     super(String.format("Unable to connect to server %s on port: %d", remoteServer.getIpAddress(),
         remoteServer.getPort()));
+  }
+  
+  public UnableToConnectException(String message){
+    super(message);
   }
 }

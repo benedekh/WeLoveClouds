@@ -1,7 +1,7 @@
 package weloveclouds.communication.exceptions;
 
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit, Benedek
  */
 public class ClientSideException extends Exception {
 
