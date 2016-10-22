@@ -62,7 +62,8 @@ public class CommunicationService {
     }
   }
 
-  public byte[] receive() throws IOException {
+  public byte[] receive() throws IOException, ClientNotConnectedException {
+    if (connectionToServer.getState() == CONNECTED) {
     byte[] receivedData = null;
 
     InputStream socketDataReader = connectionToServer.getSocket().getInputStream();
@@ -74,7 +75,9 @@ public class CommunicationService {
       }
     }
 
-    return receivedData;
+    return receivedData;}  else {
+      throw new ClientNotConnectedException();
+    }
   }
 
   private static class ConnectionCloser implements Runnable {

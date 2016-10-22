@@ -1,5 +1,6 @@
 package weloveclouds.communication.api;
 
+import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
@@ -18,5 +19,5 @@ public interface ICommunicationApi {
 
   void send(byte[] content) throws UnableToSendRequestToServerException;
 
-  byte[] receive() throws ConnectionClosedException;
+  byte[] receive() throws ClientNotConnectedException, ConnectionClosedException;
 }

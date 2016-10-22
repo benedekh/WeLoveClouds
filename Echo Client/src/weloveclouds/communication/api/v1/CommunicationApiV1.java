@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.google.inject.Inject;
 
 import weloveclouds.communication.api.ICommunicationApi;
+import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
@@ -66,7 +67,7 @@ public class CommunicationApiV1 implements ICommunicationApi {
   }
 
   @Override
-  public byte[] receive() throws ConnectionClosedException {
+  public byte[] receive() throws ClientNotConnectedException, ConnectionClosedException {
     try {
       return communicationService.receive();
     } catch (IOException e) {
