@@ -8,13 +8,14 @@
 
   <property name="build.dir"     value="bin"/>
   <property name="src.dir"       value="src"/>
+  <property name="test.dir"      value="test"/>
   <property name="lib.dir"       value="libs"/>
   <property name="jar.file"      value="echoClient.jar"/>
   <property name="manifest.file" value="MANIFEST.MF"/>
 
   <!-- The main class of your ui should be named according to the
      following -->
-  <property name="main.class" value="main.java.com.weloveclouds.client.ui.Application"/>
+  <property name="main.class" value="weloveclouds.client.ui.Application"/>
 
   <path id="external.jars">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -48,7 +49,7 @@
     <javac debug="true" debuglevel="${debuglevel}" destdir="bin" 
           source="${source}" target="${target}" 
           classpathref="project.classpath" includeantruntime="false">
-      <src path="${src.dir}"/>
+      <src path="${src.dir}:${test.dir}"/>
     </javac>
   </target>
 
