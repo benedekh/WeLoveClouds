@@ -1,8 +1,8 @@
 package weloveclouds.client.core;
 
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit
  */
 public enum ClientState {
-    LISTENING, ONHOLD, KILLEE;
+  LISTENING, ONHOLD, KILLEE;
 }

@@ -1,7 +1,7 @@
 package test.weloveclouds.client.communication.api.v1;
 
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit
  */
 public class CommunicationApiV1Test {
 
