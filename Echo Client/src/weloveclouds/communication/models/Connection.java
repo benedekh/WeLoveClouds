@@ -12,10 +12,8 @@ import java.net.Socket;
 public class Connection {
   private ServerConnectionInfo remoteServer;
   private Socket socket;
-
-  public Connection() {}
-
-  public Connection(ConnectionBuilder builder) {
+  
+  protected Connection(ConnectionBuilder builder) {
     this.remoteServer = builder.remoteServer;
     this.socket = builder.socket;
   }

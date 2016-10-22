@@ -10,12 +10,12 @@ import weloveclouds.client.models.UserInput;
  */
 public class UserInputParser {
   private static final Pattern INPUT_REGEX =
-      Pattern.compile("(?<command>\\w+) " + "(?<payload>[a-zA-Z ]+)");
+      Pattern.compile("(?<command>\\w+) " + "(?<argument>[a-zA-Z ]+)");
 
   public static UserInput parse(String userInput) {
     Matcher matcher = INPUT_REGEX.matcher(userInput);
     matcher.find();
-    return new UserInput().withCommand(matcher.group("command"))
-        .withPayload(matcher.group("payload"));
+    return new UserInput.UserInputFactory().command(matcher.group("command"))
+        .arguments(matcher.group("argument")).build();
   }
 }

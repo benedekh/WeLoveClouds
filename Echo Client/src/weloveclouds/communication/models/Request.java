@@ -12,7 +12,7 @@ public class Request {
   private Command command;
   private String argument;
 
-  public Request(RequestBuilder builder) {
+  protected Request(RequestBuilder builder) {
     this.command = builder.command;
     this.argument = builder.argument;
   }

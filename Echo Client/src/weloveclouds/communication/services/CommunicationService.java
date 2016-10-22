@@ -22,7 +22,7 @@ public class CommunicationService {
   private SocketFactory socketFactory;
 
   public CommunicationService(SocketFactory socketFactory) {
-    this.connectionToServer = new Connection();
+    this.connectionToServer = null;
     this.socketFactory = socketFactory;
   }
 
@@ -64,18 +64,19 @@ public class CommunicationService {
 
   public byte[] receive() throws IOException, ClientNotConnectedException {
     if (connectionToServer.getState() == CONNECTED) {
-    byte[] receivedData = null;
+      byte[] receivedData = null;
 
-    InputStream socketDataReader = connectionToServer.getSocket().getInputStream();
+      InputStream socketDataReader = connectionToServer.getSocket().getInputStream();
 
-    while (receivedData == null) {
-      if (socketDataReader.available() != 0) {
-        receivedData = new byte[socketDataReader.available()];
-        socketDataReader.read(receivedData);
+      while (receivedData == null) {
+        if (socketDataReader.available() != 0) {
+          receivedData = new byte[socketDataReader.available()];
+          socketDataReader.read(receivedData);
+        }
       }
-    }
 
-    return receivedData;}  else {
+      return receivedData;
+    } else {
       throw new ClientNotConnectedException();
     }
   }

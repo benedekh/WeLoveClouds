@@ -12,7 +12,7 @@ public class UserInputToApiRequestConverterV1 implements UserInputConverter<Requ
     try {
       return new Request.RequestBuilder()
           .command(Command.valueOf(userInput.getCommand().toUpperCase()))
-          .payload(userInput.getPayload()).build();
+          .payload(userInput.getArgument()).build();
     } catch (IllegalArgumentException e) {
       return null;
     }

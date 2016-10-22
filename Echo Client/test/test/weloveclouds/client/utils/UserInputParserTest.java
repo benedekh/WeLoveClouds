@@ -25,7 +25,7 @@ public class UserInputParserTest {
   public void shouldCreateARequestOnValidUserInput() throws Exception {
     UserInput userRequest = UserInputParser.parse(API_VALID_USER_INPUT_NON_CAPITAL_LETTER);
     assertThat(userRequest.getCommand()).isEqualTo(SEND_COMMAND);
-    assertThat(userRequest.getPayload()).isEqualTo(PAYLOAD);
+    assertThat(userRequest.getArgument()).isEqualTo(PAYLOAD);
   }
 
 }
