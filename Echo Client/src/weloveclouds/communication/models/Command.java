@@ -1,20 +1,20 @@
 package weloveclouds.communication.models;
 
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit
  */
 public enum Command {
 
-    SEND("send"),CONNECT("connect"),DISCONNECT("disconnect");
+  SEND("send"), CONNECT("connect"), DISCONNECT("disconnect");
 
-    private String description;
+  private String description;
 
-    Command(String description){
-        this.description = description;
-    }
+  Command(String description) {
+    this.description = description;
+  }
 
-    @Override
-    public String toString(){
-        return this.description;
-    }
+  @Override
+  public String toString() {
+    return this.description;
+  }
 }

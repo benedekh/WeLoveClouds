@@ -1,7 +1,7 @@
 package weloveclouds.communication.models;
 
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit
  */
 public enum ConnectionState {
     CONNECTED,

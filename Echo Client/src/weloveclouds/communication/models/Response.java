@@ -1,34 +1,24 @@
 package weloveclouds.communication.models;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit, Benedek
  */
 public class Response {
-    private byte[] content;
+  private byte[] content;
 
-    public Response(){}
+  public Response(byte[] content) {
+    this.content = content;
+  }
 
-    public Response(byte[] content){
-        this.content = content;
-    }
+  public byte[] getContent() {
+    return content;
+  }
 
-    public byte[] getContent() {
-        return content;
-    }
+  public String toString() {
+    return new String(content, StandardCharsets.US_ASCII);
+  }
 
-    public void setContent(byte[] content) {
-        this.content = content;
-    }
-
-    public String toString(){
-        return new String(content, Charset.forName("UTF-8"));
-    }
-
-    public Response withContent(byte[] content){
-        setContent(content);
-        return this;
-    }
 }
 

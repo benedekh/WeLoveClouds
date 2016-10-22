@@ -5,44 +5,50 @@ import com.google.common.base.Joiner;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit, Benedek
  */
 public class Request {
-    private static final String MESSAGE_DELIMITER = "\n";
+  private static final String MESSAGE_DELIMITER = "\n";
+  private Command command;
+  private String argument;
+
+  public Request(RequestBuilder builder) {
+    this.command = builder.command;
+    this.argument = builder.argument;
+  }
+
+  public Command getCommand() {
+    return command;
+  }
+
+  public String getArgument() {
+    return argument;
+  }
+
+  public String toString() {
+    return Joiner.on(" ").join(command.toString(), argument, MESSAGE_DELIMITER);
+  }
+
+  public byte[] argumentAsBytes() {
+    return argument.getBytes(StandardCharsets.US_ASCII);
+  }
+
+  public static class RequestBuilder {
     private Command command;
     private String argument;
 
-    public Command getCommand() {
-        return command;
+    public RequestBuilder command(Command command) {
+      this.command = command;
+      return this;
     }
 
-    public void setCommand(Command command) {
-        this.command = command;
+    public RequestBuilder payload(String argument) {
+      this.argument = argument;
+      return this;
     }
 
-    public String getArgument() {
-        return argument;
+    public Request build() {
+      return new Request(this);
     }
-
-    public void setArgument(String argument) {
-        this.argument = argument;
-    }
-
-    public Request withCommand(Command command){
-        setCommand(command);
-        return this;
-    }
-
-    public Request withPayload(String payload){
-        setArgument(payload);
-        return this;
-    }
-
-    public String toString(){
-        return Joiner.on(" ").join(command.toString(), argument, MESSAGE_DELIMITER);
-    }
-
-    public byte[] toBytes(){
-        return this.toString().getBytes(StandardCharsets.UTF_8);
-    }
+  }
 }

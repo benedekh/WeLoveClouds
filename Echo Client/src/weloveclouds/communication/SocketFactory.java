@@ -1,15 +1,15 @@
 package weloveclouds.communication;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 
+import weloveclouds.communication.models.ServerConnectionInfo;
+
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit, Benedek
  */
 public class SocketFactory {
-    public Socket createTcpSocketFromServerInfos(InetAddress remoteServerAddress, int port)
-            throws IOException {
-        return new Socket(remoteServerAddress, port);
-    }
+  public Socket createTcpSocketFromInfo(ServerConnectionInfo connectionInfo) throws IOException {
+    return new Socket(connectionInfo.getIpAddress(), connectionInfo.getPort());
+  }
 }

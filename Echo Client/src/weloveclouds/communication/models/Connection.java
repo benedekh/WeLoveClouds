@@ -1,48 +1,60 @@
 package weloveclouds.communication.models;
 
-import static weloveclouds.communication.models.ConnectionState.*;
+import static weloveclouds.communication.models.ConnectionState.CONNECTED;
+import static weloveclouds.communication.models.ConnectionState.DISCONNECTED;
 
 import java.io.IOException;
 import java.net.Socket;
+
 /**
- * Created by Benoit on 2016-10-21.
+ * @author Benoit, Benedek
  */
 public class Connection {
-    private ConnectionState state;
-    private RemoteServer remoteServer;
+  private ServerConnectionInfo remoteServer;
+  private Socket socket;
+
+  public Connection() {}
+
+  public Connection(ConnectionBuilder builder) {
+    this.remoteServer = builder.remoteServer;
+    this.socket = builder.socket;
+  }
+
+  public ConnectionState getState() {
+    if (socket == null) {
+      return DISCONNECTED;
+    }
+    return socket.isConnected() == true ? CONNECTED : DISCONNECTED;
+  }
+
+  public ServerConnectionInfo getRemoteServer() {
+    return remoteServer;
+  }
+
+  public Socket getSocket() {
+    return socket;
+  }
+
+  public void kill() throws IOException {
+    socket.close();
+  }
+
+  public static class ConnectionBuilder {
+    private ServerConnectionInfo remoteServer;
     private Socket socket;
 
-    public Connection(){}
-
-    public Connection(RemoteServer remoteServer, Socket socket){
-        this.remoteServer = remoteServer;
-        this.socket = socket;
+    public ConnectionBuilder remoteServer(ServerConnectionInfo remoteServer) {
+      this.remoteServer = remoteServer;
+      return this;
     }
 
-    public ConnectionState getState() {
-        if(socket == null){
-            return DISCONNECTED;
-        }
-        return socket.isConnected() == true ? CONNECTED:DISCONNECTED;
+    public ConnectionBuilder socket(Socket socket) {
+      this.socket = socket;
+      return this;
     }
 
-    public RemoteServer getRemoteServer() {
-        return remoteServer;
+    public Connection build() {
+      return new Connection(this);
     }
-
-    public void setRemoteServer(RemoteServer remoteServer) {
-        this.remoteServer = remoteServer;
-    }
-
-    public Socket getSocket() {
-        return socket;
-    }
-
-    public void setSocket(Socket socket) {
-        this.socket = socket;
-    }
-
-    public void kill() throws IOException {
-        socket.close();
-    }
+  }
 }
