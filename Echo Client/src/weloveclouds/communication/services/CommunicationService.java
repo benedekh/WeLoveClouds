@@ -76,8 +76,9 @@ public class CommunicationService {
                 }
             }
             return receivedData;
+        } else {
+            throw new ClientNotConnectedException();
         }
-        throw new ClientNotConnectedException();
     }
 
     private static class ConnectionCloser implements Runnable {
