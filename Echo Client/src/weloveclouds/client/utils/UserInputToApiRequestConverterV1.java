@@ -4,6 +4,8 @@ import weloveclouds.client.models.UserInput;
 import weloveclouds.communication.models.Command;
 import weloveclouds.communication.models.Request;
 
+import org.apache.log4j.*;
+
 /**
  * @author Benoit
  */

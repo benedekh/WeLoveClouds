@@ -3,6 +3,8 @@ package weloveclouds.client.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.*;
+
 import weloveclouds.client.models.UserInput;
 
 /**
