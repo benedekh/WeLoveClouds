@@ -1,7 +1,5 @@
 package weloveclouds.communication.services;
 
-import org.mockito.internal.matchers.Null;
-
 import static weloveclouds.communication.models.ConnectionState.CONNECTED;
 import static weloveclouds.communication.models.ConnectionState.DISCONNECTED;
 

@@ -4,6 +4,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.any;
 import static weloveclouds.communication.models.ConnectionState.DISCONNECTED;
+import static weloveclouds.communication.models.ConnectionState.CONNECTED;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class CommunicationServiceTest {
     private static final String VALID_SERVER_IP_ADDRESS = "131.159.52.1";
     private static final String INVALID_SERVER_IP_ADDRESS = "127.0.0.1";
     private static final int VALID_SERVER_PORT = 50000;
-    private static final boolean CONNECTED = true;
+    private static final boolean CONNECTED_FLAG = true;
     private CommunicationService communicationService;
     private ServerConnectionInfo validServerConnectionInfos;
     private ServerConnectionInfo invalidServerConnectionInfos;
@@ -127,7 +128,7 @@ public class CommunicationServiceTest {
         when(socketFactoryMock.createTcpSocketFromInfo(any(ServerConnectionInfo.class)))
                 .thenReturn(socketMock);
         when(socketMock.getInputStream()).thenReturn(mockedSocketInputStream);
-        when(socketMock.isConnected()).thenReturn(CONNECTED);
+        when(socketMock.isConnected()).thenReturn(CONNECTED_FLAG);
 
         communicationService.connectTo(validServerConnectionInfos);
 
