@@ -12,6 +12,8 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public interface ICommunicationApi {
   double getVersion();
+  
+  boolean isConnected();
 
   void connectTo(ServerConnectionInfo remoteServer) throws UnableToConnectException;
 

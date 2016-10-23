@@ -33,6 +33,11 @@ public class CommunicationApiV1 implements ICommunicationApi {
   }
 
   @Override
+  public boolean isConnected() {
+    return communicationService.isConnected();
+  }
+
+  @Override
   public void connectTo(ServerConnectionInfo remoteServer) throws UnableToConnectException {
     try {
       communicationService.connectTo(remoteServer);

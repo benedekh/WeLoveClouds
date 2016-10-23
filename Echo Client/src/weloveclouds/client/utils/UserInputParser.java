@@ -10,7 +10,7 @@ import weloveclouds.client.models.UserInput;
  */
 public class UserInputParser {
   private static final Pattern INPUT_REGEX =
-      Pattern.compile("(?<command>\\w+) " + "(?<argument>[a-zA-Z ]+)");
+      Pattern.compile("(?<command>\\w+) " + "(?<argument>[a-zA-Z0-9 ]+)");
 
   public static UserInput parse(String userInput) {
     Matcher matcher = INPUT_REGEX.matcher(userInput);
