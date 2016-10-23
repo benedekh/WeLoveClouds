@@ -29,7 +29,7 @@ import weloveclouds.communication.services.CommunicationService;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CommunicationServiceTest {
-    private static final String VALID_SERVER_IP_ADDRESS = "131.159.52.1";
+    private static final String VALID_SERVER_IP_ADDRESS = "131.159.52.2";
     private static final String INVALID_SERVER_IP_ADDRESS = "127.0.0.1";
     private static final int VALID_SERVER_PORT = 50000;
     private static final boolean CONNECTED_FLAG = true;
@@ -52,7 +52,7 @@ public class CommunicationServiceTest {
                 (VALID_SERVER_IP_ADDRESS), VALID_SERVER_PORT);
         invalidServerConnectionInfos = new ServerConnectionInfo(InetAddress.getByName
                 (INVALID_SERVER_IP_ADDRESS), VALID_SERVER_PORT);
-        
+
         socketFromValidServerInfos = new Socket(validServerConnectionInfos.getIpAddress(),
                 validServerConnectionInfos.getPort());
 
