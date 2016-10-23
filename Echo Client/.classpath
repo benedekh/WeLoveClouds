@@ -21,6 +21,7 @@
 	<classpathentry kind="lib" path="libs/guice-struts2-plugin-3.0.jar"/>
 	<classpathentry kind="lib" path="libs/guice-throwingproviders-3.0.jar"/>
 	<classpathentry kind="lib" path="libs/javax.inject.jar"/>
-	<classpathentry kind="lib" path="libs/junit4.jar"/>
+	<classpathentry kind="lib" path="libs/junit-4.4.jar"/>
+	<classpathentry kind="lib" path="libs/mockito-all-1.10.19.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
