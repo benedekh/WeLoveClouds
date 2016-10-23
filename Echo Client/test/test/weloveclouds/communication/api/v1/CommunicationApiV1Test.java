@@ -1,4 +1,4 @@
-package test.weloveclouds.client.communication.api.v1;
+package test.weloveclouds.communication.api.v1;
 
 /**
  * @author Benoit
