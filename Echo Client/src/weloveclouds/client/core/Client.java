@@ -34,11 +34,15 @@ public class Client {
   private Logger clientLogger;
 
   @Inject
-  public Client(ICommunicationApi communicationApi, UserInputConverter<Request> userInputConverter) {
+  public Client(ICommunicationApi communicationApi, UserInputConverter userInputConverter) {
     this.communicationApi = communicationApi;
     this.inputReader = new BufferedReader(new InputStreamReader(System.in));
     this.userInputConverter = userInputConverter;
+    /*initialize logger, There's a way to do this with an external config file but I haven't 
+     * worked with it at all
+     */
     this.clientLogger = Logger.getLogger(Client.class.getName());
+    //this.clientLogger.addAppender(newAppender);
   }
 
   public void run() {

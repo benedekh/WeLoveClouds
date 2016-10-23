@@ -15,7 +15,8 @@ public class UserInputParser {
       Pattern.compile("(?<command>\\w+) " + "(?<argument>[a-zA-Z ]+)");
 
   public static UserInput parse(String userInput) {
-    Matcher matcher = INPUT_REGEX.matcher(userInput);
+    String workingString = userInput.trim();
+    Matcher matcher = INPUT_REGEX.matcher(workingString);
     matcher.find();
     return new UserInput.UserInputFactory().command(matcher.group("command"))
         .arguments(matcher.group("argument")).build();
