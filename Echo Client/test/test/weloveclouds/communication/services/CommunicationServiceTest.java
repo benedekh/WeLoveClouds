@@ -52,12 +52,9 @@ public class CommunicationServiceTest {
                 (VALID_SERVER_IP_ADDRESS), VALID_SERVER_PORT);
         invalidServerConnectionInfos = new ServerConnectionInfo(InetAddress.getByName
                 (INVALID_SERVER_IP_ADDRESS), VALID_SERVER_PORT);
-
-        /*
+        
         socketFromValidServerInfos = new Socket(validServerConnectionInfos.getIpAddress(),
                 validServerConnectionInfos.getPort());
-        socketFromInvalidServerInfos = new Socket(invalidServerConnectionInfos.getIpAddress(),
-                invalidServerConnectionInfos.getPort());*/
 
         when(socketFactoryMock.createTcpSocketFromInfo(validServerConnectionInfos))
                 .thenReturn(socketFromValidServerInfos);
@@ -77,6 +74,9 @@ public class CommunicationServiceTest {
 
     @Test(expected = IOException.class)
     public void shouldThrowWhenConnectingToRemoteServerUsingInvalidServerInfos() throws Exception {
+        socketFromInvalidServerInfos = new Socket(invalidServerConnectionInfos.getIpAddress(),
+                invalidServerConnectionInfos.getPort());
+
         assertThat(communicationService.getConnectionToServer().getState()).isEqualTo(DISCONNECTED);
 
         try {
