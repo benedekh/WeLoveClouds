@@ -61,6 +61,7 @@ public class CommunicationService {
     public void send(byte[] content) throws IOException, UnableToSendRequestToServerException {
         if (connectionToServer.getState() == CONNECTED) {
             connectionToServer.getSocket().getOutputStream().write(content);
+            connectionToServer.getSocket().getOutputStream().flush();
         } else {
             throw new ClientNotConnectedException();
         }
@@ -78,7 +79,6 @@ public class CommunicationService {
                     socketDataReader.read(receivedData);
                 }
             }
-
             return receivedData;
         } else {
             throw new ClientNotConnectedException();
