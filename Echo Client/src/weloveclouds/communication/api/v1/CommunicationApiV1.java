@@ -57,8 +57,8 @@ public class CommunicationApiV1 implements ICommunicationApi {
 
   @Override
   public void send(byte[] content) throws UnableToSendRequestToServerException {
-    if (content == null || content.length == 0) {
-      throw new UnableToSendRequestToServerException("Message content cannot be empty.");
+    if (content == null) {
+      throw new UnableToSendRequestToServerException("Message cannot be empty (null).");
     } else if (content.length > MESSAGE_SIZE_LIMIT) {
       throw new UnableToSendRequestToServerException(
           String.format("Message size exceeds the limit (%d)", MESSAGE_SIZE_LIMIT));

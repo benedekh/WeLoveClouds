@@ -3,6 +3,10 @@ package weloveclouds.client.models;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * 
+ * @author Benedek
+ */
 public enum Command {
   CONNECT, DISCONNECT, SEND, LOGLEVEL, HELP, QUIT, DEFAULT;
 
@@ -11,16 +15,12 @@ public enum Command {
   private static Set<String> getNames() {
     Set<String> names = new TreeSet<>();
     for (Command command : Command.values()) {
-      names.add(command.name().toUpperCase());
+      names.add(command.name().toLowerCase());
     }
     return names;
   }
 
   public static Command fromString(String name) {
-    if (name == null || !names.contains(name.toUpperCase())) {
-      return DEFAULT;
-    } else {
-      return Command.valueOf(name.toUpperCase());
-    }
+    return name == null || !names.contains(name) ? DEFAULT : Command.valueOf(name);
   }
 }

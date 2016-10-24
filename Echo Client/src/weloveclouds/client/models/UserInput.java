@@ -23,7 +23,11 @@ public class UserInput {
   }
 
   public byte[] getArgumentAsBytes() {
-    return argument.getBytes(StandardCharsets.US_ASCII);
+    if (argument == null) {
+      return null;
+    } else {
+      return argument.getBytes(StandardCharsets.US_ASCII);
+    }
   }
 
   public static class UserInputFactory {
