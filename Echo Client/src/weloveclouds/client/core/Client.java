@@ -3,7 +3,6 @@ package weloveclouds.client.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.log4j.Logger;
@@ -53,13 +52,9 @@ public class Client {
           switch (command) {
             case CONNECT:
               try {
-                boolean isValid = UserInputValidator.isConnectArgumentValid(argument);
-                if (!isValid) {
-                  outputWriter.write(
-                      "Command is invalid. Either not enough parameters (IP address + port) are provided or there are some additional arguments which cannot be interpreted.");
-                  break;
-                }
+                UserInputValidator.validateConnectArgument(argument);
 
+                // TODO use regex and scanner to get the IP address and port
                 String[] argumentParts = argument.split("\\s+");
                 String ip = argumentParts[0];
                 int port = Integer.parseInt(argumentParts[1]);
@@ -68,57 +63,52 @@ public class Client {
                         .build();
 
                 communicationApi.connectTo(connectionInfo);
-              } catch (UnknownHostException ex) {
-                outputWriter.write("IP address is invalid.");
-              } catch (NumberFormatException ex) {
-                outputWriter.write("Port is invalid.");
+              } catch (IllegalArgumentException ex) {
+                outputWriter.write(ex.getMessage());
               } catch (UnableToConnectException e) {
                 outputWriter.write(e.getMessage());
               }
               break;
             case SEND:
               try {
-                boolean isValid = UserInputValidator.isSendArgumentValid(argument);
-                if (!isValid) {
-                  outputWriter.write("Command is invalid. Message cannot be empty (null).");
-                  break;
-                }
+                UserInputValidator.validateSendArgument(argument);
 
                 communicationApi.send(input.getArgumentAsBytes());
                 byte[] response = communicationApi.receive();
                 outputWriter.write(new String(response, StandardCharsets.US_ASCII));
+              } catch (IllegalArgumentException ex) {
+                outputWriter.write(ex.getMessage());
               } catch (UnableToSendRequestToServerException | ConnectionClosedException ex) {
                 outputWriter.write(ex.getMessage());
               }
               break;
             case DISCONNECT:
               try {
-                boolean isValid = UserInputValidator.isDisconnectArgumentValid(argument);
-                if (!isValid) {
-                  outputWriter.write("Command is invalid. It does not interpret any argument.");
-                  break;
-                }
+                UserInputValidator.validateDisconnectArgument(argument);
                 communicationApi.disconnect();
+              } catch (IllegalArgumentException ex) {
+                outputWriter.write(ex.getMessage());
               } catch (UnableToDisconnectException ex) {
                 outputWriter.write(ex.getMessage());
               }
               break;
             case QUIT:
-              boolean isValid = UserInputValidator.isQuitArgumentValid(argument);
-              if (!isValid) {
-                outputWriter.write("Command is invalid. It does not interpret any argument.");
-                break;
-              }
+              try {
+                UserInputValidator.validateQuitArgument(argument);
 
-              if (communicationApi.isConnected()) {
-                try {
-                  communicationApi.disconnect();
-                } catch (UnableToDisconnectException ex) {
-                  outputWriter.write(ex.getMessage());
+                if (communicationApi.isConnected()) {
+                  try {
+                    communicationApi.disconnect();
+                  } catch (UnableToDisconnectException ex) {
+                    outputWriter.write(ex.getMessage());
+                  }
                 }
+                outputWriter.write("Program was shut down.");
+                return;
+              } catch (IllegalArgumentException ex) {
+                outputWriter.write(ex.getMessage());
               }
-              outputWriter.write("Program was shut down.");
-              return;
+              break;
             case HELP:
               // TODO print help text (extract to a method)
               break;
