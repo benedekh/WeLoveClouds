@@ -42,11 +42,12 @@ public class UserInputValidator {
   }
 
   public static void validateLogLevelArgument(String argument) throws IllegalArgumentException {
-    if(!logLevels.contains(argument)){
-      throw new IllegalArgumentException("Log level is not recognized.");
+    if (!logLevels.contains(argument)) {
+      throw new IllegalArgumentException(
+          "Log level is not recognized. It should be capitalized and should be one of the followings: All, DEBUG, INFO, WARN, ERROR, FATAL, OFF");
     }
   }
-  
+
   public static void validateDisconnectArgument(String argument) throws IllegalArgumentException {
     if (!isNullOrEmpty(argument)) {
       throw new IllegalArgumentException("Command does not accept any argument.");

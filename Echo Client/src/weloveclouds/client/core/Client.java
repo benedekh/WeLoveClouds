@@ -5,12 +5,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
 
 import weloveclouds.client.models.Command;
 import weloveclouds.client.models.UserInput;
+import weloveclouds.client.utils.HelpMessageGenerator;
+import weloveclouds.client.utils.LogManager;
+import weloveclouds.client.utils.UserInputParser;
 import weloveclouds.client.utils.UserInputReader;
 import weloveclouds.client.utils.UserInputValidator;
 import weloveclouds.client.utils.UserOutputWriter;
@@ -25,6 +29,9 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * @author Benoit, Benedek
  */
 public class Client {
+
+  private static final String HELP_MESSAGE = HelpMessageGenerator.generateHelpMessage();
+
   private ICommunicationApi communicationApi;
   private InputStream inputStream;
   private OutputStream outputStream;
@@ -54,19 +61,15 @@ public class Client {
               try {
                 UserInputValidator.validateConnectArgument(argument);
 
-                // TODO use regex and scanner to get the IP address and port
-                String[] argumentParts = argument.split("\\s+");
-                String ip = argumentParts[0];
-                int port = Integer.parseInt(argumentParts[1]);
                 ServerConnectionInfo connectionInfo =
-                    new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(ip).port(port)
-                        .build();
-
+                    UserInputParser.extractConnectionInfoFromInput(argument);
                 communicationApi.connectTo(connectionInfo);
               } catch (IllegalArgumentException ex) {
-                outputWriter.write(ex.getMessage());
+                outputWriter.writeLine(ex.getMessage());
               } catch (UnableToConnectException e) {
-                outputWriter.write(e.getMessage());
+                outputWriter.writeLine(e.getMessage());
+              } finally {
+                outputWriter.writePrefix();
               }
               break;
             case SEND:
@@ -75,21 +78,26 @@ public class Client {
 
                 communicationApi.send(input.getArgumentAsBytes());
                 byte[] response = communicationApi.receive();
-                outputWriter.write(new String(response, StandardCharsets.US_ASCII));
+                outputWriter.writeLine(new String(response, StandardCharsets.US_ASCII));
               } catch (IllegalArgumentException ex) {
-                outputWriter.write(ex.getMessage());
+                outputWriter.writeLine(ex.getMessage());
               } catch (UnableToSendRequestToServerException | ConnectionClosedException ex) {
-                outputWriter.write(ex.getMessage());
+                outputWriter.writeLine(ex.getMessage());
+              } finally {
+                outputWriter.writePrefix();
               }
               break;
             case DISCONNECT:
               try {
                 UserInputValidator.validateDisconnectArgument(argument);
+
                 communicationApi.disconnect();
               } catch (IllegalArgumentException ex) {
-                outputWriter.write(ex.getMessage());
+                outputWriter.writeLine(ex.getMessage());
               } catch (UnableToDisconnectException ex) {
-                outputWriter.write(ex.getMessage());
+                outputWriter.writeLine(ex.getMessage());
+              } finally {
+                outputWriter.writePrefix();
               }
               break;
             case QUIT:
@@ -100,26 +108,48 @@ public class Client {
                   try {
                     communicationApi.disconnect();
                   } catch (UnableToDisconnectException ex) {
-                    outputWriter.write(ex.getMessage());
+                    outputWriter.writeLine(ex.getMessage());
                   }
                 }
-                outputWriter.write("Program was shut down.");
+                outputWriter.writeLine("Program was shut down.");
                 return;
               } catch (IllegalArgumentException ex) {
-                outputWriter.write(ex.getMessage());
+                outputWriter.writeLine(ex.getMessage());
               }
               break;
             case HELP:
-              // TODO print help text (extract to a method)
+              try {
+                UserInputValidator.validateHelpArgument(argument);
+
+                outputWriter.writeLine(HELP_MESSAGE);
+              } catch (IllegalArgumentException ex) {
+                outputWriter.writeLine(ex.getMessage());
+              } finally {
+                outputWriter.writePrefix();
+              }
               break;
             case LOGLEVEL:
-              // TODO set log level and print current log status
-              // TODO LoggerManager which sets all loggers log level and log output!
-              // TODO see M1 slide 24
+              try {
+                UserInputValidator.validateLogLevelArgument(argument);
+
+                Level level = Level.toLevel(argument);
+                LogManager.getInstance().setLogLevel(level);
+                outputWriter.writeLine(String.format("Current log level: %s", level));
+              } catch (IllegalArgumentException ex) {
+                outputWriter.writeLine(ex.getMessage());
+              } finally {
+                outputWriter.writePrefix();
+              }
               break;
             case DEFAULT:
-              outputWriter.write("Unknown command.");
-              // TODO print help text
+              try {
+                outputWriter.writeLine("Unknown command.");
+                outputWriter.writeLine(HELP_MESSAGE);
+              } catch (IllegalArgumentException ex) {
+                outputWriter.writeLine(ex.getMessage());
+              } finally {
+                outputWriter.writePrefix();
+              }
               break;
           }
 
