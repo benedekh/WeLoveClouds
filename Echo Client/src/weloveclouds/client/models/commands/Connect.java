@@ -17,12 +17,11 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public class Connect extends AbstractCommunicationApiCommand {
     private ServerConnectionInfo remoteServer;
-    private UserOutputWriter userOutputWriter;
+    private UserOutputWriter userOutputWriter = UserOutputWriter.getInstance();
 
     public Connect(String[] arguments, ICommunicationApi communicationApi) throws UnknownHostException {
         super(arguments, communicationApi);
         this.remoteServer = UserInputParser.extractConnectionInfoFrom(arguments);
-        this.userOutputWriter = UserOutputWriter.getInstance();
     }
 
     @Override

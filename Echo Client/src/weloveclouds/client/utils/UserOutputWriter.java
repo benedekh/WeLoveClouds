@@ -20,7 +20,7 @@ public class UserOutputWriter implements AutoCloseable {
 
   public void writeLine(String message) throws IOException {
     outputWriter.write(message);
-    outputWriter.newLine();
+    //outputWriter.newLine();
     outputWriter.flush();
   }
 

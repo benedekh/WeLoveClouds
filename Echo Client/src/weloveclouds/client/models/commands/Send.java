@@ -15,14 +15,13 @@ import weloveclouds.communication.exceptions.ClientSideException;
 public class Send extends AbstractCommunicationApiCommand {
     private static final String MESSAGE_TERMINATOR = "\r";
     private static final String MESSAGE_PARTS_SEPARATOR = " ";
-    private UserOutputWriter userOutputWriter;
+    private UserOutputWriter userOutputWriter = UserOutputWriter.getInstance();
     private String message;
 
     public Send(String[] arguments, ICommunicationApi communicationApi) {
         super(arguments, communicationApi);
         this.message = (String.join(MESSAGE_PARTS_SEPARATOR, Arrays.asList(arguments)) +
                 MESSAGE_TERMINATOR);
-        this.userOutputWriter = UserOutputWriter.getInstance();
     }
 
     @Override

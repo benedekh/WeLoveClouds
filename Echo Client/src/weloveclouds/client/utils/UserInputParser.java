@@ -34,8 +34,15 @@ public class UserInputParser {
     }
 
     public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments) throws UnknownHostException {
-        String ipAddress = arguments[IP_ADDRESS_INDEX];
-        int port = Integer.parseInt(arguments[PORT_INDEX]);
+        String ipAddress;
+        int port;
+        try {
+            ipAddress = arguments[IP_ADDRESS_INDEX];
+            port = Integer.parseInt(arguments[PORT_INDEX]);
+        } catch (IndexOutOfBoundsException ex) {
+            throw new IllegalArgumentException("Unable to extract server infos from command " +
+                    "arguments");
+        }
 
         return new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(ipAddress).port(port)
                 .build();
