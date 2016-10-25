@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 
 import com.google.inject.Inject;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.FileAppender;
 
@@ -38,16 +39,14 @@ public class Client {
     this.communicationApi = communicationApi;
     this.inputReader = new BufferedReader(new InputStreamReader(System.in));
     this.userInputConverter = userInputConverter;
-    /*initialize logger, There's a way to do this with an external config file but I haven't 
-     * worked with it at all
-     */
+ 
     this.clientLogger = Logger.getLogger(Client.class.getName());
-    //this.clientLogger.addAppender(newAppender);
+    this.clientLogger.setLevel(Level.ALL);
   }
 
   public void run() {
     this.state = LISTENING;
-
+    this.clientLogger.info("Client Running - info");
     while (state == LISTENING) {
       System.out.print("EchoClient> ");
       try {
@@ -69,7 +68,7 @@ public class Client {
     switch (apiRequest.getCommand()) {
       case CONNECT:
         /**
-         * @see Parser, which validates the data provided 
+         * @see weloveclouds.client.utils.UserInputParser#parse , which validates the data provided. 
          */
         /*I need advice on getting the network info out of the string, should this processing
          * even be done here? We could do it in the UserInput factory i think.

@@ -3,7 +3,9 @@ package weloveclouds.client.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.*;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.FileAppender;
 
 import weloveclouds.client.models.UserInput;
 
