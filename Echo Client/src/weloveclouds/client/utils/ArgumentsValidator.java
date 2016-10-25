@@ -1,7 +1,5 @@
 package weloveclouds.client.utils;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.List;
@@ -16,16 +14,16 @@ public class ArgumentsValidator {
     private static final int SEND_MESSAGE_SIZE_LIMIT_IN_BYTES = 128;
     private static final int CONNECT_NUMBER_OF_ARGUMENTS = 2;
     private static final int LEVEL_INDEX = 0;
+    private static final int NETWORK_PORT_LOWER_LIMIT = 0;
+    private static final int NETWORK_PORT_UPPER_LIMIT = 65536;
     private static List<String> logLevels =
             Arrays.asList("ALL", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF");
 
-    public static void validateConnectArguments(String[] arguments, ServerConnectionInfo
-            remoteServer) {
-        if (isNullOrEmpty(arguments) || arguments.length !=
-                CONNECT_NUMBER_OF_ARGUMENTS) {
+    public static void validateConnectArguments(String[] arguments, ServerConnectionInfo remoteServer) {
+        if (isNullOrEmpty(arguments) || arguments.length != CONNECT_NUMBER_OF_ARGUMENTS) {
             throw new InvalidParameterException("Command need arguments (<IP address> and <port>)" +
                     " only");
-        } else if (remoteServer.getPort() < 0 || remoteServer.getPort() > 65536) {
+        } else if (remoteServer.getPort() < NETWORK_PORT_LOWER_LIMIT || remoteServer.getPort() > NETWORK_PORT_UPPER_LIMIT) {
             throw new IllegalArgumentException("Port should be in the range [0,65536].");
         }
     }
