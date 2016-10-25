@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import com.google.common.base.Joiner;
 
-import weloveclouds.client.models.UserInput;
+import weloveclouds.client.models.ParsedUserInput;
 import weloveclouds.client.utils.UserInputParser;
 
 /**
@@ -23,7 +23,7 @@ public class UserInputParserTest {
 
   @Test
   public void shouldCreateARequestOnValidUserInput() throws Exception {
-    UserInput userRequest = UserInputParser.parse(API_VALID_USER_INPUT_NON_CAPITAL_LETTER);
+    ParsedUserInput userRequest = UserInputParser.parse(API_VALID_USER_INPUT_NON_CAPITAL_LETTER);
     assertThat(userRequest.getCommand()).isEqualTo(SEND_COMMAND);
     assertThat(userRequest.getArguments()).isEqualTo(null);
   }

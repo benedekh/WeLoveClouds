@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import weloveclouds.client.models.UserInput;
+import weloveclouds.client.models.ParsedUserInput;
 
 /**
  * 
@@ -19,7 +19,7 @@ public class UserInputReader implements AutoCloseable {
     this.inputReader = new BufferedReader(new InputStreamReader(inputStream));
   }
 
-  public UserInput readLine() throws IOException {
+  public ParsedUserInput readAndParseUserInput() throws IOException {
     return UserInputParser.parse(inputReader.readLine());
   }
 
