@@ -43,5 +43,4 @@ public class UserOutputWriter implements AutoCloseable {
       // suppress exception
     }
   }
-
 }

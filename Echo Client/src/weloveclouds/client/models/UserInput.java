@@ -7,39 +7,31 @@ import java.nio.charset.StandardCharsets;
  */
 public class UserInput {
   private String command;
-  private String argument;
+  private String[] arguments;
 
   protected UserInput(UserInputFactory factory) {
     this.command = factory.command;
-    this.argument = factory.argument;
+    this.arguments = factory.argument;
   }
 
   public Command getCommand() {
     return Command.fromString(command);
   }
 
-  public String getArgument() {
-    return argument;
-  }
-
-  public byte[] getArgumentAsBytes() {
-    if (argument == null) {
-      return null;
-    } else {
-      return argument.getBytes(StandardCharsets.US_ASCII);
-    }
+  public String[] getArguments() {
+    return arguments;
   }
 
   public static class UserInputFactory {
     private String command;
-    private String argument;
+    private String[] argument;
 
     public UserInputFactory command(String command) {
       this.command = command;
       return this;
     }
 
-    public UserInputFactory arguments(String argument) {
+    public UserInputFactory arguments(String[] argument) {
       this.argument = argument;
       return this;
     }

@@ -11,7 +11,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * @author Benedek
  */
-public class UserInputValidator {
+public class ArgumentsValidator {
     private static final String EMPTY_MESSAGE_ERROR_MESSAGE = "Message cannot be empty (null).";
     private static final int CONNECT_NUMBER_OF_ARGUMENTS = 2;
     private static final int LEVEL_INDEX = 0;
@@ -29,33 +29,34 @@ public class UserInputValidator {
         }
     }
 
-    public static void validateSendArgument(String[] arguments) throws IllegalArgumentException {
+    public static void validateSendArguments(String[] arguments) throws IllegalArgumentException {
         if (ValidatorUtils.isNullOrEmpty(arguments)) {
             throw new IllegalArgumentException(EMPTY_MESSAGE_ERROR_MESSAGE);
         }
     }
 
-    public static void validateLogLevelArgument(String[] arguments) throws IllegalArgumentException {
+    public static void validateLogLevelArguments(String[] arguments) throws
+            IllegalArgumentException {
         if (!logLevels.contains(arguments[LEVEL_INDEX])) {
             throw new IllegalArgumentException(
                     "Log level is not recognized. It should be capitalized and should be one of the followings: All, DEBUG, INFO, WARN, ERROR, FATAL, OFF");
         }
     }
 
-    public static void validateDisconnectArgument(String[] arguments) throws
+    public static void validateDisconnectArguments(String[] arguments) throws
             IllegalArgumentException {
         if (!isNullOrEmpty(arguments)) {
             throw new IllegalArgumentException("Command does not accept any argument.");
         }
     }
 
-    public static void validateHelpArgument(String[] arguments) {
+    public static void validateHelpArguments(String[] arguments) {
         if (!isNullOrEmpty(arguments)) {
             throw new IllegalArgumentException("Command does not accept any argument.");
         }
     }
 
-    public static void validateQuitArgument(String[] arguments) {
+    public static void validateQuitArguments(String[] arguments) {
         if (!isNullOrEmpty(arguments)) {
             throw new IllegalArgumentException("Command does not accept any argument.");
         }

@@ -11,25 +11,25 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * @author Benoit
  */
 public class UserInputParser {
-  private static final Pattern INPUT_REGEX =
-      Pattern.compile("(?<command>\\w+) " + "(?<argument>[a-zA-Z0-9 ]+)");
+    private static final int IP_ADDRESS_INDEX = 0;
+    private static final int PORT_INDEX = 1;
+    private static final String ARGUMENTS_SEPARATOR = " ";
 
-  public static UserInput parse(String userInput) {
-    Matcher matcher = INPUT_REGEX.matcher(userInput);
-    matcher.find();
-    return new UserInput.UserInputFactory().command(matcher.group("command"))
-        .arguments(matcher.group("argument")).build();
-  }
+    private static final Pattern INPUT_REGEX =
+            Pattern.compile("(?<command>\\w+) " + "(?<arguments>\\.+)");
 
-  public static ServerConnectionInfo extractConnectionInfoFromInput(String userInput) {
-    String[] argumentParts = userInput.split("\\s+");
-    String ip = argumentParts[0];
-    int port = Integer.parseInt(argumentParts[1]);
-    try {
-      return new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(ip).port(port)
-          .build();
-    } catch (UnknownHostException e) {
-      return null;
+    public static UserInput parse(String userInput) {
+        Matcher matcher = INPUT_REGEX.matcher(userInput);
+        matcher.find();
+        return new UserInput.UserInputFactory().command(matcher.group("command"))
+                .arguments(matcher.group("arguments").split(ARGUMENTS_SEPARATOR)).build();
     }
-  }
+
+    public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments) throws UnknownHostException{
+        String ipAddress = arguments[IP_ADDRESS_INDEX];
+        int port = Integer.parseInt(arguments[PORT_INDEX]);
+
+        return new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(ipAddress).port(port)
+                .build();
+    }
 }
