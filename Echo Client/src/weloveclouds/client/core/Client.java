@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.models.UserInput;
+import weloveclouds.client.models.ParsedUserInput;
 import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.UserInputReader;
 import weloveclouds.client.utils.UserOutputWriter;
@@ -28,20 +28,17 @@ public class Client {
     }
 
     public void run() {
-        try {
-            try (UserInputReader inputReader = new UserInputReader(inputStream);
-                 UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
-
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        outputWriter.writePrefix();
-                        UserInput userInput = inputReader.readLine();
-                        commandFactory.createCommandFromUserInput(userInput).validate().execute();
-                    } catch (IOException ex) {
-                        logger.error("Error while reading input from the user.");
-                    } catch (ClientSideException | IllegalArgumentException ex) {
-                        outputWriter.writeLine(ex.getMessage());
-                    }
+        try (UserInputReader inputReader = new UserInputReader(inputStream);
+             UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    outputWriter.writePrefix();
+                    ParsedUserInput userInput = inputReader.readAndParseUserInput();
+                    commandFactory.createCommandFromUserInput(userInput).validate().execute();
+                } catch (IOException ex) {
+                    logger.error("Error while reading input from the user.");
+                } catch (ClientSideException | IllegalArgumentException ex) {
+                    outputWriter.writeLine(ex.getMessage());
                 }
             }
         } catch (IOException ex) {

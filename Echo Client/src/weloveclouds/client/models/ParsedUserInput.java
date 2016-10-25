@@ -1,15 +1,13 @@
 package weloveclouds.client.models;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * @author Benoit, Benedek
  */
-public class UserInput {
+public class ParsedUserInput {
   private String command;
   private String[] arguments = {};
 
-  protected UserInput(UserInputFactory factory) {
+  protected ParsedUserInput(UserInputFactory factory) {
     this.command = factory.command;
     this.arguments = factory.argument;
   }
@@ -36,8 +34,8 @@ public class UserInput {
       return this;
     }
 
-    public UserInput build() {
-      return new UserInput(this);
+    public ParsedUserInput build() {
+      return new ParsedUserInput(this);
     }
   }
 }

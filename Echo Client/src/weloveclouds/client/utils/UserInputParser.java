@@ -4,7 +4,7 @@ import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import weloveclouds.client.models.UserInput;
+import weloveclouds.client.models.ParsedUserInput;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -18,7 +18,7 @@ public class UserInputParser {
     private static final Pattern INPUT_REGEX =
             Pattern.compile("(?<command>\\w+) ?" + "(?<arguments>.+)?");
 
-    public static UserInput parse(String userInput) {
+    public static ParsedUserInput parse(String userInput) {
         String command = "";
         String[] arguments = {};
         Matcher matcher = INPUT_REGEX.matcher(userInput);
@@ -30,7 +30,7 @@ public class UserInputParser {
                 arguments = matcher.group("arguments").split(ARGUMENTS_SEPARATOR);
             }
         }
-        return new UserInput.UserInputFactory().command(command).arguments(arguments).build();
+        return new ParsedUserInput.UserInputFactory().command(command).arguments(arguments).build();
     }
 
     public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments) throws UnknownHostException {
