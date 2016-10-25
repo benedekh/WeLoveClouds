@@ -2,8 +2,6 @@ package weloveclouds.communication.api.v1;
 
 import java.io.IOException;
 
-import com.google.inject.Inject;
-
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
@@ -22,7 +20,6 @@ public class CommunicationApiV1 implements ICommunicationApi {
 
   private CommunicationService communicationService;
 
-  @Inject
   public CommunicationApiV1(CommunicationService communicationService) {
     this.communicationService = communicationService;
   }

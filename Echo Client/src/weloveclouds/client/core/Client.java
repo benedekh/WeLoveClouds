@@ -5,8 +5,6 @@ import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
-import com.google.inject.Inject;
-
 import weloveclouds.client.models.UserInput;
 import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.UserInputReader;
@@ -23,7 +21,6 @@ public class Client {
 
     private Logger logger;
 
-    @Inject
     public Client(InputStream inputStream, CommandFactory commandFactory) {
         this.inputStream = inputStream;
         this.logger = Logger.getLogger(this.getClass());
