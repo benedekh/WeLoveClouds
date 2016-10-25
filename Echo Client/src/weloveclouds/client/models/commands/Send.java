@@ -1,8 +1,11 @@
 package weloveclouds.client.models.commands;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import weloveclouds.client.utils.ArgumentsValidator;
+import weloveclouds.client.utils.UserOutputWriter;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 
@@ -10,17 +13,28 @@ import weloveclouds.communication.exceptions.ClientSideException;
  * Created by Benoit on 2016-10-25.
  */
 public class Send extends AbstractCommunicationApiCommand {
+    private static final String MESSAGE_TERMINATOR = "\r";
     private static final String MESSAGE_PARTS_SEPARATOR = " ";
-    private byte[] message;
+    private UserOutputWriter userOutputWriter;
+    private String message;
 
     public Send(String[] arguments, ICommunicationApi communicationApi) {
         super(arguments, communicationApi);
-        this.message = String.join(MESSAGE_PARTS_SEPARATOR, Arrays.asList(arguments)).getBytes();
+        this.message = (String.join(MESSAGE_PARTS_SEPARATOR, Arrays.asList(arguments)) +
+                MESSAGE_TERMINATOR);
+        this.userOutputWriter = UserOutputWriter.getInstance();
     }
 
     @Override
     public void execute() throws ClientSideException {
-        communicationApi.send(message);
+        try {
+            communicationApi.send(message.getBytes());
+            userOutputWriter.writePrefix();
+            userOutputWriter.writeLine(new String(communicationApi.receive(),
+                    StandardCharsets.US_ASCII));
+        } catch (IOException e) {
+            throw new ClientSideException(e.getMessage());
+        }
     }
 
     @Override

@@ -16,16 +16,24 @@ public class UserInputParser {
     private static final String ARGUMENTS_SEPARATOR = " ";
 
     private static final Pattern INPUT_REGEX =
-            Pattern.compile("(?<command>\\w+) " + "(?<arguments>.+)");
+            Pattern.compile("(?<command>\\w+) ?" + "(?<arguments>.+)?");
 
     public static UserInput parse(String userInput) {
+        String command = "";
+        String[] arguments = {};
         Matcher matcher = INPUT_REGEX.matcher(userInput);
-        matcher.find();
-        return new UserInput.UserInputFactory().command(matcher.group("command"))
-                .arguments(matcher.group("arguments").split(ARGUMENTS_SEPARATOR)).build();
+        if (matcher.find()) {
+            if (matcher.group("command") != null) {
+                command = matcher.group("command");
+            }
+            if (matcher.group("arguments") != null) {
+                arguments = matcher.group("arguments").split(ARGUMENTS_SEPARATOR);
+            }
+        }
+        return new UserInput.UserInputFactory().command(command).arguments(arguments).build();
     }
 
-    public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments) throws UnknownHostException{
+    public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments) throws UnknownHostException {
         String ipAddress = arguments[IP_ADDRESS_INDEX];
         int port = Integer.parseInt(arguments[PORT_INDEX]);
 

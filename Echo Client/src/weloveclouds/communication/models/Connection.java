@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
+
 /**
  * @author Benoit, Benedek
  */
@@ -34,7 +36,9 @@ public class Connection {
   }
 
   public void kill() throws IOException {
-    socket.close();
+    if(isConnected()) {
+      socket.close();
+    }
   }
 
   public static class ConnectionBuilder {

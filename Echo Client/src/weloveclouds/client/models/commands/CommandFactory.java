@@ -38,6 +38,9 @@ public class CommandFactory {
             case QUIT:
                 command = new Quit(userInput.getArguments());
                 break;
+            default:
+                command = new DefaultCommand(null);
+                break;
         }
         return command;
     }

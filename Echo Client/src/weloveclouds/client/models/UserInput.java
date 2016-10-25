@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class UserInput {
   private String command;
-  private String[] arguments;
+  private String[] arguments = {};
 
   protected UserInput(UserInputFactory factory) {
     this.command = factory.command;

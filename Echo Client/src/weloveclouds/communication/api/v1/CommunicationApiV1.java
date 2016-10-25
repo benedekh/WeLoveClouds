@@ -3,6 +3,7 @@ package weloveclouds.communication.api.v1;
 import java.io.IOException;
 
 import weloveclouds.communication.api.ICommunicationApi;
+import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
@@ -46,8 +47,8 @@ public class CommunicationApiV1 implements ICommunicationApi {
   public void disconnect() throws UnableToDisconnectException {
     try {
       communicationService.disconnect();
-    } catch (IOException e) {
-      throw new UnableToDisconnectException();
+    } catch (IOException | AlreadyDisconnectedException e) {
+      throw new UnableToDisconnectException(e.getMessage());
     }
   }
 
