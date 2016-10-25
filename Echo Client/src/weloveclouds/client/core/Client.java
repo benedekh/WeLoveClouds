@@ -1,65 +1,48 @@
 package weloveclouds.client.core;
 
-import static weloveclouds.client.core.ClientState.LISTENING;
+import java.io.IOException;
+import java.io.InputStream;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import org.apache.log4j.Logger;
 
-import com.google.inject.Inject;
-
-import weloveclouds.client.models.UserInput;
-import weloveclouds.client.utils.UserInputConverter;
-import weloveclouds.client.utils.UserInputParser;
-import weloveclouds.communication.api.ICommunicationApi;
-import weloveclouds.communication.exceptions.ConnectionClosedException;
-import weloveclouds.communication.exceptions.UnableToDisconnectException;
-import weloveclouds.communication.exceptions.UnableToSendRequestToServerException;
-import weloveclouds.communication.models.Request;
+import weloveclouds.client.models.ParsedUserInput;
+import weloveclouds.client.models.commands.CommandFactory;
+import weloveclouds.client.utils.UserInputReader;
+import weloveclouds.client.utils.UserOutputWriter;
+import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
- * @author Benoit
+ * @author Benoit, Benedek
  */
 public class Client {
-  private ICommunicationApi communicationApi;
-  private UserInputConverter<Request> userInputConverter;
-  private BufferedReader inputReader;
-  private ClientState state;
 
-  @Inject
-  public Client(ICommunicationApi communicationApi, UserInputConverter userInputConverter) {
-    this.communicationApi = communicationApi;
-    this.inputReader = new BufferedReader(new InputStreamReader(System.in));
-    this.userInputConverter = userInputConverter;
-  }
+    private InputStream inputStream;
+    private CommandFactory commandFactory;
 
-  public void run() {
-    this.state = LISTENING;
+    private Logger logger;
 
-    while (state == LISTENING) {
-      try {
-        UserInput userInput = UserInputParser.parse(inputReader.readLine());
-        Request apiRequest = userInputConverter.convert(userInput);
+    public Client(InputStream inputStream, CommandFactory commandFactory) {
+        this.inputStream = inputStream;
+        this.logger = Logger.getLogger(this.getClass());
+        this.commandFactory = commandFactory;
+    }
 
-        if (apiRequest != null) {
-          executeApiCall(apiRequest);
+    public void run() {
+        try (UserInputReader inputReader = new UserInputReader(inputStream);
+             UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    outputWriter.writePrefix();
+                    ParsedUserInput userInput = inputReader.readAndParseUserInput();
+                    commandFactory.createCommandFromUserInput(userInput).validate().execute();
+                } catch (IOException ex) {
+                    logger.error("Error while reading input from the user.");
+                } catch (ClientSideException | IllegalArgumentException ex) {
+                    outputWriter.writeLine(ex.getMessage());
+                }
+            }
+        } catch (IOException ex) {
+            logger.error("Error while writing the output.");
         }
-
-      } catch (Exception e) {
-
-      }
     }
-  }
-
-  private void executeApiCall(Request apiRequest) throws UnableToSendRequestToServerException,
-      UnableToDisconnectException, ConnectionClosedException {
-    switch (apiRequest.getCommand()) {
-      case SEND:
-        communicationApi.send(apiRequest.argumentAsBytes());
-        communicationApi.receive();
-        break;
-      case DISCONNECT:
-        communicationApi.disconnect();
-        break;
-    }
-  }
 }

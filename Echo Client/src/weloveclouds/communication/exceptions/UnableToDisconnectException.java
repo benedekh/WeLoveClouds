@@ -10,4 +10,8 @@ public class UnableToDisconnectException extends ClientSideException {
   public UnableToDisconnectException() {
     super("Unable to disconnect from server.");
   }
+
+  public UnableToDisconnectException(String message){
+    super(message);
+  }
 }

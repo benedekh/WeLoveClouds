@@ -10,4 +10,8 @@ public class ClientSideException extends Exception {
   public ClientSideException(String message) {
     super(message);
   }
+
+  public ClientSideException(String message, Exception cause){
+    super(message, cause);
+  }
 }

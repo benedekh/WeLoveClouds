@@ -34,7 +34,9 @@ public class Connection {
   }
 
   public void kill() throws IOException {
-    socket.close();
+    if(isConnected()) {
+      socket.close();
+    }
   }
 
   public static class ConnectionBuilder {
