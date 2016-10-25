@@ -14,7 +14,6 @@ import weloveclouds.communication.exceptions.ClientSideException;
 public class Disconnect extends AbstractCommunicationApiCommand {
     private static String SUCCESSFULLY_DISCONNECTED_MESSAGE = "Successfully disconnected from " +
             "server";
-    private UserOutputWriter userOutputWriter = UserOutputWriter.getInstance();
 
     public Disconnect(String[] arguments, ICommunicationApi communicationApi) {
         super(arguments, communicationApi);
@@ -24,10 +23,9 @@ public class Disconnect extends AbstractCommunicationApiCommand {
     public void execute() throws ClientSideException {
         try {
             communicationApi.disconnect();
-            userOutputWriter.writePrefix();
             userOutputWriter.writeLine(SUCCESSFULLY_DISCONNECTED_MESSAGE);
-        } catch (IOException e) {
-            throw new ClientSideException(e.getMessage());
+        } catch (IOException ex) {
+            throw new ClientSideException(ex.getMessage(), ex);
         }
     }
 

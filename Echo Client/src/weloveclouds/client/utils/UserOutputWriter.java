@@ -19,8 +19,9 @@ public class UserOutputWriter implements AutoCloseable {
   }
 
   public void writeLine(String message) throws IOException {
+    writePrefix();
     outputWriter.write(message);
-    //outputWriter.newLine();
+    outputWriter.newLine();
     outputWriter.flush();
   }
 

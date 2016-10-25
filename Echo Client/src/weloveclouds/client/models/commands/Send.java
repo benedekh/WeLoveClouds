@@ -15,7 +15,6 @@ import weloveclouds.communication.exceptions.ClientSideException;
 public class Send extends AbstractCommunicationApiCommand {
     private static final String MESSAGE_TERMINATOR = "\r";
     private static final String MESSAGE_PARTS_SEPARATOR = " ";
-    private UserOutputWriter userOutputWriter = UserOutputWriter.getInstance();
     private String message;
 
     public Send(String[] arguments, ICommunicationApi communicationApi) {
@@ -28,11 +27,10 @@ public class Send extends AbstractCommunicationApiCommand {
     public void execute() throws ClientSideException {
         try {
             communicationApi.send(message.getBytes());
-            userOutputWriter.writePrefix();
             userOutputWriter.writeLine(new String(communicationApi.receive(),
                     StandardCharsets.US_ASCII));
         } catch (IOException e) {
-            throw new ClientSideException(e.getMessage());
+            throw new ClientSideException(e.getMessage(), e);
         }
     }
 

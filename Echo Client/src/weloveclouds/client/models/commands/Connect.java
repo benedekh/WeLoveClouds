@@ -17,7 +17,6 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public class Connect extends AbstractCommunicationApiCommand {
     private ServerConnectionInfo remoteServer;
-    private UserOutputWriter userOutputWriter = UserOutputWriter.getInstance();
 
     public Connect(String[] arguments, ICommunicationApi communicationApi) throws UnknownHostException {
         super(arguments, communicationApi);
@@ -28,11 +27,10 @@ public class Connect extends AbstractCommunicationApiCommand {
     public void execute() throws ClientSideException {
         try {
             communicationApi.connectTo(remoteServer);
-            userOutputWriter.writePrefix();
             userOutputWriter.writeLine(new String(communicationApi.receive(),
                     StandardCharsets.US_ASCII));
         }catch(IOException ex){
-            throw new ClientSideException(ex.getMessage());
+            throw new ClientSideException(ex.getMessage(), ex);
         }
     }
 

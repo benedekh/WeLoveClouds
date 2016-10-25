@@ -1,5 +1,8 @@
 package weloveclouds.client.models.commands;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
+import java.io.IOException;
 import java.security.InvalidParameterException;
 
 import weloveclouds.client.utils.ArgumentsValidator;
@@ -9,6 +12,7 @@ import weloveclouds.communication.exceptions.ClientSideException;
  * Created by Benoit on 2016-10-25.
  */
 public class Quit extends AbstractCommand {
+    private static final String APPLICATION_EXITED_MESSAGE = "Application exit !";
 
     public Quit(String[] arguments) {
         super(arguments);
@@ -16,7 +20,12 @@ public class Quit extends AbstractCommand {
 
     @Override
     public void execute() throws ClientSideException {
-        System.exit(0);
+        try {
+            userOutputWriter.writeLine(APPLICATION_EXITED_MESSAGE);
+            System.exit(0);
+        }catch(IOException e){
+            throw new ClientSideException(e.getMessage(), e);
+        }
     }
 
     @Override
