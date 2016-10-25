@@ -1,5 +1,7 @@
 package weloveclouds.client.models.commands;
 
+import com.sun.deploy.util.StringUtils;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
