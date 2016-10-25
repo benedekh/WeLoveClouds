@@ -1,7 +1,5 @@
 package weloveclouds.client.utils;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.List;

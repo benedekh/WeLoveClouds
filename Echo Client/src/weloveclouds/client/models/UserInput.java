@@ -1,7 +1,5 @@
 package weloveclouds.client.models;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * @author Benoit, Benedek
  */

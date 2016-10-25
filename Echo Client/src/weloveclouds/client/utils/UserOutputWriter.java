@@ -10,12 +10,17 @@ import java.io.OutputStreamWriter;
  * @author Benedek
  */
 public class UserOutputWriter implements AutoCloseable {
-  private static UserOutputWriter instance;
+  private static final UserOutputWriter instance = new UserOutputWriter();
   private BufferedWriter outputWriter;
   private static final String PREFIX = "EchoClient> ";
 
   private UserOutputWriter() {
     this.outputWriter = new BufferedWriter(new OutputStreamWriter(System.out));
+  }
+
+  public void setOutputStream(OutputStream stream) {
+    close();
+    outputWriter = new BufferedWriter(new OutputStreamWriter(stream));
   }
 
   public void writeLine(String message) throws IOException {
@@ -39,11 +44,7 @@ public class UserOutputWriter implements AutoCloseable {
     }
   }
 
-  public static UserOutputWriter getInstance(){
-    if(UserOutputWriter.instance == null){
-      UserOutputWriter.instance = new UserOutputWriter();
-    }
-
-    return UserOutputWriter.instance;
+  public static UserOutputWriter getInstance() {
+    return instance;
   }
 }

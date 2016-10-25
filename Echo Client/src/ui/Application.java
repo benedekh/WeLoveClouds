@@ -1,4 +1,4 @@
-package weloveclouds.client.ui;
+package ui;
 
 
 import weloveclouds.client.core.Client;
@@ -13,7 +13,8 @@ import weloveclouds.communication.services.CommunicationService;
 public class Application {
 
   public static void main(String[] args) {
-    new Client(System.in, new CommandFactory(new CommunicationApiV1(new CommunicationService(new
-            SocketFactory())))).run();
+    new Client(System.in,
+        new CommandFactory(new CommunicationApiV1(new CommunicationService(new SocketFactory()))))
+            .run();
   }
 }

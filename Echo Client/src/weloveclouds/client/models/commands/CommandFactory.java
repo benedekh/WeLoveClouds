@@ -3,7 +3,6 @@ package weloveclouds.client.models.commands;
 import java.net.UnknownHostException;
 
 import weloveclouds.client.models.UserInput;
-import weloveclouds.client.utils.UserInputParser;
 import weloveclouds.communication.api.ICommunicationApi;
 
 /**
