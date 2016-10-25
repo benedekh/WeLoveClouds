@@ -1,12 +1,11 @@
 package weloveclouds.client.models.commands;
 
-import org.apache.log4j.Level;
-
 import java.security.InvalidParameterException;
+
+import org.apache.log4j.Level;
 
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.LogManager;
-import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**

@@ -29,7 +29,7 @@ public class ArgumentsValidator {
     }
 
     public static void validateSendArguments(String[] arguments) throws IllegalArgumentException {
-        if (isNullOrEmpty(arguments) || String.join(" ", Arrays.asList(arguments)).getBytes().length >
+        if (isNullOrEmpty(arguments) || StringJoiner.join(" ", Arrays.asList(arguments)).getBytes().length >
                 SEND_MESSAGE_SIZE_LIMIT_IN_BYTES) {
             throw new IllegalArgumentException(EMPTY_MESSAGE_ERROR_MESSAGE);
         }

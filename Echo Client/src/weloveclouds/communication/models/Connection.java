@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
-
 /**
  * @author Benoit, Benedek
  */

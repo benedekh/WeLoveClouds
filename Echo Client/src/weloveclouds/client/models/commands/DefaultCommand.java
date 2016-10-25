@@ -3,7 +3,6 @@ package weloveclouds.client.models.commands;
 import java.security.InvalidParameterException;
 
 import weloveclouds.client.utils.HelpMessageGenerator;
-import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**

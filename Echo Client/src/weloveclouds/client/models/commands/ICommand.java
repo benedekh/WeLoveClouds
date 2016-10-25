@@ -1,6 +1,5 @@
 package weloveclouds.client.models.commands;
 
-import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
