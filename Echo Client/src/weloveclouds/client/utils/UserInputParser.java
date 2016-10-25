@@ -12,12 +12,19 @@ import weloveclouds.client.models.UserInput;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
+ * The UserInputParser class is used for interpreting user input. 
  * @author Benoit
  */
 public class UserInputParser {
   private static final Pattern INPUT_REGEX =
       Pattern.compile("(?<command>\\w+) " + "(?<argument>[a-zA-Z0-9 ]+)");
 
+  /**
+   * parse, uses the regex to process an input string.
+   * @param userInput - A string from the input stream.
+   * @return - A UserInput object containing the information of the input, 
+   *    @see weloveclouds.client.models.UserInput
+   */
   public static UserInput parse(String userInput) {
     String workingString = userInput.trim();
     Matcher matcher = INPUT_REGEX.matcher(workingString);
@@ -26,6 +33,12 @@ public class UserInputParser {
         .arguments(matcher.group("argument")).build();
   }
 
+  /**
+   * extractConnectionInfoFromInput, does as the name says.
+   * @param userInput - String from the input stream.
+   * @return - a ServerConnectionInfo object,
+   *    @see weloveclouds.communication.models
+   */
   public static ServerConnectionInfo extractConnectionInfoFromInput(String userInput) {
     String[] argumentParts = userInput.split("\\s+");
     String ip = argumentParts[0];

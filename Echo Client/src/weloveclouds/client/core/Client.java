@@ -27,6 +27,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * @author Benoit, Benedek
+ * The Client class handles interaction with the user and with the communication interface
  */
 public class Client {
 
@@ -38,6 +39,13 @@ public class Client {
 
   private Logger logger;
 
+  /**
+   * The Client constructor.
+   * @param communicationApi - ICommunicationApi parameter, an interface for interacting with the
+   * communication component of the program.
+   * @param outputStream - Outputstream, the target stream for the client's output
+   * @param inputStream - Inputstream, the stream that the client receives its user input from.
+   */
   @Inject
   public Client(ICommunicationApi communicationApi, OutputStream outputStream,
       InputStream inputStream) {
@@ -47,6 +55,10 @@ public class Client {
     this.logger = Logger.getLogger(this.getClass());
   }
 
+  /**
+   * This function runs the client, orders its interaction with the ICommunicationApi, input and output
+   * streams according to the input of the user.
+   */
   public void run() {
     try (UserInputReader inputReader = new UserInputReader(inputStream);
         UserOutputWriter outputWriter = new UserOutputWriter(outputStream);) {
