@@ -13,6 +13,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public class ArgumentsValidator {
     private static final String EMPTY_MESSAGE_ERROR_MESSAGE = "Message cannot be empty (null).";
+    private static final int SEND_MESSAGE_SIZE_LIMIT_IN_BYTES = 128;
     private static final int CONNECT_NUMBER_OF_ARGUMENTS = 2;
     private static final int LEVEL_INDEX = 0;
     private static List<String> logLevels =
@@ -20,7 +21,7 @@ public class ArgumentsValidator {
 
     public static void validateConnectArguments(String[] arguments, ServerConnectionInfo
             remoteServer) {
-        if (ValidatorUtils.isNullOrEmpty(arguments) || arguments.length !=
+        if (isNullOrEmpty(arguments) || arguments.length !=
                 CONNECT_NUMBER_OF_ARGUMENTS) {
             throw new InvalidParameterException("Command need arguments (<IP address> and <port>)" +
                     " only");
@@ -30,7 +31,8 @@ public class ArgumentsValidator {
     }
 
     public static void validateSendArguments(String[] arguments) throws IllegalArgumentException {
-        if (ValidatorUtils.isNullOrEmpty(arguments)) {
+        if (isNullOrEmpty(arguments) || String.join(" ", Arrays.asList(arguments)).getBytes().length >
+                SEND_MESSAGE_SIZE_LIMIT_IN_BYTES) {
             throw new IllegalArgumentException(EMPTY_MESSAGE_ERROR_MESSAGE);
         }
     }
