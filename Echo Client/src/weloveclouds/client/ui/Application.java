@@ -4,7 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import weloveclouds.client.core.Client;
-import weloveclouds.client.module.BaseModule;
+import weloveclouds.client.module.ClientModule;
 
 import org.apache.log4j.*;
 
@@ -14,7 +14,7 @@ import org.apache.log4j.*;
 public class Application {
 
   public static void main(String[] args) {
-    Injector injector = Guice.createInjector(new BaseModule());
+    Injector injector = Guice.createInjector(new ClientModule());
     Client client = injector.getInstance(Client.class);
     /**
      * @see weloveclouds.client.core.Client#run   
