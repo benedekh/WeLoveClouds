@@ -16,7 +16,7 @@ public class UserInputParser {
     private static final String ARGUMENTS_SEPARATOR = " ";
 
     private static final Pattern INPUT_REGEX =
-            Pattern.compile("(?<command>\\w+) " + "(?<arguments>\\.+)");
+            Pattern.compile("(?<command>\\w+) " + "(?<arguments>.+)");
 
     public static UserInput parse(String userInput) {
         Matcher matcher = INPUT_REGEX.matcher(userInput);
