@@ -1,32 +1,49 @@
 package weloveclouds.communication.models;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @author Benoit, Benedek
  */
 public class ServerConnectionInfo {
+  private InetAddress ipAddress;
+  private int port;
+
+  protected ServerConnectionInfo(ServerConnectionInfoBuilder builder) {
+    this.ipAddress = builder.ipAddress;
+    this.port = builder.port;
+  }
+
+  public InetAddress getIpAddress() {
+    return ipAddress;
+  }
+
+  public int getPort() {
+    return port;
+  }
+
+  public static class ServerConnectionInfoBuilder {
     private InetAddress ipAddress;
     private int port;
 
-    public ServerConnectionInfo(InetAddress ipAddress, int port) {
-        this.ipAddress = ipAddress;
-        this.port = port;
+    public ServerConnectionInfoBuilder ipAddress(String ipAddress) throws UnknownHostException {
+      this.ipAddress = InetAddress.getByName(ipAddress);
+      return this;
     }
 
-    public InetAddress getIpAddress() {
-        return ipAddress;
+    public ServerConnectionInfoBuilder ipAddress(InetAddress address) {
+      this.ipAddress = address;
+      return this;
     }
 
-    public int getPort() {
-        return port;
+    public ServerConnectionInfoBuilder port(int port) {
+      this.port = port;
+      return this;
     }
 
-    public void setIpAddress(InetAddress ipAddress) {
-        this.ipAddress = ipAddress;
+    public ServerConnectionInfo build() {
+      return new ServerConnectionInfo(this);
     }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
+  }
 }
