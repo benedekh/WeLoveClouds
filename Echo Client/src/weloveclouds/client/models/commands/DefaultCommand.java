@@ -8,7 +8,10 @@ import weloveclouds.client.utils.HelpMessageGenerator;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * Represents a command that was not recognized as a valid
+ * {@link weloveclouds.client.models.Command}.
+ * 
+ * @author Benoit, Hunton
  */
 public class DefaultCommand extends AbstractCommand {
 

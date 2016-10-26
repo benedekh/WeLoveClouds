@@ -3,13 +3,19 @@ package weloveclouds.client.models.commands;
 import weloveclouds.client.utils.UserOutputWriter;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * Abstract common class for processing commands. It stores the {@link #arguments} that a specific
+ * command may have.
+ * 
+ * @author Benoit
  */
-public abstract class AbstractCommand implements ICommand{
+public abstract class AbstractCommand implements ICommand {
     protected String[] arguments;
     protected UserOutputWriter userOutputWriter = UserOutputWriter.getInstance();
 
-    public AbstractCommand(String[] arguments){
+    /**
+     * @param arguments the arguments of the command
+     */
+    public AbstractCommand(String[] arguments) {
         this.arguments = arguments;
     }
 }

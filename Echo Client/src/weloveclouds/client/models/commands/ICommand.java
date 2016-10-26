@@ -3,9 +3,16 @@ package weloveclouds.client.models.commands;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * Represents an object (command) that can be executed.
+ * 
+ * @author Benoit
  */
-public interface ICommand extends IValidatable{
+public interface ICommand extends IValidatable {
 
+    /**
+     * Executes the respective command.
+     * 
+     * @throws ClientSideException if any error occurs
+     */
     void execute() throws ClientSideException;
 }

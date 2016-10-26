@@ -13,6 +13,9 @@ import weloveclouds.client.models.ParsedUserInput;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
+ * Parses the raw user input into a processed user input so it can be handled by the application
+ * more efficiently.
+ * 
  * @author Benoit
  */
 public abstract class UserInputParser {
@@ -25,6 +28,12 @@ public abstract class UserInputParser {
 
     private static final Logger LOGGER = Logger.getLogger(UserInputParser.class);
 
+    /**
+     * Extracts the <command> and its <arguments> from the user input.
+     * 
+     * @param userInput the raw content of the user input (raw line from the user input stream)
+     * @return the extracted command and its arguments stored in one object
+     */
     public static ParsedUserInput parse(String userInput) {
         String command = "";
         String[] arguments = {};
@@ -43,9 +52,19 @@ public abstract class UserInputParser {
                 LOGGER.debug(StringJoiner.join(" ", debugMessages));
             }
         }
-        return new ParsedUserInput.UserInputFactory().command(command).arguments(arguments).build();
+        return new ParsedUserInput.ParsedUserInputBuilder().command(command).arguments(arguments)
+                .build();
     }
 
+    /**
+     * Extracts the IP address and port from the arguments array. <br>
+     * The IP address shall be the 0. element of the array.<br>
+     * The port shall be the 1. element of the array.
+     * 
+     * @return the IP address and port stored in one server conenction information object
+     * @throws UnknownHostException see
+     *         {@link ServerConnectionInfo.ServerConnectionInfoBuilder#ipAddress(java.net.InetAddress)}
+     */
     public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments)
             throws UnknownHostException {
         try {

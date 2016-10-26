@@ -10,17 +10,33 @@ import weloveclouds.client.utils.StringJoiner;
 import weloveclouds.communication.api.ICommunicationApi;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
+ * handles several commands (see {@link Command} for the possible commands) by dispatching the
+ * command to its respective handler.
+ * 
+ * @author Benoit
  */
 public class CommandFactory {
     private ICommunicationApi communicationApi;
     private Logger logger;
 
+    /**
+     * @param communicationApi an instance for the communication module for those commands which
+     *        need to communicate via the network
+     */
     public CommandFactory(ICommunicationApi communicationApi) {
         this.communicationApi = communicationApi;
         this.logger = Logger.getLogger(getClass());
     }
 
+    /**
+     * Dispatches the command that is stored in the userInput to its respective handler, which
+     * processes it.
+     * 
+     * @param userInput which contains the command and its arguments
+     * @return the type of the recognized command
+     * @throws UnknownHostException see {@link Connect}
+     */
     public ICommand createCommandFromUserInput(ParsedUserInput userInput)
             throws UnknownHostException {
         ICommand recognizedCommand = null;

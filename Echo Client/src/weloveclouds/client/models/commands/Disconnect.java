@@ -10,7 +10,9 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * Disconnect command which means a disconnection from the server.
+ * 
+ * @author Benoit, Benedek, Hunton
  */
 public class Disconnect extends AbstractCommunicationApiCommand {
     private static String SUCCESSFULLY_DISCONNECTED_MESSAGE =

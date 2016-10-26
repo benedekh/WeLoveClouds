@@ -12,7 +12,10 @@ import weloveclouds.client.utils.UserOutputWriter;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
- * @author Benoit, Benedek
+ * The echo client itself. It processes (read, validate, execute) various commands that are received
+ * from the user. For details on the the commands see {@link CommandFactory}.
+ * 
+ * @author Benoit, Benedek, Hunton
  */
 public class Client {
 
@@ -21,12 +24,20 @@ public class Client {
 
     private Logger logger;
 
+    /**
+     * @param inputStream from which it receives command from the user
+     * @param commandFactory that processes (validate and execute) the various commands
+     */
     public Client(InputStream inputStream, CommandFactory commandFactory) {
         this.inputStream = inputStream;
         this.commandFactory = commandFactory;
         this.logger = Logger.getLogger(getClass());
     }
 
+    /**
+     * Reads commands with arguments from the user via the {@link #inputStream}. After, it forwards
+     * the respective command to the {@link #commandFactory} that will validate and execute it.
+     */
     public void run() {
         try (UserInputReader inputReader = new UserInputReader(inputStream);
                 UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
