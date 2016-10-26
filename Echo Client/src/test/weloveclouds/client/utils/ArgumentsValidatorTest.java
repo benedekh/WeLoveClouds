@@ -117,4 +117,19 @@ public class ArgumentsValidatorTest {
     public void shouldThrowIfHelpArgumentIsNotNullOrEmpty() throws Exception {
         ArgumentsValidator.validateHelpArguments(NOT_NULL_COMMAND_ARGUMENT);
     }
+
+    @Test
+    public void shouldNotThrowIfDisconnectArgumentsIsNullOrEmpty() {
+        ArgumentsValidator.validateDisconnectArguments(NULL_COMMAND_ARGUMENTS);
+    }
+
+    @Test
+    public void shouldNotThrowIfQuitArgumentsIsNullOrEmpty() {
+        ArgumentsValidator.validateQuitArguments(NULL_COMMAND_ARGUMENTS);
+    }
+
+    @Test
+    public void shouldNotThrowIfHelpArgumentIsNullOrEmpty() {
+        ArgumentsValidator.validateHelpArguments(NULL_COMMAND_ARGUMENTS);
+    }
 }

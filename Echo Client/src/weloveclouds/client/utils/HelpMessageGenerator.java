@@ -4,6 +4,7 @@ public class HelpMessageGenerator {
   
   public static String generateHelpMessage(){
     StringBuffer buffer = new StringBuffer();
+    buffer.append("\n");
     buffer.append("Echo Client\n");
     buffer.append("\n");
     buffer.append("A simple tool to connect to an echo server and send and receive message from that, using the reliable TCP/IP protocol.\n");
