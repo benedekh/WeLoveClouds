@@ -56,7 +56,7 @@ public class Send extends AbstractCommunicationApiCommand {
     public ICommand validate() throws IllegalArgumentException {
         // because of the terminator character, the message shall be validated instead of the raw
         // arguments array
-        ArgumentsValidator.validateSendArguments(message);
+        ArgumentsValidator.validateSendArguments(new String[] {message});
         return this;
     }
 }

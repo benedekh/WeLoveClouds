@@ -20,6 +20,7 @@ public class ArgumentsValidator {
     private static final int CONNECT_NUMBER_OF_ARGUMENTS = 2;
     private static final int LOG_LEVEL_NUMBER_OF_ARGUMENTS = 1;
     private static final int LEVEL_INDEX = 0;
+    private static final int MESSAGE_INDEX = 0;
     private static final int NETWORK_PORT_LOWER_LIMIT = 0;
     private static final int NETWORK_PORT_UPPER_LIMIT = 65536;
     private static List<String> logLevels =
@@ -59,12 +60,12 @@ public class ArgumentsValidator {
      * 
      * @throws IllegalArgumentException if there is a validation error
      */
-    public static void validateSendArguments(String message) throws IllegalArgumentException {
-        if (message == null) {
+    public static void validateSendArguments(String[] arguments) throws IllegalArgumentException {
+        if (arguments == null) {
             LOGGER.warn("Send command is invalid.");
             throw new IllegalArgumentException(EMPTY_MESSAGE_ERROR_MESSAGE);
         } else {
-            byte[] messageBytes = message.getBytes(StandardCharsets.US_ASCII);
+            byte[] messageBytes = arguments[MESSAGE_INDEX].getBytes(StandardCharsets.US_ASCII);
             if (messageBytes.length > SEND_MESSAGE_SIZE_LIMIT_IN_BYTES) {
                 LOGGER.warn("Send command is invalid.");
                 throw new IllegalArgumentException(
