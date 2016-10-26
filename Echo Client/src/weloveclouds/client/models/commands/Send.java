@@ -29,11 +29,7 @@ public class Send extends AbstractCommunicationApiCommand {
      */
     public Send(String[] arguments, ICommunicationApi communicationApi) {
         super(arguments, communicationApi);
-        if (arguments != null) {
-            this.message = join("", join(MESSAGE_PARTS_SEPARATOR, arguments), MESSAGE_TERMINATOR);
-        } else {
-            this.message = null;
-        }
+        this.message = join("", join(MESSAGE_PARTS_SEPARATOR, arguments), MESSAGE_TERMINATOR);
         this.logger = Logger.getLogger(getClass());
     }
 
