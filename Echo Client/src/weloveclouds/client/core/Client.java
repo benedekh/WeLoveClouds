@@ -41,9 +41,9 @@ public class Client {
     public void run() {
         try (UserInputReader inputReader = new UserInputReader(inputStream);
                 UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
+            logger.info("Client started.");
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    logger.info("Client started.");
                     outputWriter.writePrefix();
                     ParsedUserInput userInput = inputReader.readAndParseUserInput();
                     commandFactory.createCommandFromUserInput(userInput).validate().execute();

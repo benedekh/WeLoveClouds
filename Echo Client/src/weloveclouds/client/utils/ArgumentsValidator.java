@@ -59,13 +59,12 @@ public abstract class ArgumentsValidator {
      * 
      * @throws IllegalArgumentException if there is a validation error
      */
-    public static void validateSendArguments(String[] arguments) throws IllegalArgumentException {
-        if (arguments == null) {
+    public static void validateSendArguments(String message) throws IllegalArgumentException {
+        if (message == null) {
             LOGGER.warn("Send command is invalid.");
             throw new IllegalArgumentException(EMPTY_MESSAGE_ERROR_MESSAGE);
         } else {
-            byte[] messageBytes =
-                    StringJoiner.join(" ", arguments).getBytes(StandardCharsets.US_ASCII);
+            byte[] messageBytes = message.getBytes(StandardCharsets.US_ASCII);
             if (messageBytes.length > SEND_MESSAGE_SIZE_LIMIT_IN_BYTES) {
                 LOGGER.warn("Send command is invalid.");
                 throw new IllegalArgumentException(

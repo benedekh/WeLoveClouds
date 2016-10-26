@@ -29,7 +29,11 @@ public class Send extends AbstractCommunicationApiCommand {
      */
     public Send(String[] arguments, ICommunicationApi communicationApi) {
         super(arguments, communicationApi);
-        this.message = join("", join(MESSAGE_PARTS_SEPARATOR, arguments), MESSAGE_TERMINATOR);
+        if (arguments != null) {
+            this.message = join("", join(MESSAGE_PARTS_SEPARATOR, arguments), MESSAGE_TERMINATOR);
+        } else {
+            this.message = null;
+        }
         this.logger = Logger.getLogger(getClass());
     }
 
@@ -56,7 +60,7 @@ public class Send extends AbstractCommunicationApiCommand {
     public ICommand validate() throws IllegalArgumentException {
         // because of the terminator character, the message shall be validated instead of the raw
         // arguments array
-        ArgumentsValidator.validateSendArguments(new String[] {message});
+        ArgumentsValidator.validateSendArguments(message);
         return this;
     }
 }

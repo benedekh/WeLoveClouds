@@ -21,12 +21,16 @@ public abstract class StringJoiner {
      * Joins string fragments using the delimiter string into one string.
      */
     public static String join(String delimiter, List<String> fragments) {
-        StringBuffer buffer = new StringBuffer();
-        for (String fragment : fragments) {
-            buffer.append(fragment);
-            buffer.append(delimiter);
+        if (fragments != null && fragments.size() > 0) {
+            StringBuffer buffer = new StringBuffer();
+            for (String fragment : fragments) {
+                buffer.append(fragment);
+                buffer.append(delimiter);
+            }
+            buffer.setLength(buffer.length() - delimiter.length());
+            return buffer.toString();
+        } else {
+            return "";
         }
-        buffer.setLength(buffer.length() - delimiter.length());
-        return buffer.toString();
     }
 }
