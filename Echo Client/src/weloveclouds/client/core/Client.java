@@ -49,8 +49,7 @@ public class Client {
                     commandFactory.createCommandFromUserInput(userInput).validate().execute();
                     logger.info("Command executed.");
                 } catch (IOException ex) {
-                    outputWriter.writeLine(
-                            "Error while reading from the user or writing the user output.");
+                    outputWriter.writeLine(ex.getMessage());
                     logger.error(ex.getMessage(), ex);
                 } catch (ClientSideException | IllegalArgumentException ex) {
                     outputWriter.writeLine(ex.getMessage());
