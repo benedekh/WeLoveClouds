@@ -2,45 +2,55 @@ package weloveclouds.client.models.commands;
 
 import java.net.UnknownHostException;
 
+import org.apache.log4j.Logger;
+
+import weloveclouds.client.models.Command;
 import weloveclouds.client.models.ParsedUserInput;
+import weloveclouds.client.utils.StringJoiner;
 import weloveclouds.communication.api.ICommunicationApi;
 
 /**
  * Created by Benoit on 2016-10-25.
  */
 public class CommandFactory {
-    ICommunicationApi communicationApi;
+    private ICommunicationApi communicationApi;
+    private Logger logger;
 
     public CommandFactory(ICommunicationApi communicationApi) {
         this.communicationApi = communicationApi;
+        this.logger = Logger.getLogger(getClass());
     }
 
-    public ICommand createCommandFromUserInput(ParsedUserInput userInput) throws UnknownHostException{
-        ICommand command = null;
+    public ICommand createCommandFromUserInput(ParsedUserInput userInput)
+            throws UnknownHostException {
+        ICommand recognizedCommand = null;
+        Command userCommand = userInput.getCommand();
 
-        switch (userInput.getCommand()) {
+        switch (userCommand) {
             case CONNECT:
-                command = new Connect(userInput.getArguments(), communicationApi);
+                recognizedCommand = new Connect(userInput.getArguments(), communicationApi);
                 break;
             case DISCONNECT:
-                command = new Disconnect(userInput.getArguments(),communicationApi);
+                recognizedCommand = new Disconnect(userInput.getArguments(), communicationApi);
                 break;
             case SEND:
-                command = new Send(userInput.getArguments(),communicationApi);
+                recognizedCommand = new Send(userInput.getArguments(), communicationApi);
                 break;
             case HELP:
-                command = new Help(userInput.getArguments());
+                recognizedCommand = new Help(userInput.getArguments());
                 break;
             case LOGLEVEL:
-                command = new LogLevel(userInput.getArguments());
+                recognizedCommand = new LogLevel(userInput.getArguments());
                 break;
             case QUIT:
-                command = new Quit(userInput.getArguments());
+                recognizedCommand = new Quit(userInput.getArguments());
                 break;
             default:
-                command = new DefaultCommand(null);
+                logger.info(
+                        StringJoiner.join(" ", "Unrecognized command:", userCommand.toString()));
+                recognizedCommand = new DefaultCommand(null);
                 break;
         }
-        return command;
+        return recognizedCommand;
     }
 }

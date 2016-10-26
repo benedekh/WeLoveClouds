@@ -3,6 +3,8 @@ package weloveclouds.communication.models;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import weloveclouds.client.utils.StringJoiner;
+
 /**
  * @author Benoit, Benedek
  */
@@ -21,6 +23,11 @@ public class ServerConnectionInfo {
 
   public int getPort() {
     return port;
+  }
+  
+  @Override
+  public String toString(){
+      return StringJoiner.join(" ", ipAddress.toString(), String.valueOf(port));
   }
 
   public static class ServerConnectionInfoBuilder {

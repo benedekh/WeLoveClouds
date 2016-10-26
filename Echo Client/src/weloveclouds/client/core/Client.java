@@ -23,26 +23,35 @@ public class Client {
 
     public Client(InputStream inputStream, CommandFactory commandFactory) {
         this.inputStream = inputStream;
-        this.logger = Logger.getLogger(this.getClass());
         this.commandFactory = commandFactory;
+        this.logger = Logger.getLogger(getClass());
     }
 
     public void run() {
         try (UserInputReader inputReader = new UserInputReader(inputStream);
-             UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
+                UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
+                    logger.info("Client started.");
                     outputWriter.writePrefix();
                     ParsedUserInput userInput = inputReader.readAndParseUserInput();
                     commandFactory.createCommandFromUserInput(userInput).validate().execute();
+                    logger.info("Command executed.");
                 } catch (IOException ex) {
-                    logger.error("Error while reading input from the user.");
+                    outputWriter.writeLine(
+                            "Error while reading from the user or writing the user output.");
+                    logger.error(ex.getMessage(), ex);
                 } catch (ClientSideException | IllegalArgumentException ex) {
                     outputWriter.writeLine(ex.getMessage());
+                    logger.error(ex.getMessage(), ex);
                 }
             }
         } catch (IOException ex) {
-            logger.error("Error while writing the output.");
+            logger.error(ex.getMessage(), ex);
+        } catch (Exception ex) {
+            logger.fatal(ex.getMessage(), ex);
+        } finally {
+            logger.info("Client stopped.");
         }
     }
 }

@@ -2,6 +2,8 @@ package weloveclouds.client.models.commands;
 
 import java.security.InvalidParameterException;
 
+import org.mockito.internal.util.StringJoiner;
+
 import weloveclouds.client.utils.HelpMessageGenerator;
 import weloveclouds.communication.exceptions.ClientSideException;
 
@@ -16,7 +18,8 @@ public class DefaultCommand extends AbstractCommand {
 
     @Override
     public void execute() throws ClientSideException {
-        throw new ClientSideException("Unable to find command. " + HelpMessageGenerator.generateHelpMessage());
+        throw new ClientSideException(StringJoiner.join(" ", "Unable to find command.",
+                HelpMessageGenerator.generateHelpMessage()));
     }
 
     @Override

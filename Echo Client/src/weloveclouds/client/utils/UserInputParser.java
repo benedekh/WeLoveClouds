@@ -1,8 +1,13 @@
 package weloveclouds.client.utils;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.ParsedUserInput;
 import weloveclouds.communication.models.ServerConnectionInfo;
@@ -10,13 +15,15 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * @author Benoit
  */
-public class UserInputParser {
+public abstract class UserInputParser {
     private static final int IP_ADDRESS_INDEX = 0;
     private static final int PORT_INDEX = 1;
     private static final String ARGUMENTS_SEPARATOR = " ";
 
     private static final Pattern INPUT_REGEX =
             Pattern.compile("(?<command>\\w+) ?" + "(?<arguments>.+)?");
+
+    private static final Logger LOGGER = Logger.getLogger(UserInputParser.class);
 
     public static ParsedUserInput parse(String userInput) {
         String command = "";
@@ -25,26 +32,36 @@ public class UserInputParser {
         if (matcher.find()) {
             if (matcher.group("command") != null) {
                 command = matcher.group("command");
+                LOGGER.debug(StringJoiner.join(" ", command, "is parsed."));
             }
             if (matcher.group("arguments") != null) {
                 arguments = matcher.group("arguments").split(ARGUMENTS_SEPARATOR);
+
+                List<String> debugMessages = new ArrayList<>();
+                debugMessages.add("Arguments are recognized for the command:");
+                debugMessages.addAll(Arrays.asList(arguments));
+                LOGGER.debug(StringJoiner.join(" ", debugMessages));
             }
         }
         return new ParsedUserInput.UserInputFactory().command(command).arguments(arguments).build();
     }
 
-    public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments) throws UnknownHostException {
-        String ipAddress;
-        int port;
+    public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments)
+            throws UnknownHostException {
         try {
-            ipAddress = arguments[IP_ADDRESS_INDEX];
-            port = Integer.parseInt(arguments[PORT_INDEX]);
-        } catch (IndexOutOfBoundsException ex) {
-            throw new IllegalArgumentException("Unable to extract server infos from command " +
-                    "arguments");
-        }
+            LOGGER.debug("Extracting IP address and port from arguments.");
+            String ipAddress = arguments[IP_ADDRESS_INDEX];
+            int port = Integer.parseInt(arguments[PORT_INDEX]);
 
-        return new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(ipAddress).port(port)
-                .build();
+            ServerConnectionInfo connectionInfo =
+                    new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(ipAddress)
+                            .port(port).build();
+            LOGGER.debug(StringJoiner.join(" ", "Connection parameters are extracted",
+                    connectionInfo.toString()));
+            return connectionInfo;
+        } catch (IndexOutOfBoundsException ex) {
+            throw new IllegalArgumentException(
+                    "Unable to extract server connection parameters from command arguments.");
+        }
     }
 }

@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.log4j.Logger;
+
+import weloveclouds.client.utils.StringJoiner;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.exceptions.AlreadyConnectedException;
 import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
@@ -20,10 +23,12 @@ public class CommunicationService {
     private Thread connectionShutdownHook;
 
     private SocketFactory socketFactory;
+    private Logger logger;
 
     public CommunicationService(SocketFactory socketFactory) {
         this.connectionToServer = new Connection.ConnectionBuilder().build();
         this.socketFactory = socketFactory;
+        this.logger = Logger.getLogger(getClass());
     }
 
     public boolean isConnected() {
@@ -34,39 +39,54 @@ public class CommunicationService {
             throws IOException, AlreadyConnectedException {
         if (!connectionToServer.isConnected()) {
             try {
+                logger.debug("Removing previously registered shutdown hook.");
                 Runtime.getRuntime().removeShutdownHook(connectionShutdownHook);
             } catch (IllegalStateException | NullPointerException e) {
                 // No hook previously added
+                logger.debug(e.getMessage(), e);
             }
             initializeConnection(remoteServer);
+            logger.info("Connection established.");
         } else {
+            logger.debug("Already connected to a server.");
             throw new AlreadyConnectedException();
         }
     }
 
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
+        logger.debug(StringJoiner.join(" ", "Trying to connec to", remoteServer.toString()));
         connectionToServer = new Connection.ConnectionBuilder().remoteServer(remoteServer)
                 .socket(socketFactory.createTcpSocketFromInfo(remoteServer)).build();
 
         // create shutdown hook to automatically close the connection
-        connectionShutdownHook = new Thread(new ConnectionCloser(connectionToServer));
+        logger.debug("Creating shutdown hook for connection.");
+        connectionShutdownHook = new Thread(new ConnectionCloser(connectionToServer, logger));
+        logger.debug("Registering shutdown hook to JVM.");
         Runtime.getRuntime().addShutdownHook(connectionShutdownHook);
     }
 
     public void disconnect() throws IOException, AlreadyDisconnectedException {
         if (connectionToServer.isConnected()) {
+            logger.debug("Closing the connection.");
             connectionToServer.kill();
+            logger.info("Disconnected from the server.");
         } else {
-            throw new AlreadyDisconnectedException("The communication service is already disconnected");
+            String message = "The communication service is already disconnected";
+            logger.debug(message);
+            throw new AlreadyDisconnectedException(message);
         }
     }
 
     public void send(byte[] content) throws IOException, UnableToSendRequestToServerException {
         if (connectionToServer.isConnected()) {
+            logger.debug("Getting output stream from the connection.");
             OutputStream outputStream = connectionToServer.getOutputStream();
+            logger.debug("Sending message over the connection.");
             outputStream.write(content);
             outputStream.flush();
+            logger.info("Message sent.");
         } else {
+            logger.debug("Client is not connected, so message cannot be sent.");
             throw new ClientNotConnectedException();
         }
     }
@@ -78,31 +98,42 @@ public class CommunicationService {
             InputStream socketDataReader = connectionToServer.getInputStream();
 
             while (receivedData == null) {
-                if (socketDataReader.available() != 0) {
-                    receivedData = new byte[socketDataReader.available()];
+                int availableBytes = socketDataReader.available();
+                if (availableBytes != 0) {
+                    logger.debug(StringJoiner.join(" ", "Receiving", String.valueOf(availableBytes),
+                            "from the connection."));
+                    receivedData = new byte[availableBytes];
                     socketDataReader.read(receivedData);
+                    logger.info("Data received from the network.");
                 }
             }
             return receivedData;
         } else {
+            logger.debug("Client is not connected, so message cannot be received.");
             throw new ClientNotConnectedException();
         }
     }
 
     private static class ConnectionCloser implements Runnable {
         private Connection connection;
+        private Logger logger;
 
-        public ConnectionCloser(Connection connection) {
+        public ConnectionCloser(Connection connection, Logger logger) {
             this.connection = connection;
+            this.logger = logger;
         }
 
         @Override
         public void run() {
             if (connection.isConnected()) {
                 try {
+                    logger.debug("Closing unclosed connection in the shutdown hook.");
                     connection.kill();
+                    logger.debug("Connection is closed in the shutdown hook.");
                 } catch (IOException e) {
-                    // suppress exception because the thread is invoked as soon as JVM is to be shut down
+                    // suppress exception because the thread is invoked as soon as JVM is to be shut
+                    // down
+                    logger.error(e.getMessage(), e);
                 }
             }
         }

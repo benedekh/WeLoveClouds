@@ -16,58 +16,58 @@ import weloveclouds.communication.services.CommunicationService;
  * @author Benoit, Benedek
  */
 public class CommunicationApiV1 implements ICommunicationApi {
-  private static final double VERSION = 1.0;
+    private static final double VERSION = 1.0;
 
-  private CommunicationService communicationService;
+    private CommunicationService communicationService;
 
-  public CommunicationApiV1(CommunicationService communicationService) {
-    this.communicationService = communicationService;
-  }
-
-  @Override
-  public double getVersion() {
-    return VERSION;
-  }
-
-  @Override
-  public boolean isConnected() {
-    return communicationService.isConnected();
-  }
-
-  @Override
-  public void connectTo(ServerConnectionInfo remoteServer) throws UnableToConnectException {
-    try {
-      communicationService.connectTo(remoteServer);
-    } catch (IOException e) {
-      throw new UnableToConnectException(remoteServer);
+    public CommunicationApiV1(CommunicationService communicationService) {
+        this.communicationService = communicationService;
     }
-  }
 
-  @Override
-  public void disconnect() throws UnableToDisconnectException {
-    try {
-      communicationService.disconnect();
-    } catch (IOException | AlreadyDisconnectedException e) {
-      throw new UnableToDisconnectException(e.getMessage());
+    @Override
+    public double getVersion() {
+        return VERSION;
     }
-  }
 
-  @Override
-  public void send(byte[] content) throws UnableToSendRequestToServerException {
-    try {
-      communicationService.send(content);
-    } catch (IOException e) {
-      throw new UnableToSendRequestToServerException();
+    @Override
+    public boolean isConnected() {
+        return communicationService.isConnected();
     }
-  }
 
-  @Override
-  public byte[] receive() throws ClientNotConnectedException, ConnectionClosedException {
-    try {
-      return communicationService.receive();
-    } catch (IOException e) {
-      throw new ConnectionClosedException();
+    @Override
+    public void connectTo(ServerConnectionInfo remoteServer) throws UnableToConnectException {
+        try {
+            communicationService.connectTo(remoteServer);
+        } catch (IOException e) {
+            throw new UnableToConnectException(remoteServer);
+        }
     }
-  }
+
+    @Override
+    public void disconnect() throws UnableToDisconnectException {
+        try {
+            communicationService.disconnect();
+        } catch (IOException | AlreadyDisconnectedException e) {
+            throw new UnableToDisconnectException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void send(byte[] content) throws UnableToSendRequestToServerException {
+        try {
+            communicationService.send(content);
+        } catch (IOException e) {
+            throw new UnableToSendRequestToServerException();
+        }
+    }
+
+    @Override
+    public byte[] receive() throws ClientNotConnectedException, ConnectionClosedException {
+        try {
+            return communicationService.receive();
+        } catch (IOException e) {
+            throw new ConnectionClosedException();
+        }
+    }
 
 }
