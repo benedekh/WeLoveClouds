@@ -60,7 +60,7 @@ public class UserOutputWriter implements AutoCloseable {
         try {
             outputWriter.close();
         } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error(ex);
         }
     }
 

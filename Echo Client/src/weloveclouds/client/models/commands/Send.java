@@ -45,7 +45,7 @@ public class Send extends AbstractCommunicationApiCommand {
             userOutputWriter.writeLine(response);
             logger.debug(response);
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e);
             throw new ClientSideException(e.getMessage(), e);
         } finally {
             logger.info("Send command execution finished.");

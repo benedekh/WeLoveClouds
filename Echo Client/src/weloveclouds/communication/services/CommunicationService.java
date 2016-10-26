@@ -179,7 +179,7 @@ public class CommunicationService {
                 } catch (IOException e) {
                     // suppress exception because the thread is invoked as soon as JVM is to be shut
                     // down
-                    logger.error(e.getMessage(), e);
+                    logger.error(e);
                 }
             }
         }

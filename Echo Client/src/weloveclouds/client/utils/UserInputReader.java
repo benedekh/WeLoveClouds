@@ -35,7 +35,7 @@ public class UserInputReader implements AutoCloseable {
      */
     public ParsedUserInput readAndParseUserInput() throws IOException {
         String line = inputReader.readLine();
-        logger.debug(CustomStringJoiner.join(" ", "Line read from the user:", line, "\n"));
+        logger.debug(CustomStringJoiner.join(" ", "Line read from the user:", line));
         return UserInputParser.parse(line);
     }
 

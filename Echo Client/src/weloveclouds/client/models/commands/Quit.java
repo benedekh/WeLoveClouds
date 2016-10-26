@@ -31,7 +31,7 @@ public class Quit extends AbstractCommand {
             logger.debug(APPLICATION_EXITED_MESSAGE);
             System.exit(0);
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e);
             throw new ClientSideException(e.getMessage(), e);
         }
     }

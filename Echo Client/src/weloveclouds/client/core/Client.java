@@ -50,14 +50,14 @@ public class Client {
                     logger.info("Command executed.");
                 } catch (IOException ex) {
                     outputWriter.writeLine(ex.getMessage());
-                    logger.error(ex.getMessage(), ex);
+                    logger.error(ex);
                 } catch (ClientSideException | IllegalArgumentException ex) {
                     outputWriter.writeLine(ex.getMessage());
-                    logger.error(ex.getMessage(), ex);
+                    logger.error(ex);
                 }
             }
         } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error(ex);
         } catch (Exception ex) {
             logger.fatal(ex.getMessage(), ex);
         } finally {

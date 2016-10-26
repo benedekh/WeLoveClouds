@@ -45,7 +45,7 @@ public class Connect extends AbstractCommunicationApiCommand {
             userOutputWriter.writeLine(response);
             logger.debug(response);
         } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error(ex);
             throw new ClientSideException(ex.getMessage(), ex);
         } finally {
             logger.info("Connect command execution finished.");

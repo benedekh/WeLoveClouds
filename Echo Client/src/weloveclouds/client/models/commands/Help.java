@@ -29,7 +29,7 @@ public class Help extends AbstractCommand {
             logger.info("Executing help command.");
             userOutputWriter.writeLine(HelpMessageGenerator.generateHelpMessage());
         } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error(ex);
             throw new ClientSideException(ex.getMessage(), ex);
         } finally {
             logger.info("Help command execution finished.");

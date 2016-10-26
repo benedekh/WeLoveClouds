@@ -39,7 +39,7 @@ public class LogLevel extends AbstractCommand {
             userOutputWriter.writeLine(statusMessage);
             logger.debug(statusMessage);
         } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error(ex);
             throw new ClientSideException(ex.getMessage(), ex);
         } finally {
             logger.info("logLevel command execution finished.");

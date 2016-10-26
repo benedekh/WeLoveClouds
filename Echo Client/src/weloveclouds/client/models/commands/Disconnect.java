@@ -35,7 +35,7 @@ public class Disconnect extends AbstractCommunicationApiCommand {
             userOutputWriter.writeLine(SUCCESSFULLY_DISCONNECTED_MESSAGE);
             logger.debug(SUCCESSFULLY_DISCONNECTED_MESSAGE);
         } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error(ex);
             throw new ClientSideException(ex.getMessage(), ex);
         } finally {
             logger.info("Disconnect command execution finished.");
