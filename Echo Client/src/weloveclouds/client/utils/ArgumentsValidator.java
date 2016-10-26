@@ -61,7 +61,7 @@ public class ArgumentsValidator {
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateSendArguments(String[] arguments) throws IllegalArgumentException {
-        if (arguments == null) {
+        if (isNullOrEmpty(arguments)) {
             LOGGER.warn("Send command is invalid.");
             throw new IllegalArgumentException(EMPTY_MESSAGE_ERROR_MESSAGE);
         } else {
