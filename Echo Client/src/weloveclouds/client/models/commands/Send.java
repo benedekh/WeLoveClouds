@@ -19,13 +19,12 @@ public class Send extends AbstractCommunicationApiCommand {
 
   public Send(String[] arguments, ICommunicationApi communicationApi) {
     super(arguments, communicationApi);
-    this.message =
-        (StringJoiner.join(MESSAGE_PARTS_SEPARATOR, Arrays.asList(arguments)) + MESSAGE_TERMINATOR);
   }
 
   @Override
   public void execute() throws ClientSideException {
     try {
+      message = (StringJoiner.join(MESSAGE_PARTS_SEPARATOR, Arrays.asList(arguments)) + MESSAGE_TERMINATOR);
       communicationApi.send(message.getBytes());
       userOutputWriter.writeLine(new String(communicationApi.receive(), StandardCharsets.US_ASCII));
     } catch (IOException e) {
