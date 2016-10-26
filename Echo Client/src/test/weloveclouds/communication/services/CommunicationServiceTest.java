@@ -1,8 +1,7 @@
 package test.weloveclouds.communication.services;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.*;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +19,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.exceptions.AlreadyConnectedException;
+import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
@@ -36,7 +36,6 @@ public class CommunicationServiceTest {
     private CommunicationService communicationService;
     private ServerConnectionInfo validServerConnectionInfos;
     private ServerConnectionInfo invalidServerConnectionInfos;
-    private Socket socketFromValidServerInfos;
     private Socket socketFromInvalidServerInfos;
 
     @Mock
@@ -49,17 +48,14 @@ public class CommunicationServiceTest {
         communicationService = new CommunicationService(socketFactoryMock);
 
         validServerConnectionInfos = new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                .ipAddress(InetAddress.getByName(VALID_SERVER_IP_ADDRESS)).port(VALID_SERVER_PORT)
-                .build();
+                .ipAddress(InetAddress.getByName(VALID_SERVER_IP_ADDRESS)).port(VALID_SERVER_PORT).build();
         invalidServerConnectionInfos = new ServerConnectionInfo.ServerConnectionInfoBuilder()
                 .ipAddress(InetAddress.getByName(INVALID_SERVER_IP_ADDRESS)).port(VALID_SERVER_PORT)
                 .build();
 
-        socketFromValidServerInfos = new Socket(validServerConnectionInfos.getIpAddress(),
-                validServerConnectionInfos.getPort());
-
         when(socketFactoryMock.createTcpSocketFromInfo(validServerConnectionInfos))
-                .thenReturn(socketFromValidServerInfos);
+                .thenReturn(new Socket(validServerConnectionInfos.getIpAddress(),
+                        validServerConnectionInfos.getPort()));
 
         when(socketFactoryMock.createTcpSocketFromInfo(invalidServerConnectionInfos))
                 .thenReturn(socketFromInvalidServerInfos);
@@ -68,10 +64,7 @@ public class CommunicationServiceTest {
     @Test
     public void shouldConnectToRemoteServerUsingValidServerInfos() throws Exception {
         assertFalse(communicationService.isConnected());
-
-        communicationService.connectTo(validServerConnectionInfos);
-
-        assertTrue(communicationService.isConnected());
+        verifyConnectionTo(validServerConnectionInfos);
     }
 
     @Test(expected = IOException.class)
@@ -91,25 +84,15 @@ public class CommunicationServiceTest {
     @Test
     public void shouldCloseTheConnectionOnDisconnect() throws Exception {
         assertFalse(communicationService.isConnected());
-
-        communicationService.connectTo(validServerConnectionInfos);
-
-        assertTrue(communicationService.isConnected());
-
-        communicationService.disconnect();
-
-        assertFalse(communicationService.isConnected());
+        verifyConnectionTo(validServerConnectionInfos);
+        verifyDisconnection();
     }
 
     @Test(expected = AlreadyConnectedException.class)
     public void shouldThrowWhenTryingToConnectToServerButIsAlreadyConnected() throws Exception {
         assertFalse(communicationService.isConnected());
-
-        communicationService.connectTo(validServerConnectionInfos);
-
-        assertTrue(communicationService.isConnected());
-
-        communicationService.connectTo(validServerConnectionInfos);
+        verifyConnectionTo(validServerConnectionInfos);
+        verifyConnectionTo(validServerConnectionInfos);
     }
 
     @Test(expected = ClientNotConnectedException.class)
@@ -135,5 +118,36 @@ public class CommunicationServiceTest {
         communicationService.connectTo(validServerConnectionInfos);
 
         assertThat(new String(communicationService.receive())).isEqualTo(RECEIVED_MESSAGE);
+    }
+
+    @Test(expected = AlreadyDisconnectedException.class)
+    public void shouldThrowWhenDisconnectingWithoutBeingConnected() throws Exception {
+        assertThat(communicationService.isConnected()).isFalse();
+        verifyDisconnection();
+    }
+
+    @Test
+    public void shouldBeAbleToConnectAndDisconnectMultipleTimes() throws Exception {
+        when(socketFactoryMock.createTcpSocketFromInfo(validServerConnectionInfos))
+                .thenReturn(new Socket(validServerConnectionInfos.getIpAddress(),
+                        validServerConnectionInfos.getPort()))
+                .thenReturn(new Socket(validServerConnectionInfos.getIpAddress(),
+                        validServerConnectionInfos.getPort()));
+        final int NUMBER_OF_CONNECTION_TESTS = 2;
+
+        for (int i = 0; i < NUMBER_OF_CONNECTION_TESTS; i++) {
+            verifyConnectionTo(validServerConnectionInfos);
+            verifyDisconnection();
+        }
+    }
+
+    private void verifyConnectionTo(ServerConnectionInfo remoteServer) throws Exception {
+        communicationService.connectTo(remoteServer);
+        assertThat(communicationService.isConnected()).isTrue();
+    }
+
+    private void verifyDisconnection() throws Exception {
+        communicationService.disconnect();
+        assertThat(communicationService.isConnected()).isFalse();
     }
 }

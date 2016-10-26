@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="libs/javax.inject.jar"/>
 	<classpathentry kind="lib" path="libs/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="libs/mockito-all-1.10.19.jar"/>
+	<classpathentry kind="lib" path="libs/apache-commons-lang.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

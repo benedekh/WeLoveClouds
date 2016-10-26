@@ -42,9 +42,13 @@ public class ServerConnectionInfo {
         private int port;
 
         public ServerConnectionInfoBuilder ipAddress(String ipAddress) throws UnknownHostException {
+            if (ipAddress == null) {
+                throw new UnknownHostException("No host provided.");
+            }
             this.ipAddress = InetAddress.getByName(ipAddress);
             return this;
         }
+
 
         public ServerConnectionInfoBuilder ipAddress(InetAddress address) {
             this.ipAddress = address;
