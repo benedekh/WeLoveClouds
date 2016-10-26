@@ -14,7 +14,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * 
  * @author Benoit, Benedek
  */
-public abstract class ArgumentsValidator {
+public class ArgumentsValidator {
     private static final String EMPTY_MESSAGE_ERROR_MESSAGE = "Message cannot be empty (null).";
     private static final int SEND_MESSAGE_SIZE_LIMIT_IN_BYTES = 128;
     private static final int CONNECT_NUMBER_OF_ARGUMENTS = 2;

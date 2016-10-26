@@ -18,7 +18,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * 
  * @author Benoit
  */
-public abstract class UserInputParser {
+public class UserInputParser {
     private static final int IP_ADDRESS_INDEX = 0;
     private static final int PORT_INDEX = 1;
     private static final String ARGUMENTS_SEPARATOR = " ";
