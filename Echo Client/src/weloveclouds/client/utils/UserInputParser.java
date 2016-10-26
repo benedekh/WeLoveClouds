@@ -35,8 +35,8 @@ public abstract class UserInputParser {
      * @return the extracted command and its arguments stored in one object
      */
     public static ParsedUserInput parse(String userInput) {
-        String command = null;
-        String[] arguments = null;
+        String command = "";
+        String[] arguments = {};
         Matcher matcher = INPUT_REGEX.matcher(userInput);
         if (matcher.find()) {
             if (matcher.group("command") != null) {
