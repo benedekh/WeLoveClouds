@@ -21,7 +21,7 @@ public class ArgumentsValidator {
 
     public static void validateConnectArguments(String[] arguments, ServerConnectionInfo remoteServer) {
         if (isNullOrEmpty(arguments) || arguments.length != CONNECT_NUMBER_OF_ARGUMENTS) {
-            throw new InvalidParameterException("Command need arguments (<IP address> and <port>)" +
+            throw new IllegalArgumentException("Command need arguments (<IP address> and <port>)" +
                     " only");
         } else if (remoteServer.getPort() < NETWORK_PORT_LOWER_LIMIT || remoteServer.getPort() > NETWORK_PORT_UPPER_LIMIT) {
             throw new IllegalArgumentException("Port should be in the range [0,65536].");

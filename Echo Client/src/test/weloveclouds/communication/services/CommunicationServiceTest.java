@@ -36,7 +36,6 @@ public class CommunicationServiceTest {
     private CommunicationService communicationService;
     private ServerConnectionInfo validServerConnectionInfos;
     private ServerConnectionInfo invalidServerConnectionInfos;
-    private Socket socketFromValidServerInfos;
     private Socket socketFromInvalidServerInfos;
 
     @Mock
