@@ -1,8 +1,17 @@
 package weloveclouds.client.models.commands;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * Interface for objects which can be validated.
+ * 
+ * @author Benoit
  */
 public interface IValidatable {
+
+    /**
+     * Validates the respective command. Returns the command if the validation was successful.
+     * 
+     * @throws IllegalArgumentException if the command's arguments are syntactically or semantically
+     *         invalid
+     */
     ICommand validate() throws IllegalArgumentException;
 }

@@ -2,45 +2,71 @@ package weloveclouds.client.models.commands;
 
 import java.net.UnknownHostException;
 
+import org.apache.log4j.Logger;
+
+import weloveclouds.client.models.Command;
 import weloveclouds.client.models.ParsedUserInput;
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.ICommunicationApi;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
+ * handles several commands (see {@link Command} for the possible commands) by dispatching the
+ * command to its respective handler.
+ * 
+ * @author Benoit
  */
 public class CommandFactory {
-    ICommunicationApi communicationApi;
+    private ICommunicationApi communicationApi;
+    private Logger logger;
 
+    /**
+     * @param communicationApi an instance for the communication module for those commands which
+     *        need to communicate via the network
+     */
     public CommandFactory(ICommunicationApi communicationApi) {
         this.communicationApi = communicationApi;
+        this.logger = Logger.getLogger(getClass());
     }
 
-    public ICommand createCommandFromUserInput(ParsedUserInput userInput) throws UnknownHostException{
-        ICommand command = null;
+    /**
+     * Dispatches the command that is stored in the userInput to its respective handler, which
+     * processes it.
+     * 
+     * @param userInput which contains the command and its arguments
+     * @return the type of the recognized command
+     * @throws UnknownHostException see {@link Connect}
+     */
+    public ICommand createCommandFromUserInput(ParsedUserInput userInput)
+            throws UnknownHostException {
+        ICommand recognizedCommand = null;
+        Command userCommand = userInput.getCommand();
 
-        switch (userInput.getCommand()) {
+        switch (userCommand) {
             case CONNECT:
-                command = new Connect(userInput.getArguments(), communicationApi);
+                recognizedCommand = new Connect(userInput.getArguments(), communicationApi);
                 break;
             case DISCONNECT:
-                command = new Disconnect(userInput.getArguments(),communicationApi);
+                recognizedCommand = new Disconnect(userInput.getArguments(), communicationApi);
                 break;
             case SEND:
-                command = new Send(userInput.getArguments(),communicationApi);
+                recognizedCommand = new Send(userInput.getArguments(), communicationApi);
                 break;
             case HELP:
-                command = new Help(userInput.getArguments());
+                recognizedCommand = new Help(userInput.getArguments());
                 break;
             case LOGLEVEL:
-                command = new LogLevel(userInput.getArguments());
+                recognizedCommand = new LogLevel(userInput.getArguments());
                 break;
             case QUIT:
-                command = new Quit(userInput.getArguments());
+                recognizedCommand = new Quit(userInput.getArguments());
                 break;
             default:
-                command = new DefaultCommand(null);
+                logger.info(
+                        CustomStringJoiner.join(" ", "Unrecognized command:", userCommand.toString()));
+                recognizedCommand = new DefaultCommand(null);
                 break;
         }
-        return command;
+        return recognizedCommand;
     }
 }
