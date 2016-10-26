@@ -9,7 +9,9 @@ import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * Quit command which terminates the application.
+ * 
+ * @author Benoit, Hunton
  */
 public class Quit extends AbstractCommand {
     private static final String APPLICATION_EXITED_MESSAGE = "Application exit!";

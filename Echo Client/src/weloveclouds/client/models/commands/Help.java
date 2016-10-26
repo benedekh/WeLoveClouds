@@ -10,7 +10,9 @@ import weloveclouds.client.utils.HelpMessageGenerator;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * Help command which means a printing the help of the application.
+ * 
+ * @author Benoit, Benedek
  */
 public class Help extends AbstractCommand {
 

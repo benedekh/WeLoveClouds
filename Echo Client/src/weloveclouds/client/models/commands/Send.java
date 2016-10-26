@@ -12,7 +12,9 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * Send command which represents sending a message to the server.
+ * 
+ * @author Benoit, Benedek, Hunton
  */
 public class Send extends AbstractCommunicationApiCommand {
     private static final String MESSAGE_TERMINATOR = "\r";
@@ -20,6 +22,11 @@ public class Send extends AbstractCommunicationApiCommand {
     private String message;
     private Logger logger;
 
+    /**
+     * @param arguments values in the array are joined by the {@link #MESSAGE_PARTS_SEPARATOR} into
+     *        one message
+     * @param communicationApi a reference to the communication module
+     */
     public Send(String[] arguments, ICommunicationApi communicationApi) {
         super(arguments, communicationApi);
         this.message = join("", join(MESSAGE_PARTS_SEPARATOR, arguments), MESSAGE_TERMINATOR);

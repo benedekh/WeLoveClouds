@@ -8,11 +8,14 @@ import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
-import weloveclouds.communication.exceptions.UnableToSendRequestToServerException;
+import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
 
 /**
+ * First version implementation of the communication API. Simply forwards the method calls to the
+ * {@link CommunicationService}.
+ * 
  * @author Benoit, Benedek
  */
 public class CommunicationApiV1 implements ICommunicationApi {
@@ -53,11 +56,11 @@ public class CommunicationApiV1 implements ICommunicationApi {
     }
 
     @Override
-    public void send(byte[] content) throws UnableToSendRequestToServerException {
+    public void send(byte[] content) throws UnableToSendContentToServerException {
         try {
             communicationService.send(content);
         } catch (IOException e) {
-            throw new UnableToSendRequestToServerException();
+            throw new UnableToSendContentToServerException();
         }
     }
 

@@ -11,13 +11,18 @@ import weloveclouds.client.utils.StringJoiner;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * LogLevel command which means setting the log level to the respective value.
+ * 
+ * @author Benoit, Benedek, Hunton
  */
 public class LogLevel extends AbstractCommand {
     private static final int LEVEL_INDEX = 0;
 
     private Logger logger;
 
+    /**
+     * @param arguments the 0. element of the array shall contain new log level
+     */
     public LogLevel(String[] arguments) {
         super(arguments);
         this.logger = Logger.getLogger(getClass());
@@ -27,7 +32,7 @@ public class LogLevel extends AbstractCommand {
     public void execute() throws ClientSideException {
         try {
             String logLevel = arguments[LEVEL_INDEX];
-            logger.info("Executing setLevel command.");
+            logger.info("Executing logLevel command.");
             Logger.getRootLogger().setLevel(Level.toLevel(logLevel));
 
             String statusMessage = StringJoiner.join(" ", "Latest log level:", logLevel);
@@ -37,7 +42,7 @@ public class LogLevel extends AbstractCommand {
             logger.error(ex.getMessage(), ex);
             throw new ClientSideException(ex.getMessage(), ex);
         } finally {
-            logger.info("setLevel command execution finished.");
+            logger.info("logLevel command execution finished.");
         }
     }
 

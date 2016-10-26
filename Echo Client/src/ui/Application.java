@@ -18,10 +18,18 @@ import weloveclouds.communication.api.v1.CommunicationApiV1;
 import weloveclouds.communication.services.CommunicationService;
 
 /**
- * @author Benoit
+ * 
+ * Echo client application. See {@link Client} for more details.
+ * 
+ * @author Benoit, Benedek, Hunton
  */
 public class Application {
 
+    /**
+     * The entry point of the application.
+     * 
+     * @param args is discarded so far
+     */
     public static void main(String[] args) {
         initializeLogging();
 
@@ -31,11 +39,18 @@ public class Application {
         client.run();
     }
 
+    /**
+     * Initializes the loggers:<br>
+     * (1) Sets the log layout pattern.<br>
+     * (2) Sets the file appender's path (default: /log/client.log).<br>
+     * (3) Registers the file appender and console appender for the root logger.<br>
+     * (4) Disables logging by default.
+     */
     private static void initializeLogging() {
-        String logDir = "/log/client.log";
         PatternLayout pLayout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
 
         try {
+            String logDir = "/log/client.log";
             Appender fa = new FileAppender(pLayout, logDir, true);
             Logger.getRootLogger().addAppender(fa);
         } catch (IOException ex) {

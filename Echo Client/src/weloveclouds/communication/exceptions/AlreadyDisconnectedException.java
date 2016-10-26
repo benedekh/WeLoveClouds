@@ -1,11 +1,13 @@
 package weloveclouds.communication.exceptions;
 
 /**
- * Created by Benoit on 2016-10-25.
+ * Client is already disconnected from the server.
+ * 
+ * @author Benoit
  */
-public class AlreadyDisconnectedException extends ClientSideException{
+public class AlreadyDisconnectedException extends ClientSideException {
 
-  private static final long serialVersionUID = 8571162644897670733L;
+    private static final long serialVersionUID = 8571162644897670733L;
 
     public AlreadyDisconnectedException(String message) {
         super(message);
