@@ -7,7 +7,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
-import weloveclouds.client.utils.StringJoiner;
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
@@ -35,7 +35,7 @@ public class LogLevel extends AbstractCommand {
             logger.info("Executing logLevel command.");
             Logger.getRootLogger().setLevel(Level.toLevel(logLevel));
 
-            String statusMessage = StringJoiner.join(" ", "Latest log level:", logLevel);
+            String statusMessage = CustomStringJoiner.join(" ", "Latest log level:", logLevel);
             userOutputWriter.writeLine(statusMessage);
             logger.debug(statusMessage);
         } catch (IOException ex) {

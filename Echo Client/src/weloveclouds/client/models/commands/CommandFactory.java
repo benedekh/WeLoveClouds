@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.Command;
 import weloveclouds.client.models.ParsedUserInput;
-import weloveclouds.client.utils.StringJoiner;
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.ICommunicationApi;
 
 /**
@@ -63,7 +63,7 @@ public class CommandFactory {
                 break;
             default:
                 logger.info(
-                        StringJoiner.join(" ", "Unrecognized command:", userCommand.toString()));
+                        CustomStringJoiner.join(" ", "Unrecognized command:", userCommand.toString()));
                 recognizedCommand = new DefaultCommand(null);
                 break;
         }

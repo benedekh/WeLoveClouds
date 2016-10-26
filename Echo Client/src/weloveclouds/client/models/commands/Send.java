@@ -1,6 +1,6 @@
 package weloveclouds.client.models.commands;
 
-import static weloveclouds.client.utils.StringJoiner.join;
+import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

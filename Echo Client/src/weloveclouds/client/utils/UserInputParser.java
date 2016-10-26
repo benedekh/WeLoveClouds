@@ -41,7 +41,7 @@ public abstract class UserInputParser {
         if (matcher.find()) {
             if (matcher.group("command") != null) {
                 command = matcher.group("command");
-                LOGGER.debug(StringJoiner.join(" ", command, "is parsed."));
+                LOGGER.debug(CustomStringJoiner.join(" ", command, "is parsed."));
             }
             if (matcher.group("arguments") != null) {
                 arguments = matcher.group("arguments").split(ARGUMENTS_SEPARATOR);
@@ -49,7 +49,7 @@ public abstract class UserInputParser {
                 List<String> debugMessages = new ArrayList<>();
                 debugMessages.add("Arguments are recognized for the command:");
                 debugMessages.addAll(Arrays.asList(arguments));
-                LOGGER.debug(StringJoiner.join(" ", debugMessages));
+                LOGGER.debug(CustomStringJoiner.join(" ", debugMessages));
             }
         }
         return new ParsedUserInput.ParsedUserInputBuilder().command(command).arguments(arguments)
@@ -75,7 +75,7 @@ public abstract class UserInputParser {
             ServerConnectionInfo connectionInfo =
                     new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(ipAddress)
                             .port(port).build();
-            LOGGER.debug(StringJoiner.join(" ", "Connection parameters are extracted",
+            LOGGER.debug(CustomStringJoiner.join(" ", "Connection parameters are extracted",
                     connectionInfo.toString()));
             return connectionInfo;
         } catch (IndexOutOfBoundsException ex) {

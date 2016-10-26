@@ -8,7 +8,7 @@ import java.util.List;
  * 
  * @author Benedek
  */
-public abstract class StringJoiner {
+public abstract class CustomStringJoiner {
 
     /**
      * Joins string fragments using the delimiter string into one string.

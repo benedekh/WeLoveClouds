@@ -5,7 +5,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.StringJoiner;
+import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
  * Different commands which are handled by
@@ -50,7 +50,7 @@ public enum Command {
         Command recognized = (command == null || !commandNames.containsKey(command) ? DEFAULT
                 : commandNames.get(command));
         if (recognized == DEFAULT) {
-            LOGGER.warn(StringJoiner.join("", "Command (", command, ") is not recognized."));
+            LOGGER.warn(CustomStringJoiner.join("", "Command (", command, ") is not recognized."));
         }
         return recognized;
     }

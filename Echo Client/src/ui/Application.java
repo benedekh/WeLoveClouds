@@ -12,7 +12,7 @@ import org.apache.log4j.PatternLayout;
 
 import weloveclouds.client.core.Client;
 import weloveclouds.client.models.commands.CommandFactory;
-import weloveclouds.client.utils.StringJoiner;
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
 import weloveclouds.communication.services.CommunicationService;
@@ -55,7 +55,7 @@ public class Application {
             Logger.getRootLogger().addAppender(fa);
         } catch (IOException ex) {
             System.err.println(
-                    StringJoiner.join(" ", "Log file appender was not created.", ex.getMessage()));
+                    CustomStringJoiner.join(" ", "Log file appender was not created.", ex.getMessage()));
         }
 
         Appender ca = new ConsoleAppender(pLayout);

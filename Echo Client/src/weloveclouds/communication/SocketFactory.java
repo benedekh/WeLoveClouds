@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 
 import org.apache.log4j.Logger;
-import org.mockito.internal.util.StringJoiner;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -28,7 +28,7 @@ public class SocketFactory {
      * @throws IOException see {@link Socket}
      */
     public Socket createTcpSocketFromInfo(ServerConnectionInfo connectionInfo) throws IOException {
-        logger.debug(StringJoiner.join(" ", "Creating socket for", connectionInfo.toString()));
+        logger.debug(CustomStringJoiner.join(" ", "Creating socket for", connectionInfo.toString()));
         return new Socket(connectionInfo.getIpAddress(), connectionInfo.getPort());
     }
 }

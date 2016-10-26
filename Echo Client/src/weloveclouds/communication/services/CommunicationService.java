@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.StringJoiner;
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.exceptions.AlreadyConnectedException;
 import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
@@ -75,7 +75,7 @@ public class CommunicationService {
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
-        logger.debug(StringJoiner.join(" ", "Trying to connec to", remoteServer.toString()));
+        logger.debug(CustomStringJoiner.join(" ", "Trying to connec to", remoteServer.toString()));
         connectionToServer = new Connection.ConnectionBuilder().remoteServer(remoteServer)
                 .socket(socketFactory.createTcpSocketFromInfo(remoteServer)).build();
 
@@ -140,7 +140,7 @@ public class CommunicationService {
             while (receivedData == null) {
                 int availableBytes = socketDataReader.available();
                 if (availableBytes != 0) {
-                    logger.debug(StringJoiner.join(" ", "Receiving", String.valueOf(availableBytes),
+                    logger.debug(CustomStringJoiner.join(" ", "Receiving", String.valueOf(availableBytes),
                             "from the connection."));
                     receivedData = new byte[availableBytes];
                     socketDataReader.read(receivedData);

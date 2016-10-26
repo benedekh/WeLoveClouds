@@ -44,7 +44,7 @@ public abstract class ArgumentsValidator {
                     "Command need arguments (<IP address> and <port>) only.");
         } else if (remoteServer.getPort() < NETWORK_PORT_LOWER_LIMIT
                 || remoteServer.getPort() > NETWORK_PORT_UPPER_LIMIT) {
-            String message = StringJoiner.join(",",
+            String message = CustomStringJoiner.join(",",
                     "Port should be in the range [" + String.valueOf(NETWORK_PORT_LOWER_LIMIT),
                     String.valueOf(NETWORK_PORT_UPPER_LIMIT) + "].");
             LOGGER.warn("Connect command is invalid.");
@@ -68,7 +68,7 @@ public abstract class ArgumentsValidator {
             if (messageBytes.length > SEND_MESSAGE_SIZE_LIMIT_IN_BYTES) {
                 LOGGER.warn("Send command is invalid.");
                 throw new IllegalArgumentException(
-                        StringJoiner.join(" ", "Message size can be at most",
+                        CustomStringJoiner.join(" ", "Message size can be at most",
                                 String.valueOf(SEND_MESSAGE_SIZE_LIMIT_IN_BYTES), "kB"));
             }
         }
@@ -84,7 +84,7 @@ public abstract class ArgumentsValidator {
      */
     public static void validateLogLevelArguments(String[] arguments)
             throws IllegalArgumentException {
-        String message = StringJoiner.join(" ",
+        String message = CustomStringJoiner.join(" ",
                 "Log level is not recognized. It should be capitalized and should be one of the followings:",
                 convertLevelsToString());
 
