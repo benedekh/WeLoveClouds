@@ -1,7 +1,7 @@
 package weloveclouds.client.models;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
@@ -14,19 +14,30 @@ import weloveclouds.client.utils.StringJoiner;
  * @author Benedek
  */
 public enum Command {
-    CONNECT, DISCONNECT, SEND, LOGLEVEL, HELP, QUIT, DEFAULT;
+    CONNECT("connect"), DISCONNECT("disconnect"), SEND("send"), LOGLEVEL("logLevel"), HELP(
+            "help"), QUIT("quit"), DEFAULT("default");
 
     private static final Logger LOGGER = Logger.getLogger(Command.class);
 
-    private static final Set<String> lowercaseCommands = getCommandsAsLowercase();
+    private static final Map<String, Command> commandNames = getCommandNames();
+
+    private String customName;
+
+    Command(String customName) {
+        this.customName = customName;
+    }
+
+    private String getCustomName() {
+        return customName;
+    }
 
     /**
-     * Creates a set from the lower-case names of the commands.
+     * Creates a map from the names of the commands and its command object.
      */
-    private static Set<String> getCommandsAsLowercase() {
-        Set<String> names = new TreeSet<>();
+    private static Map<String, Command> getCommandNames() {
+        Map<String, Command> names = new TreeMap<>();
         for (Command command : Command.values()) {
-            names.add(command.name().toLowerCase());
+            names.put(command.getCustomName(), command);
         }
         return names;
     }
@@ -36,8 +47,8 @@ public enum Command {
      * it returns {@link #DEFAULT}
      */
     public static Command fromString(String command) {
-        Command recognized = (command == null || !lowercaseCommands.contains(command) ? DEFAULT
-                : Command.valueOf(command));
+        Command recognized = (command == null || !commandNames.containsKey(command) ? DEFAULT
+                : commandNames.get(command));
         if (recognized == DEFAULT) {
             LOGGER.warn(StringJoiner.join("", "Command (", command, ") is not recognized."));
         }
