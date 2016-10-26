@@ -41,7 +41,7 @@ public class Connect extends AbstractCommunicationApiCommand {
             communicationApi.connectTo(remoteServer);
             logger.info("Connection was successful. Receiving server welcome message.");
 
-            String response = new String(communicationApi.receive(), StandardCharsets.US_ASCII);
+            String response = new String(communicationApi.receive(), StandardCharsets.US_ASCII).replace("\r", "");
             userOutputWriter.writeLine(response);
             logger.debug(response);
         } catch (IOException ex) {

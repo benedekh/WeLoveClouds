@@ -41,7 +41,7 @@ public class Send extends AbstractCommunicationApiCommand {
             logger.info("Message was sent.");
 
             logger.info("Receiving server response.");
-            String response = new String(communicationApi.receive(), StandardCharsets.US_ASCII);
+            String response = new String(communicationApi.receive(), StandardCharsets.US_ASCII).replace("\r", "");
             userOutputWriter.writeLine(response);
             logger.debug(response);
         } catch (IOException e) {
