@@ -14,6 +14,7 @@ public class KVStore implements IKVStore {
     public KVStore(KVCache cache, KVPersistentStorage persistentStorage) {
         this.cache = cache;
         this.persistentStorage = persistentStorage;
+        this.persistentStorage.addObserver(cache);
     }
 
     @Override

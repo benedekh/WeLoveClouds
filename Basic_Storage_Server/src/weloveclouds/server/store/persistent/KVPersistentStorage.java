@@ -16,16 +16,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.KVEntry;
-import weloveclouds.server.store.IEntryChangeNotifyable;
 import weloveclouds.server.store.IKVStore;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 
-public class KVPersistentStorage implements IKVStore {
+public class KVPersistentStorage extends Observable implements IKVStore {
 
     private static final String FILE_EXTENSION = "ser";
 
@@ -33,10 +33,8 @@ public class KVPersistentStorage implements IKVStore {
     private Path rootPath;
 
     private Logger logger;
-    private IEntryChangeNotifyable entryChangeNotifyable;
 
-    public KVPersistentStorage(Path rootPath, IEntryChangeNotifyable entryChangeNotifyable)
-            throws IllegalArgumentException {
+    public KVPersistentStorage(Path rootPath) throws IllegalArgumentException {
         if (rootPath == null || !rootPath.toAbsolutePath().toFile().exists()) {
             throw new IllegalArgumentException("Root path does not exist.");
         }
@@ -44,7 +42,6 @@ public class KVPersistentStorage implements IKVStore {
         this.persistentPaths = new HashMap<>();
         this.rootPath = rootPath.toAbsolutePath();
         this.logger = Logger.getLogger(getClass());
-        this.entryChangeNotifyable = entryChangeNotifyable;
 
         initializePaths();
     }
@@ -73,7 +70,7 @@ public class KVPersistentStorage implements IKVStore {
         }
 
         persistentPaths.put(key, entryPath);
-        entryChangeNotifyable.put(entry);
+        notifyObservers(entry);
     }
 
     @Override
@@ -93,7 +90,7 @@ public class KVPersistentStorage implements IKVStore {
                 Path path = persistentPaths.get(key);
                 Files.delete(path);
                 persistentPaths.remove(key);
-                entryChangeNotifyable.remove(key);
+                notifyObservers(key);
             }
         } catch (NullPointerException ex) {
             throw new StorageException("Key cannot be null.");

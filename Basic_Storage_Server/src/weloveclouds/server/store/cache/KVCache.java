@@ -2,17 +2,18 @@ package weloveclouds.server.store.cache;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.KVEntry;
-import weloveclouds.server.store.IEntryChangeNotifyable;
 import weloveclouds.server.store.IKVStore;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 
-public class KVCache implements IKVStore, IEntryChangeNotifyable {
+public class KVCache implements IKVStore, Observer {
 
     private Map<String, String> cache;
     private int currentSize;
@@ -81,20 +82,15 @@ public class KVCache implements IKVStore, IEntryChangeNotifyable {
     }
 
     @Override
-    public void put(KVEntry entry) {
+    public void update(Observable target, Object value) {
         try {
-            putEntry(entry);
-        } catch (StorageException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    @Override
-    public void remove(String key) {
-        try {
-            removeEntry(key);
-        } catch (StorageException e) {
-            logger.error(e.getMessage());
+            if (value instanceof KVEntry) {
+                putEntry((KVEntry) value);
+            } else if (value instanceof String) {
+                removeEntry((String) value);
+            }
+        } catch (StorageException ex) {
+            logger.error(ex.getMessage());
         }
     }
 
