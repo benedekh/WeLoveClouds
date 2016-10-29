@@ -46,11 +46,15 @@ public class KVPersistentStorage implements IKVStore {
 
     @Override
     public void putEntry(KVEntry entry) throws StorageException {
-        if (entry.keyIsNull()) {
-            throw new StorageException("Key cannot be null.");
+        String key = entry.getKey();
+
+        if (key == null || entry.getValue() == null) {
+            throw new StorageException("Key and value cannot be null.");
+        } else if (persistentPaths.containsKey(key)) {
+            removeEntry(key);
         }
 
-        String cleanKey = entry.getKey().replaceAll("[^a-zA-Z0-9.-]", "_"); // valid filename
+        String cleanKey = key.replaceAll("[^a-zA-Z0-9.-]", "_"); // valid filename
         Path entryPath = Paths.get(rootPath.toString(), join(".", cleanKey, FILE_EXTENSION));
 
         try (ObjectOutputStream stream =
@@ -63,7 +67,7 @@ public class KVPersistentStorage implements IKVStore {
                     "Entry was not saved to the persistent storage due to IO error.");
         }
 
-        persistentPaths.put(entry.getKey(), entryPath);
+        persistentPaths.put(key, entryPath);
     }
 
     @Override
@@ -79,22 +83,19 @@ public class KVPersistentStorage implements IKVStore {
 
     @Override
     public void removeEntry(String key) throws StorageException {
-        if (!persistentPaths.containsKey(key)) {
-            throw new StorageException("Key is not stored in the persistent storage yet.");
+        if (persistentPaths.containsKey(key)) {
+            try {
+                Path path = persistentPaths.get(key);
+                Files.delete(path);
+                persistentPaths.remove(key);
+            } catch (NoSuchFileException ex) {
+                persistentPaths.remove(key);
+                throw new StorageException("File for key was already removed.");
+            } catch (IOException e) {
+                throw new StorageException(
+                        "File for key cannot be removed from persistent storage due to permission problems.");
+            }
         }
-
-        Path path = persistentPaths.get(key);
-        try {
-            Files.delete(path);
-        } catch (NoSuchFileException ex) {
-            persistentPaths.remove(key);
-            throw new StorageException("File for key was already removed.");
-        } catch (IOException e) {
-            throw new StorageException(
-                    "File for key cannot be removed from persistent storage due to permission problems.");
-        }
-
-        persistentPaths.remove(key);
     }
 
     private void initializePaths() {

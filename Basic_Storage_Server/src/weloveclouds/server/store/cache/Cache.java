@@ -5,35 +5,39 @@ import java.util.TreeMap;
 
 import weloveclouds.kvstore.KVEntry;
 import weloveclouds.server.store.IKVStore;
-import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
 
-public class KVCache implements IKVStore {
+public class Cache implements IKVStore {
 
     private int currentSize;
-    private int maxSize;
+    private int capacity;
 
     private Map<String, String> cache;
-    private DisplacementStrategy strategy;
 
-    public KVCache(DisplacementStrategy strategy, int maxSize) {
-        this.strategy = strategy;
-        this.maxSize = maxSize;
+    public Cache(int maxSize) {
+        this.capacity = maxSize;
 
         this.cache = new TreeMap<>();
         this.currentSize = 0;
     }
 
+    public boolean isFull() {
+        return currentSize == capacity;
+    }
+
+    public Map<String, String> getCache() {
+        return cache;
+    }
+
     @Override
-    public synchronized void putEntry(KVEntry entry) throws StorageException {
+    public void putEntry(KVEntry entry) throws StorageException {
         try {
             String key = entry.getKey();
             String value = entry.getValue();
-
-            if (currentSize == maxSize) {
-                strategy.displaceEntryFromCache(this);
-                currentSize--;
+            if (value == null) {
+                throw new NullPointerException();
             }
+
             cache.put(key, value);
             currentSize++;
         } catch (NullPointerException ex) {
@@ -45,7 +49,7 @@ public class KVCache implements IKVStore {
     }
 
     @Override
-    public synchronized String getValue(String key) throws StorageException {
+    public String getValue(String key) throws StorageException {
         try {
             return cache.get(key);
         } catch (NullPointerException ex) {
@@ -54,9 +58,10 @@ public class KVCache implements IKVStore {
     }
 
     @Override
-    public synchronized void removeEntry(String key) throws StorageException {
+    public void removeEntry(String key) throws StorageException {
         try {
             cache.remove(key);
+            currentSize--;
         } catch (NullPointerException ex) {
             throw new StorageException("Key cannot be null.");
         }

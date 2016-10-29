@@ -29,9 +29,4 @@ public class KVEntry implements Serializable {
     public void setValue(String value) {
         this.value = value;
     }
-
-    public boolean keyIsNull(){
-        return key == null;
-    }
-
 }
