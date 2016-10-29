@@ -4,8 +4,8 @@ import org.junit.Test;
 
 import client.KVStore;
 import junit.framework.TestCase;
-import weloveclouds.communication.api.kv.IKVMessage;
-import weloveclouds.communication.api.kv.IKVMessage.StatusType;
+import weloveclouds.kvstore.IKVMessage;
+import weloveclouds.kvstore.IKVMessage.StatusType;
 
 
 public class InteractionTest extends TestCase {

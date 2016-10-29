@@ -1,8 +1,8 @@
 package client;
 
 
-import weloveclouds.communication.api.kv.KVCommInterface;
-import weloveclouds.communication.api.kv.IKVMessage;
+import weloveclouds.kvstore.IKVMessage;
+import weloveclouds.kvstore.communication.api.KVCommInterface;
 
 public class KVStore implements KVCommInterface {
 
