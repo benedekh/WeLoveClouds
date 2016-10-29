@@ -1,7 +1,8 @@
 package client;
 
 
-import common.messages.KVMessage;
+import weloveclouds.kvstore.IKVMessage;
+import weloveclouds.kvstore.communication.api.KVCommInterface;
 
 public class KVStore implements KVCommInterface {
 
@@ -28,13 +29,13 @@ public class KVStore implements KVCommInterface {
 	}
 
 	@Override
-	public KVMessage put(String key, String value) throws Exception {
+	public IKVMessage put(String key, String value) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public KVMessage get(String key) throws Exception {
+	public IKVMessage get(String key) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
