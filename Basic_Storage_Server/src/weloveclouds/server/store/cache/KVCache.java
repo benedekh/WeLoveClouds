@@ -37,8 +37,8 @@ public class KVCache implements IKVStore, IEntryChangeNotifyable {
             String value = entry.getValue();
 
             if (currentSize == capacity) {
-                KVEntry displaced = displacementStrategy.displaceEntry();
-                removeEntry(displaced.getKey());
+                String displacedKey = displacementStrategy.displaceKey();
+                removeEntry(displacedKey);
             }
 
             cache.put(key, value);

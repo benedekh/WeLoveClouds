@@ -1,6 +1,5 @@
 package weloveclouds.server.store.cache.strategy;
 
-import weloveclouds.kvstore.KVEntry;
 import weloveclouds.server.store.IKVStore;
 import weloveclouds.server.store.exceptions.StorageException;
 
@@ -10,5 +9,5 @@ import weloveclouds.server.store.exceptions.StorageException;
  */
 public interface DisplacementStrategy extends IKVStore {
 
-    public KVEntry displaceEntry() throws StorageException;
+    public String displaceKey() throws StorageException;
 }

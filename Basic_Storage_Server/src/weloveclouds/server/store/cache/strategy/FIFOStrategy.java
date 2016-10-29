@@ -1,8 +1,6 @@
 package weloveclouds.server.store.cache.strategy;
 
 import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
@@ -11,28 +9,25 @@ import weloveclouds.server.store.exceptions.StorageException;
 
 public class FIFOStrategy implements DisplacementStrategy {
 
-    private Queue<KVEntry> fifo;
-    private Map<String, KVEntry> helperMap;
+    private Queue<String> fifo;
 
     public FIFOStrategy() {
         this.fifo = new ArrayDeque<>();
-        this.helperMap = new HashMap<>();
     }
 
     @Override
-    public KVEntry displaceEntry() throws StorageException {
+    public String displaceKey() throws StorageException {
         try {
             return fifo.remove();
         } catch (NoSuchElementException ex) {
-            throw new StorageException("FIFO is empty so it cannot remove anything.");
+            throw new StorageException("Store is empty so it cannot remove anything.");
         }
     }
 
     @Override
     public void putEntry(KVEntry entry) throws StorageException {
         try {
-            fifo.add(entry);
-            helperMap.put(entry.getKey(), entry);
+            fifo.add(entry.getKey());
         } catch (NullPointerException ex) {
             throw new StorageException("Entry cannot be null.");
         }
@@ -47,8 +42,7 @@ public class FIFOStrategy implements DisplacementStrategy {
     @Override
     public void removeEntry(String key) throws StorageException {
         try {
-            KVEntry entry = helperMap.remove(key);
-            fifo.remove(entry);
+            fifo.remove(key);
         } catch (NullPointerException ex) {
             throw new StorageException("Key cannot be null.");
         }
