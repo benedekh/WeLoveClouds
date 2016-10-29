@@ -1,7 +1,7 @@
 package weloveclouds.server.store.cache;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
@@ -25,7 +25,7 @@ public class KVCache implements IKVStore, IEntryChangeNotifyable {
         this.capacity = maxSize;
         this.displacementStrategy = displacementStrategy;
 
-        this.cache = new TreeMap<>();
+        this.cache = new HashMap<>();
         this.currentSize = 0;
         this.logger = Logger.getLogger(getClass());
     }
@@ -35,9 +35,6 @@ public class KVCache implements IKVStore, IEntryChangeNotifyable {
         try {
             String key = entry.getKey();
             String value = entry.getValue();
-            if (value == null) {
-                throw new StorageException("Value cannot be null.");
-            }
 
             if (currentSize == capacity) {
                 KVEntry displaced = displacementStrategy.displaceEntry();
@@ -78,6 +75,8 @@ public class KVCache implements IKVStore, IEntryChangeNotifyable {
             displacementStrategy.removeEntry(key);
         } catch (NullPointerException ex) {
             throw new StorageException("Key cannot be null.");
+        } catch (StorageException ex) {
+            // suppress the exception thrown by the underyling displacement strategy
         }
     }
 

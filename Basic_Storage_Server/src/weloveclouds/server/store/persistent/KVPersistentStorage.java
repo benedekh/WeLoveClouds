@@ -14,8 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
@@ -41,7 +41,7 @@ public class KVPersistentStorage implements IKVStore {
             throw new IllegalArgumentException("Root path does not exist.");
         }
 
-        this.persistentPaths = new TreeMap<>();
+        this.persistentPaths = new HashMap<>();
         this.rootPath = rootPath.toAbsolutePath();
         this.logger = Logger.getLogger(getClass());
         this.entryChangeNotifyable = entryChangeNotifyable;
