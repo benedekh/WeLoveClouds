@@ -7,14 +7,14 @@ import weloveclouds.kvstore.KVEntry;
 import weloveclouds.server.store.IKVStore;
 import weloveclouds.server.store.exceptions.StorageException;
 
-public class Cache implements IKVStore {
+public class KVCache implements IKVStore {
 
     private int currentSize;
     private int capacity;
 
     private Map<String, String> cache;
 
-    public Cache(int maxSize) {
+    public KVCache(int maxSize) {
         this.capacity = maxSize;
 
         this.cache = new TreeMap<>();
@@ -24,11 +24,7 @@ public class Cache implements IKVStore {
     public boolean isFull() {
         return currentSize == capacity;
     }
-
-    public Map<String, String> getCache() {
-        return cache;
-    }
-
+    
     @Override
     public void putEntry(KVEntry entry) throws StorageException {
         try {

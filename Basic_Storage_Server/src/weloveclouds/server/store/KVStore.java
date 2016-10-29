@@ -1,18 +1,18 @@
 package weloveclouds.server.store;
 
 import weloveclouds.kvstore.KVEntry;
-import weloveclouds.server.store.cache.Cache;
+import weloveclouds.server.store.cache.KVCache;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.persistent.KVPersistentStorage;
 
 public class KVStore implements IKVStore {
 
-    private Cache cache;
+    private KVCache cache;
     private KVPersistentStorage persistent;
     private DisplacementStrategy strategy;
 
-    public KVStore(Cache cache, KVPersistentStorage persistent, DisplacementStrategy strategy) {
+    public KVStore(KVCache cache, KVPersistentStorage persistent, DisplacementStrategy strategy) {
         this.cache = cache;
         this.persistent = persistent;
         this.strategy = strategy;

@@ -2,7 +2,7 @@ package weloveclouds.server.store.cache.strategy;
 
 import weloveclouds.kvstore.KVEntry;
 import weloveclouds.server.store.IKVStore;
-import weloveclouds.server.store.cache.Cache;
+import weloveclouds.server.store.cache.KVCache;
 import weloveclouds.server.store.exceptions.StorageException;
 
 public class LRUStrategy implements DisplacementStrategy {
