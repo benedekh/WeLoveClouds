@@ -20,8 +20,10 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.KVEntry;
+import weloveclouds.server.store.IEntryChangeNotifyable;
 import weloveclouds.server.store.IKVStore;
 import weloveclouds.server.store.exceptions.StorageException;
+import weloveclouds.server.store.exceptions.ValueNotFoundException;
 
 public class KVPersistentStorage implements IKVStore {
 
@@ -31,8 +33,10 @@ public class KVPersistentStorage implements IKVStore {
     private Path rootPath;
 
     private Logger logger;
+    private IEntryChangeNotifyable entryChangeNotifyable;
 
-    public KVPersistentStorage(Path rootPath) throws IllegalArgumentException {
+    public KVPersistentStorage(Path rootPath, IEntryChangeNotifyable entryChangeNotifyable)
+            throws IllegalArgumentException {
         if (rootPath == null || !rootPath.toAbsolutePath().toFile().exists()) {
             throw new IllegalArgumentException("Root path does not exist.");
         }
@@ -40,6 +44,7 @@ public class KVPersistentStorage implements IKVStore {
         this.persistentPaths = new TreeMap<>();
         this.rootPath = rootPath.toAbsolutePath();
         this.logger = Logger.getLogger(getClass());
+        this.entryChangeNotifyable = entryChangeNotifyable;
 
         initializePaths();
     }
@@ -68,33 +73,36 @@ public class KVPersistentStorage implements IKVStore {
         }
 
         persistentPaths.put(key, entryPath);
+        entryChangeNotifyable.put(entry);
     }
 
     @Override
-    public String getValue(String key) throws StorageException {
-        if (!persistentPaths.containsKey(key)) {
-            throw new StorageException("Key is not stored in the persistent storage yet.");
-        }
-
+    public String getValue(String key) throws StorageException, ValueNotFoundException {
         Path path = persistentPaths.get(key);
+        if (path == null) {
+            throw new ValueNotFoundException(key);
+        }
         KVEntry entry = readEntryFromFile(path.toFile());
         return entry.getValue();
     }
 
     @Override
     public void removeEntry(String key) throws StorageException {
-        if (persistentPaths.containsKey(key)) {
-            try {
+        try {
+            if (persistentPaths.containsKey(key)) {
                 Path path = persistentPaths.get(key);
                 Files.delete(path);
                 persistentPaths.remove(key);
-            } catch (NoSuchFileException ex) {
-                persistentPaths.remove(key);
-                throw new StorageException("File for key was already removed.");
-            } catch (IOException e) {
-                throw new StorageException(
-                        "File for key cannot be removed from persistent storage due to permission problems.");
+                entryChangeNotifyable.remove(key);
             }
+        } catch (NullPointerException ex) {
+            throw new StorageException("Key cannot be null.");
+        } catch (NoSuchFileException ex) {
+            persistentPaths.remove(key);
+            throw new StorageException("File for key was already removed.");
+        } catch (IOException e) {
+            throw new StorageException(
+                    "File for key cannot be removed from persistent storage due to permission problems.");
         }
     }
 

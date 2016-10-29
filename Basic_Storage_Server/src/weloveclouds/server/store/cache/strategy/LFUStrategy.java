@@ -1,26 +1,20 @@
 package weloveclouds.server.store.cache.strategy;
 
 import weloveclouds.kvstore.KVEntry;
-import weloveclouds.server.store.IKVStore;
-import weloveclouds.server.store.cache.KVCache;
 import weloveclouds.server.store.exceptions.StorageException;
 
 public class LFUStrategy implements DisplacementStrategy {
 
     @Override
-    public KVEntry displaceEntryFromStore(IKVStore cache) throws StorageException {
+    public KVEntry displaceEntry() throws StorageException {
         // TODO Auto-generated method stub
-        KVEntry toBeRemoved = null;
-        
-        cache.removeEntry(toBeRemoved.getKey());
-        removeEntry(toBeRemoved.getKey());
-        return toBeRemoved;
+        return null;
     }
 
     @Override
     public void putEntry(KVEntry entry) throws StorageException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -32,7 +26,7 @@ public class LFUStrategy implements DisplacementStrategy {
     @Override
     public void removeEntry(String key) throws StorageException {
         // TODO Auto-generated method stub
-        
+
     }
 
 

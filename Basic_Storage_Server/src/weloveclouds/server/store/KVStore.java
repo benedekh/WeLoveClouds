@@ -2,56 +2,44 @@ package weloveclouds.server.store;
 
 import weloveclouds.kvstore.KVEntry;
 import weloveclouds.server.store.cache.KVCache;
-import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
+import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.persistent.KVPersistentStorage;
 
 public class KVStore implements IKVStore {
 
     private KVCache cache;
-    private KVPersistentStorage persistent;
-    private DisplacementStrategy strategy;
+    private KVPersistentStorage persistentStorage;
 
-    public KVStore(KVCache cache, KVPersistentStorage persistent, DisplacementStrategy strategy) {
+    public KVStore(KVCache cache, KVPersistentStorage persistentStorage) {
         this.cache = cache;
-        this.persistent = persistent;
-        this.strategy = strategy;
+        this.persistentStorage = persistentStorage;
     }
 
     @Override
     public void putEntry(KVEntry entry) throws StorageException {
-        if (cache.isFull()) {
-            KVEntry displaced = strategy.displaceEntryFromStore(cache);
-            persistent.putEntry(displaced);
-        }
-        cache.putEntry(entry);
-        strategy.putEntry(entry);
+        // implicit notification will go the cache as well
+        // throw the persistent store
+        persistentStorage.putEntry(entry);
     }
 
     @Override
-    public String getValue(String key) throws StorageException {
-        String value = cache.getValue(key);
-        if (value == null) {
-            // if is not in the cache, then get it from the persistent storage and put in the caches
-            value = persistent.getValue(key);
+    public String getValue(String key) throws StorageException, ValueNotFoundException {
+        String value = null;
+        try {
+            value = cache.getValue(key);
+        } catch (ValueNotFoundException ex) {
+            value = persistentStorage.getValue(key);
             putEntry(new KVEntry(key, value));
-            // remove from persistent because it is stored in the cache
-            persistent.removeEntry(key);
-        } else {
-            // if it was in the cache then update the strategy information
-            strategy.getValue(key);
         }
         return value;
     }
 
     @Override
     public void removeEntry(String key) throws StorageException {
-        try {
-            cache.removeEntry(key);
-            strategy.removeEntry(key);
-        } catch (StorageException ex) {
-            persistent.removeEntry(key);
-        }
+        // implicit notification will go the cache as well
+        // throw the persistent store
+        persistentStorage.removeEntry(key);
     }
 
 }

@@ -1,19 +1,14 @@
 package weloveclouds.server.store.cache.strategy;
 
 import weloveclouds.kvstore.KVEntry;
-import weloveclouds.server.store.IKVStore;
 import weloveclouds.server.store.exceptions.StorageException;
 
 public class FIFOStrategy implements DisplacementStrategy {
 
     @Override
-    public KVEntry displaceEntryFromStore(IKVStore cache) throws StorageException {
+    public KVEntry displaceEntry() throws StorageException {
         // TODO Auto-generated method stub
-        KVEntry toBeRemoved = null;
-        
-        cache.removeEntry(toBeRemoved.getKey());
-        removeEntry(toBeRemoved.getKey());
-        return toBeRemoved;
+        return null;
     }
 
     @Override

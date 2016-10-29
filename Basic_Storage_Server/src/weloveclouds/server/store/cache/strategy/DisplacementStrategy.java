@@ -10,5 +10,5 @@ import weloveclouds.server.store.exceptions.StorageException;
  */
 public interface DisplacementStrategy extends IKVStore {
 
-    public KVEntry displaceEntryFromStore(IKVStore store) throws StorageException;
+    public KVEntry displaceEntry() throws StorageException;
 }
