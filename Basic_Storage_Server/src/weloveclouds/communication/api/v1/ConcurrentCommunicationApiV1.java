@@ -29,6 +29,6 @@ public class ConcurrentCommunicationApiV1 implements IConcurrentCommunicationApi
 
     @Override
     public byte[] receiveFrom(Connection connection) {
-        return communicationService.receive(connection);
+        return communicationService.receiveFrom(connection);
     }
 }
