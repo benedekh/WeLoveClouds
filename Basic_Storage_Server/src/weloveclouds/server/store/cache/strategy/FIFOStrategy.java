@@ -20,7 +20,7 @@ public class FIFOStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public String displaceKey() throws StorageException {
+    public synchronized String displaceKey() throws StorageException {
         try {
             return fifo.remove();
         } catch (NoSuchElementException ex) {
@@ -29,7 +29,7 @@ public class FIFOStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public void put(String key){
+    public synchronized void put(String key) {
         try {
             fifo.add(key);
         } catch (NullPointerException ex) {
@@ -38,12 +38,12 @@ public class FIFOStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public void get(String key){
+    public synchronized void get(String key) {
         // FIFO strategy does not update anything
     }
 
     @Override
-    public void remove(String key) {
+    public synchronized void remove(String key) {
         try {
             fifo.remove(key);
         } catch (NullPointerException ex) {

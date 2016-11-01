@@ -20,7 +20,7 @@ public class LRUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public String displaceKey() throws StorageException {
+    public synchronized String displaceKey() throws StorageException {
         try {
             // the last element of the queue is the least recently used one
             return recentKeys.removeLast();
@@ -30,7 +30,7 @@ public class LRUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public void put(String key) {
+    public synchronized void put(String key) {
         try {
             recentKeys.addFirst(key);
         } catch (NullPointerException ex) {
@@ -39,7 +39,7 @@ public class LRUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public void get(String key) {
+    public synchronized void get(String key) {
         try {
             // move the element to the head of the queue
             // because it was most recently used
@@ -51,7 +51,7 @@ public class LRUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public void remove(String key) {
+    public synchronized void remove(String key) {
         try {
             recentKeys.remove(key);
         } catch (NullPointerException ex) {

@@ -23,7 +23,7 @@ public class LFUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public String displaceKey() throws StorageException {
+    public synchronized String displaceKey() throws StorageException {
         try {
             // order by frequency, the least frequent will be the first
             SortedSet<KeyFrequency> sorted = new TreeSet<>(keyFrequencyPairs.values());
@@ -37,7 +37,7 @@ public class LFUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public void put(String key) {
+    public synchronized void put(String key) {
         try {
             KeyFrequency keyFrequency = new KeyFrequency(key, 0);
             keyFrequencyPairs.put(key, keyFrequency);;
@@ -47,7 +47,7 @@ public class LFUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public void get(String key) {
+    public synchronized void get(String key) {
         try {
             KeyFrequency keyFrequency = keyFrequencyPairs.get(key);
             keyFrequency.increaseFrequency();
@@ -57,7 +57,7 @@ public class LFUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public void remove(String key) {
+    public synchronized void remove(String key) {
         try {
             keyFrequencyPairs.remove(key);
         } catch (NullPointerException ex) {

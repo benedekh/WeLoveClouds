@@ -47,7 +47,7 @@ public class KVPersistentStorage extends Observable implements IKVStore {
     }
 
     @Override
-    public void putEntry(KVEntry entry) throws StorageException {
+    public synchronized void putEntry(KVEntry entry) throws StorageException {
         String key = entry.getKey();
 
         if (key == null || entry.getValue() == null) {
@@ -74,7 +74,7 @@ public class KVPersistentStorage extends Observable implements IKVStore {
     }
 
     @Override
-    public String getValue(String key) throws StorageException, ValueNotFoundException {
+    public synchronized String getValue(String key) throws StorageException, ValueNotFoundException {
         Path path = persistentPaths.get(key);
         if (path == null) {
             throw new ValueNotFoundException(key);
@@ -84,7 +84,7 @@ public class KVPersistentStorage extends Observable implements IKVStore {
     }
 
     @Override
-    public void removeEntry(String key) throws StorageException {
+    public synchronized void removeEntry(String key) throws StorageException {
         try {
             if (persistentPaths.containsKey(key)) {
                 Path path = persistentPaths.get(key);
