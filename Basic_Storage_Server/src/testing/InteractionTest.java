@@ -3,15 +3,15 @@ package testing;
 import org.junit.Test;
 
 import junit.framework.TestCase;
+
 import weloveclouds.communication.api.v1.KVCommunicationApiV1;
 import weloveclouds.kvstore.IKVMessage;
 import weloveclouds.kvstore.IKVMessage.StatusType;
-import weloveclouds.kvstore.communication.api.KVCommInterface;
-
+import weloveclouds.kvstore.api.IKVServerApi;
 
 public class InteractionTest extends TestCase {
 
-    private KVCommInterface kvClient;
+    private IKVServerApi kvClient;
 
     public void setUp() {
         kvClient = new KVCommunicationApiV1("localhost", 50000);
@@ -129,7 +129,6 @@ public class InteractionTest extends TestCase {
 
         assertTrue(ex == null && response.getStatus() == StatusType.GET_ERROR);
     }
-
 
 
 }

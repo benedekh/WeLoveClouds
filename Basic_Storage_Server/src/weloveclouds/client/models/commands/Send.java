@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
@@ -38,7 +37,7 @@ public class Send extends AbstractCommunicationApiCommand {
 
     @Override
     public ICommand validate() throws IllegalArgumentException {
-        ArgumentsValidator.validateSendArguments(arguments);
+        //ArgumentsValidator.validateSendArguments(arguments);
         return this;
     }
 }

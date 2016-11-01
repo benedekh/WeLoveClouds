@@ -4,9 +4,11 @@ import java.io.IOException;
 
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.kvstore.KVMessage;
+import weloveclouds.kvstore.serialization.IMessageDeserializer;
+import weloveclouds.kvstore.serialization.IMessageSerializer;
+import weloveclouds.kvstore.serialization.SerializedKVMessage;
 import weloveclouds.server.models.RequestFactory;
-import weloveclouds.server.models.ResponseFactory;
-import weloveclouds.server.parsers.IMessageParser;
 import weloveclouds.server.services.IDataAccessService;
 
 import static weloveclouds.server.core.ServerStatus.*;
@@ -17,17 +19,17 @@ import static weloveclouds.server.core.ServerStatus.*;
 public class Server extends AbstractServer {
     private IConcurrentCommunicationApi communicationApi;
     private RequestFactory requestFactory;
-    private ResponseFactory responseFactory;
-    private IMessageParser messageParser;
     private IDataAccessService dataAccessService;
+    private IMessageSerializer messageSerializer;
+    private IMessageDeserializer messageDeserializer;
 
     private Server(ServerBuilder serverBuilder) throws IOException {
         super(serverBuilder.serverSocketFactory, serverBuilder.port);
         this.communicationApi = serverBuilder.communicationApi;
         this.requestFactory = serverBuilder.requestFactory;
-        this.responseFactory = serverBuilder.responseFactory;
-        this.messageParser = serverBuilder.messageParser;
         this.dataAccessService = serverBuilder.dataAccessService;
+        this.messageSerializer = serverBuilder.messageSerializer;
+        this.messageDeserializer = serverBuilder.messageDeserializer;
     }
 
     @Override
@@ -38,10 +40,10 @@ public class Server extends AbstractServer {
                 new SimpleConnectionHandler.SimpleConnectionBuilder()
                         .connection(new Connection.ConnectionBuilder().socket(serverSocket.accept
                                 ()).build())
-                        .messageParser(messageParser)
                         .requestFactory(requestFactory)
-                        .responseFactory(responseFactory)
                         .communicationApi(communicationApi)
+                        .messageSerializer(messageSerializer)
+                        .messageDeserializer(messageDeserializer)
                         .build()
                         .handleConnection();
             } catch (IOException e) {
@@ -54,9 +56,9 @@ public class Server extends AbstractServer {
         private IConcurrentCommunicationApi communicationApi;
         private ServerSocketFactory serverSocketFactory;
         private RequestFactory requestFactory;
-        private ResponseFactory responseFactory;
-        private IMessageParser messageParser;
         private IDataAccessService dataAccessService;
+        private IMessageSerializer messageSerializer;
+        private IMessageDeserializer messageDeserializer;
         private int port;
 
         public ServerBuilder serverSocketFactory(ServerSocketFactory serverSocketFactory) {
@@ -69,18 +71,8 @@ public class Server extends AbstractServer {
             return this;
         }
 
-        public ServerBuilder messageParser(IMessageParser messageParser) {
-            this.messageParser = messageParser;
-            return this;
-        }
-
         public ServerBuilder requestFactory(RequestFactory requestFactory) {
             this.requestFactory = requestFactory;
-            return this;
-        }
-
-        public ServerBuilder responseFactory(ResponseFactory responseFactory) {
-            this.responseFactory = responseFactory;
             return this;
         }
 
@@ -89,8 +81,18 @@ public class Server extends AbstractServer {
             return this;
         }
 
-        public ServerBuilder dataAccessService(IDataAccessService dataAccessService){
+        public ServerBuilder dataAccessService(IDataAccessService dataAccessService) {
             this.dataAccessService = dataAccessService;
+            return this;
+        }
+
+        public ServerBuilder messageSerializer(IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer) {
+            this.messageSerializer = messageSerializer;
+            return this;
+        }
+
+        public ServerBuilder messageDeserializer(IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer) {
+            this.messageDeserializer = messageDeserializer;
             return this;
         }
 

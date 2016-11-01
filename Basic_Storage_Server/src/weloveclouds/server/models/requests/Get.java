@@ -21,7 +21,7 @@ public class Get implements IRequest {
 
     @Override
     public KVMessage execute() {
-        KVMessage response = null;
+        KVMessage response;
         try {
             response = new KVMessage.KVMessageBuilder()
                     .status(GET_SUCCESS)

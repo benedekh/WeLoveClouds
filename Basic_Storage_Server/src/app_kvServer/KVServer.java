@@ -1,34 +1,34 @@
 package app_kvServer;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import weloveclouds.communication.api.v1.ConcurrentCommunicationApiV1;
 import weloveclouds.communication.services.ConcurrentCommunicationService;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerSocketFactory;
 import weloveclouds.server.models.RequestFactory;
-import weloveclouds.server.models.ResponseFactory;
+import weloveclouds.server.services.DataAccessService;
+import weloveclouds.server.store.cache.KVCache;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.FIFOStrategy;
 import weloveclouds.server.store.cache.strategy.LFUStrategy;
 import weloveclouds.server.store.cache.strategy.LRUStrategy;
+import weloveclouds.server.store.persistent.KVPersistentStorage;
 
 public class KVServer {
     private static int SERVER_PORT;
     private static int CACHE_SIZE;
+    private static Path ROOTH_PATH = Paths.get("./");
 
     public static void main(String[] args) {
         try {
             new Server.ServerBuilder()
                     .port(SERVER_PORT)
-                    .cacheSize(CACHE_SIZE)
                     .serverSocketFactory(new ServerSocketFactory())
-                    .requestFactory(new RequestFactory())
-                    .responseFactory(new ResponseFactory())
+                    .requestFactory(new RequestFactory(new DataAccessService(new KVCache
+                            (CACHE_SIZE, new FIFOStrategy()), new KVPersistentStorage(ROOTH_PATH))))
                     .communicationApi(new ConcurrentCommunicationApiV1(new ConcurrentCommunicationService()))
                     .build()
                     .start();
