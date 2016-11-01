@@ -11,6 +11,7 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 public class SerializedKVMessage {
 
     private static String SEPARATOR = "-\r-";
+    private static int NUMBER_OF_MESSAGE_PARTS = 3;
 
     private static int MESSAGE_STATUS_INDEX = 0;
     private static int MESSAGE_KEY_INDEX = 1;
@@ -41,7 +42,7 @@ public class SerializedKVMessage {
         String serialized = new String(array, StandardCharsets.UTF_8);
         String[] parts = serialized.split(SEPARATOR);
 
-        if (parts.length < 3) {
+        if (parts.length < NUMBER_OF_MESSAGE_PARTS) {
             throw new DeserializationException("Message contains more than three parts.");
         }
 
