@@ -1,7 +1,6 @@
 package weloveclouds.server.models;
 
-import weloveclouds.communication.api.ICommunicationApi;
-import weloveclouds.communication.api.IConcurrentCommunicationApi;
+import weloveclouds.kvstore.api.IKVServerApi;
 import weloveclouds.server.models.requests.IRequest;
 
 /**

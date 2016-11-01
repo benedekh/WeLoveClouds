@@ -22,6 +22,8 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
         this.communicationApi = simpleConnectionBuilder.communicationApi;
         this.connection = simpleConnectionBuilder.connection;
         this.messageParser = simpleConnectionBuilder.messageParser;
+        this.requestFactory = simpleConnectionBuilder.requestFactory;
+        this.responseFactory = simpleConnectionBuilder.responseFactory;
     }
 
     @Override

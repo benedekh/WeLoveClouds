@@ -2,9 +2,9 @@ package client;
 
 
 import weloveclouds.kvstore.IKVMessage;
-import weloveclouds.kvstore.communication.api.KVCommInterface;
+import weloveclouds.kvstore.api.IKVServerApi;
 
-public class KVStore implements KVCommInterface {
+public class KVStore implements IKVServerApi {
 
 	
 	/**
