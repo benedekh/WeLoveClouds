@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import weloveclouds.communication.api.v1.ConcurrentCommunicationApiV1;
 import weloveclouds.communication.services.ConcurrentCommunicationService;
-import weloveclouds.server.converter.MessageToKVRequestConverter;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerSocketFactory;
 import weloveclouds.server.models.RequestFactory;
@@ -16,11 +15,13 @@ import weloveclouds.server.store.cache.strategy.LRUStrategy;
 
 public class KVServer {
     private static int SERVER_PORT;
+    private static int CACHE_SIZE;
 
     public static void main(String[] args) {
         try {
             new Server.ServerBuilder()
                     .port(SERVER_PORT)
+                    .cacheSize(CACHE_SIZE)
                     .serverSocketFactory(new ServerSocketFactory())
                     .requestFactory(new RequestFactory())
                     .responseFactory(new ResponseFactory())

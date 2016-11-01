@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
-import weloveclouds.server.models.Connection;
+import weloveclouds.communication.models.Connection;
 import weloveclouds.server.models.RequestFactory;
 import weloveclouds.server.models.ResponseFactory;
-import weloveclouds.server.parsers.IParser;
+import weloveclouds.server.parsers.IMessageParser;
 
 import static weloveclouds.server.core.ServerStatus.*;
 
@@ -21,7 +21,7 @@ public class Server extends Thread {
     private RequestFactory requestFactory;
     private ResponseFactory responseFactory;
     private ServerSocket serverSocket;
-    private IParser messageParser;
+    private IMessageParser messageParser;
 
     private Server(ServerBuilder serverBuilder) throws IOException {
         this.communicationApi = serverBuilder.communicationApi;
@@ -42,10 +42,12 @@ public class Server extends Thread {
         while (status == RUNNING) {
             try {
                 new SimpleConnectionHandler.SimpleConnectionBuilder()
-                        .connection(new Connection(serverSocket.accept()))
+                        .connection(new Connection.ConnectionBuilder().socket(serverSocket.accept
+                                ()).build())
                         .messageParser(messageParser)
                         .requestFactory(requestFactory)
                         .responseFactory(responseFactory)
+                        .communicationApi(communicationApi)
                         .build()
                         .handleConnection();
             } catch (IOException e) {
@@ -59,8 +61,9 @@ public class Server extends Thread {
         private ServerSocketFactory serverSocketFactory;
         private RequestFactory requestFactory;
         private ResponseFactory responseFactory;
-        private IParser messageParser;
+        private IMessageParser messageParser;
         private int port;
+        private int cacheSize;
 
         public ServerBuilder serverSocketFactory(ServerSocketFactory serverSocketFactory) {
             this.serverSocketFactory = serverSocketFactory;
@@ -72,23 +75,28 @@ public class Server extends Thread {
             return this;
         }
 
-        public ServerBuilder messageParser(IParser messageParser){
+        public ServerBuilder messageParser(IMessageParser messageParser) {
             this.messageParser = messageParser;
             return this;
         }
 
-        public ServerBuilder requestFactory(RequestFactory requestFactory){
+        public ServerBuilder requestFactory(RequestFactory requestFactory) {
             this.requestFactory = requestFactory;
             return this;
         }
 
-        public ServerBuilder responseFactory(ResponseFactory responseFactory){
+        public ServerBuilder responseFactory(ResponseFactory responseFactory) {
             this.responseFactory = responseFactory;
             return this;
         }
 
-        public ServerBuilder communicationApi(IConcurrentCommunicationApi communicationApi){
+        public ServerBuilder communicationApi(IConcurrentCommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
+            return this;
+        }
+
+        public ServerBuilder cacheSize(int cacheSize) {
+            this.cacheSize = cacheSize;
             return this;
         }
 

@@ -9,7 +9,13 @@ import weloveclouds.server.models.requests.IRequest;
  */
 public class RequestFactory {
 
-    synchronized public IRequest createRequestFromReceivedMessage(){
-        return null;
+    synchronized public IRequest createRequestFromReceivedMessage(ParsedMessage parsedMessage){
+        IRequest request = null;
+
+        switch(parsedMessage.getStatusType()){
+
+        }
+
+        return request;
     }
 }

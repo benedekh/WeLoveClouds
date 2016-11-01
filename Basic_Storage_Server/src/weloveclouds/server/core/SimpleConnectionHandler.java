@@ -1,19 +1,21 @@
 package weloveclouds.server.core;
 
-import jdk.nashorn.internal.ir.RuntimeNode;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
-import weloveclouds.server.models.Connection;
+import weloveclouds.communication.models.Connection;
+import weloveclouds.server.models.ParsedMessage;
 import weloveclouds.server.models.RequestFactory;
 import weloveclouds.server.models.ResponseFactory;
-import weloveclouds.server.parsers.IParser;
+import weloveclouds.server.parsers.IMessageParser;
 
 /**
  * Created by Benoit on 2016-10-29.
  */
 public class SimpleConnectionHandler extends Thread implements IConnectionHandler{
     private IConcurrentCommunicationApi communicationApi;
+    private RequestFactory requestFactory;
+    private ResponseFactory responseFactory;
     private Connection connection;
-    private IParser messageParser;
+    private IMessageParser messageParser;
 
     private SimpleConnectionHandler(SimpleConnectionBuilder simpleConnectionBuilder) {
         this.communicationApi = simpleConnectionBuilder.communicationApi;
@@ -28,7 +30,10 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
 
     @Override
     public void run() {
-
+        while(connection.isConnected()) {
+            ParsedMessage parsedMessage = messageParser.parse(communicationApi.receive(connection));
+            requestFactory.createRequestFromReceivedMessage(parsedMessage).execute();
+        }
     }
 
 
@@ -37,14 +42,14 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
         private RequestFactory requestFactory;
         private ResponseFactory responseFactory;
         private Connection connection;
-        private IParser messageParser;
+        private IMessageParser messageParser;
 
         public SimpleConnectionBuilder connection(Connection connection){
             this.connection = connection;
             return this;
         }
 
-        public SimpleConnectionBuilder messageParser(IParser messageParser){
+        public SimpleConnectionBuilder messageParser(IMessageParser messageParser){
             this.messageParser = messageParser;
             return this;
         }
