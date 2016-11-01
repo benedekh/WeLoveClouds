@@ -6,7 +6,8 @@ import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import weloveclouds.kvstore.KVEntry;
+import org.apache.log4j.Logger;
+
 import weloveclouds.kvstore.KeyFrequency;
 import weloveclouds.server.store.exceptions.StorageException;
 
@@ -14,8 +15,11 @@ public class LFUStrategy implements DisplacementStrategy {
 
     private Map<String, KeyFrequency> keyFrequencyPairs;
 
+    private Logger logger;
+
     public LFUStrategy() {
         this.keyFrequencyPairs = new HashMap<>();
+        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -24,40 +28,40 @@ public class LFUStrategy implements DisplacementStrategy {
             // order by frequency, the least frequent will be the first
             SortedSet<KeyFrequency> sorted = new TreeSet<>(keyFrequencyPairs.values());
             KeyFrequency first = sorted.first();
-            return first.getKey();
+            String key = first.getKey();
+            remove(key);
+            return key;
         } catch (NoSuchElementException ex) {
             throw new StorageException("Store is empty so it cannot remove anything.");
         }
     }
 
     @Override
-    public void putEntry(KVEntry entry) throws StorageException {
+    public void put(String key) {
         try {
-            String key = entry.getKey();
             KeyFrequency keyFrequency = new KeyFrequency(key, 0);
             keyFrequencyPairs.put(key, keyFrequency);;
         } catch (NullPointerException ex) {
-            throw new StorageException("Entry cannot be null.");
+            logger.error("Key cannot be null for put.");
         }
     }
 
     @Override
-    public String getValue(String key) throws StorageException {
+    public void get(String key) {
         try {
             KeyFrequency keyFrequency = keyFrequencyPairs.get(key);
             keyFrequency.increaseFrequency();
-            return "";
         } catch (NullPointerException ex) {
-            throw new StorageException("Key cannot be null.");
+            logger.error("Key cannot be null for get.");
         }
     }
 
     @Override
-    public void removeEntry(String key) throws StorageException {
+    public void remove(String key) {
         try {
             keyFrequencyPairs.remove(key);
         } catch (NullPointerException ex) {
-            throw new StorageException("Key cannot be null.");
+            logger.error("Key cannot be null for remove.");
         }
     }
 

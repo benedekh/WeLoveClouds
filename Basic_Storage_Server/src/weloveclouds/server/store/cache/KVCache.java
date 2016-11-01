@@ -44,7 +44,7 @@ public class KVCache implements IKVStore, Observer {
 
             cache.put(key, value);
             currentSize++;
-            displacementStrategy.putEntry(entry);
+            displacementStrategy.put(key);
         } catch (NullPointerException ex) {
             throw new StorageException("Key or value is null.");
         } catch (IllegalArgumentException ex) {
@@ -60,7 +60,7 @@ public class KVCache implements IKVStore, Observer {
             if (value == null) {
                 throw new ValueNotFoundException(key);
             } else {
-                displacementStrategy.getValue(key);
+                displacementStrategy.get(key);
                 return value;
             }
         } catch (NullPointerException ex) {
@@ -73,11 +73,9 @@ public class KVCache implements IKVStore, Observer {
         try {
             cache.remove(key);
             currentSize--;
-            displacementStrategy.removeEntry(key);
+            displacementStrategy.remove(key);
         } catch (NullPointerException ex) {
             throw new StorageException("Key cannot be null.");
-        } catch (StorageException ex) {
-            // suppress the exception thrown by the underyling displacement strategy
         }
     }
 

@@ -4,15 +4,19 @@ import java.util.ArrayDeque;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
-import weloveclouds.kvstore.KVEntry;
+import org.apache.log4j.Logger;
+
 import weloveclouds.server.store.exceptions.StorageException;
 
 public class FIFOStrategy implements DisplacementStrategy {
 
     private Queue<String> fifo;
 
+    private Logger logger;
+
     public FIFOStrategy() {
         this.fifo = new ArrayDeque<>();
+        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -25,26 +29,25 @@ public class FIFOStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public void putEntry(KVEntry entry) throws StorageException {
+    public void put(String key){
         try {
-            fifo.add(entry.getKey());
+            fifo.add(key);
         } catch (NullPointerException ex) {
-            throw new StorageException("Entry cannot be null.");
+            logger.error("Key cannot be null for put.");
         }
     }
 
     @Override
-    public String getValue(String key) throws StorageException {
+    public void get(String key){
         // FIFO strategy does not update anything
-        return "";
     }
 
     @Override
-    public void removeEntry(String key) throws StorageException {
+    public void remove(String key) {
         try {
             fifo.remove(key);
         } catch (NullPointerException ex) {
-            throw new StorageException("Key cannot be null.");
+            logger.error("Key cannot be null for remove.");
         }
     }
 

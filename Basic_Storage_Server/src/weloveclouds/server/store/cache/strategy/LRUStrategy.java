@@ -4,15 +4,19 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.NoSuchElementException;
 
-import weloveclouds.kvstore.KVEntry;
+import org.apache.log4j.Logger;
+
 import weloveclouds.server.store.exceptions.StorageException;
 
 public class LRUStrategy implements DisplacementStrategy {
 
     private Deque<String> recentKeys;
 
+    private Logger logger;
+
     public LRUStrategy() {
         this.recentKeys = new ArrayDeque<>();
+        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -26,29 +30,32 @@ public class LRUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public void putEntry(KVEntry entry) throws StorageException {
+    public void put(String key) {
         try {
-            recentKeys.addFirst(entry.getKey());
+            recentKeys.addFirst(key);
         } catch (NullPointerException ex) {
-            throw new StorageException("Entry cannot be null.");
+            logger.error("Key cannot be null for put.");
         }
     }
 
     @Override
-    public String getValue(String key) throws StorageException {
-        // move the element to the head of the queue
-        // because it was most recently used
-        recentKeys.remove(key);
-        recentKeys.addFirst(key);
-        return "";
+    public void get(String key) {
+        try {
+            // move the element to the head of the queue
+            // because it was most recently used
+            recentKeys.remove(key);
+            recentKeys.addFirst(key);
+        } catch (NullPointerException ex) {
+            logger.error("Key cannot be null for get.");
+        }
     }
 
     @Override
-    public void removeEntry(String key) throws StorageException {
+    public void remove(String key) {
         try {
             recentKeys.remove(key);
         } catch (NullPointerException ex) {
-            throw new StorageException("Key cannot be null.");
+            logger.error("Key cannot be null for remove.");
         }
     }
 
