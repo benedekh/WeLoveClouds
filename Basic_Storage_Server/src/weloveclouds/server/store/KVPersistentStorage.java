@@ -118,6 +118,12 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                     "File for key cannot be removed from persistent storage due to permission problems.");
         }
     }
+    
+    @Override
+    public void notifyObservers(Object object){
+        setChanged();
+        super.notifyObservers(object);
+    }
 
     private void initializePaths() {
         for (File file : filterFilesInRootPath()) {

@@ -62,9 +62,11 @@ public class LRUStrategy implements DisplacementStrategy {
     @Override
     public synchronized void remove(String key) {
         try {
-            recentKeys.remove(key);
-            logger.debug(
-                    CustomStringJoiner.join(" ", key, "is removed from the LRU strategy store."));
+            boolean isRemoved = recentKeys.remove(key);
+            if (isRemoved) {
+                logger.debug(CustomStringJoiner.join(" ", key,
+                        "is removed from the LRU strategy store."));
+            }
         } catch (NullPointerException ex) {
             logger.error("Key cannot be null for remove in LRU strategy.");
         }
