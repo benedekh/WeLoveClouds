@@ -14,6 +14,8 @@ import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
+import weloveclouds.communication.api.v1.ICommunicationApi;
+import weloveclouds.communication.api.v1.KVCommunicationApiV1;
 import weloveclouds.communication.services.CommunicationService;
 
 
@@ -31,9 +33,10 @@ public class KVClient {
      */
     public static void main(String[] args) {
         initializeLogging();
-
-        CommandFactory commandFactory = new CommandFactory(
-                new CommunicationApiV1(new CommunicationService(new SocketFactory())));
+        ICommunicationApi serverCommunication =
+                new CommunicationApiV1(new CommunicationService(new SocketFactory()));
+        CommandFactory commandFactory =
+                new CommandFactory(new KVCommunicationApiV1(serverCommunication));
         Client client = new Client(System.in, commandFactory);
         client.run();
     }

@@ -14,8 +14,8 @@ import weloveclouds.client.utils.CustomStringJoiner;
  * @author Benedek
  */
 public enum Command {
-    CONNECT("connect"), DISCONNECT("disconnect"), SEND("send"), LOGLEVEL("logLevel"), HELP(
-            "help"), QUIT("quit"), DEFAULT("default");
+    CONNECT("connect"), DISCONNECT("disconnect"), PUT("put"), GET("get"), LOGLEVEL(
+            "logLevel"), HELP("help"), QUIT("quit"), DEFAULT("default");
 
     private static final Logger LOGGER = Logger.getLogger(Command.class);
 
