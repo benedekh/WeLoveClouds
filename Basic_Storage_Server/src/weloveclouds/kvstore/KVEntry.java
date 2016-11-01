@@ -9,6 +9,11 @@ public class KVEntry implements Serializable {
     private String key;
     private String value;
 
+    public KVEntry() {
+        this.key = null;
+        this.value = null;
+    }
+
     public KVEntry(String key, String value) {
         this.key = key;
         this.value = value;
