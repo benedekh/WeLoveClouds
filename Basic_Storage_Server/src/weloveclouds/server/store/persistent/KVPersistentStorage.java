@@ -21,11 +21,11 @@ import java.util.Observable;
 import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.KVEntry;
-import weloveclouds.server.store.IKVStore;
+import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 
-public class KVPersistentStorage extends Observable implements IKVStore {
+public class KVPersistentStorage extends Observable implements IDataAccessService {
 
     private static final String FILE_EXTENSION = "ser";
 

@@ -1,14 +1,13 @@
 package weloveclouds.server.core;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 
-import weloveclouds.client.models.commands.AbstractCommand;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.server.models.RequestFactory;
 import weloveclouds.server.models.ResponseFactory;
 import weloveclouds.server.parsers.IMessageParser;
+import weloveclouds.server.services.IDataAccessService;
 
 import static weloveclouds.server.core.ServerStatus.*;
 
@@ -20,6 +19,7 @@ public class Server extends AbstractServer {
     private RequestFactory requestFactory;
     private ResponseFactory responseFactory;
     private IMessageParser messageParser;
+    private IDataAccessService dataAccessService;
 
     private Server(ServerBuilder serverBuilder) throws IOException {
         super(serverBuilder.serverSocketFactory, serverBuilder.port);
@@ -27,6 +27,7 @@ public class Server extends AbstractServer {
         this.requestFactory = serverBuilder.requestFactory;
         this.responseFactory = serverBuilder.responseFactory;
         this.messageParser = serverBuilder.messageParser;
+        this.dataAccessService = serverBuilder.dataAccessService;
     }
 
     @Override
@@ -55,8 +56,8 @@ public class Server extends AbstractServer {
         private RequestFactory requestFactory;
         private ResponseFactory responseFactory;
         private IMessageParser messageParser;
+        private IDataAccessService dataAccessService;
         private int port;
-        private int cacheSize;
 
         public ServerBuilder serverSocketFactory(ServerSocketFactory serverSocketFactory) {
             this.serverSocketFactory = serverSocketFactory;
@@ -88,8 +89,8 @@ public class Server extends AbstractServer {
             return this;
         }
 
-        public ServerBuilder cacheSize(int cacheSize) {
-            this.cacheSize = cacheSize;
+        public ServerBuilder dataAccessService(IDataAccessService dataAccessService){
+            this.dataAccessService = dataAccessService;
             return this;
         }
 

@@ -8,12 +8,12 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.KVEntry;
-import weloveclouds.server.store.IKVStore;
+import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 
-public class KVCache implements IKVStore, Observer {
+public class KVCache implements IDataAccessService, Observer {
 
     private Map<String, String> cache;
     private int currentSize;

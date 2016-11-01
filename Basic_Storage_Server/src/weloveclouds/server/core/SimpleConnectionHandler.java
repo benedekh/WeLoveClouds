@@ -7,6 +7,7 @@ import weloveclouds.server.models.RequestFactory;
 import weloveclouds.server.models.ResponseFactory;
 import weloveclouds.server.models.responses.IResponse;
 import weloveclouds.server.parsers.IMessageParser;
+import weloveclouds.server.services.IDataAccessService;
 
 /**
  * Created by Benoit on 2016-10-29.

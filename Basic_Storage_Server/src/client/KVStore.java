@@ -8,7 +8,7 @@ public class KVStore implements IKVServerApi {
 
 	
 	/**
-	 * Initialize KVStore with address and port of KVServer
+	 * Initialize DataAccessService with address and port of KVServer
 	 * @param address the address of the KVServer
 	 * @param port the port of the KVServer
 	 */
