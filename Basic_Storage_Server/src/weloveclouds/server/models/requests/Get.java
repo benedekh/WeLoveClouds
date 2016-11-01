@@ -1,11 +1,11 @@
 package weloveclouds.server.models.requests;
 
-import weloveclouds.kvstore.KVMessage;
+import static weloveclouds.kvstore.models.IKVMessage.StatusType.GET_ERROR;
+import static weloveclouds.kvstore.models.IKVMessage.StatusType.GET_SUCCESS;
+
+import weloveclouds.kvstore.models.KVMessage;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
-
-import static weloveclouds.kvstore.IKVMessage.StatusType.GET_ERROR;
-import static weloveclouds.kvstore.IKVMessage.StatusType.GET_SUCCESS;
 
 /**
  * Created by Benoit on 2016-10-31.

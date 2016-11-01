@@ -1,7 +1,5 @@
 package weloveclouds.communication.api.v1;
 
-import java.net.Socket;
-
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.services.IConcurrentCommunicationService;

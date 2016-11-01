@@ -1,6 +1,6 @@
 package weloveclouds.server.services;
 
-import weloveclouds.kvstore.KVEntry;
+import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 

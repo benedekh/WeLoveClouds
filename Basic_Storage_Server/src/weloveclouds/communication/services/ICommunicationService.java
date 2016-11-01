@@ -14,13 +14,11 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 public interface ICommunicationService {
     boolean isConnected();
 
-    void connectTo(ServerConnectionInfo remoteServer)
-            throws IOException, AlreadyConnectedException;
+    void connectTo(ServerConnectionInfo remoteServer) throws IOException, AlreadyConnectedException;
 
     void disconnect() throws IOException, AlreadyDisconnectedException;
 
-    void send(byte[] content) throws IOException,
-            UnableToSendContentToServerException;
+    void send(byte[] content) throws IOException, UnableToSendContentToServerException;
 
     byte[] receive() throws IOException, ClientNotConnectedException;
 }

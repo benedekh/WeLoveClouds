@@ -1,6 +1,6 @@
 package weloveclouds.server.models.requests;
 
-import weloveclouds.kvstore.KVMessage;
+import weloveclouds.kvstore.models.KVMessage;
 
 /**
  * Created by Benoit on 2016-10-31.

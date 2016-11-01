@@ -44,7 +44,7 @@ public class UserInputReader implements AutoCloseable {
         try {
             inputReader.close();
         } catch (IOException ex) {
-            logger.error(ex.getMessage());
+            logger.error(ex);
         }
     }
 

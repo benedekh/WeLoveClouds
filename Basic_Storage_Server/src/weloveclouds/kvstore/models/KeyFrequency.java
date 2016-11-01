@@ -1,4 +1,6 @@
-package weloveclouds.kvstore;
+package weloveclouds.kvstore.models;
+
+import weloveclouds.client.utils.CustomStringJoiner;
 
 public class KeyFrequency implements Comparable<KeyFrequency> {
 
@@ -13,8 +15,8 @@ public class KeyFrequency implements Comparable<KeyFrequency> {
     public void increaseFrequency() {
         frequency += 1;
     }
-    
-    public String getKey(){
+
+    public String getKey() {
         return key;
     }
 
@@ -62,6 +64,10 @@ public class KeyFrequency implements Comparable<KeyFrequency> {
         }
     }
 
-
+    @Override
+    public String toString() {
+        return CustomStringJoiner.join(" ", "{", key, ": frequency ->", String.valueOf(frequency),
+                "}");
+    }
 
 }

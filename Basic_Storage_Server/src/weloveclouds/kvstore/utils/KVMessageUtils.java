@@ -1,7 +1,9 @@
-package weloveclouds.kvstore;
+package weloveclouds.kvstore.utils;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
-import weloveclouds.kvstore.IKVMessage.StatusType;
+
+import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.kvstore.models.IKVMessage.StatusType;
 
 
 /**

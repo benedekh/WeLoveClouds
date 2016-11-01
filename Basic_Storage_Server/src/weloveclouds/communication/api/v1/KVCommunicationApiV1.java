@@ -14,12 +14,12 @@ import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
-import weloveclouds.kvstore.IKVMessage;
-import weloveclouds.kvstore.IKVMessage.StatusType;
-import weloveclouds.kvstore.KVMessage;
+import weloveclouds.kvstore.models.IKVMessage;
+import weloveclouds.kvstore.models.IKVMessage.StatusType;
+import weloveclouds.kvstore.models.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageDeserializer;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.SerializedKVMessage;
+import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
 
 public class KVCommunicationApiV1 implements IKVCommunicationApi {
 
@@ -44,12 +44,13 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
             this.remoteServer = new ServerConnectionInfo.ServerConnectionInfoBuilder()
                     .ipAddress(address).port(port).build();
         } catch (UnknownHostException ex) {
-            logger.error(ex.getMessage());
+            logger.error(ex);
         }
     }
 
-    public KVCommunicationApiV1(ICommunicationApi communicationApi, IMessageSerializer
-            messageSerializer, IMessageDeserializer messageDeserializer) {
+    public KVCommunicationApiV1(ICommunicationApi communicationApi,
+            IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer,
+            IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer) {
         this.serverCommunication = communicationApi;
         this.messageSerializer = messageSerializer;
         this.messageDeserializer = messageDeserializer;
@@ -66,7 +67,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
         try {
             serverCommunication.disconnect();
         } catch (UnableToDisconnectException ex) {
-            logger.error(ex.getMessage());
+            logger.error(ex);
         }
     }
 

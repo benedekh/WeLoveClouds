@@ -10,14 +10,14 @@ import weloveclouds.kvstore.serialization.KVMessageDeserializer;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerSocketFactory;
-import weloveclouds.server.models.RequestFactory;
+import weloveclouds.server.models.requests.RequestFactory;
 import weloveclouds.server.services.DataAccessService;
-import weloveclouds.server.store.cache.KVCache;
+import weloveclouds.server.store.KVCache;
+import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.FIFOStrategy;
 import weloveclouds.server.store.cache.strategy.LFUStrategy;
 import weloveclouds.server.store.cache.strategy.LRUStrategy;
-import weloveclouds.server.store.persistent.KVPersistentStorage;
 
 public class KVServer {
     private static int SERVER_PORT;

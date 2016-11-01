@@ -1,4 +1,4 @@
-package weloveclouds.kvstore;
+package weloveclouds.kvstore.models;
 
 public class KVMessage implements IKVMessage {
 

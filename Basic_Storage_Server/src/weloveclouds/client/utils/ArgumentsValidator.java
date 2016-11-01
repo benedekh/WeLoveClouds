@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.commands.LogLevel;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.serialization.SerializedKVMessage;
+import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
 
 /**
  * Validates the arguments of the different commands.

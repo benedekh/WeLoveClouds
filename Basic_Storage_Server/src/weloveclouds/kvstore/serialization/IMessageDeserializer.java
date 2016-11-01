@@ -1,6 +1,5 @@
 package weloveclouds.kvstore.serialization;
 
-import weloveclouds.kvstore.KVMessage;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 
 /**

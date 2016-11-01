@@ -1,8 +1,6 @@
 package weloveclouds.communication.services;
 
 
-import java.net.Socket;
-
 import weloveclouds.communication.models.Connection;
 
 /**

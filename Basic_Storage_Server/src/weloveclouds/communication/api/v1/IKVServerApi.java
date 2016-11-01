@@ -1,6 +1,6 @@
-package weloveclouds.kvstore.api;
+package weloveclouds.communication.api.v1;
 
-import weloveclouds.kvstore.IKVMessage;
+import weloveclouds.kvstore.models.IKVMessage;
 
 public interface IKVServerApi {
 

@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
-import weloveclouds.kvstore.IKVMessage;
+import weloveclouds.kvstore.models.IKVMessage;
 
 public class Put extends AbstractKVCommunicationApiCommand {
 

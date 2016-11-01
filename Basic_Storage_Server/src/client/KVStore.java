@@ -1,8 +1,8 @@
 package client;
 
 
-import weloveclouds.kvstore.IKVMessage;
-import weloveclouds.kvstore.api.IKVServerApi;
+import weloveclouds.communication.api.v1.IKVServerApi;
+import weloveclouds.kvstore.models.IKVMessage;
 
 public class KVStore implements IKVServerApi {
 

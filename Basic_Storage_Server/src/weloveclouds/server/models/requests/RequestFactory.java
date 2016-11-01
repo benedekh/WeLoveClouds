@@ -1,10 +1,6 @@
-package weloveclouds.server.models;
+package weloveclouds.server.models.requests;
 
-import weloveclouds.kvstore.KVMessage;
-import weloveclouds.server.models.requests.Delete;
-import weloveclouds.server.models.requests.Get;
-import weloveclouds.server.models.requests.IRequest;
-import weloveclouds.server.models.requests.Put;
+import weloveclouds.kvstore.models.KVMessage;
 import weloveclouds.server.services.IDataAccessService;
 
 /**
@@ -25,10 +21,13 @@ public class RequestFactory {
                 request = new Get(dataAccessService, receivedMessage.getKey());
                 break;
             case PUT:
-                request = new Put(dataAccessService, receivedMessage.getKey(), receivedMessage.getValue());
+                request = new Put(dataAccessService, receivedMessage.getKey(),
+                        receivedMessage.getValue());
                 break;
             case DELETE:
                 request = new Delete(dataAccessService, receivedMessage.getKey());
+                break;
+            default: // TODO log unknown command
                 break;
         }
 

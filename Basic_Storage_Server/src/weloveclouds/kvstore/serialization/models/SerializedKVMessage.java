@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.serialization;
+package weloveclouds.kvstore.serialization.models;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
