@@ -1,6 +1,10 @@
 package weloveclouds.communication.services;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import weloveclouds.communication.models.Connection;
 
 /**
@@ -9,17 +13,25 @@ import weloveclouds.communication.models.Connection;
 public class ConcurrentCommunicationService implements IConcurrentCommunicationService {
 
     @Override
-    synchronized public boolean isConnected(Connection connection) {
-        return false;
+    synchronized public void send(byte[] message, Connection connection) throws IOException {
+        OutputStream outputStream = connection.getOutputStream();
+        outputStream.write(message);
+        outputStream.flush();
     }
 
     @Override
-    synchronized public void send(byte[] message, Connection connection) {
+    synchronized public byte[] receiveFrom(Connection connection) throws IOException {
+        byte[] receivedData = null;
 
-    }
+        InputStream socketDataReader = connection.getInputStream();
 
-    @Override
-    synchronized public byte[] receiveFrom(Connection connection) {
-        return new byte[0];
+        while (receivedData == null) {
+            int availableBytes = socketDataReader.available();
+            if (availableBytes != 0) {
+                receivedData = new byte[availableBytes];
+                socketDataReader.read(receivedData);
+            }
+        }
+        return receivedData;
     }
 }
