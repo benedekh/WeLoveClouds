@@ -22,7 +22,8 @@ public class ArgumentsValidatorTest {
     private static final String INVALID_NETWORK_PORT_UPPER_LIMIT = "70000";
     private static final String[] NULL_COMMAND_ARGUMENTS = null;
     private static final String[] NOT_NULL_COMMAND_ARGUMENT = {"args"};
-    private static final int SEND_MESSAGE_SIZZE_LIMIT_IN_BYTES = 128;
+    private static final int KEY_SIZE_LIMIT_IN_BYTES = 20;
+    private static final int VALUE_SIZE_LIMIT_IN_BYTES = 120 * 1000;
 
     @Before
     public void setUp() throws Exception {}
@@ -67,28 +68,73 @@ public class ArgumentsValidatorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfSendArgumentIsNull() {
-        ArgumentsValidator.validateSendArguments(null);
+    public void shouldThrowIfPutArgumentIsNull() {
+        ArgumentsValidator.validatePutArguments(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfSendMessageIsLongerThan128Bytes() throws Exception {
+    public void shouldThrowIfGetArgumentIsNull() {
+        ArgumentsValidator.validateGetArguments(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIfGetKeyIsLongerThan20Bytes() throws Exception {
         String sendMessage = "";
         String[] sendArgument =
-                {StringUtils.leftPad(sendMessage, SEND_MESSAGE_SIZZE_LIMIT_IN_BYTES + 1, "a")};
+                {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES + 1, "a")};
 
-        ArgumentsValidator.validateSendArguments(sendArgument);
+        ArgumentsValidator.validateGetArguments(sendArgument);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIfPutKeyIsLongerThan20Bytes() throws Exception {
+        String sendMessage = "";
+        String[] sendArgument =
+                {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES + 1, "a")};
+
+        ArgumentsValidator.validatePutArguments(sendArgument);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIfPutValueIsLongerThan120kBytes() throws Exception {
+        String sendMessage = "";
+        String[] sendArgument =
+                {StringUtils.leftPad(sendMessage, VALUE_SIZE_LIMIT_IN_BYTES + 1, "a")};
+
+        ArgumentsValidator.validatePutArguments(sendArgument);
     }
 
     @Test
-    public void shouldNotThrowIfSendMessageIs128BytesOrLower() {
+    public void shouldNotThrowIfGetKeyIs20BytesOrLower() {
         String sendMessage = "";
         String[] sizeLimitMessage =
-                {StringUtils.leftPad(sendMessage, SEND_MESSAGE_SIZZE_LIMIT_IN_BYTES, "a")};
+                {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES, "a")};
         String[] validMessage =
-                {StringUtils.leftPad(sendMessage, SEND_MESSAGE_SIZZE_LIMIT_IN_BYTES - 1, "a")};
-        ArgumentsValidator.validateSendArguments(sizeLimitMessage);
-        ArgumentsValidator.validateSendArguments(validMessage);
+                {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES - 1, "a")};
+        ArgumentsValidator.validateGetArguments(sizeLimitMessage);
+        ArgumentsValidator.validateGetArguments(validMessage);
+    }
+
+    @Test
+    public void shouldNotThrowIfPutKeyIs20BytesOrLower() {
+        String sendMessage = "";
+        String[] sizeLimitMessage =
+                {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES, "a")};
+        String[] validMessage =
+                {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES - 1, "a")};
+        ArgumentsValidator.validatePutArguments(sizeLimitMessage);
+        ArgumentsValidator.validatePutArguments(validMessage);
+    }
+
+    @Test
+    public void shouldNotThrowIfPutValueIs20BytesOrLower() {
+        String sendMessage = "";
+        String[] sizeLimitMessage =
+                {StringUtils.leftPad(sendMessage, VALUE_SIZE_LIMIT_IN_BYTES, "a")};
+        String[] validMessage =
+                {StringUtils.leftPad(sendMessage, VALUE_SIZE_LIMIT_IN_BYTES - 1, "a")};
+        ArgumentsValidator.validatePutArguments(sizeLimitMessage);
+        ArgumentsValidator.validatePutArguments(validMessage);
     }
 
     @Test(expected = IllegalArgumentException.class)

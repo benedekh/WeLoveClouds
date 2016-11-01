@@ -1,8 +1,6 @@
 package weloveclouds.client.models.commands;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.log4j.Logger;
 
@@ -39,14 +37,6 @@ public class Connect extends AbstractCommunicationApiCommand {
         try {
             logger.info("Executing connect command.");
             communicationApi.connectTo(remoteServer);
-            logger.info("Connection was successful. Receiving server welcome message.");
-
-            String response = new String(communicationApi.receive(), StandardCharsets.US_ASCII).replace("\r", "");
-            userOutputWriter.writeLine(response);
-            logger.debug(response);
-        } catch (IOException ex) {
-            logger.error(ex);
-            throw new ClientSideException(ex.getMessage(), ex);
         } finally {
             logger.info("Connect command execution finished.");
         }

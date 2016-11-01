@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.models.Command;
 import weloveclouds.client.models.ParsedUserInput;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.api.v1.ICommunicationApi;
+import weloveclouds.communication.api.v1.IKVCommunicationApi;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
@@ -17,14 +17,14 @@ import weloveclouds.communication.api.v1.ICommunicationApi;
  * @author Benoit
  */
 public class CommandFactory {
-    private ICommunicationApi communicationApi;
+    private IKVCommunicationApi communicationApi;
     private Logger logger;
 
     /**
      * @param communicationApi an instance for the communication module for those commands which
      *        need to communicate via the network
      */
-    public CommandFactory(ICommunicationApi communicationApi) {
+    public CommandFactory(IKVCommunicationApi communicationApi) {
         this.communicationApi = communicationApi;
         this.logger = Logger.getLogger(getClass());
     }
@@ -49,8 +49,11 @@ public class CommandFactory {
             case DISCONNECT:
                 recognizedCommand = new Disconnect(userInput.getArguments(), communicationApi);
                 break;
-            case SEND:
-                recognizedCommand = new Send(userInput.getArguments(), communicationApi);
+            case PUT:
+                recognizedCommand = new Put(userInput.getArguments(), communicationApi);
+                break;
+            case GET:
+                recognizedCommand = new Get(userInput.getArguments(), communicationApi);
                 break;
             case HELP:
                 recognizedCommand = new Help(userInput.getArguments());

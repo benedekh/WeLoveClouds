@@ -2,6 +2,7 @@ package weloveclouds.kvstore.serialization;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import weloveclouds.kvstore.IKVMessage.StatusType;
@@ -9,6 +10,8 @@ import weloveclouds.kvstore.KVMessage;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 
 public class SerializedKVMessage {
+
+    public static Charset MESSAGE_ENCODING = StandardCharsets.US_ASCII;
 
     private static String SEPARATOR = "-\r-";
 
@@ -27,7 +30,7 @@ public class SerializedKVMessage {
     }
 
     public byte[] toByteArray() {
-        return toString().getBytes(StandardCharsets.UTF_8);
+        return toString().getBytes(MESSAGE_ENCODING);
     }
 
     @Override
@@ -38,7 +41,7 @@ public class SerializedKVMessage {
     }
 
     public static SerializedKVMessage fromByteArray(byte[] array) throws DeserializationException {
-        String serialized = new String(array, StandardCharsets.UTF_8);
+        String serialized = new String(array, MESSAGE_ENCODING);
         String[] parts = serialized.split(SEPARATOR);
 
         if (parts.length < 3) {
