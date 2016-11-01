@@ -39,12 +39,12 @@ public class KVStore implements IKVStore {
         try {
             value = cache.getValue(key);
             logger.debug(CustomStringJoiner.join(" ", "Value", value, "for key", key,
-                    "is retireved from cache stored."));
+                    "is retireved from cache."));
         } catch (ValueNotFoundException ex) {
             value = persistentStorage.getValue(key);
             logger.debug(CustomStringJoiner.join(" ", "Value", value, "for key", key,
                     "is retireved from persistent storage."));
-            putEntry(new KVEntry(key, value));
+            cache.putEntry(new KVEntry(key, value));
         }
         return value;
     }

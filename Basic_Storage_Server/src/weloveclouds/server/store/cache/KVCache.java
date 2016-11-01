@@ -81,10 +81,12 @@ public class KVCache implements IKVStore, Observer {
     @Override
     public synchronized void removeEntry(String key) throws StorageException {
         try {
-            cache.remove(key);
-            currentSize--;
-            displacementStrategy.remove(key);
-            logger.debug(CustomStringJoiner.join(" ", key, "was removed from cache."));
+            String removed = cache.remove(key);
+            if (removed != null) {
+                currentSize--;
+                displacementStrategy.remove(key);
+                logger.debug(CustomStringJoiner.join(" ", key, "was removed from cache."));
+            }
         } catch (NullPointerException ex) {
             String errorMessage = "Key cannot be null to remove from cache.";
             logger.error(errorMessage);
