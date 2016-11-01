@@ -4,6 +4,7 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
@@ -90,6 +91,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
         try {
             connect();
         } catch (Exception ex) {
+            logger.error(ex);
             throw new UnableToConnectException(ex.getMessage());
         }
     }
@@ -110,10 +112,12 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
                 new KVMessage.KVMessageBuilder().status(messageType).key(key).value(value).build();
         byte[] rawMessage = new SerializedKVMessage(message).toByteArray();
         send(rawMessage);
+        logger.debug(CustomStringJoiner.join(" ", message.toString(), "is sent."));
     }
 
     private IKVMessage receiveMessage() throws Exception {
         SerializedKVMessage response = SerializedKVMessage.fromByteArray(receive());
+        logger.debug(CustomStringJoiner.join(" ", response.toString(), "is received."));
         return response.getMessage();
     }
 
