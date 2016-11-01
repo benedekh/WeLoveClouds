@@ -5,6 +5,7 @@ import weloveclouds.communication.models.Connection;
 import weloveclouds.server.models.ParsedMessage;
 import weloveclouds.server.models.RequestFactory;
 import weloveclouds.server.models.ResponseFactory;
+import weloveclouds.server.models.responses.IResponse;
 import weloveclouds.server.parsers.IMessageParser;
 
 /**
@@ -32,7 +33,9 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
     public void run() {
         while(connection.isConnected()) {
             ParsedMessage parsedMessage = messageParser.parse(communicationApi.receiveFrom(connection));
-            requestFactory.createRequestFromReceivedMessage(parsedMessage).execute();
+            IResponse response = requestFactory.createRequestFromReceivedMessage(parsedMessage)
+                    .execute();
+            communicationApi.send(response.getBytes(), connection);
         }
     }
 
