@@ -1,6 +1,7 @@
 package weloveclouds.client.utils;
 
-import java.nio.charset.StandardCharsets;
+import static weloveclouds.client.utils.CustomStringJoiner.join;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.commands.LogLevel;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.kvstore.serialization.SerializedKVMessage;
 
 /**
  * Validates the arguments of the different commands.
@@ -15,14 +17,20 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * @author Benoit, Benedek
  */
 public class ArgumentsValidator {
-    private static final String EMPTY_MESSAGE_ERROR_MESSAGE = "Message cannot be empty (null).";
-    private static final int SEND_MESSAGE_SIZE_LIMIT_IN_BYTES = 128;
+    private static final int KEY_SIZE_LIMIT_IN_BYTES = 20;
+    private static final int VALUE_SIZE_LIMIT_IN_BYTES = 120 * 1000;
+
     private static final int CONNECT_NUMBER_OF_ARGUMENTS = 2;
     private static final int LOG_LEVEL_NUMBER_OF_ARGUMENTS = 1;
+    private static final int GET_NUMBER_OF_ARGUMENTS = 1;
+    private static final int PUT_NUMBER_OF_ARGUMENTS = 1;
+
     private static final int LEVEL_INDEX = 0;
-    private static final int MESSAGE_INDEX = 0;
+    private static final int KEY_INDEX = 0;
+    private static final int VALUE_INDEX = 1;
     private static final int NETWORK_PORT_LOWER_LIMIT = 0;
     private static final int NETWORK_PORT_UPPER_LIMIT = 65536;
+
     private static List<String> logLevels =
             Arrays.asList("ALL", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF");
 
@@ -45,7 +53,7 @@ public class ArgumentsValidator {
                     "Command need arguments (<IP address> and <port>) only.");
         } else if (remoteServer.getPort() < NETWORK_PORT_LOWER_LIMIT
                 || remoteServer.getPort() > NETWORK_PORT_UPPER_LIMIT) {
-            String message = CustomStringJoiner.join(",",
+            String message = join(",",
                     "Port should be in the range [" + String.valueOf(NETWORK_PORT_LOWER_LIMIT),
                     String.valueOf(NETWORK_PORT_UPPER_LIMIT) + "].");
             LOGGER.warn("Connect command is invalid.");
@@ -53,27 +61,35 @@ public class ArgumentsValidator {
         }
     }
 
-    /**
-     * A send command is valid, if:<br>
-     * (1) the message (arguments) is not null, and <br>
-     * (2) its length is at most 128 kB.
-     * 
-     * @throws IllegalArgumentException if there is a validation error
-     */
-    public static void validateSendArguments(String[] arguments) throws IllegalArgumentException {
-        if (isNullOrEmpty(arguments)) {
-            LOGGER.warn("Send command is invalid.");
-            throw new IllegalArgumentException(EMPTY_MESSAGE_ERROR_MESSAGE);
+    public static void validatePutArguments(String[] arguments) throws IllegalArgumentException {
+        if (isNullOrEmpty(arguments) || arguments.length != PUT_NUMBER_OF_ARGUMENTS) {
+            LOGGER.warn("Put command is invalid.");
+            throw new IllegalArgumentException("Put command should have two arguments.");
         } else {
-            byte[] messageBytes = arguments[MESSAGE_INDEX].getBytes(StandardCharsets.US_ASCII);
-            if (messageBytes.length > SEND_MESSAGE_SIZE_LIMIT_IN_BYTES) {
-                LOGGER.warn("Send command is invalid.");
-                throw new IllegalArgumentException(
-                        CustomStringJoiner.join(" ", "Message size can be at most",
-                                String.valueOf(SEND_MESSAGE_SIZE_LIMIT_IN_BYTES), "kB"));
-            }
+            validateSize(arguments[KEY_INDEX], KEY_SIZE_LIMIT_IN_BYTES, "Put", "key");
+            validateSize(arguments[VALUE_INDEX], VALUE_SIZE_LIMIT_IN_BYTES, "Put", "value");
         }
     }
+
+    public static void validateGetArguments(String[] arguments) throws IllegalArgumentException {
+        if (isNullOrEmpty(arguments) || arguments.length != GET_NUMBER_OF_ARGUMENTS) {
+            LOGGER.warn("Get command is invalid.");
+            throw new IllegalArgumentException("Get command should have one argument.");
+        } else {
+            validateSize(arguments[KEY_INDEX], KEY_SIZE_LIMIT_IN_BYTES, "Get", "key");
+        }
+    }
+
+    private static void validateSize(String field, int limit, String commandName,
+            String fieldName) {
+        byte[] key = field.getBytes(SerializedKVMessage.MESSAGE_ENCODING);
+        if (key.length > limit) {
+            LOGGER.warn(join(" ", commandName, "command is invalid."));
+            throw new IllegalArgumentException(
+                    join(" ", "Max", fieldName, "size is", String.valueOf(limit), "bytes."));
+        }
+    }
+
 
     /**
      * A logLevel command is valid, if:<br>
@@ -85,7 +101,7 @@ public class ArgumentsValidator {
      */
     public static void validateLogLevelArguments(String[] arguments)
             throws IllegalArgumentException {
-        String message = CustomStringJoiner.join(" ",
+        String message = join(" ",
                 "Log level is not recognized. It should be capitalized and should be one of the followings:",
                 convertLevelsToString());
 
