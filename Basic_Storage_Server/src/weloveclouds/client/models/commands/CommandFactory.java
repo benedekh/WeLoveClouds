@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.models.Command;
 import weloveclouds.client.models.ParsedUserInput;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.api.v1.ICommunicationApi;
+import weloveclouds.communication.api.ICommunicationApi;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It

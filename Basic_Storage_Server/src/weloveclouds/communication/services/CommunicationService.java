@@ -21,8 +21,8 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * 
  * @author Benoit, Benedek
  */
-public class CommunicationService {
-    private Connection connectionToServer;
+public class CommunicationService implements ICommunicationService {
+    private Connection connectionToEndpoint;
     private Thread connectionShutdownHook;
 
     private SocketFactory socketFactory;
@@ -32,7 +32,7 @@ public class CommunicationService {
      * @param socketFactory a factory to create a socket for connection
      */
     public CommunicationService(SocketFactory socketFactory) {
-        this.connectionToServer = new Connection.ConnectionBuilder().build();
+        this.connectionToEndpoint = new Connection.ConnectionBuilder().build();
         this.socketFactory = socketFactory;
         this.logger = Logger.getLogger(getClass());
     }
@@ -40,8 +40,9 @@ public class CommunicationService {
     /**
      * True if the client is connected to a server.
      */
+    @Override
     public boolean isConnected() {
-        return connectionToServer.isConnected();
+        return connectionToEndpoint.isConnected();
     }
 
     /**
@@ -51,9 +52,10 @@ public class CommunicationService {
      * @throws IOException see #initializeConnection
      * @throws AlreadyConnectedException if the client was already conencted to a server
      */
+    @Override
     public void connectTo(ServerConnectionInfo remoteServer)
             throws IOException, AlreadyConnectedException {
-        if (!connectionToServer.isConnected()) {
+        if (!connectionToEndpoint.isConnected()) {
             try {
                 logger.debug("Removing previously registered shutdown hook.");
                 Runtime.getRuntime().removeShutdownHook(connectionShutdownHook);
@@ -74,14 +76,15 @@ public class CommunicationService {
      * 
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
-    private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
+    private void initializeConnection(ServerConnectionInfo remoteServer) throws
+            IOException {
         logger.debug(CustomStringJoiner.join(" ", "Trying to connec to", remoteServer.toString()));
-        connectionToServer = new Connection.ConnectionBuilder().remoteServer(remoteServer)
+        connectionToEndpoint = new Connection.ConnectionBuilder().remoteServer(remoteServer)
                 .socket(socketFactory.createTcpSocketFromInfo(remoteServer)).build();
 
         // create shutdown hook to automatically close the connection
         logger.debug("Creating shutdown hook for connection.");
-        connectionShutdownHook = new Thread(new ConnectionCloser(connectionToServer, logger));
+        connectionShutdownHook = new Thread(new ConnectionCloser(connectionToEndpoint, logger));
         logger.debug("Registering shutdown hook to JVM.");
         Runtime.getRuntime().addShutdownHook(connectionShutdownHook);
     }
@@ -92,10 +95,11 @@ public class CommunicationService {
      * @throws IOException see {@link Connection#kill()}
      * @throws AlreadyDisconnectedException if the client was not connected
      */
+    @Override
     public void disconnect() throws IOException, AlreadyDisconnectedException {
-        if (connectionToServer.isConnected()) {
+        if (connectionToEndpoint.isConnected()) {
             logger.debug("Closing the connection.");
-            connectionToServer.kill();
+            connectionToEndpoint.kill();
             logger.info("Disconnected from the server.");
         } else {
             String message = "The communication service is already disconnected";
@@ -111,10 +115,12 @@ public class CommunicationService {
      *         Connection#getOutputStream()}
      * @throws UnableToSendContentToServerException
      */
-    public void send(byte[] content) throws IOException, UnableToSendContentToServerException {
-        if (connectionToServer.isConnected()) {
+    @Override
+    synchronized public void send(byte[] content) throws IOException,
+            UnableToSendContentToServerException {
+        if (connectionToEndpoint.isConnected()) {
             logger.debug("Getting output stream from the connection.");
-            OutputStream outputStream = connectionToServer.getOutputStream();
+            OutputStream outputStream = connectionToEndpoint.getOutputStream();
             logger.debug("Sending message over the connection.");
             outputStream.write(content);
             outputStream.flush();
@@ -131,11 +137,12 @@ public class CommunicationService {
      * @throws IOException see {@link InputStream#read(byte[]) Connection#getInputStream()}
      * @throws ClientNotConnectedException if the client was not connected to the server
      */
+    @Override
     public byte[] receive() throws IOException, ClientNotConnectedException {
-        if (connectionToServer.isConnected()) {
+        if (connectionToEndpoint.isConnected()) {
             byte[] receivedData = null;
 
-            InputStream socketDataReader = connectionToServer.getInputStream();
+            InputStream socketDataReader = connectionToEndpoint.getInputStream();
 
             while (receivedData == null) {
                 int availableBytes = socketDataReader.available();

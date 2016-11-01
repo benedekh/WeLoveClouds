@@ -4,6 +4,6 @@ import weloveclouds.server.store.cache.KVCache;
 
 public interface DisplacementStrategy {
 
-    public void displaceEntryFromCache(KVCache cache);
+    void displaceEntryFromCache(KVCache cache);
 
 }

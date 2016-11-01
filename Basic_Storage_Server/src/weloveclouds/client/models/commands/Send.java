@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.api.v1.ICommunicationApi;
+import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**

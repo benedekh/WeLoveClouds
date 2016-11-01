@@ -1,4 +1,4 @@
-package weloveclouds.communication.api.v1;
+package weloveclouds.communication.api;
 
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
