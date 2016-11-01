@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.v1.ConcurrentCommunicationApiV1;
 import weloveclouds.communication.services.ConcurrentCommunicationService;
 import weloveclouds.kvstore.serialization.KVMessageDeserializer;
@@ -31,7 +32,7 @@ public class KVServer {
                     .serverSocketFactory(new ServerSocketFactory())
                     .requestFactory(new RequestFactory(new DataAccessService(new KVCache
                             (CACHE_SIZE, new FIFOStrategy()), new KVPersistentStorage(ROOTH_PATH))))
-                    .communicationApi(new ConcurrentCommunicationApiV1(new ConcurrentCommunicationService()))
+                    .communicationApiFactory(new CommunicationApiFactory())
                     .messageSerializer(new KVMessageSerializer())
                     .messageDeserializer(new KVMessageDeserializer())
                     .build()

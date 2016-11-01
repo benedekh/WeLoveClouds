@@ -1,5 +1,7 @@
 package weloveclouds.communication.api;
 
+import java.io.IOException;
+
 import weloveclouds.communication.models.Connection;
 
 /**
@@ -7,9 +9,7 @@ import weloveclouds.communication.models.Connection;
  */
 public interface IConcurrentCommunicationApi {
 
-    boolean isConnected(Connection connection);
+    void send(byte[] message, Connection connection) throws IOException;
 
-    void send(byte[] message, Connection connection);
-
-    byte[] receiveFrom(Connection connection);
+    byte[] receiveFrom(Connection connection) throws IOException;
 }

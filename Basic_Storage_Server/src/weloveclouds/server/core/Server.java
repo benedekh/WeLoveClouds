@@ -4,6 +4,7 @@ import static weloveclouds.server.core.ServerStatus.RUNNING;
 
 import java.io.IOException;
 
+import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.kvstore.models.KVMessage;
@@ -16,14 +17,14 @@ import weloveclouds.server.models.requests.RequestFactory;
  * Created by Benoit on 2016-10-29.
  */
 public class Server extends AbstractServer {
-    private IConcurrentCommunicationApi communicationApi;
+    private CommunicationApiFactory communicationApiFactory;
     private RequestFactory requestFactory;
     private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
     private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
 
     private Server(ServerBuilder serverBuilder) throws IOException {
         super(serverBuilder.serverSocketFactory, serverBuilder.port);
-        this.communicationApi = serverBuilder.communicationApi;
+        this.communicationApiFactory = serverBuilder.communicationApiFactory;
         this.requestFactory = serverBuilder.requestFactory;
         this.messageSerializer = serverBuilder.messageSerializer;
         this.messageDeserializer = serverBuilder.messageDeserializer;
@@ -37,7 +38,8 @@ public class Server extends AbstractServer {
                 new SimpleConnectionHandler.SimpleConnectionBuilder()
                         .connection(new Connection.ConnectionBuilder().socket(serverSocket.accept())
                                 .build())
-                        .requestFactory(requestFactory).communicationApi(communicationApi)
+                        .requestFactory(requestFactory)
+                        .communicationApi(communicationApiFactory.createConcurrentCommunicationApiV1())
                         .messageSerializer(messageSerializer)
                         .messageDeserializer(messageDeserializer).build().handleConnection();
             } catch (IOException e) {
@@ -47,7 +49,7 @@ public class Server extends AbstractServer {
     }
 
     public static class ServerBuilder {
-        private IConcurrentCommunicationApi communicationApi;
+        private CommunicationApiFactory communicationApiFactory;
         private ServerSocketFactory serverSocketFactory;
         private RequestFactory requestFactory;
         private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
@@ -69,8 +71,8 @@ public class Server extends AbstractServer {
             return this;
         }
 
-        public ServerBuilder communicationApi(IConcurrentCommunicationApi communicationApi) {
-            this.communicationApi = communicationApi;
+        public ServerBuilder communicationApiFactory(CommunicationApiFactory communicationApiFactory) {
+            this.communicationApiFactory = communicationApiFactory;
             return this;
         }
 

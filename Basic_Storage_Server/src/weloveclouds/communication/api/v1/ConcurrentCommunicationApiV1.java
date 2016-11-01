@@ -1,5 +1,7 @@
 package weloveclouds.communication.api.v1;
 
+import java.io.IOException;
+
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.services.IConcurrentCommunicationService;
@@ -16,17 +18,12 @@ public class ConcurrentCommunicationApiV1 implements IConcurrentCommunicationApi
     }
 
     @Override
-    public boolean isConnected(Connection connection) {
-        return communicationService.isConnected(connection);
-    }
-
-    @Override
-    public void send(byte[] message, Connection connection) {
+    public void send(byte[] message, Connection connection) throws IOException {
         communicationService.send(message, connection);
     }
 
     @Override
-    public byte[] receiveFrom(Connection connection) {
+    public byte[] receiveFrom(Connection connection) throws IOException {
         return communicationService.receiveFrom(connection);
     }
 }
