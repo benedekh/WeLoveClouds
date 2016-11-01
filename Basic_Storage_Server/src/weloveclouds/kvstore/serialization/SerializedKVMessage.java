@@ -14,6 +14,7 @@ public class SerializedKVMessage {
     public static Charset MESSAGE_ENCODING = StandardCharsets.US_ASCII;
 
     private static String SEPARATOR = "-\r-";
+    private static int NUMBER_OF_MESSAGE_PARTS = 3;
 
     private static int MESSAGE_STATUS_INDEX = 0;
     private static int MESSAGE_KEY_INDEX = 1;
@@ -44,7 +45,7 @@ public class SerializedKVMessage {
         String serialized = new String(array, MESSAGE_ENCODING);
         String[] parts = serialized.split(SEPARATOR);
 
-        if (parts.length < 3) {
+        if (parts.length < NUMBER_OF_MESSAGE_PARTS) {
             throw new DeserializationException("Message contains more than three parts.");
         }
 
