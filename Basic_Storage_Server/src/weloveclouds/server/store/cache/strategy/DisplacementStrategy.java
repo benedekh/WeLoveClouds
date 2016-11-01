@@ -1,9 +1,9 @@
 package weloveclouds.server.store.cache.strategy;
 
-import weloveclouds.server.store.cache.KVCache;
+import weloveclouds.server.store.IKVStoreNotification;
+import weloveclouds.server.store.exceptions.StorageException;
 
-public interface DisplacementStrategy {
+public interface DisplacementStrategy extends IKVStoreNotification {
 
-    public void displaceEntryFromCache(KVCache cache);
-
+    public String displaceKey() throws StorageException;
 }
