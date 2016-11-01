@@ -1,6 +1,8 @@
 package weloveclouds.server.core;
 
 
+import java.io.IOException;
+
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.kvstore.models.KVMessage;
@@ -42,7 +44,7 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
                 KVMessage response =
                         requestFactory.createRequestFromReceivedMessage(receivedMessage).execute();
                 communicationApi.send(messageSerializer.serialize(response).getBytes(), connection);
-            } catch (DeserializationException e) {
+            } catch (IOException | DeserializationException e) {
                 // LOG
             }
         }
