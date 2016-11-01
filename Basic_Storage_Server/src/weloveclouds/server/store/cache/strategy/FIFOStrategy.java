@@ -7,7 +7,7 @@ public class FIFOStrategy implements DisplacementStrategy {
     @Override
     public void displaceEntryFromCache(KVCache cache) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

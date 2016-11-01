@@ -3,8 +3,7 @@ package weloveclouds.server.models.responses;
 /**
  * Created by Benoit on 2016-11-01.
  */
-public class KVMessageWrapper implements IResponse{
-
+public class KVMessageWrapper implements IResponse {
 
 
     @Override

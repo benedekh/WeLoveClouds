@@ -13,7 +13,7 @@ import weloveclouds.communication.api.ICommunicationApi;
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
  * handles several commands (see {@link Command} for the possible commands) by dispatching the
  * command to its respective handler.
- * 
+ *
  * @author Benoit
  */
 public class CommandFactory {
@@ -22,7 +22,7 @@ public class CommandFactory {
 
     /**
      * @param communicationApi an instance for the communication module for those commands which
-     *        need to communicate via the network
+     *                         need to communicate via the network
      */
     public CommandFactory(ICommunicationApi communicationApi) {
         this.communicationApi = communicationApi;
@@ -32,7 +32,7 @@ public class CommandFactory {
     /**
      * Dispatches the command that is stored in the userInput to its respective handler, which
      * processes it.
-     * 
+     *
      * @param userInput which contains the command and its arguments
      * @return the type of the recognized command
      * @throws UnknownHostException see {@link Connect}

@@ -3,8 +3,8 @@ package weloveclouds.kvstore.communication.api;
 import weloveclouds.communication.services.CommunicationService;
 import weloveclouds.kvstore.IKVMessage;
 
-public class KVCommunicationApi implements KVCommInterface{
-    
+public class KVCommunicationApi implements KVCommInterface {
+
     private CommunicationService communicationService;
 
     public KVCommunicationApi(CommunicationService communicationService) {
@@ -14,13 +14,13 @@ public class KVCommunicationApi implements KVCommInterface{
     @Override
     public void connect() throws Exception {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void disconnect() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override

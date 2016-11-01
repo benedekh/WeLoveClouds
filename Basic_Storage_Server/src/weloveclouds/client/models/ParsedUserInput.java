@@ -2,7 +2,7 @@ package weloveclouds.client.models;
 
 /**
  * Represents a user input which is split into a {@link #command} and its {@link #arguments}.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class ParsedUserInput {
@@ -24,7 +24,7 @@ public class ParsedUserInput {
 
     /**
      * Builder pattern for creating a {@link ParsedUserInput} instance.
-     * 
+     *
      * @author Benedek
      */
     public static class ParsedUserInputBuilder {

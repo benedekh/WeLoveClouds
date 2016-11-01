@@ -7,7 +7,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
  * Stores the server connection information, the {@link #ipAddress} and the {@link #port}.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class ServerConnectionInfo {
@@ -34,7 +34,7 @@ public class ServerConnectionInfo {
 
     /**
      * Builder pattern for creating a {@link ServerConnectionInfo} instance.
-     * 
+     *
      * @author Benedek
      */
     public static class ServerConnectionInfoBuilder {

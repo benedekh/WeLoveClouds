@@ -4,7 +4,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * Client is not able to connect to the server.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class UnableToConnectException extends ClientSideException {

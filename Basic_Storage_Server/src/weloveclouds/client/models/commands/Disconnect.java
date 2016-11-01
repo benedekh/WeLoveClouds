@@ -11,7 +11,7 @@ import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
  * Disconnect command which means a disconnection from the server.
- * 
+ *
  * @author Benoit, Benedek, Hunton
  */
 public class Disconnect extends AbstractCommunicationApiCommand {

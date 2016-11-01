@@ -8,7 +8,7 @@ import java.net.ServerSocket;
  */
 public class ServerSocketFactory {
 
-    public ServerSocket createServerSocketFromPort(int port) throws IOException{
+    public ServerSocket createServerSocketFromPort(int port) throws IOException {
         return new ServerSocket(port);
     }
 }

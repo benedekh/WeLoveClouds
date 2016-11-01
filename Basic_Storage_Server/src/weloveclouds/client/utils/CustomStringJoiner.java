@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Joins several strings together efficiently.
- * 
+ *
  * @author Benedek
  */
 public abstract class CustomStringJoiner {

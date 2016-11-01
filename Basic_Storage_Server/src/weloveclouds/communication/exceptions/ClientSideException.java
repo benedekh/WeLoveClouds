@@ -2,7 +2,7 @@ package weloveclouds.communication.exceptions;
 
 /**
  * An exception which occured on the client side during the client-server communication.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class ClientSideException extends Exception {

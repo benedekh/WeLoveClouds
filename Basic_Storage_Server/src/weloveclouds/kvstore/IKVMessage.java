@@ -26,7 +26,7 @@ public interface IKVMessage {
 
     /**
      * @return a status string that is used to identify request types, response types and error
-     *         types associated to the message.
+     * types associated to the message.
      */
     public StatusType getStatus();
 

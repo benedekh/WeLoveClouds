@@ -14,7 +14,7 @@ import weloveclouds.communication.exceptions.ClientSideException;
 /**
  * The echo client itself. It processes (read, validate, execute) various commands that are received
  * from the user. For details on the the commands see {@link CommandFactory}.
- * 
+ *
  * @author Benoit, Benedek, Hunton
  */
 public class Client {
@@ -25,7 +25,7 @@ public class Client {
     private Logger logger;
 
     /**
-     * @param inputStream from which it receives command from the user
+     * @param inputStream    from which it receives command from the user
      * @param commandFactory that processes (validate and execute) the various commands
      */
     public Client(InputStream inputStream, CommandFactory commandFactory) {
@@ -40,7 +40,7 @@ public class Client {
      */
     public void run() {
         try (UserInputReader inputReader = new UserInputReader(inputStream);
-                UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
+             UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
             logger.info("Client started.");
             while (!Thread.currentThread().isInterrupted()) {
                 try {

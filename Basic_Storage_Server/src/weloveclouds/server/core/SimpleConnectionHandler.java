@@ -11,7 +11,7 @@ import weloveclouds.server.parsers.IMessageParser;
 /**
  * Created by Benoit on 2016-10-29.
  */
-public class SimpleConnectionHandler extends Thread implements IConnectionHandler{
+public class SimpleConnectionHandler extends Thread implements IConnectionHandler {
     private IConcurrentCommunicationApi communicationApi;
     private RequestFactory requestFactory;
     private ResponseFactory responseFactory;
@@ -31,7 +31,7 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
 
     @Override
     public void run() {
-        while(connection.isConnected()) {
+        while (connection.isConnected()) {
             ParsedMessage parsedMessage = messageParser.parse(communicationApi.receiveFrom(connection));
             IResponse response = requestFactory.createRequestFromReceivedMessage(parsedMessage)
                     .execute();
@@ -40,39 +40,39 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
     }
 
 
-    public static class SimpleConnectionBuilder{
+    public static class SimpleConnectionBuilder {
         private IConcurrentCommunicationApi communicationApi;
         private RequestFactory requestFactory;
         private ResponseFactory responseFactory;
         private Connection connection;
         private IMessageParser messageParser;
 
-        public SimpleConnectionBuilder connection(Connection connection){
+        public SimpleConnectionBuilder connection(Connection connection) {
             this.connection = connection;
             return this;
         }
 
-        public SimpleConnectionBuilder messageParser(IMessageParser messageParser){
+        public SimpleConnectionBuilder messageParser(IMessageParser messageParser) {
             this.messageParser = messageParser;
             return this;
         }
 
-        public SimpleConnectionBuilder requestFactory(RequestFactory requestFactory){
+        public SimpleConnectionBuilder requestFactory(RequestFactory requestFactory) {
             this.requestFactory = requestFactory;
             return this;
         }
 
-        public SimpleConnectionBuilder responseFactory(ResponseFactory responseFactory){
+        public SimpleConnectionBuilder responseFactory(ResponseFactory responseFactory) {
             this.responseFactory = responseFactory;
             return this;
         }
 
-        public SimpleConnectionBuilder communicationApi(IConcurrentCommunicationApi communicationApi){
+        public SimpleConnectionBuilder communicationApi(IConcurrentCommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
             return this;
         }
 
-        public SimpleConnectionHandler build(){
+        public SimpleConnectionHandler build() {
             return new SimpleConnectionHandler(this);
         }
     }

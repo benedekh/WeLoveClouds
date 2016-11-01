@@ -2,7 +2,7 @@ package weloveclouds.communication.exceptions;
 
 /**
  * Client is already connected to a server.
- * 
+ *
  * @author Benedek
  */
 public class AlreadyConnectedException extends UnableToConnectException {

@@ -9,10 +9,10 @@ import weloveclouds.server.models.requests.IRequest;
  */
 public class RequestFactory {
 
-    synchronized public IRequest createRequestFromReceivedMessage(ParsedMessage parsedMessage){
+    synchronized public IRequest createRequestFromReceivedMessage(ParsedMessage parsedMessage) {
         IRequest request = null;
 
-        switch(parsedMessage.getStatusType()){
+        switch (parsedMessage.getStatusType()) {
 
         }
 

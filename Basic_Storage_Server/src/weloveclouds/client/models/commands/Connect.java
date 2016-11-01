@@ -14,7 +14,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * Connect command which means a connection to the server.
- * 
+ *
  * @author Benoit, Benedek, Hunton
  */
 public class Connect extends AbstractCommunicationApiCommand {
@@ -22,8 +22,8 @@ public class Connect extends AbstractCommunicationApiCommand {
     private Logger logger;
 
     /**
-     * @param arguments contains the IP address (0. element of the array), and the port (1st element
-     *        of the array)
+     * @param arguments        contains the IP address (0. element of the array), and the port (1st
+     *                         element of the array)
      * @param communicationApi a reference to the communication module
      * @throws UnknownHostException see {@link UserInputParser#extractConnectionInfoFrom(String[])}
      */

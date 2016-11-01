@@ -16,7 +16,7 @@ import weloveclouds.communication.services.ICommunicationService;
 /**
  * First version implementation of the communication API. Simply forwards the method calls to the
  * {@link CommunicationService}.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class CommunicationApiV1 implements ICommunicationApi {

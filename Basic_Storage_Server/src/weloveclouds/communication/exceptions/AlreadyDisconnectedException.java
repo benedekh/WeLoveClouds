@@ -2,7 +2,7 @@ package weloveclouds.communication.exceptions;
 
 /**
  * Client is already disconnected from the server.
- * 
+ *
  * @author Benoit
  */
 public class AlreadyDisconnectedException extends ClientSideException {

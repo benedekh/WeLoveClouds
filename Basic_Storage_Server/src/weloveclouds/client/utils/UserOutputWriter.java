@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Abstracts the user output target so different output streams can be used.
- * 
+ *
  * @author Benedek
  */
 public class UserOutputWriter implements AutoCloseable {
@@ -35,7 +35,7 @@ public class UserOutputWriter implements AutoCloseable {
 
     /**
      * Writes a message to the output stream.
-     * 
+     *
      * @throws IOException see {@link BufferedWriter#write(String)}
      */
     public void writeLine(String message) throws IOException {
@@ -47,7 +47,7 @@ public class UserOutputWriter implements AutoCloseable {
 
     /**
      * Writes a single line prefix to the output stream.
-     * 
+     *
      * @throws IOException see {@link BufferedWriter#write(String)}
      */
     public void writePrefix() throws IOException {

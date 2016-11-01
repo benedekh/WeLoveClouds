@@ -8,7 +8,7 @@ import java.net.Socket;
 /**
  * Represents a connection to a server. It contains the {@link #remoteServer} connection information
  * and the {@link #socket} through which the client is connected to the server.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class Connection {
@@ -30,7 +30,7 @@ public class Connection {
 
     /**
      * Returns the input stream of the socket.
-     * 
+     *
      * @throws IOException see {@link Socket#getInputStream()}
      */
     public InputStream getInputStream() throws IOException {
@@ -39,7 +39,7 @@ public class Connection {
 
     /**
      * Returns the output stream of the socket.
-     * 
+     *
      * @throws IOException see {@link Socket#getOutputStream()}
      */
     public OutputStream getOutputStream() throws IOException {
@@ -48,7 +48,7 @@ public class Connection {
 
     /**
      * Closes the socket which is connected to the server.
-     * 
+     *
      * @throws IOException see {@link Socket#close()}
      */
     public void kill() throws IOException {
@@ -59,7 +59,7 @@ public class Connection {
 
     /**
      * Builder pattern for creating a {@link Connection} instance.
-     * 
+     *
      * @author Benedek
      */
     public static class ConnectionBuilder {

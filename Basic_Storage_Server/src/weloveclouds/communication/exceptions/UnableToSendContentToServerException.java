@@ -2,7 +2,7 @@ package weloveclouds.communication.exceptions;
 
 /**
  * Client is not able to send anything to the server.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class UnableToSendContentToServerException extends ClientSideException {

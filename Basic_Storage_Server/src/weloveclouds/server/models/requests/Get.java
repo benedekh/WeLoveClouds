@@ -5,7 +5,7 @@ import weloveclouds.kvstore.IKVMessage;
 /**
  * Created by Benoit on 2016-10-31.
  */
-public class Get implements IRequest<IKVMessage>{
+public class Get implements IRequest<IKVMessage> {
     @Override
     public IKVMessage execute() {
         return null;

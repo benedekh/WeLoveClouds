@@ -11,7 +11,7 @@ import weloveclouds.client.models.ParsedUserInput;
 
 /**
  * Abstracts the user input source so different input streams can be used as source.
- * 
+ *
  * @author Benedek
  */
 public class UserInputReader implements AutoCloseable {
@@ -30,7 +30,7 @@ public class UserInputReader implements AutoCloseable {
     /**
      * Reads the user's input through the {@link #inputReader} and parses it into a
      * {@link ParsedUserInput}.
-     * 
+     *
      * @throws IOException see {@link BufferedReader#readLine()}
      */
     public ParsedUserInput readAndParseUserInput() throws IOException {

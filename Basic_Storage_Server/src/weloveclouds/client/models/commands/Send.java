@@ -11,7 +11,7 @@ import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
  * Send command which represents sending a message to the server.
- * 
+ *
  * @author Benoit, Benedek, Hunton
  */
 public class Send extends AbstractCommunicationApiCommand {

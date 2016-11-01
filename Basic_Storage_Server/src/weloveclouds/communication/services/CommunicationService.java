@@ -18,7 +18,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * The communication module implementation which executes the network operations (connect,
  * disconnect, send, receiveFrom).
- * 
+ *
  * @author Benoit, Benedek
  */
 public class CommunicationService implements ICommunicationService {
@@ -48,8 +48,8 @@ public class CommunicationService implements ICommunicationService {
     /**
      * Connects to a server described by the connection information stored in the remoteServer
      * parameter.
-     * 
-     * @throws IOException see #initializeConnection
+     *
+     * @throws IOException               see #initializeConnection
      * @throws AlreadyConnectedException if the client was already conencted to a server
      */
     @Override
@@ -73,7 +73,7 @@ public class CommunicationService implements ICommunicationService {
 
     /**
      * See {@link #connectTo(ServerConnectionInfo)}
-     * 
+     *
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws
@@ -91,8 +91,8 @@ public class CommunicationService implements ICommunicationService {
 
     /**
      * Disconnects from the server.
-     * 
-     * @throws IOException see {@link Connection#kill()}
+     *
+     * @throws IOException                  see {@link Connection#kill()}
      * @throws AlreadyDisconnectedException if the client was not connected
      */
     @Override
@@ -110,10 +110,9 @@ public class CommunicationService implements ICommunicationService {
 
     /**
      * Sends a message as a byte array to the server.
-     * 
+     *
      * @throws IOException see {@link OutputStream#write(byte[]), OutputStream#flush(),
-     *         Connection#getOutputStream()}
-     * @throws UnableToSendContentToServerException
+     *                     Connection#getOutputStream()}
      */
     @Override
     synchronized public void send(byte[] content) throws IOException,
@@ -133,8 +132,8 @@ public class CommunicationService implements ICommunicationService {
 
     /**
      * Reads a message as a byte array from the server if any is available.
-     * 
-     * @throws IOException see {@link InputStream#read(byte[]) Connection#getInputStream()}
+     *
+     * @throws IOException                 see {@link InputStream#read(byte[]) Connection#getInputStream()}
      * @throws ClientNotConnectedException if the client was not connected to the server
      */
     @Override
@@ -164,7 +163,7 @@ public class CommunicationService implements ICommunicationService {
     /**
      * A shutdown runnable that closes the connection as soon as the runnable is executed and the
      * connection is open.
-     * 
+     *
      * @author Benedek
      */
     private static class ConnectionCloser implements Runnable {
