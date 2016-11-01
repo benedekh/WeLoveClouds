@@ -31,7 +31,7 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
     @Override
     public void run() {
         while(connection.isConnected()) {
-            ParsedMessage parsedMessage = messageParser.parse(communicationApi.receive(connection));
+            ParsedMessage parsedMessage = messageParser.parse(communicationApi.receiveFrom(connection));
             requestFactory.createRequestFromReceivedMessage(parsedMessage).execute();
         }
     }

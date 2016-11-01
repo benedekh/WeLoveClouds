@@ -48,7 +48,7 @@ public interface ICommunicationApi {
     /**
      * Receives data from the server over the network.
      * 
-     * @throws ClientNotConnectedException if any error occurs during the receive
+     * @throws ClientNotConnectedException if any error occurs during the receiveFrom
      * @throws ConnectionClosedException
      */
     byte[] receive() throws ClientNotConnectedException, ConnectionClosedException;

@@ -10,5 +10,5 @@ public interface IConcurrentCommunicationService {
 
     void send(byte[] message, Connection connection);
 
-    byte[] receive(Connection connection);
+    byte[] receiveFrom(Connection connection);
 }

@@ -17,7 +17,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * The communication module implementation which executes the network operations (connect,
- * disconnect, send, receive).
+ * disconnect, send, receiveFrom).
  * 
  * @author Benoit, Benedek
  */

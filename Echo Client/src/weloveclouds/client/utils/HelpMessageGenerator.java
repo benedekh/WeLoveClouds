@@ -15,7 +15,7 @@ public class HelpMessageGenerator {
         StringBuffer buffer = new StringBuffer();
         buffer.append("Echo Client\n");
         buffer.append("\n");
-        buffer.append("A simple tool to connect to an echo server and send and receive message from that, using the reliable TCP/IP protocol.\n");
+        buffer.append("A simple tool to connect to an echo server and send and receiveFrom message from that, using the reliable TCP/IP protocol.\n");
         buffer.append("\n");
         buffer.append("First, the user shall connect to an echo server by providing its IP address and port.\n");
         buffer.append("Second, the user shall send several messages after each other to the server. The server's echo responses will be displayed.\n");
