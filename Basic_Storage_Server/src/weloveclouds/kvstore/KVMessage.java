@@ -2,29 +2,57 @@ package weloveclouds.kvstore;
 
 public class KVMessage implements IKVMessage {
 
-    private String key;
-    private String value;
+    private KVEntry entry;
     private StatusType status;
 
-    public KVMessage(String key, String value, StatusType status) {
-        this.key = key;
-        this.value = value;
-        this.status = status;
+    protected KVMessage(KVMessageBuilder builder) {
+        this.status = builder.status;
+        this.entry = builder.entry;
     }
 
     @Override
     public String getKey() {
-        return key;
+        return entry.getKey();
     }
 
     @Override
     public String getValue() {
-        return value;
+        return entry.getValue();
     }
 
     @Override
     public StatusType getStatus() {
         return status;
+    }
+
+    public static class KVMessageBuilder {
+        private KVEntry entry;
+        private StatusType status;
+
+        public KVMessageBuilder status(StatusType status) {
+            this.status = status;
+            return this;
+        }
+
+        public KVMessageBuilder key(String key) {
+            if (entry == null) {
+                entry = new KVEntry();
+            }
+            entry.setKey(key);
+            return this;
+        }
+
+        public KVMessageBuilder value(String value) {
+            if (entry == null) {
+                entry = new KVEntry();
+            }
+            entry.setValue(value);
+            return this;
+        }
+
+        public KVMessage build() {
+            return new KVMessage(this);
+        }
     }
 
 }
