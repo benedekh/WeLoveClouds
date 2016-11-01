@@ -52,9 +52,11 @@ public class FIFOStrategy implements DisplacementStrategy {
     @Override
     public synchronized void remove(String key) {
         try {
-            fifo.remove(key);
-            logger.debug(
-                    CustomStringJoiner.join(" ", key, "is removed from the FIFO strategy store."));
+            boolean isRemoved = fifo.remove(key);
+            if (isRemoved) {
+                logger.debug(CustomStringJoiner.join(" ", key,
+                        "is removed from the FIFO strategy store."));
+            }
         } catch (NullPointerException ex) {
             logger.error("Key cannot be null for remove in FIFO strategy.");
         }

@@ -67,9 +67,11 @@ public class LFUStrategy implements DisplacementStrategy {
     @Override
     public synchronized void remove(String key) {
         try {
-            keyFrequencyPairs.remove(key);
-            logger.debug(
-                    CustomStringJoiner.join(" ", key, "is removed from the LFU strategy store."));
+            KeyFrequency removed = keyFrequencyPairs.remove(key);
+            if (removed != null) {
+                logger.debug(CustomStringJoiner.join(" ", key,
+                        "is removed from the LFU strategy store."));
+            }
         } catch (NullPointerException ex) {
             logger.error("Key cannot be null for remove in LFU strategy.");
         }
