@@ -70,7 +70,7 @@ public class KVEntry implements Serializable {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", key, value);
+        return CustomStringJoiner.join(" ", "{", key, "::", value, "}");
     }
 
 }

@@ -66,7 +66,8 @@ public class KeyFrequency implements Comparable<KeyFrequency> {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", key, String.valueOf(frequency));
+        return CustomStringJoiner.join(" ", "{", key, ": frequency ->", String.valueOf(frequency),
+                "}");
     }
 
 }
