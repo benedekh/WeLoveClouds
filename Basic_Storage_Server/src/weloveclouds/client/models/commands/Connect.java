@@ -6,13 +6,13 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.UserInputParser;
-import weloveclouds.communication.api.v1.ICommunicationApi;
+import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * Connect command which means a connection to the server.
- * 
+ *
  * @author Benoit, Benedek, Hunton
  */
 public class Connect extends AbstractCommunicationApiCommand {
@@ -20,8 +20,8 @@ public class Connect extends AbstractCommunicationApiCommand {
     private Logger logger;
 
     /**
-     * @param arguments contains the IP address (0. element of the array), and the port (1st element
-     *        of the array)
+     * @param arguments        contains the IP address (0. element of the array), and the port (1st
+     *                         element of the array)
      * @param communicationApi a reference to the communication module
      * @throws UnknownHostException see {@link UserInputParser#extractConnectionInfoFrom(String[])}
      */

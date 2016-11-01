@@ -46,7 +46,6 @@ public class LFUStrategy implements DisplacementStrategy {
         }
     }
 
-    @Override
     public synchronized void get(String key) {
         try {
             KeyFrequency keyFrequency = keyFrequencyPairs.get(key);

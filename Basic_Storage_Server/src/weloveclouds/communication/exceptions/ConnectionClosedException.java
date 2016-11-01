@@ -2,7 +2,7 @@ package weloveclouds.communication.exceptions;
 
 /**
  * The connection was already closed.
- * 
+ *
  * @author Benedek
  */
 public class ConnectionClosedException extends ClientSideException {

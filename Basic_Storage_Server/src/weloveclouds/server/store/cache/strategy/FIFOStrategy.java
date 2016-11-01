@@ -42,7 +42,6 @@ public class FIFOStrategy implements DisplacementStrategy {
         // FIFO strategy does not update anything
     }
 
-    @Override
     public synchronized void remove(String key) {
         try {
             fifo.remove(key);
@@ -50,5 +49,4 @@ public class FIFOStrategy implements DisplacementStrategy {
             logger.error("Key cannot be null for remove.");
         }
     }
-
 }

@@ -15,7 +15,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * Parses the raw user input into a processed user input so it can be handled by the application
  * more efficiently.
- * 
+ *
  * @author Benoit
  */
 public class UserInputParser {
@@ -30,7 +30,7 @@ public class UserInputParser {
 
     /**
      * Extracts the <command> and its <arguments> from the user input.
-     * 
+     *
      * @param userInput the raw content of the user input (raw line from the user input stream)
      * @return the extracted command and its arguments stored in one object
      */
@@ -60,10 +60,9 @@ public class UserInputParser {
      * Extracts the IP address and port from the arguments array. <br>
      * The IP address shall be the 0. element of the array.<br>
      * The port shall be the 1. element of the array.
-     * 
+     *
      * @return the IP address and port stored in one server conenction information object
-     * @throws UnknownHostException see
-     *         {@link ServerConnectionInfo.ServerConnectionInfoBuilder#ipAddress(java.net.InetAddress)}
+     * @throws UnknownHostException see {@link ServerConnectionInfo.ServerConnectionInfoBuilder#ipAddress(java.net.InetAddress)}
      */
     public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments)
             throws UnknownHostException {

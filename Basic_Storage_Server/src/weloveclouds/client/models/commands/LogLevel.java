@@ -12,7 +12,7 @@ import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
  * LogLevel command which means setting the log level to the respective value.
- * 
+ *
  * @author Benoit, Benedek, Hunton
  */
 public class LogLevel extends AbstractCommand {

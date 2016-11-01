@@ -13,10 +13,12 @@ import weloveclouds.client.core.Client;
 import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.SocketFactory;
+import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
-import weloveclouds.communication.api.v1.ICommunicationApi;
 import weloveclouds.communication.api.v1.KVCommunicationApiV1;
 import weloveclouds.communication.services.CommunicationService;
+import weloveclouds.kvstore.serialization.KVMessageDeserializer;
+import weloveclouds.kvstore.serialization.KVMessageSerializer;
 
 
 /**
@@ -36,7 +38,8 @@ public class KVClient {
         ICommunicationApi serverCommunication =
                 new CommunicationApiV1(new CommunicationService(new SocketFactory()));
         CommandFactory commandFactory =
-                new CommandFactory(new KVCommunicationApiV1(serverCommunication));
+                new CommandFactory(new KVCommunicationApiV1(serverCommunication, new
+                        KVMessageSerializer(), new KVMessageDeserializer()));
         Client client = new Client(System.in, commandFactory);
         client.run();
     }

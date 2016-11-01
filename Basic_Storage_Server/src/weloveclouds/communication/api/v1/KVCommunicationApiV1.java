@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.SocketFactory;
+import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
@@ -16,6 +17,8 @@ import weloveclouds.communication.services.CommunicationService;
 import weloveclouds.kvstore.IKVMessage;
 import weloveclouds.kvstore.IKVMessage.StatusType;
 import weloveclouds.kvstore.KVMessage;
+import weloveclouds.kvstore.serialization.IMessageDeserializer;
+import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.SerializedKVMessage;
 
 public class KVCommunicationApiV1 implements IKVCommunicationApi {
@@ -24,6 +27,8 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
 
     private ServerConnectionInfo remoteServer;
     private ICommunicationApi serverCommunication;
+    private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
+    private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
     private Logger logger;
 
     /**
@@ -43,8 +48,11 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
         }
     }
 
-    public KVCommunicationApiV1(ICommunicationApi serverCommunication) {
-        this.serverCommunication = serverCommunication;
+    public KVCommunicationApiV1(ICommunicationApi communicationApi, IMessageSerializer
+            messageSerializer, IMessageDeserializer messageDeserializer) {
+        this.serverCommunication = communicationApi;
+        this.messageSerializer = messageSerializer;
+        this.messageDeserializer = messageDeserializer;
         this.logger = Logger.getLogger(getClass());
     }
 
@@ -110,15 +118,15 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
             throws UnableToSendContentToServerException {
         KVMessage message =
                 new KVMessage.KVMessageBuilder().status(messageType).key(key).value(value).build();
-        byte[] rawMessage = new SerializedKVMessage(message).toByteArray();
+        byte[] rawMessage = messageSerializer.serialize(message).getBytes();
         send(rawMessage);
         logger.debug(CustomStringJoiner.join(" ", message.toString(), "is sent."));
     }
 
     private IKVMessage receiveMessage() throws Exception {
-        SerializedKVMessage response = SerializedKVMessage.fromByteArray(receive());
+        KVMessage response = messageDeserializer.deserialize(receive());
         logger.debug(CustomStringJoiner.join(" ", response.toString(), "is received."));
-        return response.getMessage();
+        return response;
     }
 
 }

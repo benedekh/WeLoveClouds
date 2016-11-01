@@ -10,7 +10,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 /**
  * Different commands which are handled by
  * {@link weloveclouds.client.models.commands.CommandFactory}.
- * 
+ *
  * @author Benedek
  */
 public enum Command {

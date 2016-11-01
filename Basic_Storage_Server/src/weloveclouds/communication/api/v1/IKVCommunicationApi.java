@@ -1,7 +1,8 @@
 package weloveclouds.communication.api.v1;
 
-import weloveclouds.kvstore.communication.api.KVCommInterface;
+import weloveclouds.communication.api.ICommunicationApi;
+import weloveclouds.kvstore.api.IKVServerApi;
 
-public interface IKVCommunicationApi extends KVCommInterface, ICommunicationApi {
+public interface IKVCommunicationApi extends IKVServerApi, ICommunicationApi {
 
 }

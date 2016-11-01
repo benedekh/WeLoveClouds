@@ -11,7 +11,7 @@ import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
  * Help command which means a printing the help of the application.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class Help extends AbstractCommand {

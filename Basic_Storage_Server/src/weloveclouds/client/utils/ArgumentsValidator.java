@@ -13,7 +13,7 @@ import weloveclouds.kvstore.serialization.SerializedKVMessage;
 
 /**
  * Validates the arguments of the different commands.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class ArgumentsValidator {
@@ -42,11 +42,11 @@ public class ArgumentsValidator {
      * (2) the 1st parameter of arguments i a valid port, and <br>
      * (3) these are the only arguments.<br>
      * The remoteServer already contains the IP address and the port.
-     * 
+     *
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateConnectArguments(String[] arguments,
-            ServerConnectionInfo remoteServer) throws IllegalArgumentException {
+                                                ServerConnectionInfo remoteServer) throws IllegalArgumentException {
         if (isNullOrEmpty(arguments) || arguments.length != CONNECT_NUMBER_OF_ARGUMENTS) {
             LOGGER.warn("Connect command is invalid.");
             throw new IllegalArgumentException(
@@ -60,6 +60,7 @@ public class ArgumentsValidator {
             throw new IllegalArgumentException(message);
         }
     }
+
 
     public static void validatePutArguments(String[] arguments) throws IllegalArgumentException {
         if (isNullOrEmpty(arguments) || arguments.length != PUT_NUMBER_OF_ARGUMENTS) {
@@ -95,7 +96,7 @@ public class ArgumentsValidator {
      * A logLevel command is valid, if:<br>
      * (1) the 0. element of the arguments array is a log level, and<br>
      * (2) the log level is one of those in {@link LogLevel}.
-     * 
+     *
      * @param arguments 0. element of the array contains the log level
      * @throws IllegalArgumentException if
      */
@@ -119,7 +120,7 @@ public class ArgumentsValidator {
 
     /**
      * A disconnect command is valid, if it does not contain any argument.
-     * 
+     *
      * @param arguments shall be empty
      * @throws IllegalArgumentException if there is a validation error
      */
@@ -133,7 +134,7 @@ public class ArgumentsValidator {
 
     /**
      * A help command is valid, if it does not contain any argument.
-     * 
+     *
      * @param arguments shall be empty
      * @throws IllegalArgumentException if there is a validation error
      */
@@ -146,7 +147,7 @@ public class ArgumentsValidator {
 
     /**
      * A disconnect quit is valid, if it does not contain any argument.
-     * 
+     *
      * @param arguments shall be empty
      * @throws IllegalArgumentException if there is a validation error
      */

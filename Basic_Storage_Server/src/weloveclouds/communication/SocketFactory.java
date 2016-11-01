@@ -10,7 +10,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * Factory to create sockets from connection information.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class SocketFactory {
@@ -24,7 +24,7 @@ public class SocketFactory {
     /**
      * Creates a TCP Socket using server connection information
      * ({@link ServerConnectionInfo#getIpAddress()} and {@link ServerConnectionInfo#getPort()}).
-     * 
+     *
      * @throws IOException see {@link Socket}
      */
     public Socket createTcpSocketFromInfo(ServerConnectionInfo connectionInfo) throws IOException {

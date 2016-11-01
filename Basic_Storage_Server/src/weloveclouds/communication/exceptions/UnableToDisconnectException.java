@@ -2,7 +2,7 @@ package weloveclouds.communication.exceptions;
 
 /**
  * Client is not able to disconnect from th server.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class UnableToDisconnectException extends ClientSideException {

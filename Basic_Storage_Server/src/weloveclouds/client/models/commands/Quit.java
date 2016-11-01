@@ -10,7 +10,7 @@ import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
  * Quit command which terminates the application.
- * 
+ *
  * @author Benoit, Hunton
  */
 public class Quit extends AbstractCommand {

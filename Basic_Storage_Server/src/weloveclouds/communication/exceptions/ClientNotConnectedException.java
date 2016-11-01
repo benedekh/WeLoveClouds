@@ -2,7 +2,7 @@ package weloveclouds.communication.exceptions;
 
 /**
  * Client is not connected to any server.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class ClientNotConnectedException extends UnableToSendContentToServerException {
