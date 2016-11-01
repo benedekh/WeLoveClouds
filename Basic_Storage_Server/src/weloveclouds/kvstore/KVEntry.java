@@ -2,6 +2,8 @@ package weloveclouds.kvstore;
 
 import java.io.Serializable;
 
+import weloveclouds.client.utils.CustomStringJoiner;
+
 public class KVEntry implements Serializable {
 
     private static final long serialVersionUID = 3871522756840647625L;
@@ -66,5 +68,9 @@ public class KVEntry implements Serializable {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return CustomStringJoiner.join(" ", key, value);
+    }
 
 }

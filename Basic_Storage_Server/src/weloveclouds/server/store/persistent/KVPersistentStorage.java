@@ -20,6 +20,7 @@ import java.util.Observable;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.KVEntry;
 import weloveclouds.server.store.IKVStore;
 import weloveclouds.server.store.exceptions.StorageException;
@@ -62,24 +63,31 @@ public class KVPersistentStorage extends Observable implements IKVStore {
         try (ObjectOutputStream stream =
                 new ObjectOutputStream(new FileOutputStream(entryPath.toString()))) {
             stream.writeObject(entry);
+            logger.debug(CustomStringJoiner.join(" ", entry.toString(),
+                    "is persisted to permanent store on path ", entryPath.toString()));
+
+            persistentPaths.put(key, entryPath);
+            notifyObservers(entry);
         } catch (FileNotFoundException e) {
+            logger.error(e);
             throw new StorageException("File was not found.");
         } catch (IOException e) {
+            logger.error(e);
             throw new StorageException(
                     "Entry was not saved to the persistent storage due to IO error.");
         }
-
-        persistentPaths.put(key, entryPath);
-        notifyObservers(entry);
     }
 
     @Override
-    public synchronized String getValue(String key) throws StorageException, ValueNotFoundException {
+    public synchronized String getValue(String key)
+            throws StorageException, ValueNotFoundException {
         Path path = persistentPaths.get(key);
         if (path == null) {
             throw new ValueNotFoundException(key);
         }
         KVEntry entry = readEntryFromFile(path.toFile());
+        logger.debug(CustomStringJoiner.join(" ", entry.toString(), "is read from file",
+                path.toString()));
         return entry.getValue();
     }
 
@@ -90,14 +98,22 @@ public class KVPersistentStorage extends Observable implements IKVStore {
                 Path path = persistentPaths.get(key);
                 Files.delete(path);
                 persistentPaths.remove(key);
+                logger.debug(CustomStringJoiner.join(" ", key,
+                        "is removed from persistent store, along with file", path.toString()));
                 notifyObservers(key);
             }
         } catch (NullPointerException ex) {
-            throw new StorageException("Key cannot be null.");
+            String errorMessage = "Key cannot be null for removing from persistent storage.";
+            logger.error(errorMessage);
+            throw new StorageException(errorMessage);
         } catch (NoSuchFileException ex) {
             persistentPaths.remove(key);
-            throw new StorageException("File for key was already removed.");
+            String errorMessage = CustomStringJoiner.join(" ", "File for key", key,
+                    "was already removed from persistent storage.");
+            logger.error(errorMessage);
+            throw new StorageException(errorMessage);
         } catch (IOException e) {
+            logger.error(e);
             throw new StorageException(
                     "File for key cannot be removed from persistent storage due to permission problems.");
         }
@@ -127,9 +143,11 @@ public class KVPersistentStorage extends Observable implements IKVStore {
         try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file))) {
             return (KVEntry) stream.readObject();
         } catch (IOException ex) {
+            logger.error(ex);
             throw new StorageException(
                     "Entry was not read from persistent storage due to IO error.");
         } catch (ClassNotFoundException | ClassCastException ex) {
+            logger.error(ex);
             throw new StorageException(
                     "Entry was not read from persistent storage due to format conversion error.");
         }

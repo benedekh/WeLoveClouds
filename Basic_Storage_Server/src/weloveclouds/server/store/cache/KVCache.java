@@ -7,6 +7,7 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.KVEntry;
 import weloveclouds.server.store.IKVStore;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
@@ -43,11 +44,15 @@ public class KVCache implements IKVStore, Observer {
             }
 
             cache.put(key, value);
+            logger.debug(CustomStringJoiner.join(" ", entry.toString(), "was added to cache."));
             currentSize++;
             displacementStrategy.put(key);
         } catch (NullPointerException ex) {
-            throw new StorageException("Key or value is null.");
+            String errorMessage = "Key or value is null when adding element to cache.";
+            logger.error(errorMessage);
+            throw new StorageException(errorMessage);
         } catch (IllegalArgumentException ex) {
+            logger.error(ex);
             throw new StorageException(
                     "Some property of the key or value prevents it from being stored in the cache.");
         }
@@ -62,10 +67,14 @@ public class KVCache implements IKVStore, Observer {
                 throw new ValueNotFoundException(key);
             } else {
                 displacementStrategy.get(key);
+                logger.debug(CustomStringJoiner.join(" ", value, "was retrieved from cache for key",
+                        key));
                 return value;
             }
         } catch (NullPointerException ex) {
-            throw new StorageException("Key cannot be null.");
+            String errorMessage = "Key cannot be null to get value from cache.";
+            logger.error(errorMessage);
+            throw new StorageException(errorMessage);
         }
     }
 
@@ -75,8 +84,11 @@ public class KVCache implements IKVStore, Observer {
             cache.remove(key);
             currentSize--;
             displacementStrategy.remove(key);
+            logger.debug(CustomStringJoiner.join(" ", key, "was removed from cache."));
         } catch (NullPointerException ex) {
-            throw new StorageException("Key cannot be null.");
+            String errorMessage = "Key cannot be null to remove from cache.";
+            logger.error(errorMessage);
+            throw new StorageException(errorMessage);
         }
     }
 
@@ -89,7 +101,7 @@ public class KVCache implements IKVStore, Observer {
                 removeEntry((String) value);
             }
         } catch (StorageException ex) {
-            logger.error(ex.getMessage());
+            logger.error(ex);
         }
     }
 
