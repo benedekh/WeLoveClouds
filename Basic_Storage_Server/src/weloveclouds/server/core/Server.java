@@ -3,6 +3,7 @@ package weloveclouds.server.core;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.server.models.Connection;
 import weloveclouds.server.models.RequestFactory;
 import weloveclouds.server.models.ResponseFactory;
@@ -15,6 +16,7 @@ import static weloveclouds.server.core.ServerStatus.*;
  */
 public class Server extends Thread {
     private ServerStatus status;
+    private IConcurrentCommunicationApi communicationApi;
     private ServerSocketFactory serverSocketFactory;
     private RequestFactory requestFactory;
     private ResponseFactory responseFactory;
@@ -22,6 +24,7 @@ public class Server extends Thread {
     private IParser messageParser;
 
     private Server(ServerBuilder serverBuilder) throws IOException {
+        this.communicationApi = serverBuilder.communicationApi;
         this.serverSocketFactory = serverBuilder.serverSocketFactory;
         this.requestFactory = serverBuilder.requestFactory;
         this.responseFactory = serverBuilder.responseFactory;
@@ -52,6 +55,7 @@ public class Server extends Thread {
     }
 
     public static class ServerBuilder {
+        private IConcurrentCommunicationApi communicationApi;
         private ServerSocketFactory serverSocketFactory;
         private RequestFactory requestFactory;
         private ResponseFactory responseFactory;
@@ -80,6 +84,11 @@ public class Server extends Thread {
 
         public ServerBuilder responseFactory(ResponseFactory responseFactory){
             this.responseFactory = responseFactory;
+            return this;
+        }
+
+        public ServerBuilder communicationApi(IConcurrentCommunicationApi communicationApi){
+            this.communicationApi = communicationApi;
             return this;
         }
 

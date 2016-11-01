@@ -2,9 +2,13 @@ package app_kvServer;
 
 import java.io.IOException;
 
+import weloveclouds.communication.api.v1.ConcurrentCommunicationApiV1;
+import weloveclouds.communication.services.ConcurrentCommunicationService;
 import weloveclouds.server.converter.MessageToKVRequestConverter;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerSocketFactory;
+import weloveclouds.server.models.RequestFactory;
+import weloveclouds.server.models.ResponseFactory;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.FIFOStrategy;
 import weloveclouds.server.store.cache.strategy.LFUStrategy;
@@ -18,7 +22,9 @@ public class KVServer {
             new Server.ServerBuilder()
                     .port(SERVER_PORT)
                     .serverSocketFactory(new ServerSocketFactory())
-                    .requestConverter(new MessageToKVRequestConverter())
+                    .requestFactory(new RequestFactory())
+                    .responseFactory(new ResponseFactory())
+                    .communicationApi(new ConcurrentCommunicationApiV1(new ConcurrentCommunicationService()))
                     .build()
                     .start();
         } catch (IOException e) {

@@ -1,6 +1,7 @@
 package weloveclouds.server.core;
 
 import jdk.nashorn.internal.ir.RuntimeNode;
+import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.server.models.Connection;
 import weloveclouds.server.models.RequestFactory;
 import weloveclouds.server.models.ResponseFactory;
@@ -10,10 +11,12 @@ import weloveclouds.server.parsers.IParser;
  * Created by Benoit on 2016-10-29.
  */
 public class SimpleConnectionHandler extends Thread implements IConnectionHandler{
+    private IConcurrentCommunicationApi communicationApi;
     private Connection connection;
     private IParser messageParser;
 
     private SimpleConnectionHandler(SimpleConnectionBuilder simpleConnectionBuilder) {
+        this.communicationApi = simpleConnectionBuilder.communicationApi;
         this.connection = simpleConnectionBuilder.connection;
         this.messageParser = simpleConnectionBuilder.messageParser;
     }
@@ -30,6 +33,7 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
 
 
     public static class SimpleConnectionBuilder{
+        private IConcurrentCommunicationApi communicationApi;
         private RequestFactory requestFactory;
         private ResponseFactory responseFactory;
         private Connection connection;
@@ -52,6 +56,11 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
 
         public SimpleConnectionBuilder responseFactory(ResponseFactory responseFactory){
             this.responseFactory = responseFactory;
+            return this;
+        }
+
+        public SimpleConnectionBuilder communicationApi(IConcurrentCommunicationApi communicationApi){
+            this.communicationApi = communicationApi;
             return this;
         }
 
