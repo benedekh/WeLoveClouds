@@ -39,7 +39,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
             this.remoteServer = new ServerConnectionInfo.ServerConnectionInfoBuilder()
                     .ipAddress(address).port(port).build();
         } catch (UnknownHostException ex) {
-            logger.error(ex.getMessage());
+            logger.error(ex);
         }
     }
 
@@ -58,7 +58,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
         try {
             serverCommunication.disconnect();
         } catch (UnableToDisconnectException ex) {
-            logger.error(ex.getMessage());
+            logger.error(ex);
         }
     }
 
