@@ -13,14 +13,14 @@ import weloveclouds.communication.models.Connection;
 public class ConcurrentCommunicationService implements IConcurrentCommunicationService {
 
     @Override
-    synchronized public void send(byte[] message, Connection connection) throws IOException {
+    public void send(byte[] message, Connection connection) throws IOException {
         OutputStream outputStream = connection.getOutputStream();
         outputStream.write(message);
         outputStream.flush();
     }
 
     @Override
-    synchronized public byte[] receiveFrom(Connection connection) throws IOException {
+    public byte[] receiveFrom(Connection connection) throws IOException {
         byte[] receivedData = null;
 
         InputStream socketDataReader = connection.getInputStream();
