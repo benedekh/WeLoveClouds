@@ -38,11 +38,10 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
         while (connection.isConnected()) {
             try {
                 KVMessage receivedMessage = messageDeserializer.deserialize(communicationApi.receiveFrom(connection));
-                KVMessage response = requestFactory.createRequestFromReceivedMessage(receivedMessage)
-                        .execute();
+                KVMessage response = requestFactory.createRequestFromReceivedMessage(receivedMessage).execute();
                 communicationApi.send(messageSerializer.serialize(response).getBytes(), connection);
             } catch (DeserializationException e) {
-
+                //LOG
             }
         }
     }
