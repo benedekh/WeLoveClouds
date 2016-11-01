@@ -18,14 +18,15 @@ public class KVStore implements IKVStore {
     }
 
     @Override
-    public void putEntry(KVEntry entry) throws StorageException {
+    public synchronized void putEntry(KVEntry entry) throws StorageException {
         // implicit notification will go the cache as well
         // throw the persistent store
         persistentStorage.putEntry(entry);
     }
 
     @Override
-    public String getValue(String key) throws StorageException, ValueNotFoundException {
+    public synchronized String getValue(String key)
+            throws StorageException, ValueNotFoundException {
         String value = null;
         try {
             value = cache.getValue(key);
@@ -37,7 +38,7 @@ public class KVStore implements IKVStore {
     }
 
     @Override
-    public void removeEntry(String key) throws StorageException {
+    public synchronized void removeEntry(String key) throws StorageException {
         // implicit notification will go the cache as well
         // throw the persistent store
         persistentStorage.removeEntry(key);

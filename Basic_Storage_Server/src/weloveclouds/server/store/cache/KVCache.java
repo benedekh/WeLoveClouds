@@ -32,7 +32,7 @@ public class KVCache implements IKVStore, Observer {
     }
 
     @Override
-    public void putEntry(KVEntry entry) throws StorageException {
+    public synchronized void putEntry(KVEntry entry) throws StorageException {
         try {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -54,7 +54,8 @@ public class KVCache implements IKVStore, Observer {
     }
 
     @Override
-    public String getValue(String key) throws StorageException, ValueNotFoundException {
+    public synchronized String getValue(String key)
+            throws StorageException, ValueNotFoundException {
         try {
             String value = cache.get(key);
             if (value == null) {
@@ -69,7 +70,7 @@ public class KVCache implements IKVStore, Observer {
     }
 
     @Override
-    public void removeEntry(String key) throws StorageException {
+    public synchronized void removeEntry(String key) throws StorageException {
         try {
             cache.remove(key);
             currentSize--;
@@ -80,7 +81,7 @@ public class KVCache implements IKVStore, Observer {
     }
 
     @Override
-    public void update(Observable target, Object value) {
+    public synchronized void update(Observable target, Object value) {
         try {
             if (value instanceof KVEntry) {
                 putEntry((KVEntry) value);
