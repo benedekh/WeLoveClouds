@@ -1,9 +1,9 @@
 package weloveclouds.server.models;
 
 import weloveclouds.kvstore.KVMessage;
-import weloveclouds.kvstore.api.IKVServerApi;
 import weloveclouds.server.models.requests.Get;
 import weloveclouds.server.models.requests.IRequest;
+import weloveclouds.server.models.requests.Put;
 import weloveclouds.server.services.IDataAccessService;
 
 /**
@@ -24,6 +24,7 @@ public class RequestFactory {
                 request = new Get(dataAccessService, message.getKey());
                 break;
             case PUT:
+                request = new Put();
                 break;
             case DELETE:
                 break;
