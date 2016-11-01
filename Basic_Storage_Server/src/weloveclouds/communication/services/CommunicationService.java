@@ -49,7 +49,7 @@ public class CommunicationService implements ICommunicationService {
      * Connects to a server described by the connection information stored in the remoteServer
      * parameter.
      *
-     * @throws IOException               see #initializeConnection
+     * @throws IOException see #initializeConnection
      * @throws AlreadyConnectedException if the client was already conencted to a server
      */
     @Override
@@ -76,8 +76,7 @@ public class CommunicationService implements ICommunicationService {
      *
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
-    private void initializeConnection(ServerConnectionInfo remoteServer) throws
-            IOException {
+    private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
         logger.debug(CustomStringJoiner.join(" ", "Trying to connec to", remoteServer.toString()));
         connectionToEndpoint = new Connection.ConnectionBuilder().remoteServer(remoteServer)
                 .socket(socketFactory.createTcpSocketFromInfo(remoteServer)).build();
@@ -92,7 +91,7 @@ public class CommunicationService implements ICommunicationService {
     /**
      * Disconnects from the server.
      *
-     * @throws IOException                  see {@link Connection#kill()}
+     * @throws IOException see {@link Connection#kill()}
      * @throws AlreadyDisconnectedException if the client was not connected
      */
     @Override
@@ -112,11 +111,10 @@ public class CommunicationService implements ICommunicationService {
      * Sends a message as a byte array to the server.
      *
      * @throws IOException see {@link OutputStream#write(byte[]), OutputStream#flush(),
-     *                     Connection#getOutputStream()}
+     *         Connection#getOutputStream()}
      */
     @Override
-    synchronized public void send(byte[] content) throws IOException,
-            UnableToSendContentToServerException {
+    public void send(byte[] content) throws IOException, UnableToSendContentToServerException {
         if (connectionToEndpoint.isConnected()) {
             logger.debug("Getting output stream from the connection.");
             OutputStream outputStream = connectionToEndpoint.getOutputStream();
@@ -133,7 +131,7 @@ public class CommunicationService implements ICommunicationService {
     /**
      * Reads a message as a byte array from the server if any is available.
      *
-     * @throws IOException                 see {@link InputStream#read(byte[]) Connection#getInputStream()}
+     * @throws IOException see {@link InputStream#read(byte[]) Connection#getInputStream()}
      * @throws ClientNotConnectedException if the client was not connected to the server
      */
     @Override
@@ -146,8 +144,8 @@ public class CommunicationService implements ICommunicationService {
             while (receivedData == null) {
                 int availableBytes = socketDataReader.available();
                 if (availableBytes != 0) {
-                    logger.debug(CustomStringJoiner.join(" ", "Receiving", String.valueOf(availableBytes),
-                            "from the connection."));
+                    logger.debug(CustomStringJoiner.join(" ", "Receiving",
+                            String.valueOf(availableBytes), "from the connection."));
                     receivedData = new byte[availableBytes];
                     socketDataReader.read(receivedData);
                     logger.info("Data received from the network.");
