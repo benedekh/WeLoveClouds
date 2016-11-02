@@ -17,6 +17,8 @@ import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageDeserializer;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
+import weloveclouds.kvstore.serialization.KVMessageDeserializer;
+import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
 
 public class KVCommunicationApiV1 implements IKVCommunicationApi {
@@ -43,6 +45,9 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
 
         this.address = address;
         this.port = port;
+
+        this.messageSerializer = new KVMessageSerializer();
+        this.messageDeserializer = new KVMessageDeserializer();
     }
 
     public KVCommunicationApiV1(ICommunicationApi communicationApi,

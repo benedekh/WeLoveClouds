@@ -58,7 +58,9 @@ public class CommunicationService implements ICommunicationService {
         if (!connectionToEndpoint.isConnected()) {
             try {
                 logger.debug("Removing previously registered shutdown hook.");
-                Runtime.getRuntime().removeShutdownHook(connectionShutdownHook);
+                if (connectionShutdownHook != null) {
+                    Runtime.getRuntime().removeShutdownHook(connectionShutdownHook);
+                }
             } catch (IllegalStateException | NullPointerException e) {
                 // No hook previously added
                 logger.debug(e.getMessage(), e);
