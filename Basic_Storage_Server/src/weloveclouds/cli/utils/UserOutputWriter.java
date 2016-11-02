@@ -1,4 +1,4 @@
-package weloveclouds.client.utils;
+package weloveclouds.cli.utils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -13,16 +13,20 @@ import org.apache.log4j.Logger;
  * @author Benedek
  */
 public class UserOutputWriter implements AutoCloseable {
+
     private static final UserOutputWriter instance = new UserOutputWriter();
-    private static final String PREFIX = "EchoClient> ";
+    private static String PREFIX = "Client> ";
 
     private BufferedWriter outputWriter;
     private Logger logger;
 
-
     private UserOutputWriter() {
         this.outputWriter = new BufferedWriter(new OutputStreamWriter(System.out));
         this.logger = Logger.getLogger(getClass());
+    }
+
+    public static void setPrefix(String prefix) {
+        PREFIX = prefix;
     }
 
     /**
