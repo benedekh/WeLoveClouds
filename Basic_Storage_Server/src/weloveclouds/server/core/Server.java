@@ -23,7 +23,9 @@ public class Server extends AbstractServer {
     private RequestFactory requestFactory;
     private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
     private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
+
     private ServerShutdownHook shutdownHook;
+    private Logger logger;
 
     private Server(ServerBuilder serverBuilder) throws IOException {
         super(serverBuilder.serverSocketFactory, serverBuilder.port);
@@ -31,6 +33,7 @@ public class Server extends AbstractServer {
         this.requestFactory = serverBuilder.requestFactory;
         this.messageSerializer = serverBuilder.messageSerializer;
         this.messageDeserializer = serverBuilder.messageDeserializer;
+        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -50,7 +53,11 @@ public class Server extends AbstractServer {
                         .messageDeserializer(messageDeserializer).build().handleConnection();
             }
         } catch (IOException ex) {
-            // Log what's going on
+            logger.error(ex);
+        } catch (Throwable ex) {
+            logger.fatal(ex);
+        } finally {
+            logger.info("Active server stopped.");
         }
     }
 

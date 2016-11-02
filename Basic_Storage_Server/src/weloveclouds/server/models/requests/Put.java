@@ -4,6 +4,9 @@ import static weloveclouds.kvstore.models.IKVMessage.StatusType.PUT_ERROR;
 import static weloveclouds.kvstore.models.IKVMessage.StatusType.PUT_SUCCESS;
 import static weloveclouds.kvstore.models.IKVMessage.StatusType.PUT_UPDATE;
 
+import org.apache.log4j.Logger;
+
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.models.KVMessage;
@@ -19,16 +22,21 @@ public class Put implements IRequest {
     private String key;
     private String value;
 
+    private Logger logger;
+
     public Put(IDataAccessService dataAccessService, String key, String value) {
         this.dataAccessService = dataAccessService;
         this.key = key;
         this.value = value;
+        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public KVMessage execute() {
         KVMessage response = null;
         try {
+            logger.debug(CustomStringJoiner.join(" ", "Trying to put record", key, value));
+
             PutType putType = dataAccessService.putEntry(new KVEntry(key, value));
             switch (putType) {
                 case INSERT:
@@ -40,6 +48,8 @@ public class Put implements IRequest {
             }
         } catch (StorageException e) {
             response = createResponse(PUT_ERROR, key, e.getMessage());
+        } finally {
+            logger.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
         }
         return response;
     }

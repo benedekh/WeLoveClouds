@@ -52,8 +52,8 @@ public class ServerCLIHandler {
             }
         } catch (IOException ex) {
             logger.error(ex);
-        } catch (Exception ex) {
-            logger.fatal(ex.getMessage(), ex);
+        } catch (Throwable ex) {
+            logger.fatal(ex);
         } finally {
             logger.info("Server stopped.");
         }

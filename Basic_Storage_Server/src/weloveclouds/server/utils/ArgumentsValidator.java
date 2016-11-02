@@ -2,7 +2,6 @@ package weloveclouds.server.utils;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
-import java.nio.channels.ServerSocketChannel;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -206,7 +205,9 @@ public class ArgumentsValidator {
 
     private static void logWarning(String command) {
         String warning = join(" ", command, "command is invalid.");
-        LOGGER.warn(warning);
+        synchronized (LOGGER) {
+            LOGGER.warn(warning);
+        }
     }
 
 }

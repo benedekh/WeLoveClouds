@@ -1,5 +1,7 @@
 package weloveclouds.kvstore.models;
 
+import weloveclouds.client.utils.CustomStringJoiner;
+
 public class KVMessage implements IKVMessage {
 
     private KVEntry entry;
@@ -53,6 +55,13 @@ public class KVMessage implements IKVMessage {
         public KVMessage build() {
             return new KVMessage(this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return CustomStringJoiner.join(" ", "Message status:",
+                status == null ? "null" : status.toString(), "KVEntry:",
+                entry == null ? "null" : entry.toString());
     }
 
 }

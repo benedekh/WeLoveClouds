@@ -25,7 +25,7 @@ public class Client {
     private Logger logger;
 
     /**
-     * @param inputStream    from which it receives command from the user
+     * @param inputStream from which it receives command from the user
      * @param commandFactory that processes (validate and execute) the various commands
      */
     public Client(InputStream inputStream, CommandFactory commandFactory) {
@@ -40,7 +40,7 @@ public class Client {
      */
     public void run() {
         try (UserInputReader inputReader = new UserInputReader(inputStream);
-             UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
+                UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
             logger.info("Client started.");
             while (!Thread.currentThread().isInterrupted()) {
                 try {
@@ -58,8 +58,8 @@ public class Client {
             }
         } catch (IOException ex) {
             logger.error(ex);
-        } catch (Exception ex) {
-            logger.fatal(ex.getMessage(), ex);
+        } catch (Throwable ex) {
+            logger.fatal(ex);
         } finally {
             logger.info("Client stopped.");
         }
