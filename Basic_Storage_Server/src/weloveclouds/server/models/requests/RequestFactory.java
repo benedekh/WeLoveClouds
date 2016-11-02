@@ -1,5 +1,9 @@
 package weloveclouds.server.models.requests;
 
+import static weloveclouds.client.utils.CustomStringJoiner.join;
+
+import org.apache.log4j.Logger;
+
 import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.KVMessage;
 import weloveclouds.server.services.IDataAccessService;
@@ -10,11 +14,14 @@ import weloveclouds.server.services.IDataAccessService;
 public class RequestFactory {
     private IDataAccessService dataAccessService;
 
+    private Logger logger;
+
     public RequestFactory(IDataAccessService dataAccessService) {
         this.dataAccessService = dataAccessService;
+        this.logger = Logger.getLogger(getClass());
     }
 
-    synchronized public IRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
+    public IRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
         IRequest request = null;
         StatusType status = receivedMessage.getStatus();
 
@@ -34,7 +41,12 @@ public class RequestFactory {
             case DELETE:
                 request = new Delete(dataAccessService, receivedMessage.getKey());
                 break;
-            default: // TODO log unknown command
+            default:
+                String errorMessage = "Unrecognized command for KV message";
+                synchronized (logger) {
+                    logger.error(join(" ", errorMessage, receivedMessage.toString()));
+                }
+                request = new DefaultRequest(receivedMessage.getKey(), errorMessage);
                 break;
         }
 

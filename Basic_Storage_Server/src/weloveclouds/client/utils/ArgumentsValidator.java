@@ -24,13 +24,12 @@ public class ArgumentsValidator {
     private static final int LOG_LEVEL_NUMBER_OF_ARGUMENTS = 1;
     private static final int GET_NUMBER_OF_ARGUMENTS = 1;
     private static final int PUT_MIN_NUMBER_OF_ARGUMENTS = 1;
-    private static final int PUT_MAX_NUMBER_OF_ARGUMENTS = 2;
 
     private static final int LEVEL_INDEX = 0;
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
     private static final int NETWORK_PORT_LOWER_LIMIT = 0;
-    private static final int NETWORK_PORT_UPPER_LIMIT = 65536;
+    private static final int NETWORK_PORT_UPPER_LIMIT = 65535;
 
     private static List<String> logLevels =
             Arrays.asList("ALL", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF");
@@ -47,47 +46,56 @@ public class ArgumentsValidator {
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateConnectArguments(String[] arguments,
-                                                ServerConnectionInfo remoteServer) throws IllegalArgumentException {
+            ServerConnectionInfo remoteServer) throws IllegalArgumentException {
+        String command = "connect";
+
         if (isNullOrEmpty(arguments) || arguments.length != CONNECT_NUMBER_OF_ARGUMENTS) {
-            LOGGER.warn("Connect command is invalid.");
+            logWarning(command);
             throw new IllegalArgumentException(
                     "Command need arguments (<IP address> and <port>) only.");
         } else if (remoteServer.getPort() < NETWORK_PORT_LOWER_LIMIT
                 || remoteServer.getPort() > NETWORK_PORT_UPPER_LIMIT) {
-            String message = join(",",
-                    "Port should be in the range [" + String.valueOf(NETWORK_PORT_LOWER_LIMIT),
+            String message = join("", "Port should be in the range [",
+                    String.valueOf(NETWORK_PORT_LOWER_LIMIT), ",",
                     String.valueOf(NETWORK_PORT_UPPER_LIMIT) + "].");
-            LOGGER.warn("Connect command is invalid.");
+            logWarning(command);
             throw new IllegalArgumentException(message);
         }
     }
 
-
     public static void validatePutArguments(String[] arguments) throws IllegalArgumentException {
-        if (isNullOrEmpty(arguments) || arguments.length < PUT_MIN_NUMBER_OF_ARGUMENTS || arguments
-                .length > PUT_MAX_NUMBER_OF_ARGUMENTS) {
-            LOGGER.warn("Put command is invalid.");
-            throw new IllegalArgumentException("Put command should have two arguments.");
+        String command = "put";
+
+        if (isNullOrEmpty(arguments) || arguments.length < PUT_MIN_NUMBER_OF_ARGUMENTS) {
+            logWarning(command);
+            throw new IllegalArgumentException("Put command should have at least two arguments.");
         } else {
-            validateSize(arguments[KEY_INDEX], KEY_SIZE_LIMIT_IN_BYTES, "Put", "key");
-            validateSize(arguments[VALUE_INDEX], VALUE_SIZE_LIMIT_IN_BYTES, "Put", "value");
+            validateSize(arguments[KEY_INDEX], KEY_SIZE_LIMIT_IN_BYTES, command, "key");
+
+            // merge values to one string
+            List<String> argList = Arrays.asList(arguments);
+            List<String> valueElements = argList.subList(VALUE_INDEX, argList.size() - 1);
+            String value = CustomStringJoiner.join(" ", valueElements);
+
+            validateSize(value, VALUE_SIZE_LIMIT_IN_BYTES, command, "value");
         }
     }
 
     public static void validateGetArguments(String[] arguments) throws IllegalArgumentException {
+        String command = "get";
         if (isNullOrEmpty(arguments) || arguments.length != GET_NUMBER_OF_ARGUMENTS) {
-            LOGGER.warn("Get command is invalid.");
+            logWarning(command);
             throw new IllegalArgumentException("Get command should have one argument.");
         } else {
-            validateSize(arguments[KEY_INDEX], KEY_SIZE_LIMIT_IN_BYTES, "Get", "key");
+            validateSize(arguments[KEY_INDEX], KEY_SIZE_LIMIT_IN_BYTES, command, "key");
         }
     }
 
-    private static void validateSize(String field, int limit, String commandName,
-            String fieldName) {
+    private static void validateSize(String field, int limit, String commandName, String fieldName)
+            throws IllegalArgumentException {
         byte[] key = field.getBytes(SerializedKVMessage.MESSAGE_ENCODING);
         if (key.length > limit) {
-            LOGGER.warn(join(" ", commandName, "command is invalid."));
+            logWarning(commandName);
             throw new IllegalArgumentException(
                     join(" ", "Max", fieldName, "size is", String.valueOf(limit), "bytes."));
         }
@@ -104,18 +112,16 @@ public class ArgumentsValidator {
      */
     public static void validateLogLevelArguments(String[] arguments)
             throws IllegalArgumentException {
+        String command = "logLevel";
         String message = join(" ",
                 "Log level is not recognized. It should be capitalized and should be one of the followings:",
-                convertLevelsToString());
+                join(",", logLevels));
 
-        if (isNullOrEmpty(arguments)) {
-            LOGGER.warn("logLevel command is invalid.");
+        if (isNullOrEmpty(arguments) || arguments.length != LOG_LEVEL_NUMBER_OF_ARGUMENTS) {
+            logWarning(command);
             throw new IllegalArgumentException(message);
-        } else if (arguments.length > LOG_LEVEL_NUMBER_OF_ARGUMENTS) {
-            LOGGER.warn("logLevel command is invalid.");
-            throw new IllegalArgumentException("logLevel only accepts one parameter.");
         } else if (!logLevels.contains(arguments[LEVEL_INDEX])) {
-            LOGGER.warn("logLevel command is invalid.");
+            logWarning(command);
             throw new IllegalArgumentException(message);
         }
     }
@@ -129,7 +135,7 @@ public class ArgumentsValidator {
     public static void validateDisconnectArguments(String[] arguments)
             throws IllegalArgumentException {
         if (!isNullOrEmpty(arguments)) {
-            LOGGER.warn("Disconnect command is invalid.");
+            logWarning("disconnect");
             throw new IllegalArgumentException("Command does not accept any argument.");
         }
     }
@@ -140,22 +146,22 @@ public class ArgumentsValidator {
      * @param arguments shall be empty
      * @throws IllegalArgumentException if there is a validation error
      */
-    public static void validateHelpArguments(String[] arguments) {
+    public static void validateHelpArguments(String[] arguments) throws IllegalArgumentException {
         if (!isNullOrEmpty(arguments)) {
-            LOGGER.warn("Help command is invalid.");
+            logWarning("help");
             throw new IllegalArgumentException("Command does not accept any argument.");
         }
     }
 
     /**
-     * A disconnect quit is valid, if it does not contain any argument.
+     * A quit command is valid, if it does not contain any argument.
      *
      * @param arguments shall be empty
      * @throws IllegalArgumentException if there is a validation error
      */
-    public static void validateQuitArguments(String[] arguments) {
+    public static void validateQuitArguments(String[] arguments) throws IllegalArgumentException {
         if (!isNullOrEmpty(arguments)) {
-            LOGGER.warn("Quit command is invalid.");
+            logWarning("quit");
             throw new IllegalArgumentException("Command does not accept any argument.");
         }
     }
@@ -167,17 +173,8 @@ public class ArgumentsValidator {
         return arguments == null || arguments.length == 0;
     }
 
-    /**
-     * Joins the {@link #logLevels} by a comma and converts their names to a joined string.
-     */
-    private static String convertLevelsToString() {
-        StringBuffer buffer = new StringBuffer();
-        for (String level : logLevels) {
-            buffer.append(level);
-            buffer.append(",");
-        }
-        buffer.setLength(buffer.length() - ",".length());
-        return buffer.toString();
+    private static void logWarning(String command) {
+        String warning = join(" ", command, "command is invalid.");
+        LOGGER.warn(warning);
     }
-
 }

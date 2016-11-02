@@ -21,9 +21,10 @@ public class Get extends AbstractKVCommunicationApiCommand {
     public void execute() throws ClientSideException {
         try {
             logger.info("Executing get command.");
-            IKVMessage response = communicationApi.get(arguments[KEY_INDEX]);
 
-            logger.debug(response);
+            IKVMessage response = communicationApi.get(arguments[KEY_INDEX]);
+            logger.debug(response.toString());
+
             switch (response.getStatus()) {
                 case GET_SUCCESS:
                 case GET_ERROR:

@@ -1,4 +1,4 @@
-package weloveclouds.client.models;
+package weloveclouds.client.models.commands;
 
 import java.util.Map;
 import java.util.TreeMap;

@@ -1,9 +1,13 @@
 package weloveclouds.client.models.commands;
 
+import static weloveclouds.client.utils.CustomStringJoiner.join;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.kvstore.models.IKVMessage;
@@ -23,10 +27,12 @@ public class Put extends AbstractKVCommunicationApiCommand {
     public void execute() throws ClientSideException {
         try {
             logger.info("Executing put command.");
-            IKVMessage response =
-                    communicationApi.put(arguments[KEY_INDEX], arguments[VALUE_INDEX]);
+            String key = arguments[KEY_INDEX];
+            String value = mergeValuesToOneString(arguments);
 
-            logger.debug(response);
+            IKVMessage response = communicationApi.put(key, value);
+            logger.debug(response.toString());
+
             switch (response.getStatus()) {
                 case PUT_UPDATE:
                 case PUT_SUCCESS:
@@ -37,8 +43,8 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     userOutputWriter.writeLine("Key removed successfully.");
                     break;
                 case DELETE_ERROR:
-                    userOutputWriter.writeLine(CustomStringJoiner.join(" ",
-                            "Error during key remove:", response.getValue()));
+                    userOutputWriter
+                            .writeLine(join(" ", "Error during key remove:", response.getValue()));
                     break;
                 default:
                     userOutputWriter.writeLine("Unexpected response type.");
@@ -56,6 +62,12 @@ public class Put extends AbstractKVCommunicationApiCommand {
     public ICommand validate() throws IllegalArgumentException {
         ArgumentsValidator.validatePutArguments(arguments);
         return this;
+    }
+
+    private String mergeValuesToOneString(String[] arguments) {
+        List<String> argList = Arrays.asList(arguments);
+        List<String> valueElements = argList.subList(VALUE_INDEX, argList.size() - 1);
+        return join(" ", valueElements);
     }
 
 }
