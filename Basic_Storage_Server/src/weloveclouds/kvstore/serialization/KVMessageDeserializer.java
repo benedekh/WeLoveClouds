@@ -35,7 +35,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
                 new String(serializedMessage, SerializedKVMessage.MESSAGE_ENCODING);
         String[] messageParts = serializedMessageAsString.split(SEPARATOR);
 
-        if (messageParts.length < NUMBER_OF_MESSAGE_PARTS) {
+        if (messageParts.length > NUMBER_OF_MESSAGE_PARTS) {
             String errorMessage = "Message contains more than three parts.";
             logger.debug(errorMessage);
             throw new DeserializationException(errorMessage);

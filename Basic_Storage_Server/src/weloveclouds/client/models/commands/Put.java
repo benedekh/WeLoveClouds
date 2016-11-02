@@ -66,7 +66,7 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
     private String mergeValuesToOneString(String[] arguments) {
         List<String> argList = Arrays.asList(arguments);
-        List<String> valueElements = argList.subList(VALUE_INDEX, argList.size() - 1);
+        List<String> valueElements = argList.subList(VALUE_INDEX, argList.size());
         return join(" ", valueElements);
     }
 
