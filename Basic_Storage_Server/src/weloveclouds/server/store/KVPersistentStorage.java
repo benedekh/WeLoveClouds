@@ -140,7 +140,12 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         for (File file : filterFilesInRootPath()) {
             try {
                 KVEntry entry = readEntryFromFile(file);
-                persistentPaths.put(entry.getKey(), file.toPath().toAbsolutePath());
+                String key = entry.getKey();
+                Path path = file.toPath().toAbsolutePath();
+                persistentPaths.put(key, path);
+
+                logger.debug(CustomStringJoiner.join(" ", "Key", key,
+                        "is put in the persistent store metastore from path", path.toString()));
             } catch (StorageException ex) {
                 logger.error(join(" ", file.toString(), ex.getMessage()));
             }
