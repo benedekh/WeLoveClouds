@@ -29,24 +29,34 @@ public class ServerCommandFactory {
      */
     public ICommand createCommandFromUserInput(ParsedUserInput userInput)
             throws UnknownHostException {
-        ICommand recognizedCommand = null;
         ServerCommand userCommand = userInput.getServerCommand();
+        String[] arguments = userInput.getArguments();
+        ICommand recognizedCommand = null;
 
         switch (userCommand) {
-            case PORT:
-                recognizedCommand = new Port(userInput.getArguments(), context);
+            case CACHESIZE:
+                recognizedCommand = new CacheSize(arguments, context);
+                break;
+            case HELP:
+                recognizedCommand = new Help(arguments);
                 break;
             case LOGLEVEL:
-                recognizedCommand = new LogLevel(userInput.getArguments());
+                recognizedCommand = new LogLevel(arguments);
                 break;
-            case STRATEGY:
-                recognizedCommand = new Strategy(userInput.getArguments(), context);
-                break;
-            case QUIT:
-                recognizedCommand = new Quit(userInput.getArguments());
+            case PORT:
+                recognizedCommand = new Port(arguments, context);
                 break;
             case START:
-                recognizedCommand = new Start(userInput.getArguments(), context);
+                recognizedCommand = new Start(arguments, context);
+                break;
+            case STORAGEPATH:
+                recognizedCommand = new StoragePath(arguments, context);
+                break;
+            case STRATEGY:
+                recognizedCommand = new Strategy(arguments, context);
+                break;
+            case QUIT:
+                recognizedCommand = new Quit(arguments);
                 break;
             default:
                 logger.info(join(" ", "Unrecognized command:", userCommand.toString()));

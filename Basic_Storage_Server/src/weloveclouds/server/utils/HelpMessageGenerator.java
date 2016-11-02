@@ -1,4 +1,5 @@
 package weloveclouds.server.utils;
+
 /**
  * Generates the help message for the application.
  *
@@ -14,25 +15,26 @@ public class HelpMessageGenerator {
         StringBuffer buffer = new StringBuffer();
         buffer.append("Server\n");
         buffer.append("\n");
-        buffer.append("A simple tool to connect to an echo server and send and receiveFrom message from that, using the reliable TCP/IP protocol.\n");
+        buffer.append("Starts a server which will can accept Key-Value pairs and store them in both a persistent storage and a cache.\n");
         buffer.append("\n");
-        buffer.append("First, the user shall connect to an echo server by providing its IP address and port.\n");
-        buffer.append("Second, the user shall send several messages after each other to the server. The server's echo responses will be displayed.\n");
-        buffer.append("Third, the user can disconnect from the server by the respective command.\n");
+        buffer.append("First, the user shall set how big the cache would be.\n");
+        buffer.append("Second, the user shall set on which port should the server be available.\n");
+        buffer.append("Third, the user shall set the path for the persistent storage. Beware, the path has to exist in the file system.\n");
+        buffer.append("Fourth, the user shall set the cache displacement startegy. Possible values: FIFO, LFU, LRU.\n");
+        buffer.append("Fifth, the user shall can start the server.\n");
         buffer.append("Finally, the user can close the application using the quit command.\n");
         buffer.append("\n");
         buffer.append("|Commmand | Parameters | Description | Expected shell output |\n");
         String delimeterLine = "|--------|------------|-------------|----------------------|\n";
         buffer.append(delimeterLine);
-        buffer.append("|connect <address> <port> | <address>: Hostname or IP address of the echo server. <port>: The port of the echo service on the respective server. | Tries to establish a TCP-connection to the echo server based on the given server address and the port number of the echo service. | Once the connection is established, the echo server will reply with a confirmation message. This message will be displayed to the user. |\n");
-        buffer.append("|disconnect | (none) | Tries to disconnect from the connected server. | Once the client got disconnected from the server, it will provide a notification to the user. |\n");
-        buffer.append("|put <key> <value> | <key>: Arbitrary string used to identify the <value> (max length 20 bytes).");
-        buffer.append(" <value> Arbitrary string to be stored (max length 120 bytes). | Inserts a key-value pair into storage, updates the current value with the specified value");
-        buffer.append(" if the server already contains the specified key, deletes the entry for the given key if <value> is null. | Provides notification if the input was successful (SUCCESS) or not (ERROR).|\n");
-        buffer.append("|get <key> | <key>: The key that indexes the desired value (Max length 20 bytes). | retrieves the value for the given key from the server. | Returns the value for the given key or an error if the key does not exist in storage.|\n");
+        buffer.append("|cacheSize <size> | <size>: how many entries shall be stored in the cache | Sets the size of the cache. | Latest cache size. |\n");
+        buffer.append("|help | (none) | Shows the intended usage of the application and describes its set of commands. | Shows the intended usage of the application and describes its set of commands. |\n");
         buffer.append("|logLevel <level> | <level>: One of the following log4j log levels: ALL, DEBUG, INFO, WARN, ERROR, FATAL, OFF | Sets the logger to the specified log level. | Shows the most recent log status. |\n");
-        buffer.append("|help | (none) | Shows the intended usage of the client application and describes its set of commands. | Shows the intended usage of the client application and describes its set of commands. |\n");
-        buffer.append("|quit | (none) | Tears down the active connection to the server and exits the program execution. | Shows a status message about the imminent program shutdown. |\n");
+        buffer.append("|port <port> | <port>: on which the server will accept clients (valid range: [0,65535]) | Sets the port on which the server accepts clients. | Latest port. |\n");
+        buffer.append("|start | (none) | Starts the server with the previously applied settings. Beware to use the configuration commands (cacheSize, port, strategy, storagePath) beforehand.| Status message about the server start. |\n");
+        buffer.append("|storagePath <path> | <path>: where the persistent storage will store the key-value pairs. | A valid folder path in the file system. | Latest path. |\n");
+        buffer.append("|strategy <strategy> | <strategy>: the abbreviation of the strategy that shall be used for displacing entries from the cache. (valid values: FIFO, LFU, LRU) | Sets what values shall be used to displace entries from the cache. | Latest strategy. |\n");
+        buffer.append("|quit | (none) | Tears down the active connections and exits the program execution. | Shows a status message about the imminent program shutdown. |\n");
         buffer.append("|<anything else> | <any> | Any unrecognized input in the context of this application. | Shows an error message and prints the same help text as for the help command. |\n");
         buffer.append(delimeterLine);
         // @formatter:on
