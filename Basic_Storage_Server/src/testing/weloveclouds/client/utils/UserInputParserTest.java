@@ -4,6 +4,8 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.Arrays;
 
+import junit.framework.TestCase;
+
 import org.junit.Test;
 
 import weloveclouds.cli.models.ParsedUserInput;
@@ -14,7 +16,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 /**
  * @author Benoit
  */
-public class UserInputParserTest {
+public class UserInputParserTest extends TestCase{
     private static final String PUT_COMMAND = "put";
     private static final String GET_COMMAND = "get";
     private static final String CONNECT_COMMAND = "connect";

@@ -32,7 +32,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
     private Logger logger;
 
     /**
-     * Creates a new communication instance which connects to the server at the referred addres and
+     * Creates a new communication instance which connects to the server at the referred address and
      * port. This constructor is used mainly for testing purposes.
      */
     public KVCommunicationApiV1(String address, int port) {

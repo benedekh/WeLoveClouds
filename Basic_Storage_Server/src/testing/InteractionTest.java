@@ -1,5 +1,6 @@
 package testing;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
@@ -12,14 +13,17 @@ public class InteractionTest extends TestCase {
 
     private IKVServerApi kvClient;
 
+    @Before
     public void setUp() {
+        //here we will use a socket with try with resources.
         kvClient = new KVCommunicationApiV1("localhost", 50000);
         try {
             kvClient.connect();
         } catch (Exception e) {
         }
     }
-
+    
+    
     public void tearDown() {
         kvClient.disconnect();
     }
@@ -31,13 +35,12 @@ public class InteractionTest extends TestCase {
         String value = "bar";
         IKVMessage response = null;
         Exception ex = null;
-
         try {
             response = kvClient.put(key, value);
         } catch (Exception e) {
             ex = e;
         }
-
+        tearDown();
         assertTrue(ex == null && response.getStatus() == StatusType.PUT_SUCCESS);
     }
 
@@ -54,6 +57,7 @@ public class InteractionTest extends TestCase {
             ex = e;
         }
 
+        tearDown();
         assertNotNull(ex);
     }
 
