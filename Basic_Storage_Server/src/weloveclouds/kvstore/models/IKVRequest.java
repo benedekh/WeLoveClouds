@@ -1,8 +1,14 @@
 package weloveclouds.kvstore.models;
 
 /**
- * Created by Benoit on 2016-10-30.
+ * Represents a request between the server and the data access layer to the persistent storage /
+ * cache.
+ * 
+ * @author Benoit
  */
 public interface IKVRequest {
+    /**
+     * Executes the request.
+     */
     void execute();
 }

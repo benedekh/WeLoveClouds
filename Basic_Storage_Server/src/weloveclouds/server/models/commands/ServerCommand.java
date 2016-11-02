@@ -9,7 +9,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
  * Different commands which are handled by
- * {@link weloveclouds.client.models.commands.CommandFactory}.
+ * {@link weloveclouds.server.models.commands.ServerCommandFactory}.
  *
  * @author Benedek
  */

@@ -16,7 +16,10 @@ import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
 import weloveclouds.server.models.requests.RequestFactory;
 
 /**
- * Created by Benoit on 2016-10-29.
+ * An exact KV server instance which accepts messages over the network and can handle multiple
+ * clients concurrently. For further details refer to {@link SimpleConnectionHandler}.
+ * 
+ * @author Benoit
  */
 public class Server extends AbstractServer {
     private CommunicationApiFactory communicationApiFactory;
@@ -70,6 +73,11 @@ public class Server extends AbstractServer {
         }
     }
 
+    /**
+     * A shutdown hook which closes the open server socket if it was not closed beforehand.
+     * 
+     * @author Benedek
+     */
     private class ServerShutdownHook extends Thread {
 
         private ServerSocket socket;
@@ -89,6 +97,11 @@ public class Server extends AbstractServer {
         }
     }
 
+    /**
+     * A builder to create a {@link Server} instance.
+     * 
+     * @author Benoit
+     */
     public static class ServerBuilder {
         private CommunicationApiFactory communicationApiFactory;
         private ServerSocketFactory serverSocketFactory;

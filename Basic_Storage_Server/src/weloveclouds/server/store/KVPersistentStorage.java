@@ -22,10 +22,17 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 
+/**
+ * The persistent storage for the {@link DataAccessService}} which stores the key-value pairs on the
+ * hard storage.
+ * 
+ * @author Benedek
+ */
 public class KVPersistentStorage extends Observable implements IDataAccessService {
 
     private static final String FILE_EXTENSION = "ser";
@@ -109,6 +116,12 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         super.notifyObservers(object);
     }
 
+    /**
+     * Removes an entry from the storage, without notifying anyone.
+     * 
+     * @param key key of the entry to be removed
+     * @throws StorageException if an error occurs
+     */
     private void removeEntryWithoutNotification(String key) throws StorageException {
         try {
             if (persistentPaths.containsKey(key)) {
@@ -135,6 +148,10 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         }
     }
 
+    /**
+     * Scans through the hard storage and notes which keys were already stored in the hard storage
+     * on what paths.
+     */
     private void initializePaths() {
         logger.debug("Initializing persistent store with already stored keys.");
         for (File file : filterFilesInRootPath()) {
@@ -153,6 +170,9 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         logger.debug("Initializing persistent store finished.");
     }
 
+    /**
+     * Filters the file names inside the {@link #rootPath} if they end with {@link #FILE_EXTENSION}.
+     */
     private File[] filterFilesInRootPath() {
         return rootPath.toFile().listFiles(new FilenameFilter() {
             @Override
@@ -162,6 +182,11 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         });
     }
 
+    /**
+     * Reads the persisted {@link KVEntry} from the file.
+     * 
+     * @throws StorageException if any error occurs
+     */
     private KVEntry readEntryFromFile(File file) throws StorageException {
         try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file))) {
             return (KVEntry) stream.readObject();

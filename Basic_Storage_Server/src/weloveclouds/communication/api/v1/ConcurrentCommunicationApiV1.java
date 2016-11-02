@@ -7,7 +7,11 @@ import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.services.IConcurrentCommunicationService;
 
 /**
- * Created by Benoit on 2016-11-01.
+ * Communication API which is used by the {@link Server} to maintain connection with the different
+ * clients and to send messages them and receive data from them through the
+ * {@link IConcurrentCommunicationService}.
+ * 
+ * @author Benoit
  */
 public class ConcurrentCommunicationApiV1 implements IConcurrentCommunicationApi {
 

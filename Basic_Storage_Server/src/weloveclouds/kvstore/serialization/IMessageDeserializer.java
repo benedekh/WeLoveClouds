@@ -3,10 +3,22 @@ package weloveclouds.kvstore.serialization;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 
 /**
- * Created by Benoit on 2016-11-01.
+ * A deserializer that can convert from type E to T, or from byte[] to T
+ * 
+ * @author Benoit
  */
 public interface IMessageDeserializer<T, E> {
+    /**
+     * Converts a serialized message to a T type.
+     * 
+     * @throws DeserializationException if any error occurs
+     */
     T deserialize(E serializedMessage) throws DeserializationException;
 
+    /**
+     * Converts a serialized message from byte[] to a T type.
+     * 
+     * @throws DeserializationException if any error occurs
+     */
     T deserialize(byte[] serializedMessage) throws DeserializationException;
 }

@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 
+/**
+ * Represents a Key-value pair that is transferred through the network.
+ * 
+ * @author Benedek
+ */
 public class KVEntry implements Serializable {
 
     private static final long serialVersionUID = 3871522756840647625L;

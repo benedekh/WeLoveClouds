@@ -2,6 +2,11 @@ package weloveclouds.communication.api.v1;
 
 import weloveclouds.kvstore.models.IKVMessage;
 
+/**
+ * API for the Key-value store commands from the client side.
+ * 
+ * @author Benedek
+ */
 public interface IKVServerApi {
 
     /**

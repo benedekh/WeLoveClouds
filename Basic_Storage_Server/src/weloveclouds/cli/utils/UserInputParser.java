@@ -62,8 +62,9 @@ public class UserInputParser {
      * The IP address shall be the 0. element of the array.<br>
      * The port shall be the 1. element of the array.
      *
-     * @return the IP address and port stored in one server conenction information object
-     * @throws UnknownHostException see {@link ServerConnectionInfo.ServerConnectionInfoBuilder#ipAddress(java.net.InetAddress)}
+     * @return the IP address and port stored in one server connection information object
+     * @throws UnknownHostException see
+     *         {@link ServerConnectionInfo.ServerConnectionInfoBuilder#ipAddress(java.net.InetAddress)}
      */
     public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments)
             throws UnknownHostException {

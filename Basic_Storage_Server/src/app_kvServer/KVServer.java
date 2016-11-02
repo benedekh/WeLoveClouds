@@ -25,8 +25,19 @@ import weloveclouds.server.store.cache.strategy.LFUStrategy;
 import weloveclouds.server.store.cache.strategy.LRUStrategy;
 import weloveclouds.server.utils.LogSetup;
 
+/**
+ * 
+ * Server application. See {@link ServerCLIHandler} for more details.
+ * 
+ * @author Benoit, Benedek, Hunton
+ */
 public class KVServer {
 
+    /**
+     * The entry point of the application.
+     * 
+     * @param args is discarded so far
+     */
     public static void main(String[] args) {
         String logFile = "logs/server.log";
         try {

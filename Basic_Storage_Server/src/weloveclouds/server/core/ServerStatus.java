@@ -1,7 +1,9 @@
 package weloveclouds.server.core;
 
 /**
- * Created by Benoit on 2016-10-29.
+ * Represents the status of the {@link Server}.
+ * 
+ * @author Benoit
  */
 public enum ServerStatus {
     RUNNING, HALTED, CONNECTED;

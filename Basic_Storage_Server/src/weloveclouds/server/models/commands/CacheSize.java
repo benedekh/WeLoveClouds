@@ -10,6 +10,11 @@ import weloveclouds.server.models.ServerConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.utils.ArgumentsValidator;
 
+/**
+ * A cacheSize command which sets the size of the cache ({@link KVCache}).
+ * 
+ * @author Benedek
+ */
 public class CacheSize extends AbstractServerCommand {
 
     private static final int CACHE_SIZE_INDEX = 0;
@@ -17,6 +22,11 @@ public class CacheSize extends AbstractServerCommand {
     private ServerConfigurationContext context;
     private Logger logger;
 
+    /**
+     * @param arguments the {@link #CACHE_SIZE_INDEX} element of the array shall contain new cache
+     *        size
+     * @param context contains the server parameter configuration
+     */
     public CacheSize(String[] arguments, ServerConfigurationContext context) {
         super(arguments);
         this.context = context;

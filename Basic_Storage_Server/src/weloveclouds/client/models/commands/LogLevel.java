@@ -21,7 +21,7 @@ public class LogLevel extends AbstractCommand {
     private Logger logger;
 
     /**
-     * @param arguments the 0. element of the array shall contain new log level
+     * @param arguments the {@link #LEVEL_INDEX} element of the array shall contain new log level
      */
     public LogLevel(String[] arguments) {
         super(arguments);

@@ -37,21 +37,11 @@ public class CommunicationService implements ICommunicationService {
         this.logger = Logger.getLogger(getClass());
     }
 
-    /**
-     * True if the client is connected to a server.
-     */
     @Override
     public boolean isConnected() {
         return connectionToEndpoint.isConnected();
     }
 
-    /**
-     * Connects to a server described by the connection information stored in the remoteServer
-     * parameter.
-     *
-     * @throws IOException see #initializeConnection
-     * @throws AlreadyConnectedException if the client was already conencted to a server
-     */
     @Override
     public void connectTo(ServerConnectionInfo remoteServer)
             throws IOException, AlreadyConnectedException {
@@ -79,7 +69,7 @@ public class CommunicationService implements ICommunicationService {
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
-        logger.debug(CustomStringJoiner.join(" ", "Trying to connec to", remoteServer.toString()));
+        logger.debug(CustomStringJoiner.join(" ", "Trying to connect to", remoteServer.toString()));
         connectionToEndpoint = new Connection.ConnectionBuilder().remoteServer(remoteServer)
                 .socket(socketFactory.createTcpSocketFromInfo(remoteServer)).build();
 
@@ -90,12 +80,6 @@ public class CommunicationService implements ICommunicationService {
         Runtime.getRuntime().addShutdownHook(connectionShutdownHook);
     }
 
-    /**
-     * Disconnects from the server.
-     *
-     * @throws IOException see {@link Connection#kill()}
-     * @throws AlreadyDisconnectedException if the client was not connected
-     */
     @Override
     public void disconnect() throws IOException, AlreadyDisconnectedException {
         if (connectionToEndpoint.isConnected()) {
@@ -109,12 +93,6 @@ public class CommunicationService implements ICommunicationService {
         }
     }
 
-    /**
-     * Sends a message as a byte array to the server.
-     *
-     * @throws IOException see {@link OutputStream#write(byte[]), OutputStream#flush(),
-     *         Connection#getOutputStream()}
-     */
     @Override
     public void send(byte[] content) throws IOException, UnableToSendContentToServerException {
         if (connectionToEndpoint.isConnected()) {
@@ -130,12 +108,6 @@ public class CommunicationService implements ICommunicationService {
         }
     }
 
-    /**
-     * Reads a message as a byte array from the server if any is available.
-     *
-     * @throws IOException see {@link InputStream#read(byte[]) Connection#getInputStream()}
-     * @throws ClientNotConnectedException if the client was not connected to the server
-     */
     @Override
     public byte[] receive() throws IOException, ClientNotConnectedException {
         if (connectionToEndpoint.isConnected()) {

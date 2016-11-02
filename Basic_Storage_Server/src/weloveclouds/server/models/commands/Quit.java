@@ -7,6 +7,12 @@ import org.apache.log4j.Logger;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.utils.ArgumentsValidator;
 
+
+/**
+ * Quit command which terminates the application.
+ *
+ * @author Benoit, Hunton
+ */
 public class Quit extends AbstractServerCommand {
 
     private static final String APPLICATION_EXITED_MESSAGE = "Application exit!";

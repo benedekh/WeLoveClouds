@@ -19,11 +19,19 @@ import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.utils.ArgumentsValidator;
 
+/**
+ * Start command which starts the {@link Server}} based on the configuration in {@link #context}.
+ * 
+ * @author Benedek
+ */
 public class Start extends AbstractServerCommand {
 
     private ServerConfigurationContext context;
     private Logger logger;
 
+    /**
+     * @param context contains the server parameter configuration
+     */
     public Start(String[] arguments, ServerConfigurationContext context) {
         super(arguments);
         this.context = context;

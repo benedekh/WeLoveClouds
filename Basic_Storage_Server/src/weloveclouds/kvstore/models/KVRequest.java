@@ -1,7 +1,10 @@
 package weloveclouds.kvstore.models;
 
 /**
- * Created by Benoit on 2016-10-29.
+ * Represents a request between the server and the data access layer to the persistent storage /
+ * cache.
+ * 
+ * @author Benoit
  */
 public abstract class KVRequest implements IKVRequest {
     protected KVEntry entry;

@@ -1,5 +1,8 @@
 package weloveclouds.kvstore.models;
 
+/**
+ * Represents a Key-Value message.
+ */
 public interface IKVMessage {
 
     public enum StatusType {
@@ -10,8 +13,7 @@ public interface IKVMessage {
         PUT_SUCCESS, /* Put - request successful, tuple inserted */
         PUT_UPDATE, /* Put - request successful, i.e. value updated */
         PUT_ERROR, /* Put - request not successful */
-        DELETE,
-        DELETE_SUCCESS, /* Delete - request successful */
+        DELETE, DELETE_SUCCESS, /* Delete - request successful */
         DELETE_ERROR; /* Delete - request successful */
     }
 
@@ -27,7 +29,7 @@ public interface IKVMessage {
 
     /**
      * @return a status string that is used to identify request types, response types and error
-     * types associated to the message.
+     *         types associated to the message.
      */
     public StatusType getStatus();
 

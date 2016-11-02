@@ -10,7 +10,9 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
 
 /**
- * Created by Benoit on 2016-11-01.
+ * An exact deserializer which converts a {@link SerializedKVMessage} to a {@link KVMessage}.
+ * 
+ * @author Benoit
  */
 public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, SerializedKVMessage> {
     private static String SEPARATOR = "-\r-";

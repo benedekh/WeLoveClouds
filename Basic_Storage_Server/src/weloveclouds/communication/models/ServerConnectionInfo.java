@@ -49,7 +49,6 @@ public class ServerConnectionInfo {
             return this;
         }
 
-
         public ServerConnectionInfoBuilder ipAddress(InetAddress address) {
             this.ipAddress = address;
             return this;

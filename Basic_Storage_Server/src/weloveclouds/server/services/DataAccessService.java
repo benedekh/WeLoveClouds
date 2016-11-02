@@ -10,6 +10,12 @@ import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 
+/**
+ * Represents an abstract access layer to the key-value store. It include the {@link KVCache} and
+ * the {@link KVPersistentStorage} as well.
+ * 
+ * @author Benedek
+ */
 public class DataAccessService implements IDataAccessService {
 
     private KVCache cache;

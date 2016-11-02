@@ -5,6 +5,11 @@ import static weloveclouds.server.utils.HelpMessageGenerator.generateHelpMessage
 
 import weloveclouds.server.models.exceptions.ServerSideException;
 
+/**
+ * An unrecognized command.
+ *
+ * @author Benedek
+ */
 public class DefaultCommand extends AbstractServerCommand {
 
     public DefaultCommand(String[] arguments) {

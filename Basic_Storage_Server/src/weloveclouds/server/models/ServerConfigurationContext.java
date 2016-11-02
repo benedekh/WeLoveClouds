@@ -4,6 +4,12 @@ import java.nio.file.Path;
 
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 
+/**
+ * A context object which is handled by the different {@link ServerCommand}s so every configuration
+ * parameter of the {@link Server} can be collected at one place.
+ * 
+ * @author Benedek
+ */
 public class ServerConfigurationContext {
 
     private int port;

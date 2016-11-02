@@ -3,6 +3,11 @@ package weloveclouds.server.models.requests;
 import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.KVMessage;
 
+/**
+ * An unrecognized request to the data access layer.
+ * 
+ * @author Benedek
+ */
 public class DefaultRequest implements IRequest {
 
     private String key;
