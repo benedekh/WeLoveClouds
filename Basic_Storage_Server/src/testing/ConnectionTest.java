@@ -2,6 +2,8 @@ package testing;
 
 import java.net.UnknownHostException;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 import weloveclouds.communication.api.v1.IKVServerApi;
 import weloveclouds.communication.api.v1.KVCommunicationApiV1;
@@ -9,7 +11,7 @@ import weloveclouds.communication.api.v1.KVCommunicationApiV1;
 
 public class ConnectionTest extends TestCase {
 
-	
+	@Test
 	public void testConnectionSuccess() {
 		
 		Exception ex = null;
@@ -24,7 +26,7 @@ public class ConnectionTest extends TestCase {
 		assertNull(ex);
 	}
 	
-	
+	@Test
 	public void testUnknownHost() {
 		Exception ex = null;
 		IKVServerApi kvClient = new KVCommunicationApiV1("unknown", 50000);
@@ -38,7 +40,7 @@ public class ConnectionTest extends TestCase {
 		assertTrue(ex instanceof UnknownHostException);
 	}
 	
-	
+	@Test
 	public void testIllegalPort() {
 		Exception ex = null;
 		IKVServerApi kvClient = new KVCommunicationApiV1("localhost", 123456789);

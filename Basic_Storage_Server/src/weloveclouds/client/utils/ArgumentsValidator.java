@@ -74,7 +74,7 @@ public class ArgumentsValidator {
 
             // merge values to one string
             List<String> argList = Arrays.asList(arguments);
-            List<String> valueElements = argList.subList(VALUE_INDEX, argList.size() - 1);
+            List<String> valueElements = argList.subList(VALUE_INDEX, argList.size());
             String value = CustomStringJoiner.join(" ", valueElements);
 
             validateSize(value, VALUE_SIZE_LIMIT_IN_BYTES, command, "value");

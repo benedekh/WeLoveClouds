@@ -3,18 +3,20 @@ package testing.weloveclouds.client.utils;
 import static org.fest.assertions.Assertions.assertThat;
 
 import java.net.UnknownHostException;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
 import org.junit.Test;
 
+import junit.framework.TestCase;
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * Created by Benoit on 2016-10-26.
  */
-public class ArgumentsValidatorTest {
+public class ArgumentsValidatorTest extends TestCase {
     private static final String INVALID_IP_ADDRESS = "darthvader";
     private static final String VALID_IP_ADDRESS = "131.159.52.2";
     private static final String VALID_NETWORK_PORT_NUMBER = "50000";
@@ -25,87 +27,119 @@ public class ArgumentsValidatorTest {
     private static final int KEY_SIZE_LIMIT_IN_BYTES = 20;
     private static final int VALUE_SIZE_LIMIT_IN_BYTES = 120 * 1000;
 
-    @Before
-    public void setUp() throws Exception {}
-
-    @Test(expected = UnknownHostException.class)
-    public void shouldThrowWhenValidatingInvalidIp() throws Exception {
+    @Test
+    public void testShouldThrowWhenValidatingInvalidIp() {
         String[] connectCommandArguments = {INVALID_IP_ADDRESS, VALID_NETWORK_PORT_NUMBER};
-        ArgumentsValidator.validateConnectArguments(connectCommandArguments,
-                new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(INVALID_IP_ADDRESS)
-                        .port(Integer.parseInt(VALID_NETWORK_PORT_NUMBER)).build());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowWhenValidatingInvalidNetworkPortNumber() throws Exception {
-        String[] connectCommandArguments = {VALID_IP_ADDRESS, INVALID_NETWORK_PORT_LOWER_LIMIT};
-        boolean hasThrown = false;
-
         try {
             ArgumentsValidator.validateConnectArguments(connectCommandArguments,
                     new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                            .ipAddress(VALID_IP_ADDRESS)
-                            .port(Integer.parseInt(INVALID_NETWORK_PORT_LOWER_LIMIT)).build());
-        } catch (IllegalArgumentException e) {
-            hasThrown = true;
-            ArgumentsValidator.validateConnectArguments(connectCommandArguments,
-                    new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                            .ipAddress(VALID_IP_ADDRESS)
-                            .port(Integer.parseInt(INVALID_NETWORK_PORT_UPPER_LIMIT)).build());
-        } finally {
-            assertThat(hasThrown).isTrue();
+                            .ipAddress(INVALID_IP_ADDRESS)
+                            .port(Integer.parseInt(VALID_NETWORK_PORT_NUMBER)).build());
+        } catch (Exception ex) {
+            assertTrue(ex instanceof UnknownHostException);
         }
     }
 
-    @Test(expected = UnknownHostException.class)
-    public void shouldThrowIfConnectArgumentIsNull() throws Exception {
-        String nullStringValue = null;
-        Integer nullIntValue = null;
+    @Test
+    public void testShouldThrowWhenValidatingInvalidNetworkPortNumber() {
+        try {
+            String[] connectCommandArguments = {VALID_IP_ADDRESS, INVALID_NETWORK_PORT_LOWER_LIMIT};
+            boolean hasThrown = false;
 
-        ArgumentsValidator.validateConnectArguments(NULL_COMMAND_ARGUMENTS,
-                new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(nullStringValue)
-                        .port(nullIntValue).build());
-    }
+            try {
+                ArgumentsValidator.validateConnectArguments(connectCommandArguments,
+                        new ServerConnectionInfo.ServerConnectionInfoBuilder()
+                                .ipAddress(VALID_IP_ADDRESS)
+                                .port(Integer.parseInt(INVALID_NETWORK_PORT_LOWER_LIMIT)).build());
+            } catch (IllegalArgumentException e) {
+                hasThrown = true;
+                ArgumentsValidator.validateConnectArguments(connectCommandArguments,
+                        new ServerConnectionInfo.ServerConnectionInfoBuilder()
+                                .ipAddress(VALID_IP_ADDRESS)
+                                .port(Integer.parseInt(INVALID_NETWORK_PORT_UPPER_LIMIT)).build());
+            } finally {
+                assertThat(hasThrown).isTrue();
+            }
+        } catch (Exception ex) {
+            assertTrue(ex instanceof IllegalArgumentException);
+        }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfPutArgumentIsNull() {
-        ArgumentsValidator.validatePutArguments(null);
-    }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfGetArgumentIsNull() {
-        ArgumentsValidator.validateGetArguments(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfGetKeyIsLongerThan20Bytes() throws Exception {
-        String sendMessage = "";
-        String[] sendArgument =
-                {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES + 1, "a")};
-
-        ArgumentsValidator.validateGetArguments(sendArgument);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfPutKeyIsLongerThan20Bytes() throws Exception {
-        String sendMessage = "";
-        String[] sendArgument =
-                {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES + 1, "a")};
-
-        ArgumentsValidator.validatePutArguments(sendArgument);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfPutValueIsLongerThan120kBytes() throws Exception {
-        String sendMessage = "";
-        String[] sendArgument =
-                {StringUtils.leftPad(sendMessage, VALUE_SIZE_LIMIT_IN_BYTES + 1, "a")};
-
-        ArgumentsValidator.validatePutArguments(sendArgument);
     }
 
     @Test
-    public void shouldNotThrowIfGetKeyIs20BytesOrLower() {
+    public void testShouldThrowIfConnectArgumentIsNull() {
+        try {
+            String nullStringValue = null;
+            Integer nullIntValue = null;
+
+            ArgumentsValidator.validateConnectArguments(NULL_COMMAND_ARGUMENTS,
+                    new ServerConnectionInfo.ServerConnectionInfoBuilder()
+                            .ipAddress(nullStringValue).port(nullIntValue).build());
+        } catch (Exception ex) {
+            assertTrue(ex instanceof UnknownHostException);
+        }
+    }
+
+    @Test
+    public void testShouldThrowIfPutArgumentIsNull() {
+        try {
+            ArgumentsValidator.validatePutArguments(null);
+        } catch (Exception ex) {
+            assertTrue(ex instanceof IllegalArgumentException);
+        }
+    }
+
+    @Test
+    public void testShouldThrowIfGetArgumentIsNull() {
+        try {
+            ArgumentsValidator.validateGetArguments(null);
+        } catch (Exception ex) {
+            assertTrue(ex instanceof IllegalArgumentException);
+        }
+    }
+
+    @Test
+    public void testShouldThrowIfGetKeyIsLongerThan20Bytes() throws Exception {
+        try {
+            String sendMessage = "";
+            String[] sendArgument =
+                    {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES + 1, "a")};
+
+            ArgumentsValidator.validateGetArguments(sendArgument);
+        } catch (Exception ex) {
+            assertTrue(ex instanceof IllegalArgumentException);
+        }
+    }
+
+    @Test
+    public void testShouldThrowIfPutKeyIsLongerThan20Bytes() throws Exception {
+        try {
+            String sendMessage = "";
+            String[] sendArgument =
+                    {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES + 1, "a")};
+
+            ArgumentsValidator.validatePutArguments(sendArgument);
+        } catch (Exception ex) {
+            assertTrue(ex instanceof IllegalArgumentException);
+        }
+    }
+
+    @Test
+    public void testShouldThrowIfPutValueIsLongerThan120kBytes() {
+        try {
+            String sendMessage = "";
+            String[] sendArgument =
+                    {StringUtils.leftPad(sendMessage, VALUE_SIZE_LIMIT_IN_BYTES + 1, "a")};
+
+            ArgumentsValidator.validatePutArguments(sendArgument);
+        } catch (Exception ex) {
+            assertTrue(ex instanceof IllegalArgumentException);
+        }
+    }
+
+    @Test
+    public void testShouldNotThrowIfGetKeyIs20BytesOrLower() {
         String sendMessage = "";
         String[] sizeLimitMessage =
                 {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES, "a")};
@@ -116,7 +150,7 @@ public class ArgumentsValidatorTest {
     }
 
     @Test
-    public void shouldNotThrowIfPutKeyIs20BytesOrLower() {
+    public void testShouldNotThrowIfPutKeyIs20BytesOrLower() {
         String sendMessage = "";
         String[] sizeLimitMessage =
                 {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES, "a")};
@@ -127,43 +161,65 @@ public class ArgumentsValidatorTest {
     }
 
     @Test
-    public void shouldNotThrowIfPutValueIs20BytesOrLower() {
+    public void testShouldNotThrowIfPutValueIs120kBytesOrLower() {
         String sendMessage = "";
         String[] sizeLimitMessage =
                 {StringUtils.leftPad(sendMessage, VALUE_SIZE_LIMIT_IN_BYTES, "a")};
         String[] validMessage =
                 {StringUtils.leftPad(sendMessage, VALUE_SIZE_LIMIT_IN_BYTES - 1, "a")};
-        ArgumentsValidator.validatePutArguments(sizeLimitMessage);
-        ArgumentsValidator.validatePutArguments(validMessage);
-    }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfDisconnectArgumentsIsNotNullOrEmpty() throws Exception {
-        ArgumentsValidator.validateDisconnectArguments(NOT_NULL_COMMAND_ARGUMENT);
-    }
+        ArrayDeque<String> limitDeque = new ArrayDeque<String>(Arrays.asList(sizeLimitMessage));
+        limitDeque.addFirst(sendMessage);
+        String[] limitArguments = limitDeque.toArray(new String[limitDeque.size()]);
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfQuitArgumentsIsNotNullOrEmpty() throws Exception {
-        ArgumentsValidator.validateQuitArguments(NOT_NULL_COMMAND_ARGUMENT);
-    }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfHelpArgumentIsNotNullOrEmpty() throws Exception {
-        ArgumentsValidator.validateHelpArguments(NOT_NULL_COMMAND_ARGUMENT);
+        ArrayDeque<String> validDeque = new ArrayDeque<String>(Arrays.asList(validMessage));
+        validDeque.addFirst(sendMessage);
+        String[] validArguments = validDeque.toArray(new String[validDeque.size()]);
+
+        ArgumentsValidator.validatePutArguments(limitArguments);
+        ArgumentsValidator.validatePutArguments(validArguments);
     }
 
     @Test
-    public void shouldNotThrowIfDisconnectArgumentsIsNullOrEmpty() {
+    public void testShouldThrowIfDisconnectArgumentsIsNotNullOrEmpty() {
+        try {
+            ArgumentsValidator.validateDisconnectArguments(NOT_NULL_COMMAND_ARGUMENT);
+        } catch (Exception ex) {
+            assertTrue(ex instanceof IllegalArgumentException);
+        }
+    }
+
+    @Test
+    public void testShouldThrowIfQuitArgumentsIsNotNullOrEmpty() {
+        try {
+            ArgumentsValidator.validateQuitArguments(NOT_NULL_COMMAND_ARGUMENT);
+        } catch (Exception ex) {
+            assertTrue(ex instanceof IllegalArgumentException);
+        }
+    }
+
+    @Test
+    public void testShouldThrowIfHelpArgumentIsNotNullOrEmpty() {
+        try {
+            ArgumentsValidator.validateHelpArguments(NOT_NULL_COMMAND_ARGUMENT);
+        } catch (Exception ex) {
+            assertTrue(ex instanceof IllegalArgumentException);
+        }
+    }
+
+    @Test
+    public void testShouldNotThrowIfDisconnectArgumentsIsNullOrEmpty() {
         ArgumentsValidator.validateDisconnectArguments(NULL_COMMAND_ARGUMENTS);
     }
 
     @Test
-    public void shouldNotThrowIfQuitArgumentsIsNullOrEmpty() {
+    public void testShouldNotThrowIfQuitArgumentsIsNullOrEmpty() {
         ArgumentsValidator.validateQuitArguments(NULL_COMMAND_ARGUMENTS);
     }
 
     @Test
-    public void shouldNotThrowIfHelpArgumentIsNullOrEmpty() {
+    public void testShouldNotThrowIfHelpArgumentIsNullOrEmpty() {
         ArgumentsValidator.validateHelpArguments(NULL_COMMAND_ARGUMENTS);
     }
 }
