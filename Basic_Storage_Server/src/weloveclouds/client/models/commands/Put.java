@@ -11,7 +11,7 @@ import weloveclouds.kvstore.models.IKVMessage;
 public class Put extends AbstractKVCommunicationApiCommand {
 
     private static final int KEY_INDEX = 0;
-    private static final int VALUE_INDEX = 0;
+    private static final int VALUE_INDEX = 1;
     private Logger logger;
 
     public Put(String[] arguments, IKVCommunicationApi communicationApi) {
