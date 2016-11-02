@@ -21,6 +21,8 @@ import weloveclouds.server.utils.ArgumentsValidator;
 
 public class Start extends AbstractServerCommand {
 
+    private static boolean RUNNING = false;
+
     private ServerConfigurationContext context;
     private Logger logger;
 
@@ -51,10 +53,12 @@ public class Start extends AbstractServerCommand {
                     .messageDeserializer(new KVMessageDeserializer()).build();
             server.start();
 
+            RUNNING = true;
             String statusMessage = "Server is running.";
             userOutputWriter.writeLine(statusMessage);
             logger.info(statusMessage);
         } catch (IOException ex) {
+            RUNNING = false;
             logger.error(ex);
             throw new ServerSideException(ex.getMessage(), ex);
         } finally {
@@ -64,6 +68,11 @@ public class Start extends AbstractServerCommand {
 
     @Override
     public ICommand validate() throws IllegalArgumentException {
+        if (RUNNING) {
+            String error = "Server is already running.";
+            logger.error(error);
+            throw new IllegalArgumentException(error);
+        }
         ArgumentsValidator.validateStartArguments(arguments);
         return this;
     }

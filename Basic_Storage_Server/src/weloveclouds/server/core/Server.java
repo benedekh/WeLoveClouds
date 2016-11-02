@@ -3,9 +3,9 @@ package weloveclouds.server.core;
 import static weloveclouds.server.core.ServerStatus.RUNNING;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.kvstore.models.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageDeserializer;
@@ -34,12 +34,13 @@ public class Server extends AbstractServer {
     public void run() {
         status = RUNNING;
         while (status == RUNNING) {
-            try {
+            try (ServerSocket socket = serverSocket) {
                 new SimpleConnectionHandler.SimpleConnectionBuilder()
-                        .connection(new Connection.ConnectionBuilder().socket(serverSocket.accept())
-                                .build())
+                        .connection(
+                                new Connection.ConnectionBuilder().socket(socket.accept()).build())
                         .requestFactory(requestFactory)
-                        .communicationApi(communicationApiFactory.createConcurrentCommunicationApiV1())
+                        .communicationApi(
+                                communicationApiFactory.createConcurrentCommunicationApiV1())
                         .messageSerializer(messageSerializer)
                         .messageDeserializer(messageDeserializer).build().handleConnection();
             } catch (IOException e) {
@@ -71,7 +72,8 @@ public class Server extends AbstractServer {
             return this;
         }
 
-        public ServerBuilder communicationApiFactory(CommunicationApiFactory communicationApiFactory) {
+        public ServerBuilder communicationApiFactory(
+                CommunicationApiFactory communicationApiFactory) {
             this.communicationApiFactory = communicationApiFactory;
             return this;
         }
