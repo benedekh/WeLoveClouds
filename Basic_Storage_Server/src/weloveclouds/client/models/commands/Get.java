@@ -1,8 +1,11 @@
 package weloveclouds.client.models.commands;
 
+import static weloveclouds.client.utils.CustomStringJoiner.join;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.kvstore.models.IKVMessage;
@@ -24,11 +27,14 @@ public class Get extends AbstractKVCommunicationApiCommand {
 
             IKVMessage response = communicationApi.get(arguments[KEY_INDEX]);
             logger.debug(response.toString());
+            String responseValue = response.getValue();
 
             switch (response.getStatus()) {
                 case GET_SUCCESS:
+                    userOutputWriter.writeLine(CustomStringJoiner.join(" ", "Value", responseValue,
+                            "was sucessfully got for key."));
                 case GET_ERROR:
-                    userOutputWriter.writeLine(response.getValue());
+                    userOutputWriter.writeLine(join(" ", "Error during key get:", responseValue));
                     break;
                 default:
                     userOutputWriter.writeLine("Unexpected response type.");

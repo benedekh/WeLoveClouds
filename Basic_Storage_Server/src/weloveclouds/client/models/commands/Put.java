@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.kvstore.models.IKVMessage;
@@ -35,9 +36,14 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
             switch (response.getStatus()) {
                 case PUT_UPDATE:
+                    userOutputWriter.writeLine("Key was successfully updated on the server.");
+                    break;
                 case PUT_SUCCESS:
+                    userOutputWriter.writeLine("Key was successfully put on the server.");
+                    break;
                 case PUT_ERROR:
-                    userOutputWriter.writeLine(response.getValue());
+                    userOutputWriter.writeLine(CustomStringJoiner.join(" ", "Error during key put:",
+                            response.getValue()));
                     break;
                 case DELETE_SUCCESS:
                     userOutputWriter.writeLine("Key removed successfully.");
