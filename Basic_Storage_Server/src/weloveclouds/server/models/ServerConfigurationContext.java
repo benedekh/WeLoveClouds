@@ -10,9 +10,11 @@ public class ServerConfigurationContext {
     private int cacheSize;
     private DisplacementStrategy displacementStrategy;
     private Path storagePath;
+    private boolean isStarted;
 
     public ServerConfigurationContext() {
-
+        this.port = -1;
+        this.cacheSize = -1;
     }
 
     public int getPort() {
@@ -46,5 +48,15 @@ public class ServerConfigurationContext {
     public void setStoragePath(Path storagePath) {
         this.storagePath = storagePath;
     }
+
+    public boolean isStarted() {
+        return isStarted;
+    }
+
+    public void setStarted(boolean isStarted) {
+        this.isStarted = isStarted;
+    }
+
+
 
 }
