@@ -5,6 +5,8 @@ import static weloveclouds.server.core.ServerStatus.RUNNING;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.kvstore.models.KVMessage;
@@ -21,6 +23,7 @@ public class Server extends AbstractServer {
     private RequestFactory requestFactory;
     private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
     private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
+    private ServerShutdownHook shutdownHook;
 
     private Server(ServerBuilder serverBuilder) throws IOException {
         super(serverBuilder.serverSocketFactory, serverBuilder.port);
@@ -33,8 +36,10 @@ public class Server extends AbstractServer {
     @Override
     public void run() {
         status = RUNNING;
-        while (status == RUNNING) {
-            try (ServerSocket socket = serverSocket) {
+        try (ServerSocket socket = serverSocket) {
+            registerShutdownHookForSocket(socket);
+
+            while (status == RUNNING) {
                 new SimpleConnectionHandler.SimpleConnectionBuilder()
                         .connection(
                                 new Connection.ConnectionBuilder().socket(socket.accept()).build())
@@ -43,8 +48,36 @@ public class Server extends AbstractServer {
                                 communicationApiFactory.createConcurrentCommunicationApiV1())
                         .messageSerializer(messageSerializer)
                         .messageDeserializer(messageDeserializer).build().handleConnection();
+            }
+        } catch (IOException ex) {
+            // Log what's going on
+        }
+    }
+
+    private void registerShutdownHookForSocket(ServerSocket socket) {
+        if (shutdownHook != null) {
+            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        } else {
+            shutdownHook = new ServerShutdownHook(socket);
+            Runtime.getRuntime().addShutdownHook(shutdownHook);
+        }
+    }
+
+    private class ServerShutdownHook extends Thread {
+
+        private ServerSocket socket;
+        private Logger logger;
+
+        public ServerShutdownHook(ServerSocket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                socket.close();
             } catch (IOException e) {
-                // Log what's going on
+                logger.error(e);
             }
         }
     }
