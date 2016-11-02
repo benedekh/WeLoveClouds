@@ -71,7 +71,7 @@ public class ArgumentsValidator {
             throws IllegalArgumentException {
         String command = "storagePath";
 
-        if (!isNullOrEmpty(arguments) || arguments.length != STORAGE_PATH_NUMBER_OF_ARGUMENTS) {
+        if (isNullOrEmpty(arguments) || arguments.length != STORAGE_PATH_NUMBER_OF_ARGUMENTS) {
             logWarning(command);
             throw new IllegalArgumentException("storagePath need one argument (<path>) only.");
         } else {
