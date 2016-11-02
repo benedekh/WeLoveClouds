@@ -29,7 +29,7 @@ public class KVClient {
      * @param args is discarded so far
      */
     public static void main(String[] args) {
-        String logFile = "/logs/client.log";
+        String logFile = "logs/client.log";
         try {
             new LogSetup(logFile, Level.OFF);
 

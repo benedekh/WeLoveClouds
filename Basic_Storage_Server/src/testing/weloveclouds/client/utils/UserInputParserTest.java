@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import junit.framework.TestCase;
 import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.cli.utils.UserInputParser;
 import weloveclouds.client.models.commands.Command;
@@ -14,7 +15,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 /**
  * @author Benoit
  */
-public class UserInputParserTest {
+public class UserInputParserTest extends TestCase {
     private static final String PUT_COMMAND = "put";
     private static final String GET_COMMAND = "get";
     private static final String CONNECT_COMMAND = "connect";
@@ -30,7 +31,7 @@ public class UserInputParserTest {
     private final int SINGLE_ARGUMENT = 1;
 
     @Test
-    public void shouldParseValidCommandsWithoutArguments() {
+    public void testShouldParseValidCommandsWithoutArguments() {
         verifyValidCommandParsingWithoutArguments(PUT_COMMAND, Command.PUT);
         verifyValidCommandParsingWithoutArguments(GET_COMMAND, Command.GET);
         verifyValidCommandParsingWithoutArguments(CONNECT_COMMAND, Command.CONNECT);
@@ -42,11 +43,7 @@ public class UserInputParserTest {
     }
 
     @Test
-    public void shouldParseValidCommandsWithSingleArguments() {
-        verifyValidCommandParsingWithSingleArgument(
-                CustomStringJoiner.join(ARGUMENTS_DELIMITER,
-                        Arrays.asList(PUT_COMMAND, DOUBLE_ARGUMENTS)),
-                Command.PUT, SINGLE_ARGUMENTS);
+    public void testShouldParseValidCommandsWithSingleArguments() {
         verifyValidCommandParsingWithSingleArgument(
                 CustomStringJoiner.join(ARGUMENTS_DELIMITER,
                         Arrays.asList(GET_COMMAND, SINGLE_ARGUMENTS)),
@@ -78,7 +75,7 @@ public class UserInputParserTest {
     }
 
     @Test
-    public void shouldParseValidCommandsWithMultipleArguments() {
+    public void testShouldParseValidCommandsWithMultipleArguments() {
         verifyValidCommandParsingWithMultipleArguments(
                 CustomStringJoiner.join(ARGUMENTS_DELIMITER,
                         Arrays.asList(PUT_COMMAND, MULTIPLE_ARGUMENTS)),

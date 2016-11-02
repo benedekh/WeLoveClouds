@@ -28,7 +28,7 @@ import weloveclouds.server.utils.LogSetup;
 public class KVServer {
 
     public static void main(String[] args) {
-        String logFile = "/logs/server.log";
+        String logFile = "logs/server.log";
         try {
             new LogSetup(logFile, Level.OFF);
             ServerCLIHandler cli = new ServerCLIHandler(System.in, new ServerCommandFactory());
@@ -49,7 +49,11 @@ public class KVServer {
      *        Options are "FIFO", "LRU", and "LFU".
      */
     public KVServer(int port, int cacheSize, String strategy) {
-        Path defaultStoragePath = Paths.get("/logs/persistentstore/");
+        Path defaultStoragePath = Paths.get("logs/testing/");
+        if (!defaultStoragePath.toAbsolutePath().toFile().exists()) {
+            defaultStoragePath.toAbsolutePath().toFile().mkdirs();
+        }
+
         DisplacementStrategy displacementStrategy = null;
 
         switch (strategy) {
