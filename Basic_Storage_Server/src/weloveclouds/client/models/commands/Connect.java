@@ -1,5 +1,6 @@
 package weloveclouds.client.models.commands;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
@@ -20,8 +21,8 @@ public class Connect extends AbstractCommunicationApiCommand {
     private Logger logger;
 
     /**
-     * @param arguments        contains the IP address (0. element of the array), and the port (1st
-     *                         element of the array)
+     * @param arguments contains the IP address (0. element of the array), and the port (1st element
+     *        of the array)
      * @param communicationApi a reference to the communication module
      * @throws UnknownHostException see {@link UserInputParser#extractConnectionInfoFrom(String[])}
      */
@@ -37,6 +38,9 @@ public class Connect extends AbstractCommunicationApiCommand {
         try {
             logger.info("Executing connect command.");
             communicationApi.connectTo(remoteServer);
+            userOutputWriter.writeLine("Connected to server.");
+        } catch (IOException ex) {
+            logger.error(ex);
         } finally {
             logger.info("Connect command execution finished.");
         }
