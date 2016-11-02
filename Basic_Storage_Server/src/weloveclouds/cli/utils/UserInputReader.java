@@ -1,4 +1,4 @@
-package weloveclouds.client.utils;
+package weloveclouds.cli.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.ParsedUserInput;
+import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
  * Abstracts the user input source so different input streams can be used as source.

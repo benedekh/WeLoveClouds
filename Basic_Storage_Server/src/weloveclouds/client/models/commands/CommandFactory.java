@@ -1,12 +1,13 @@
 package weloveclouds.client.models.commands;
 
+import static weloveclouds.client.utils.CustomStringJoiner.join;
+
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.Command;
 import weloveclouds.client.models.ParsedUserInput;
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 
 /**
@@ -22,7 +23,7 @@ public class CommandFactory {
 
     /**
      * @param communicationApi an instance for the communication module for those commands which
-     *                         need to communicate via the network
+     *        need to communicate via the network
      */
     public CommandFactory(IKVCommunicationApi communicationApi) {
         this.communicationApi = communicationApi;
@@ -65,8 +66,7 @@ public class CommandFactory {
                 recognizedCommand = new Quit(userInput.getArguments());
                 break;
             default:
-                logger.info(
-                        CustomStringJoiner.join(" ", "Unrecognized command:", userCommand.toString()));
+                logger.info(join(" ", "Unrecognized command:", userCommand.toString()));
                 recognizedCommand = new DefaultCommand(null);
                 break;
         }

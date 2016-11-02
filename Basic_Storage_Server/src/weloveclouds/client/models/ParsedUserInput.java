@@ -18,6 +18,10 @@ public class ParsedUserInput {
         return Command.fromString(command);
     }
 
+    public weloveclouds.server.models.commands.ServerCommand getServerCommand() {
+        return weloveclouds.server.models.commands.ServerCommand.fromString(command);
+    }
+
     public String[] getArguments() {
         return arguments;
     }

@@ -1,4 +1,4 @@
-package weloveclouds.client.core;
+package weloveclouds.server.core;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,27 +8,20 @@ import org.apache.log4j.Logger;
 import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
 import weloveclouds.client.models.ParsedUserInput;
-import weloveclouds.client.models.commands.CommandFactory;
-import weloveclouds.communication.exceptions.ClientSideException;
+import weloveclouds.server.models.commands.ServerCommandFactory;
+import weloveclouds.server.models.exceptions.ServerSideException;
 
-/**
- * The echo client itself. It processes (read, validate, execute) various commands that are received
- * from the user. For details on the the commands see {@link CommandFactory}.
- *
- * @author Benoit, Benedek, Hunton
- */
-public class Client {
-
+public class ServerCLIHandler {
     private InputStream inputStream;
-    private CommandFactory commandFactory;
+    private ServerCommandFactory commandFactory;
 
     private Logger logger;
 
     /**
-     * @param inputStream    from which it receives command from the user
+     * @param inputStream from which it receives command from the user
      * @param commandFactory that processes (validate and execute) the various commands
      */
-    public Client(InputStream inputStream, CommandFactory commandFactory) {
+    public ServerCLIHandler(InputStream inputStream, ServerCommandFactory commandFactory) {
         this.inputStream = inputStream;
         this.commandFactory = commandFactory;
         this.logger = Logger.getLogger(getClass());
@@ -40,8 +33,9 @@ public class Client {
      */
     public void run() {
         try (UserInputReader inputReader = new UserInputReader(inputStream);
-             UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
-            logger.info("Client started.");
+                UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
+            UserOutputWriter.setPrefix("Server> ");
+            logger.info("Server started.");
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     outputWriter.writePrefix();
@@ -51,7 +45,7 @@ public class Client {
                 } catch (IOException ex) {
                     outputWriter.writeLine(ex.getMessage());
                     logger.error(ex);
-                } catch (ClientSideException | IllegalArgumentException ex) {
+                } catch (ServerSideException | IllegalArgumentException ex) {
                     outputWriter.writeLine(ex.getMessage());
                     logger.error(ex);
                 }
@@ -61,7 +55,7 @@ public class Client {
         } catch (Exception ex) {
             logger.fatal(ex.getMessage(), ex);
         } finally {
-            logger.info("Client stopped.");
+            logger.info("Server stopped.");
         }
     }
 }

@@ -1,23 +1,17 @@
-package weloveclouds.client.models.commands;
+package weloveclouds.server.models.commands;
 
 import java.io.IOException;
-import java.security.InvalidParameterException;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.exceptions.ClientSideException;
+import weloveclouds.server.models.exceptions.ServerSideException;
+import weloveclouds.server.utils.ArgumentsValidator;
 
-/**
- * LogLevel command which means setting the log level to the respective value.
- *
- * @author Benoit, Benedek, Hunton
- */
-public class LogLevel extends AbstractCommand {
+public class LogLevel extends AbstractServerCommand {
+
     private static final int LEVEL_INDEX = 0;
-
     private Logger logger;
 
     /**
@@ -29,7 +23,7 @@ public class LogLevel extends AbstractCommand {
     }
 
     @Override
-    public void execute() throws ClientSideException {
+    public void execute() throws ServerSideException {
         try {
             logger.info("Executing logLevel command.");
             String logLevel = arguments[LEVEL_INDEX];
@@ -40,15 +34,16 @@ public class LogLevel extends AbstractCommand {
             logger.debug(statusMessage);
         } catch (IOException ex) {
             logger.error(ex);
-            throw new ClientSideException(ex.getMessage(), ex);
+            throw new ServerSideException(ex.getMessage(), ex);
         } finally {
             logger.info("logLevel command execution finished.");
         }
     }
 
     @Override
-    public ICommand validate() throws InvalidParameterException {
+    public ICommand validate() throws IllegalArgumentException {
         ArgumentsValidator.validateLogLevelArguments(arguments);
         return this;
     }
+
 }

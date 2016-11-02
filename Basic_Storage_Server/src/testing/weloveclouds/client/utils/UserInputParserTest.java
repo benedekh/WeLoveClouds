@@ -6,10 +6,10 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import weloveclouds.cli.utils.UserInputParser;
 import weloveclouds.client.models.Command;
 import weloveclouds.client.models.ParsedUserInput;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.client.utils.UserInputParser;
 
 /**
  * @author Benoit
