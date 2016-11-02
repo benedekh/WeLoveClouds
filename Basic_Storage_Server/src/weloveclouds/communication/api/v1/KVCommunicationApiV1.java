@@ -21,6 +21,12 @@ import weloveclouds.kvstore.serialization.KVMessageDeserializer;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
 
+/**
+ * First version implementation of the Key-value store communication API. Simply forwards the method
+ * calls to the {@link ICommunicationApi}.
+ *
+ * @author Benoit, Benedek
+ */
 public class KVCommunicationApiV1 implements IKVCommunicationApi {
 
     private static final double VERSION = 1.5;
@@ -50,6 +56,11 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
         this.messageDeserializer = new KVMessageDeserializer();
     }
 
+    /**
+     * @param communicationApi which transfers the messages over the network
+     * @param messageSerializer to serialized {@link KVMessage} to byte[].
+     * @param messageDeserializer to deserialize {@link KVMessage} from byte[].
+     */
     public KVCommunicationApiV1(ICommunicationApi communicationApi,
             IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer,
             IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer) {
@@ -123,6 +134,16 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
         return serverCommunication.receive();
     }
 
+    /**
+     * Creates a new {@link KVMessage} from the referred parameters, serializes that and sends over
+     * the network to the server.
+     * 
+     * @param messageType type of the message
+     * @param key key field's value in the message
+     * @param value value fields's value in the message
+     * 
+     * @throws UnableToSendContentToServerException if any error occurs
+     */
     private void sendMessage(StatusType messageType, String key, String value)
             throws UnableToSendContentToServerException {
         KVMessage message =
@@ -132,6 +153,11 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
         logger.debug(CustomStringJoiner.join(" ", message.toString(), "is sent."));
     }
 
+    /**
+     * Receives a byte[] response over the network, and deserializes a {@link IKVMessage} from that.
+     * 
+     * @throws Exception if any error occurs
+     */
     private IKVMessage receiveMessage() throws Exception {
         KVMessage response = messageDeserializer.deserialize(receive());
         logger.debug(CustomStringJoiner.join(" ", response.toString(), "is received."));

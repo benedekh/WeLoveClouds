@@ -11,6 +11,12 @@ import weloveclouds.cli.utils.UserOutputWriter;
 import weloveclouds.server.models.commands.ServerCommandFactory;
 import weloveclouds.server.models.exceptions.ServerSideException;
 
+/**
+ * CommandLineInterface handler for the Server so it can be run as a standalone application. Handles
+ * different commands which come from the {@link #inputStream}.
+ * 
+ * @author Benedek
+ */
 public class ServerCLIHandler {
     private InputStream inputStream;
     private ServerCommandFactory commandFactory;

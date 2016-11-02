@@ -8,6 +8,11 @@ import weloveclouds.server.utils.HelpMessageGenerator;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.utils.ArgumentsValidator;
 
+/**
+ * Prints the help message of the server-side CLI.
+ *
+ * @author Benedek
+ */
 public class Help extends AbstractServerCommand {
 
     private Logger logger;

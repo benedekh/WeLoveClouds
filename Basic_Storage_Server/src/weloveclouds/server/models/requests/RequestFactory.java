@@ -9,7 +9,11 @@ import weloveclouds.kvstore.models.KVMessage;
 import weloveclouds.server.services.IDataAccessService;
 
 /**
- * Created by Benoit on 2016-10-31.
+ * CommandFactory design pattern, which gives a common handling mechanism of different requests. It
+ * handles several requests (see {@link StatusType} for the possible types) by dispatching the
+ * command to its respective handler (see package {@link weloveclouds.server.models.requests}.
+ *
+ * @author Benoit
  */
 public class RequestFactory {
     private IDataAccessService dataAccessService;

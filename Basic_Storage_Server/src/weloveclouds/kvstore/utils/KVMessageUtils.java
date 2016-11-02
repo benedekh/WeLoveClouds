@@ -7,12 +7,17 @@ import weloveclouds.kvstore.models.IKVMessage.StatusType;
 
 
 /**
- * Created by Benoit on 2016-11-01.
+ * Utility class for {@link KVMessage}}.
+ * 
+ * @author Benedek
  */
 public class KVMessageUtils {
     private static final String SEPARATOR = "-\r-";
 
-    public static String convertMessageToString(KVMessage message){
+    /**
+     * Converts a {@link KVMessage} to a string for serialization purposes.
+     */
+    public static String convertMessageToString(KVMessage message) {
         StatusType status = message.getStatus();
         String statusStr = status == null ? null : status.toString();
         return join(SEPARATOR, statusStr, message.getKey(), message.getValue());

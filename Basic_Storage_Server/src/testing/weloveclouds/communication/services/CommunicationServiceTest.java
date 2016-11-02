@@ -1,6 +1,6 @@
 package testing.weloveclouds.communication.services;
 
-import static org.fest.assertions.Assertions.*;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
@@ -25,7 +25,9 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
 
 /**
- * @author Benoit
+ * Unit tests to validate the {@link CommunicationService} correct behavior.
+ * 
+ * @author Benoit, Benedek, Hunton
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CommunicationServiceTest {
@@ -48,7 +50,8 @@ public class CommunicationServiceTest {
         communicationService = new CommunicationService(socketFactoryMock);
 
         validServerConnectionInfos = new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                .ipAddress(InetAddress.getByName(VALID_SERVER_IP_ADDRESS)).port(VALID_SERVER_PORT).build();
+                .ipAddress(InetAddress.getByName(VALID_SERVER_IP_ADDRESS)).port(VALID_SERVER_PORT)
+                .build();
         invalidServerConnectionInfos = new ServerConnectionInfo.ServerConnectionInfoBuilder()
                 .ipAddress(InetAddress.getByName(INVALID_SERVER_IP_ADDRESS)).port(VALID_SERVER_PORT)
                 .build();

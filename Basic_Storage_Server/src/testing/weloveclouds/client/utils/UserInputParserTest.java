@@ -13,7 +13,9 @@ import weloveclouds.client.models.commands.Command;
 import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
- * @author Benoit
+ * Unit tests to validate the {@link UserInputParser}'s correct behavior.
+ * 
+ * @author Benoit, Benedek, Hunton
  */
 public class UserInputParserTest extends TestCase {
     private static final String PUT_COMMAND = "put";
@@ -25,7 +27,6 @@ public class UserInputParserTest extends TestCase {
     private static final String LOGLEVEL_COMMAND = "logLevel";
     private static final String INVALID_COMMAND = "lukeskywalker";
     private static final String SINGLE_ARGUMENTS = "testargs123:";
-    private static final String DOUBLE_ARGUMENTS = "args1 args2";
     private static final String MULTIPLE_ARGUMENTS = "args1 args2 args3";
     private static final String ARGUMENTS_DELIMITER = " ";
     private final int SINGLE_ARGUMENT = 1;

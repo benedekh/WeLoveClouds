@@ -6,7 +6,9 @@ import java.net.ServerSocket;
 import static weloveclouds.server.core.ServerStatus.HALTED;
 
 /**
- * Created by Benoit on 2016-11-01.
+ * Represents an abstract server which can accept connections on the referred port.
+ * 
+ * @author Benoit
  */
 public class AbstractServer extends Thread {
     protected ServerStatus status;
@@ -14,13 +16,18 @@ public class AbstractServer extends Thread {
     protected ServerSocket serverSocket;
     protected int port;
 
-    public AbstractServer(ServerSocketFactory serverSocketFactory, int port) throws IOException{
+    /**
+     * @param serverSocketFactory to create the server socket on the referred port
+     * @param port on which the server will listen
+     * @throws IOException {@link ServerSocketFactory#createServerSocketFromPort(int)}}
+     */
+    public AbstractServer(ServerSocketFactory serverSocketFactory, int port) throws IOException {
         this.serverSocketFactory = serverSocketFactory;
         this.serverSocket = serverSocketFactory.createServerSocketFromPort(port);
         this.status = HALTED;
     }
 
-    protected ServerStatus getStatus(){
+    protected ServerStatus getStatus() {
         return status;
     }
 }

@@ -2,6 +2,11 @@ package weloveclouds.kvstore.models;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 
+/**
+ * Represents a Key-value message that is transferred through the network (the entry and the message type).
+ * 
+ * @author Benedek
+ */
 public class KVMessage implements IKVMessage {
 
     private KVEntry entry;

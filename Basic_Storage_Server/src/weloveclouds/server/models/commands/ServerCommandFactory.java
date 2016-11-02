@@ -10,6 +10,13 @@ import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.client.models.commands.Connect;
 import weloveclouds.server.models.ServerConfigurationContext;
 
+/**
+ * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
+ * handles several commands (see {@link ServerCommand} for the possible commands) by dispatching the
+ * command to its respective handler.
+ *
+ * @author Benedek
+ */
 public class ServerCommandFactory {
     private ServerConfigurationContext context;
     private Logger logger;

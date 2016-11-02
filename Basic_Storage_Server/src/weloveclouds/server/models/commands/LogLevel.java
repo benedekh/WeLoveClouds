@@ -9,13 +9,18 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.utils.ArgumentsValidator;
 
+/**
+ * LogLevel command which means setting the log level to the respective value.
+ *
+ * @author Benoit, Benedek, Hunton
+ */
 public class LogLevel extends AbstractServerCommand {
 
     private static final int LEVEL_INDEX = 0;
     private Logger logger;
 
     /**
-     * @param arguments the 0. element of the array shall contain new log level
+     * @param arguments the {@link #LEVEL_INDEX} element of the array shall contain new log level
      */
     public LogLevel(String[] arguments) {
         super(arguments);

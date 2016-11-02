@@ -25,6 +25,10 @@ public class UserOutputWriter implements AutoCloseable {
         this.logger = Logger.getLogger(getClass());
     }
 
+    /**
+     * Set the prefix that is displayed on each row when a message has to be printed on the output
+     * stream.
+     */
     public static void setPrefix(String prefix) {
         PREFIX = prefix;
     }

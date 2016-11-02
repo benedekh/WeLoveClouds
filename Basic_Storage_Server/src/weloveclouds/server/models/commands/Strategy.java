@@ -8,10 +8,16 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.server.models.ServerConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
+import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
 import weloveclouds.server.utils.ArgumentsValidator;
 
+/**
+ * The displacements strategy to be used in the {@link KVCache}}.
+ * 
+ * @author Benedek
+ */
 public class Strategy extends AbstractServerCommand {
 
     private static final int STRATEGY_INDEX = 0;
@@ -19,6 +25,11 @@ public class Strategy extends AbstractServerCommand {
     private ServerConfigurationContext context;
     private Logger logger;
 
+    /**
+     * @param arguments the {@link #STRATEGY_INDEX} element of the array shall contain the name of
+     *        the displacement startegy
+     * @param context contains the server parameter configuration
+     */
     public Strategy(String[] arguments, ServerConfigurationContext context) {
         super(arguments);
         this.context = context;

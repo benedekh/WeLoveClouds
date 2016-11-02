@@ -3,8 +3,13 @@ package weloveclouds.server.models.requests;
 import weloveclouds.kvstore.models.KVMessage;
 
 /**
- * Created by Benoit on 2016-10-31.
+ * An executable request which produces the response {@link KVMessage}.
+ * 
+ * @author Benoit
  */
 public interface IRequest {
+    /**
+     * Executing the request it will result in a reponse {@link KVMessage}.
+     */
     KVMessage execute();
 }

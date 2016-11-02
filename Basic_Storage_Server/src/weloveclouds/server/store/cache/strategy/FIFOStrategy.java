@@ -9,6 +9,11 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.server.store.exceptions.StorageException;
 
+/**
+ * FIFO (First In First Out) strategy for displacing a key from a full cache.
+ *  
+ * @author Benedek
+ */
 public class FIFOStrategy implements DisplacementStrategy {
 
     private Queue<String> fifo;

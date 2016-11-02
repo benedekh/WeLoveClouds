@@ -10,6 +10,11 @@ import weloveclouds.server.models.ServerConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.utils.ArgumentsValidator;
 
+/**
+ * The port on which the server is going to listen for the client.
+ * 
+ * @author Benedek
+ */
 public class Port extends AbstractServerCommand {
 
     private static final int PORT_INDEX = 0;
@@ -17,6 +22,10 @@ public class Port extends AbstractServerCommand {
     private ServerConfigurationContext context;
     private Logger logger;
 
+    /**
+     * @param arguments the {@link #PORT_INDEX} element of the array shall contain new port
+     * @param context contains the server parameter configuration
+     */
     public Port(String[] arguments, ServerConfigurationContext context) {
         super(arguments);
         this.context = context;

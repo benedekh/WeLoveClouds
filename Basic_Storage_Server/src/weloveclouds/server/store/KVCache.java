@@ -14,6 +14,12 @@ import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 
+/**
+ * A key-value cache for the {@link DataAccessService}. It hides the {@link DisplacementStrategy}
+ * which tells which key to be removed from the cache, if the cache is full.
+ * 
+ * @author Benedek
+ */
 public class KVCache implements IDataAccessService, Observer {
 
     private Map<String, String> cache;
@@ -23,6 +29,11 @@ public class KVCache implements IDataAccessService, Observer {
     private DisplacementStrategy displacementStrategy;
     private Logger logger;
 
+    /**
+     * @param maxSize how many entries can be stored in the cache
+     * @param displacementStrategy strategy which decides which key and value to be removed from the
+     *        cache, if it is full
+     */
     public KVCache(int maxSize, DisplacementStrategy displacementStrategy) {
         this.capacity = maxSize;
         this.displacementStrategy = displacementStrategy;

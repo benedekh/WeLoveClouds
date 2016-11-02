@@ -16,7 +16,11 @@ import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
 import weloveclouds.server.models.requests.RequestFactory;
 
 /**
- * Created by Benoit on 2016-10-29.
+ * A handler for a client connected to the {@link Server}. It receives and interprets different
+ * message from the client over the network, and forwards the clients' requests to the data access
+ * layer.
+ * 
+ * @author Benoit
  */
 public class SimpleConnectionHandler extends Thread implements IConnectionHandler {
     private IConcurrentCommunicationApi communicationApi;
@@ -67,7 +71,11 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
         logger.info("Client is disconnected.");
     }
 
-
+    /**
+     * A builder to create a {@link SimpleConnectionHandler} instance.
+     * 
+     * @author Benoit
+     */
     public static class SimpleConnectionBuilder {
         private IConcurrentCommunicationApi communicationApi;
         private RequestFactory requestFactory;

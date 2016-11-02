@@ -12,8 +12,13 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.commands.LogLevel;
 import weloveclouds.server.models.ServerConfigurationContext;
+import weloveclouds.server.models.commands.ServerCommand;
 
-
+/**
+ * Validates the arguments of the different commands ({@link ServerCommand}).
+ *
+ * @author Benedek
+ */
 public class ArgumentsValidator {
 
     private static final Logger LOGGER = Logger.getLogger(ArgumentsValidator.class);
@@ -39,6 +44,13 @@ public class ArgumentsValidator {
     private static final int STORAGE_PATH_INDEX = 0;
 
 
+    /**
+     * A start command is valid, if:<br>
+     * (1) it does not have any arguments, and <br>
+     * (2) every field of the context object was initialized.
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
     public static void validateStartArguments(String[] arguments,
             ServerConfigurationContext context) throws IllegalArgumentException {
         String command = "start";
@@ -67,6 +79,13 @@ public class ArgumentsValidator {
         }
     }
 
+    /**
+     * A storage path command is valid, if:<br>
+     * (1) the {@link #STORAGE_PATH_INDEX} location parameter of arguments is a valid path, and <br>
+     * (2) this is the only argument of the command
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
     public static void validateStoragePathArguments(String[] arguments)
             throws IllegalArgumentException {
         String command = "storagePath";
@@ -87,6 +106,13 @@ public class ArgumentsValidator {
         }
     }
 
+    /**
+     * A cache size command is valid, if:<br>
+     * (1) the {@link #CACHE_SIZE_INDEX} location parameter of arguments is a valid number, and <br>
+     * (2) this is the only argument of the command
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
     public static void validateCacheSizeArguments(String[] arguments)
             throws IllegalArgumentException {
         String command = "cacheSize";
@@ -118,6 +144,14 @@ public class ArgumentsValidator {
         }
     }
 
+    /**
+     * A port command is valid, if:<br>
+     * (1) the {@link #PORT_SIZE_INDEX} location parameter of arguments is a valid port number, and
+     * <br>
+     * (2) this is the only argument of the command
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
     public static void validatePortArguments(String[] arguments) throws IllegalArgumentException {
         String command = "port";
 
@@ -144,10 +178,10 @@ public class ArgumentsValidator {
 
     /**
      * A logLevel command is valid, if:<br>
-     * (1) the 0. element of the arguments array is a log level, and<br>
+     * (1) the {@link #LOG_LEVEL_INDEX} element of the arguments array is a log level, and<br>
      * (2) the log level is one of those in {@link LogLevel}.
      *
-     * @param arguments 0. element of the array contains the log level
+     * @param arguments {@link #LOG_LEVEL_INDEX} element of the array contains the log level
      * @throws IllegalArgumentException if
      */
     public static void validateLogLevelArguments(String[] arguments)
@@ -166,6 +200,14 @@ public class ArgumentsValidator {
         }
     }
 
+    /**
+     * A strategy command is valid, if:<br>
+     * (1) the {@link #STRATEGY_INDEX} location parameter of arguments is a name for a displacement
+     * startegy, and <br>
+     * (2) this is the only argument of the command
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
     public static void validateStrategyArguments(String[] arguments)
             throws IllegalArgumentException {
         String command = "strategy";
@@ -202,6 +244,11 @@ public class ArgumentsValidator {
         return arguments == null || arguments.length == 0;
     }
 
+    /**
+     * Logs a warning message by the logger.
+     * 
+     * @param command which command sent the warning
+     */
     private static void logWarning(String command) {
         String warning = join(" ", command, "command is invalid.");
         synchronized (LOGGER) {

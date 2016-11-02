@@ -1,8 +1,13 @@
 package weloveclouds.kvstore.serialization;
 
 /**
- * Created by Benoit on 2016-11-01.
+ * A serializer that can convert from type E to T.
+ * 
+ * @author Benoit
  */
 public interface IMessageSerializer<T, E> {
+    /**
+     * Converts an unserialized message to a T type.
+     */
     T serialize(E unserializedMessage);
 }

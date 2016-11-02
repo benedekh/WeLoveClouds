@@ -14,7 +14,9 @@ import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
- * Created by Benoit on 2016-10-26.
+ * Unit tests to validate the {@link ArgumentsValidator} correct behavior.
+ * 
+ * @author Benoit, Benedek, Hunton
  */
 public class ArgumentsValidatorTest extends TestCase {
     private static final String INVALID_IP_ADDRESS = "darthvader";

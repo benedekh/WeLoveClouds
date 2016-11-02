@@ -8,7 +8,9 @@ import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
 import weloveclouds.kvstore.utils.KVMessageUtils;
 
 /**
- * Created by Benoit on 2016-11-01.
+ * An exact deserializer which converts a {@link KVMessage} to a {@link SerializedKVMessage}.
+ * 
+ * @author Benoit
  */
 public class KVMessageSerializer implements IMessageSerializer<SerializedKVMessage, KVMessage> {
 

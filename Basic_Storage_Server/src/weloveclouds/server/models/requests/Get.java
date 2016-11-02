@@ -8,11 +8,14 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
- * Created by Benoit on 2016-10-31.
+ * A get request to get the respective value for a key, stored in the {@link DataAccessService}.
+ * 
+ * @author Benoit
  */
 public class Get implements IRequest {
     private IDataAccessService dataAccessService;

@@ -7,12 +7,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.models.commands.Command;
 import weloveclouds.client.models.commands.LogLevel;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
 
 /**
- * Validates the arguments of the different commands.
+ * Validates the arguments of the different commands ({@link Command}).
  *
  * @author Benoit, Benedek
  */
@@ -39,7 +40,7 @@ public class ArgumentsValidator {
     /**
      * A connect command is valid, if:<br>
      * (1) the 0. parameter of arguments is a valid IP address, and <br>
-     * (2) the 1st parameter of arguments i a valid port, and <br>
+     * (2) the 1st parameter of arguments is a valid port, and <br>
      * (3) these are the only arguments.<br>
      * The remoteServer already contains the IP address and the port.
      *
@@ -63,6 +64,17 @@ public class ArgumentsValidator {
         }
     }
 
+    /**
+     * A put command is valid, if:<br>
+     * (1) the {@link #KEY_INDEX} parameter of arguments is a key, and <br>
+     * (2) all other parameters starting from {@link #VALUE_INDEX} parameter of the arguments are
+     * regarded and merged as value, and<br>
+     * (3) these are the only arguments, and <br>
+     * (4) and the size of the key is at most {@link #KEY_SIZE_LIMIT_IN_BYTES} bytes, and <br>
+     * (5) and the size of the value is at most {@link #VALUE_SIZE_LIMIT_IN_BYTES} bytes.<br>
+     * 
+     * @throws IllegalArgumentException if there is a validation error
+     */
     public static void validatePutArguments(String[] arguments) throws IllegalArgumentException {
         String command = "put";
 
@@ -81,6 +93,14 @@ public class ArgumentsValidator {
         }
     }
 
+    /**
+     * A get command is valid, if:<br>
+     * (1) the {@link #KEY_INDEX} parameter of arguments is a key, and <br>
+     * (2) and the size of the key is at most {@link #KEY_SIZE_LIMIT_IN_BYTES} bytes, and<br>
+     * (3) that is the only argument.<br>
+     * 
+     * @throws IllegalArgumentException if there is a validation error
+     */
     public static void validateGetArguments(String[] arguments) throws IllegalArgumentException {
         String command = "get";
         if (isNullOrEmpty(arguments) || arguments.length != GET_NUMBER_OF_ARGUMENTS) {
@@ -91,6 +111,14 @@ public class ArgumentsValidator {
         }
     }
 
+    /**
+     * Validates if the respective field's size as a byte array is smaller than the limit.
+     * 
+     * @param commandName name of the command which need this field
+     * @param fieldName name of the field
+     * 
+     * @throws IllegalArgumentException if there is a validation error
+     */
     private static void validateSize(String field, int limit, String commandName, String fieldName)
             throws IllegalArgumentException {
         byte[] key = field.getBytes(SerializedKVMessage.MESSAGE_ENCODING);
@@ -104,10 +132,10 @@ public class ArgumentsValidator {
 
     /**
      * A logLevel command is valid, if:<br>
-     * (1) the 0. element of the arguments array is a log level, and<br>
+     * (1) the {@link #LEVEL_INDEX}element of the arguments array is a log level, and<br>
      * (2) the log level is one of those in {@link LogLevel}.
      *
-     * @param arguments 0. element of the array contains the log level
+     * @param arguments {@link #LEVEL_INDEX} element of the array contains the log level
      * @throws IllegalArgumentException if
      */
     public static void validateLogLevelArguments(String[] arguments)
@@ -173,6 +201,11 @@ public class ArgumentsValidator {
         return arguments == null || arguments.length == 0;
     }
 
+    /**
+     * Logs a warning message by the logger.
+     * 
+     * @param command which command sent the warning
+     */
     private static void logWarning(String command) {
         String warning = join(" ", command, "command is invalid.");
         LOGGER.warn(warning);

@@ -13,12 +13,23 @@ import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.kvstore.models.IKVMessage;
 
+/**
+ * Put command which means the client would like to send a key along with a value to the server.
+ *
+ * @author Benoit, Benedek, Hunton
+ */
 public class Put extends AbstractKVCommunicationApiCommand {
 
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
     private Logger logger;
 
+    /**
+     * @param arguments contains the key in the {@link #KEY_INDEX} position and the value is merged
+     *        into one value starting from the index {@link #VALUE_INDEX} and going until the end of
+     *        the array
+     * @param communicationApi which is used for querying the value from the server
+     */
     public Put(String[] arguments, IKVCommunicationApi communicationApi) {
         super(arguments, communicationApi);
         this.logger = Logger.getLogger(getClass());

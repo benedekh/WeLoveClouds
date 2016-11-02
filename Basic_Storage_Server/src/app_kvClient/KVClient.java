@@ -7,18 +7,13 @@ import org.apache.log4j.Level;
 import weloveclouds.client.core.Client;
 import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.SocketFactory;
-import weloveclouds.communication.api.ICommunicationApi;
-import weloveclouds.communication.api.v1.CommunicationApiV1;
-import weloveclouds.communication.api.v1.KVCommunicationApiV1;
-import weloveclouds.communication.services.CommunicationService;
-import weloveclouds.kvstore.serialization.KVMessageDeserializer;
-import weloveclouds.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.server.utils.LogSetup;
 
 /**
  * 
- * Echo client application. See {@link Client} for more details.
+ * Client application. See {@link Client} for more details.
  * 
  * @author Benoit, Benedek, Hunton
  */
@@ -33,11 +28,9 @@ public class KVClient {
         try {
             new LogSetup(logFile, Level.OFF);
 
-            ICommunicationApi serverCommunication =
-                    new CommunicationApiV1(new CommunicationService(new SocketFactory()));
-            CommandFactory commandFactory =
-                    new CommandFactory(new KVCommunicationApiV1(serverCommunication,
-                            new KVMessageSerializer(), new KVMessageDeserializer()));
+            IKVCommunicationApi serverCommunication =
+                    new CommunicationApiFactory().createKVCommunicationApiV1();
+            CommandFactory commandFactory = new CommandFactory(serverCommunication);
             Client client = new Client(System.in, commandFactory);
             client.run();
         } catch (IOException ex) {

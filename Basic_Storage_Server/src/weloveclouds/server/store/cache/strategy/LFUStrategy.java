@@ -12,6 +12,11 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.KeyFrequency;
 import weloveclouds.server.store.exceptions.StorageException;
 
+/**
+ * LFU (Least Frequently Used) strategy for displacing a key from a full cache.
+ * 
+ * @author Benedek
+ */
 public class LFUStrategy implements DisplacementStrategy {
 
     private Map<String, KeyFrequency> keyFrequencyPairs;
@@ -52,6 +57,7 @@ public class LFUStrategy implements DisplacementStrategy {
         }
     }
 
+    @Override
     public synchronized void get(String key) {
         try {
             KeyFrequency keyFrequency = keyFrequencyPairs.get(key);

@@ -10,12 +10,15 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
- * Created by Benoit on 2016-10-31.
+ * A put request to store a key and a value in the {@link DataAccessService}.
+ * 
+ * @author Benoit
  */
 public class Put implements IRequest {
     private IDataAccessService dataAccessService;

@@ -10,8 +10,15 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.server.models.ServerConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
+import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.utils.ArgumentsValidator;
 
+
+/**
+ * The path for the {@link KVPersistentStorage}} where it can persist the records.
+ * 
+ * @author Benedek
+ */
 public class StoragePath extends AbstractServerCommand {
 
     private static final int STORAGE_PATH_INDEX = 0;
@@ -19,6 +26,11 @@ public class StoragePath extends AbstractServerCommand {
     private ServerConfigurationContext context;
     private Logger logger;
 
+    /**
+     * @param arguments the {@link #STORAGE_PATH_INDEX} element of the array shall contain new
+     *        storage path
+     * @param context contains the server parameter configuration
+     */
     public StoragePath(String[] arguments, ServerConfigurationContext context) {
         super(arguments);
         this.context = context;

@@ -8,11 +8,15 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
- * Created by Benoit on 2016-10-31.
+ * A delete request to remove the key and its respective value stored in the
+ * {@link DataAccessService}.
+ * 
+ * @author Benoit
  */
 public class Delete implements IRequest {
     private IDataAccessService dataAccessService;

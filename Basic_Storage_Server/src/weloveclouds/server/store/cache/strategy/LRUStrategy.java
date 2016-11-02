@@ -9,6 +9,11 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.server.store.exceptions.StorageException;
 
+/**
+ * LRU (Least Recently Used) strategy for displacing a key from a full cache.
+ * 
+ * @author Benedek
+ */
 public class LRUStrategy implements DisplacementStrategy {
 
     private Deque<String> recentKeys;
