@@ -33,6 +33,7 @@ public class Get extends AbstractKVCommunicationApiCommand {
                 case GET_SUCCESS:
                     userOutputWriter.writeLine(CustomStringJoiner.join(" ", "Value", responseValue,
                             "was sucessfully got for key."));
+                    break;
                 case GET_ERROR:
                     userOutputWriter.writeLine(join(" ", "Error during key get:", responseValue));
                     break;
