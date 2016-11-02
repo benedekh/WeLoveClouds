@@ -27,6 +27,7 @@ public class Start extends AbstractServerCommand {
     public Start(String[] arguments, ServerConfigurationContext context) {
         super(arguments);
         this.context = context;
+        this.logger = Logger.getLogger(getClass());
     }
 
     @Override

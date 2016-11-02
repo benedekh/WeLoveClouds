@@ -70,7 +70,6 @@ public class ArgumentsValidator {
     public static void validateStoragePathArguments(String[] arguments)
             throws IllegalArgumentException {
         String command = "storagePath";
-
         if (isNullOrEmpty(arguments) || arguments.length != STORAGE_PATH_NUMBER_OF_ARGUMENTS) {
             logWarning(command);
             throw new IllegalArgumentException("storagePath need one argument (<path>) only.");
@@ -83,7 +82,7 @@ public class ArgumentsValidator {
                 }
             } catch (InvalidPathException ex) {
                 logWarning(command);
-                throw new IllegalArgumentException("Path string cannot be converted.");
+                throw new IllegalArgumentException(ex);
             }
         }
     }

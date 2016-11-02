@@ -22,6 +22,7 @@ public class StoragePath extends AbstractServerCommand {
     public StoragePath(String[] arguments, ServerConfigurationContext context) {
         super(arguments);
         this.context = context;
+        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
