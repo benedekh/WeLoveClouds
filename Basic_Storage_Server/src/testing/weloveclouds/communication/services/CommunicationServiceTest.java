@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import junit.framework.TestCase;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +30,7 @@ import weloveclouds.communication.services.CommunicationService;
  * @author Benoit
  */
 @RunWith(MockitoJUnitRunner.class)
-public class CommunicationServiceTest {
+public class CommunicationServiceTest extends TestCase {
     private static final String VALID_SERVER_IP_ADDRESS = "131.159.52.2";
     private static final String INVALID_SERVER_IP_ADDRESS = "127.0.0.1";
     private static final int VALID_SERVER_PORT = 50000;

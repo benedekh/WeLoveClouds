@@ -27,7 +27,7 @@ public class ConnectionTest extends TestCase {
         } catch (Exception e) {
             ex = e;
         }
-
+        kvClient.disconnect();
         assertNull(ex);
     }
 
@@ -47,6 +47,7 @@ public class ConnectionTest extends TestCase {
          * @see weloveclouds.communication.api.V1.KVCommunicationApiV1
          * @see weloveclouds.communication.models.ServerConnectionInfo
          */
+        kvClient.disconnect();
         assertTrue(ex instanceof Exception);
     }
 
@@ -60,7 +61,7 @@ public class ConnectionTest extends TestCase {
         } catch (Exception e) {
             ex = e;
         }
-
+        kvClient.disconnect();
         assertTrue(ex instanceof IllegalArgumentException);
     }
 }

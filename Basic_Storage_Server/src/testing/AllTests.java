@@ -54,9 +54,6 @@ public class AllTests {
         }
     }
     
-    
-
-	
 	
 	public static Test suite() {
 		TestSuite clientSuite = new TestSuite("Basic Storage ServerTest-Suite");
@@ -64,7 +61,8 @@ public class AllTests {
 		clientSuite.addTestSuite(InteractionTest.class); 
 		clientSuite.addTestSuite(AdditionalTest.class); 
 		clientSuite.addTestSuite(testing.weloveclouds.client.utils.ArgumentsValidatorTest.class);
-		
+		clientSuite.addTestSuite(testing.weloveclouds.client.utils.UserInputParserTest.class);
+		clientSuite.addTestSuite(testing.weloveclouds.communication.services.CommunicationServiceTest.class);
 		return clientSuite;
 	}
 	
