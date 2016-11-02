@@ -1,7 +1,5 @@
 package weloveclouds.communication.api.v1;
 
-import java.net.UnknownHostException;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -31,8 +29,11 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
     private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
     private Logger logger;
 
+    private String address;
+    private int port;
+
     /**
-     * Creates a new communication instance which connects to the server at the referred addres and
+     * Creates a new communication instance which connects to the server at the referred address and
      * port. This constructor is used mainly for testing purposes.
      */
     public KVCommunicationApiV1(String address, int port) {
@@ -40,12 +41,8 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
                 new CommunicationApiV1(new CommunicationService(new SocketFactory()));
         this.logger = Logger.getLogger(getClass());
 
-        try {
-            this.remoteServer = new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                    .ipAddress(address).port(port).build();
-        } catch (UnknownHostException ex) {
-            logger.error(ex);
-        }
+        this.address = address;
+        this.port = port;
     }
 
     public KVCommunicationApiV1(ICommunicationApi communicationApi,
@@ -59,6 +56,12 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
 
     @Override
     public void connect() throws Exception {
+        if (remoteServer == null) {
+            // only for test purposes in the testing package
+            remoteServer = new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(address)
+                    .port(port).build();
+        }
+
         serverCommunication.connectTo(remoteServer);
     }
 

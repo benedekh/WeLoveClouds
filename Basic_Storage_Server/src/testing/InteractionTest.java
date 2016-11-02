@@ -8,6 +8,7 @@ import weloveclouds.communication.api.v1.KVCommunicationApiV1;
 import weloveclouds.kvstore.models.IKVMessage;
 import weloveclouds.kvstore.models.IKVMessage.StatusType;
 
+
 public class InteractionTest extends TestCase {
 
     private IKVServerApi kvClient;
@@ -128,6 +129,7 @@ public class InteractionTest extends TestCase {
 
         assertTrue(ex == null && response.getStatus() == StatusType.GET_ERROR);
     }
+
 
 
 }
