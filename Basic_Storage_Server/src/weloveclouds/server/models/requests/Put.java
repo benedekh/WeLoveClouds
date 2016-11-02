@@ -2,10 +2,13 @@ package weloveclouds.server.models.requests;
 
 import static weloveclouds.kvstore.models.IKVMessage.StatusType.PUT_ERROR;
 import static weloveclouds.kvstore.models.IKVMessage.StatusType.PUT_SUCCESS;
+import static weloveclouds.kvstore.models.IKVMessage.StatusType.PUT_UPDATE;
 
+import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.models.KVMessage;
 import weloveclouds.server.services.IDataAccessService;
+import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
@@ -14,26 +17,34 @@ import weloveclouds.server.store.exceptions.StorageException;
 public class Put implements IRequest {
     private IDataAccessService dataAccessService;
     private String key;
-    private String newValue;
+    private String value;
 
-    public Put(IDataAccessService dataAccessService, String key, String newValue) {
+    public Put(IDataAccessService dataAccessService, String key, String value) {
         this.dataAccessService = dataAccessService;
         this.key = key;
-        this.newValue = newValue;
+        this.value = value;
     }
 
     @Override
     public KVMessage execute() {
-        KVMessage response;
-
+        KVMessage response = null;
         try {
-            dataAccessService.putEntry(new KVEntry(key, newValue));
-            response = new KVMessage.KVMessageBuilder().status(PUT_SUCCESS).key(key).value(newValue)
-                    .build();
+            PutType putType = dataAccessService.putEntry(new KVEntry(key, value));
+            switch (putType) {
+                case INSERT:
+                    response = createResponse(PUT_SUCCESS, key, value);
+                    break;
+                case UPDATE:
+                    response = createResponse(PUT_UPDATE, key, value);
+                    break;
+            }
         } catch (StorageException e) {
-            response = new KVMessage.KVMessageBuilder().status(PUT_ERROR).key(key).value(newValue)
-                    .build();
+            response = createResponse(PUT_ERROR, key, e.getMessage());
         }
         return response;
+    }
+
+    private KVMessage createResponse(StatusType status, String key, String value) {
+        return new KVMessage.KVMessageBuilder().status(status).key(key).value(value).build();
     }
 }

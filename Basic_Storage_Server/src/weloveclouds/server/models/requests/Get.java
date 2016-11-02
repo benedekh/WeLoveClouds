@@ -4,6 +4,7 @@ import static weloveclouds.kvstore.models.IKVMessage.StatusType.GET_ERROR;
 import static weloveclouds.kvstore.models.IKVMessage.StatusType.GET_SUCCESS;
 
 import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 
@@ -23,18 +24,14 @@ public class Get implements IRequest {
     public KVMessage execute() {
         KVMessage response;
         try {
-            response = new KVMessage.KVMessageBuilder()
-                    .status(GET_SUCCESS)
-                    .key(key)
-                    .value(dataAccessService.getValue(key))
-                    .build();
+            response = createResponse(GET_SUCCESS, key, dataAccessService.getValue(key));
         } catch (StorageException e) {
-            response = new KVMessage.KVMessageBuilder()
-                    .status(GET_ERROR)
-                    .key(key)
-                    .value(null)
-                    .build();
+            response = createResponse(GET_ERROR, key, e.getMessage());
         }
         return response;
+    }
+
+    private KVMessage createResponse(StatusType status, String key, String value) {
+        return new KVMessage.KVMessageBuilder().status(status).key(key).value(value).build();
     }
 }

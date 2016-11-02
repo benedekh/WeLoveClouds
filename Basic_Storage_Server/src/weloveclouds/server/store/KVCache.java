@@ -33,20 +33,30 @@ public class KVCache implements IDataAccessService, Observer {
     }
 
     @Override
-    public synchronized void putEntry(KVEntry entry) throws StorageException {
+    public synchronized PutType putEntry(KVEntry entry) throws StorageException {
+        PutType response;
         try {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            if (currentSize == capacity) {
-                String displacedKey = displacementStrategy.displaceKey();
-                removeEntry(displacedKey);
+            if (cache.containsKey(key)) {
+                cache.put(key, value);
+                response = PutType.UPDATE;
+            } else {
+                if (currentSize == capacity) {
+                    String displacedKey = displacementStrategy.displaceKey();
+                    removeEntry(displacedKey);
+                }
+
+                cache.put(key, value);
+                currentSize++;
+                response = PutType.INSERT;
             }
 
-            cache.put(key, value);
             logger.debug(CustomStringJoiner.join(" ", entry.toString(), "was added to cache."));
-            currentSize++;
             displacementStrategy.put(key);
+
+            return response;
         } catch (NullPointerException ex) {
             String errorMessage = "Key or value is null when adding element to cache.";
             logger.error(errorMessage);
