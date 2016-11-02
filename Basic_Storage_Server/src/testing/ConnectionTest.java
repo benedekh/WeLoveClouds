@@ -11,7 +11,7 @@ import weloveclouds.communication.exceptions.*;
 
 /**
  * 
- * @author hb - not quite, he only modified the provided test cases to suite our architecture.
+ * @author hb - not quite, he only modified the provided test cases to suite our implementation.
  *
  */
 public class ConnectionTest extends TestCase {
@@ -27,7 +27,7 @@ public class ConnectionTest extends TestCase {
         } catch (Exception e) {
             ex = e;
         }
-        //kvClient.disconnect();
+
         assertNull(ex);
     }
 

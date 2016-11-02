@@ -4,6 +4,8 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.net.UnknownHostException;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +16,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * Created by Benoit on 2016-10-26.
  */
-public class ArgumentsValidatorTest {
+public class ArgumentsValidatorTest extends TestCase{
     private static final String INVALID_IP_ADDRESS = "darthvader";
     private static final String VALID_IP_ADDRESS = "131.159.52.2";
     private static final String VALID_NETWORK_PORT_NUMBER = "50000";
