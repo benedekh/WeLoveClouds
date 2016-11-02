@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.HelpMessageGenerator;
+import weloveclouds.server.utils.HelpMessageGenerator;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.utils.ArgumentsValidator;
 
