@@ -31,19 +31,23 @@ public class ArgumentsValidatorTest extends TestCase {
 
     @Test
     public void testShouldThrowWhenValidatingInvalidIp() {
-        String[] connectCommandArguments = {INVALID_IP_ADDRESS, VALID_NETWORK_PORT_NUMBER};
+        Exception ex = null;
         try {
+            String[] connectCommandArguments = {INVALID_IP_ADDRESS, VALID_NETWORK_PORT_NUMBER};
             ArgumentsValidator.validateConnectArguments(connectCommandArguments,
                     new ServerConnectionInfo.ServerConnectionInfoBuilder()
                             .ipAddress(INVALID_IP_ADDRESS)
                             .port(Integer.parseInt(VALID_NETWORK_PORT_NUMBER)).build());
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof UnknownHostException);
         }
     }
 
     @Test
     public void testShouldThrowWhenValidatingInvalidNetworkPortNumber() {
+        Exception ex = null;
         try {
             String[] connectCommandArguments = {VALID_IP_ADDRESS, INVALID_NETWORK_PORT_LOWER_LIMIT};
             boolean hasThrown = false;
@@ -62,7 +66,9 @@ public class ArgumentsValidatorTest extends TestCase {
             } finally {
                 assertThat(hasThrown).isTrue();
             }
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof IllegalArgumentException);
         }
 
@@ -71,6 +77,7 @@ public class ArgumentsValidatorTest extends TestCase {
 
     @Test
     public void testShouldThrowIfConnectArgumentIsNull() {
+        Exception ex = null;
         try {
             String nullStringValue = null;
             Integer nullIntValue = null;
@@ -78,64 +85,81 @@ public class ArgumentsValidatorTest extends TestCase {
             ArgumentsValidator.validateConnectArguments(NULL_COMMAND_ARGUMENTS,
                     new ServerConnectionInfo.ServerConnectionInfoBuilder()
                             .ipAddress(nullStringValue).port(nullIntValue).build());
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof UnknownHostException);
         }
     }
 
     @Test
     public void testShouldThrowIfPutArgumentIsNull() {
+        Exception ex = null;
         try {
             ArgumentsValidator.validatePutArguments(null);
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof IllegalArgumentException);
         }
     }
 
     @Test
     public void testShouldThrowIfGetArgumentIsNull() {
+        Exception ex = null;
         try {
             ArgumentsValidator.validateGetArguments(null);
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof IllegalArgumentException);
         }
     }
 
     @Test
     public void testShouldThrowIfGetKeyIsLongerThan20Bytes() throws Exception {
+        Exception ex = null;
         try {
             String sendMessage = "";
             String[] sendArgument =
                     {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES + 1, "a")};
 
             ArgumentsValidator.validateGetArguments(sendArgument);
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof IllegalArgumentException);
         }
     }
 
     @Test
     public void testShouldThrowIfPutKeyIsLongerThan20Bytes() throws Exception {
+        Exception ex = null;
         try {
             String sendMessage = "";
             String[] sendArgument =
                     {StringUtils.leftPad(sendMessage, KEY_SIZE_LIMIT_IN_BYTES + 1, "a")};
 
             ArgumentsValidator.validatePutArguments(sendArgument);
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof IllegalArgumentException);
         }
     }
 
     @Test
     public void testShouldThrowIfPutValueIsLongerThan120kBytes() {
+        Exception ex = null;
         try {
             String sendMessage = "";
             String[] sendArgument =
                     {StringUtils.leftPad(sendMessage, VALUE_SIZE_LIMIT_IN_BYTES + 1, "a")};
 
             ArgumentsValidator.validatePutArguments(sendArgument);
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof IllegalArgumentException);
         }
     }
@@ -185,27 +209,36 @@ public class ArgumentsValidatorTest extends TestCase {
 
     @Test
     public void testShouldThrowIfDisconnectArgumentsIsNotNullOrEmpty() {
+        Exception ex = null;
         try {
             ArgumentsValidator.validateDisconnectArguments(NOT_NULL_COMMAND_ARGUMENT);
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof IllegalArgumentException);
         }
     }
 
     @Test
     public void testShouldThrowIfQuitArgumentsIsNotNullOrEmpty() {
+        Exception ex = null;
         try {
             ArgumentsValidator.validateQuitArguments(NOT_NULL_COMMAND_ARGUMENT);
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof IllegalArgumentException);
         }
     }
 
     @Test
     public void testShouldThrowIfHelpArgumentIsNotNullOrEmpty() {
+        Exception ex = null;
         try {
             ArgumentsValidator.validateHelpArguments(NOT_NULL_COMMAND_ARGUMENT);
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            ex = e;
+        } finally {
             assertTrue(ex instanceof IllegalArgumentException);
         }
     }
