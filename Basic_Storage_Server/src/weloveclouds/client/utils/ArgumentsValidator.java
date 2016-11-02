@@ -24,7 +24,6 @@ public class ArgumentsValidator {
     private static final int LOG_LEVEL_NUMBER_OF_ARGUMENTS = 1;
     private static final int GET_NUMBER_OF_ARGUMENTS = 1;
     private static final int PUT_MIN_NUMBER_OF_ARGUMENTS = 1;
-    private static final int PUT_MAX_NUMBER_OF_ARGUMENTS = 2;
 
     private static final int LEVEL_INDEX = 0;
     private static final int KEY_INDEX = 0;
@@ -67,13 +66,18 @@ public class ArgumentsValidator {
     public static void validatePutArguments(String[] arguments) throws IllegalArgumentException {
         String command = "put";
 
-        if (isNullOrEmpty(arguments) || arguments.length < PUT_MIN_NUMBER_OF_ARGUMENTS
-                || arguments.length > PUT_MAX_NUMBER_OF_ARGUMENTS) {
+        if (isNullOrEmpty(arguments) || arguments.length < PUT_MIN_NUMBER_OF_ARGUMENTS) {
             logWarning(command);
-            throw new IllegalArgumentException("Put command should have two arguments.");
+            throw new IllegalArgumentException("Put command should have at least two arguments.");
         } else {
             validateSize(arguments[KEY_INDEX], KEY_SIZE_LIMIT_IN_BYTES, command, "key");
-            validateSize(arguments[VALUE_INDEX], VALUE_SIZE_LIMIT_IN_BYTES, command, "value");
+
+            // merge values to one string
+            List<String> argList = Arrays.asList(arguments);
+            List<String> valueElements = argList.subList(VALUE_INDEX, argList.size() - 1);
+            String value = CustomStringJoiner.join(" ", valueElements);
+
+            validateSize(value, VALUE_SIZE_LIMIT_IN_BYTES, command, "value");
         }
     }
 

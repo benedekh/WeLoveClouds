@@ -1,5 +1,8 @@
 package weloveclouds.client.models.commands;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
@@ -23,8 +26,10 @@ public class Put extends AbstractKVCommunicationApiCommand {
     public void execute() throws ClientSideException {
         try {
             logger.info("Executing put command.");
-            IKVMessage response =
-                    communicationApi.put(arguments[KEY_INDEX], arguments[VALUE_INDEX]);
+            String key = arguments[KEY_INDEX];
+            String value = mergeValuesToOneString(arguments);
+
+            IKVMessage response = communicationApi.put(key, value);
 
             logger.debug(response);
             switch (response.getStatus()) {
@@ -56,6 +61,12 @@ public class Put extends AbstractKVCommunicationApiCommand {
     public ICommand validate() throws IllegalArgumentException {
         ArgumentsValidator.validatePutArguments(arguments);
         return this;
+    }
+
+    private String mergeValuesToOneString(String[] arguments) {
+        List<String> argList = Arrays.asList(arguments);
+        List<String> valueElements = argList.subList(VALUE_INDEX, argList.size() - 1);
+        return CustomStringJoiner.join(" ", valueElements);
     }
 
 }
