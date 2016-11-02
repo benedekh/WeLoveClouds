@@ -6,6 +6,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.KVPersistentStorage;
+import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 
@@ -25,11 +26,12 @@ public class DataAccessService implements IDataAccessService {
     }
 
     @Override
-    public synchronized void putEntry(KVEntry entry) throws StorageException {
+    public synchronized PutType putEntry(KVEntry entry) throws StorageException {
         // implicit notification will go the cache as well
         // throw the persistent store
-        persistentStorage.putEntry(entry);
+        PutType response = persistentStorage.putEntry(entry);
         logger.debug(CustomStringJoiner.join(" ", entry.toString(), "is stored."));
+        return response;
     }
 
     @Override

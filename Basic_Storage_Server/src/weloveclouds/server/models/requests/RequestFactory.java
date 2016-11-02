@@ -1,5 +1,6 @@
 package weloveclouds.server.models.requests;
 
+import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.KVMessage;
 import weloveclouds.server.services.IDataAccessService;
 
@@ -15,8 +16,14 @@ public class RequestFactory {
 
     synchronized public IRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
         IRequest request = null;
+        StatusType status = receivedMessage.getStatus();
 
-        switch (receivedMessage.getStatus()) {
+        // see M2 docs, we delete the key if it is a PUT request with only a key
+        if (receivedMessage.getStatus() == StatusType.PUT && receivedMessage.getValue() == null) {
+            status = StatusType.DELETE;
+        }
+
+        switch (status) {
             case GET:
                 request = new Get(dataAccessService, receivedMessage.getKey());
                 break;

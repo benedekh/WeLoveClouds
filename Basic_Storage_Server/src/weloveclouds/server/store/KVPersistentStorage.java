@@ -48,13 +48,17 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     }
 
     @Override
-    public synchronized void putEntry(KVEntry entry) throws StorageException {
+    public synchronized PutType putEntry(KVEntry entry) throws StorageException {
         String key = entry.getKey();
+        PutType response;
 
         if (key == null || entry.getValue() == null) {
             throw new StorageException("Key and value cannot be null.");
         } else if (persistentPaths.containsKey(key)) {
+            response = PutType.UPDATE;
             removeEntry(key);
+        } else {
+            response = PutType.INSERT;
         }
 
         String cleanKey = key.replaceAll("[^a-zA-Z0-9.-]", "_"); // valid filename
@@ -68,6 +72,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
 
             persistentPaths.put(key, entryPath);
             notifyObservers(entry);
+
+            return response;
         } catch (FileNotFoundException e) {
             logger.error(e);
             throw new StorageException("File was not found.");
@@ -118,9 +124,9 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                     "File for key cannot be removed from persistent storage due to permission problems.");
         }
     }
-    
+
     @Override
-    public void notifyObservers(Object object){
+    public void notifyObservers(Object object) {
         setChanged();
         super.notifyObservers(object);
     }
