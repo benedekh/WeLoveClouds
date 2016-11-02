@@ -23,7 +23,8 @@ public class ArgumentsValidator {
     private static final int CONNECT_NUMBER_OF_ARGUMENTS = 2;
     private static final int LOG_LEVEL_NUMBER_OF_ARGUMENTS = 1;
     private static final int GET_NUMBER_OF_ARGUMENTS = 1;
-    private static final int PUT_NUMBER_OF_ARGUMENTS = 1;
+    private static final int PUT_MIN_NUMBER_OF_ARGUMENTS = 1;
+    private static final int PUT_MAX_NUMBER_OF_ARGUMENTS = 2;
 
     private static final int LEVEL_INDEX = 0;
     private static final int KEY_INDEX = 0;
@@ -63,7 +64,8 @@ public class ArgumentsValidator {
 
 
     public static void validatePutArguments(String[] arguments) throws IllegalArgumentException {
-        if (isNullOrEmpty(arguments) || arguments.length != PUT_NUMBER_OF_ARGUMENTS) {
+        if (isNullOrEmpty(arguments) || arguments.length < PUT_MIN_NUMBER_OF_ARGUMENTS || arguments
+                .length > PUT_MAX_NUMBER_OF_ARGUMENTS) {
             LOGGER.warn("Put command is invalid.");
             throw new IllegalArgumentException("Put command should have two arguments.");
         } else {
