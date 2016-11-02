@@ -2,6 +2,7 @@ package weloveclouds.server.utils;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
+import java.nio.channels.ServerSocketChannel;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,6 +12,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.commands.LogLevel;
+import weloveclouds.server.models.ServerConfigurationContext;
 
 
 public class ArgumentsValidator {
@@ -38,10 +40,31 @@ public class ArgumentsValidator {
     private static final int STORAGE_PATH_INDEX = 0;
 
 
-    public static void validateStartArguments(String[] arguments) throws IllegalArgumentException {
+    public static void validateStartArguments(String[] arguments,
+            ServerConfigurationContext context) throws IllegalArgumentException {
+        String command = "start";
         if (!isNullOrEmpty(arguments)) {
-            logWarning("start");
+            logWarning(command);
             throw new IllegalArgumentException("Command does not accept any argument.");
+        } else {
+            if (context.isStarted()) {
+                logWarning(command);
+                throw new IllegalArgumentException("Server is already running.");
+            } else if (context.getCacheSize() == -1) {
+                logWarning(command);
+                throw new IllegalArgumentException("Cache size should be initialized first.");
+            } else if (context.getPort() == -1) {
+                logWarning(command);
+                throw new IllegalArgumentException("Port should be initialized first.");
+            } else if (context.getDisplacementStrategy() == null) {
+                logWarning(command);
+                throw new IllegalArgumentException(
+                        "Cache displacement strategy should be initialized first.");
+            } else if (context.getStoragePath() == null) {
+                logWarning(command);
+                throw new IllegalArgumentException(
+                        "Persistent storage path should be initialized first.");
+            }
         }
     }
 
