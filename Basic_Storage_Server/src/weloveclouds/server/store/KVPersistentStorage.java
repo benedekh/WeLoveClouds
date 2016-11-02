@@ -56,7 +56,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             throw new StorageException("Key and value cannot be null.");
         } else if (persistentPaths.containsKey(key)) {
             response = PutType.UPDATE;
-            removeEntry(key);
+            removeEntryWithoutNotification(key);
         } else {
             response = PutType.INSERT;
         }
@@ -99,6 +99,17 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
 
     @Override
     public synchronized void removeEntry(String key) throws StorageException {
+        removeEntryWithoutNotification(key);
+        notifyObservers(key);
+    }
+
+    @Override
+    public void notifyObservers(Object object) {
+        setChanged();
+        super.notifyObservers(object);
+    }
+
+    private void removeEntryWithoutNotification(String key) throws StorageException {
         try {
             if (persistentPaths.containsKey(key)) {
                 Path path = persistentPaths.get(key);
@@ -106,7 +117,6 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 persistentPaths.remove(key);
                 logger.debug(CustomStringJoiner.join(" ", key,
                         "is removed from persistent store, along with file", path.toString()));
-                notifyObservers(key);
             }
         } catch (NullPointerException ex) {
             String errorMessage = "Key cannot be null for removing from persistent storage.";
@@ -123,12 +133,6 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             throw new StorageException(
                     "File for key cannot be removed from persistent storage due to permission problems.");
         }
-    }
-
-    @Override
-    public void notifyObservers(Object object) {
-        setChanged();
-        super.notifyObservers(object);
     }
 
     private void initializePaths() {
