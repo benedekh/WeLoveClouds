@@ -136,6 +136,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     }
 
     private void initializePaths() {
+        logger.debug("Initializing persistent store with already stored keys.");
         for (File file : filterFilesInRootPath()) {
             try {
                 KVEntry entry = readEntryFromFile(file);
@@ -144,6 +145,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 logger.error(join(" ", file.toString(), ex.getMessage()));
             }
         }
+        logger.debug("Initializing persistent store finished.");
     }
 
     private File[] filterFilesInRootPath() {
