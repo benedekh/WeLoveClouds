@@ -148,7 +148,7 @@ public class CommunicationService implements ICommunicationService {
                             String.valueOf(availableBytes), "from the connection."));
                     receivedData = new byte[availableBytes];
                     socketDataReader.read(receivedData);
-                    logger.info("Data received from the network.");
+                    logger.debug("Data received from the network.");
                 }
             }
             return receivedData;

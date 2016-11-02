@@ -1,12 +1,13 @@
 package weloveclouds.client.models.commands;
 
+import static weloveclouds.client.utils.CustomStringJoiner.join;
+
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.kvstore.models.IKVMessage;
@@ -30,8 +31,8 @@ public class Put extends AbstractKVCommunicationApiCommand {
             String value = mergeValuesToOneString(arguments);
 
             IKVMessage response = communicationApi.put(key, value);
+            logger.debug(response.toString());
 
-            logger.debug(response);
             switch (response.getStatus()) {
                 case PUT_UPDATE:
                 case PUT_SUCCESS:
@@ -42,8 +43,8 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     userOutputWriter.writeLine("Key removed successfully.");
                     break;
                 case DELETE_ERROR:
-                    userOutputWriter.writeLine(CustomStringJoiner.join(" ",
-                            "Error during key remove:", response.getValue()));
+                    userOutputWriter
+                            .writeLine(join(" ", "Error during key remove:", response.getValue()));
                     break;
                 default:
                     userOutputWriter.writeLine("Unexpected response type.");
@@ -66,7 +67,7 @@ public class Put extends AbstractKVCommunicationApiCommand {
     private String mergeValuesToOneString(String[] arguments) {
         List<String> argList = Arrays.asList(arguments);
         List<String> valueElements = argList.subList(VALUE_INDEX, argList.size() - 1);
-        return CustomStringJoiner.join(" ", valueElements);
+        return join(" ", valueElements);
     }
 
 }
