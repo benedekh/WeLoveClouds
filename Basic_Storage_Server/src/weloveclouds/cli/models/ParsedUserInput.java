@@ -1,4 +1,7 @@
-package weloveclouds.client.models;
+package weloveclouds.cli.models;
+
+import weloveclouds.client.models.commands.Command;
+import weloveclouds.server.models.commands.ServerCommand;
 
 /**
  * Represents a user input which is split into a {@link #command} and its {@link #arguments}.
@@ -18,8 +21,8 @@ public class ParsedUserInput {
         return Command.fromString(command);
     }
 
-    public weloveclouds.server.models.commands.ServerCommand getServerCommand() {
-        return weloveclouds.server.models.commands.ServerCommand.fromString(command);
+    public ServerCommand getServerCommand() {
+        return ServerCommand.fromString(command);
     }
 
     public String[] getArguments() {

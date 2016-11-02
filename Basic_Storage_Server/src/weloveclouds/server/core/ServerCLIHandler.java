@@ -5,9 +5,9 @@ import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
-import weloveclouds.client.models.ParsedUserInput;
 import weloveclouds.server.models.commands.ServerCommandFactory;
 import weloveclouds.server.models.exceptions.ServerSideException;
 

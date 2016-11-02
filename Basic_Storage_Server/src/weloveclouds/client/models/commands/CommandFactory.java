@@ -6,8 +6,7 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.models.Command;
-import weloveclouds.client.models.ParsedUserInput;
+import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 
 /**

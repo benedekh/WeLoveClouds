@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.models.ParsedUserInput;
+import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 

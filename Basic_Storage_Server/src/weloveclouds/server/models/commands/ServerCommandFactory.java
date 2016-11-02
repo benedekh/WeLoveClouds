@@ -1,14 +1,14 @@
 package weloveclouds.server.models.commands;
 
+import static weloveclouds.client.utils.CustomStringJoiner.join;
+
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.models.ParsedUserInput;
+import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.client.models.commands.Connect;
 import weloveclouds.server.models.ServerConfigurationContext;
-
-import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 public class ServerCommandFactory {
     private ServerConfigurationContext context;
