@@ -84,11 +84,7 @@ public class ArgumentsValidator {
         } else {
             validateSize(arguments[KEY_INDEX], KEY_SIZE_LIMIT_IN_BYTES, command, "key");
 
-            // merge values to one string
-            List<String> argList = Arrays.asList(arguments);
-            List<String> valueElements = argList.subList(VALUE_INDEX, argList.size());
-            String value = CustomStringJoiner.join(" ", valueElements);
-
+            String value = PutCommandUtils.mergeValuesToOneString(VALUE_INDEX, arguments);
             validateSize(value, VALUE_SIZE_LIMIT_IN_BYTES, command, "value");
         }
     }

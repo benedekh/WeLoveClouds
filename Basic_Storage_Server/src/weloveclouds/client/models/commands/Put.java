@@ -2,13 +2,11 @@ package weloveclouds.client.models.commands;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.client.utils.PutCommandUtils;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.kvstore.models.IKVMessage;
@@ -40,7 +38,7 @@ public class Put extends AbstractKVCommunicationApiCommand {
         try {
             logger.info("Executing put command.");
             String key = arguments[KEY_INDEX];
-            String value = mergeValuesToOneString(arguments);
+            String value = PutCommandUtils.mergeValuesToOneString(VALUE_INDEX, arguments);
 
             IKVMessage response = communicationApi.put(key, value);
             logger.debug(response.toString());
@@ -81,10 +79,5 @@ public class Put extends AbstractKVCommunicationApiCommand {
         return this;
     }
 
-    private String mergeValuesToOneString(String[] arguments) {
-        List<String> argList = Arrays.asList(arguments);
-        List<String> valueElements = argList.subList(VALUE_INDEX, argList.size());
-        return join(" ", valueElements);
-    }
 
 }
