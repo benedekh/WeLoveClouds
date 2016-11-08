@@ -53,6 +53,10 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
 
         initializePaths();
     }
+    
+    public void clear(){
+        persistentPaths.clear();
+    }
 
     @Override
     public synchronized PutType putEntry(KVEntry entry) throws StorageException {
