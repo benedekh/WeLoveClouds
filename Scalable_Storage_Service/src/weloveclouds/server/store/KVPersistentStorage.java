@@ -76,6 +76,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 // if there is, append the new record to it
                 path = haveFreeSpaces.peek();
                 putEntryIntoPersistedStorageUnit(entry, path);
+                keyToFilePaths.put(key, path);
             } else {
                 // if there is no, then create a new storage unit
                 PersistentStorageUnit storageUnit =
