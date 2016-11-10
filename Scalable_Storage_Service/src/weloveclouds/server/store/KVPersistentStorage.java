@@ -38,8 +38,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     private static final String FILE_EXTENSION = "ser";
     private static final int MAX_NUMBER_OF_ENTRIES = 100;
 
-    private Map<String, Path> keyToFilePaths;
-    private Queue<Path> haveFreeSpaces;
+    private Map<String, Path> filePaths;
+    private Queue<Path> unitsWithFreeSpace;
 
     private Path rootPath;
     private Logger logger;
@@ -49,8 +49,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             throw new IllegalArgumentException("Root path does not exist.");
         }
 
-        this.keyToFilePaths = new HashMap<>();
-        this.haveFreeSpaces = new ArrayDeque<>();
+        this.filePaths = new HashMap<>();
+        this.unitsWithFreeSpace = new ArrayDeque<>();
 
         this.rootPath = rootPath.toAbsolutePath();
         this.logger = Logger.getLogger(getClass());
@@ -64,19 +64,19 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
 
         if (key == null || entry.getValue() == null) {
             throw new StorageException("Key and value cannot be null.");
-        } else if (keyToFilePaths.containsKey(key)) {
+        } else if (filePaths.containsKey(key)) {
             response = PutType.UPDATE;
-            Path filePath = keyToFilePaths.get(key);
+            Path filePath = filePaths.get(key);
             putEntryIntoPersistedStorageUnit(entry, filePath);
         } else {
             response = PutType.INSERT;
 
             // see if there is any storage unit with free spaces
-            if (!haveFreeSpaces.isEmpty()) {
+            if (!unitsWithFreeSpace.isEmpty()) {
                 // if there is, append the new record to it
-                path = haveFreeSpaces.peek();
+                path = unitsWithFreeSpace.peek();
                 putEntryIntoPersistedStorageUnit(entry, path);
-                keyToFilePaths.put(key, path);
+                filePaths.put(key, path);
             } else {
                 // if there is no, then create a new storage unit
                 PersistentStorageUnit storageUnit =
@@ -87,8 +87,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
                 saveStorageUnitToPath(storageUnit, path);
 
-                keyToFilePaths.put(key, path);
-                haveFreeSpaces.add(path);
+                filePaths.put(key, path);
+                unitsWithFreeSpace.add(path);
             }
         }
 
@@ -102,11 +102,11 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     @Override
     public synchronized String getValue(String key)
             throws StorageException, ValueNotFoundException {
-        if (!keyToFilePaths.containsKey(key)) {
+        if (!filePaths.containsKey(key)) {
             throw new ValueNotFoundException(key);
         }
 
-        Path path = keyToFilePaths.get(key);
+        Path path = filePaths.get(key);
         PersistentStorageUnit storageUnit = loadStorageUnitFromPath(path);
         String value = storageUnit.getValue(key);
 
@@ -118,8 +118,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     @Override
     public synchronized void removeEntry(String key) throws StorageException {
         try {
-            if (keyToFilePaths.containsKey(key)) {
-                Path path = keyToFilePaths.get(key);
+            if (filePaths.containsKey(key)) {
+                Path path = filePaths.get(key);
                 PersistentStorageUnit storageUnit = loadStorageUnitFromPath(path);
                 storageUnit.removeEntry(key);
 
@@ -127,8 +127,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                     FileUtility.deleteFile(path);
                 } else {
                     saveStorageUnitToPath(storageUnit, path);
-                    if (!storageUnit.isFull() && !haveFreeSpaces.contains(path)) {
-                        haveFreeSpaces.add(path);
+                    if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(path)) {
+                        unitsWithFreeSpace.add(path);
                     }
                 }
             }
@@ -137,7 +137,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             logger.error(errorMessage);
             throw new StorageException(errorMessage);
         } catch (NoSuchFileException ex) {
-            keyToFilePaths.remove(key);
+            filePaths.remove(key);
             String errorMessage = CustomStringJoiner.join(" ", "File for key", key,
                     "was already removed from persistent storage.");
             logger.error(errorMessage);
@@ -148,7 +148,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                     "File for key cannot be removed from persistent storage due to permission problems.");
         }
 
-        keyToFilePaths.remove(key);
+        filePaths.remove(key);
         notifyObservers(key);
     }
 
@@ -162,8 +162,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      * Clears the internal meta-data cache structures of the persistent storage.
      */
     public void clear() {
-        keyToFilePaths.clear();
-        haveFreeSpaces.clear();
+        filePaths.clear();
+        unitsWithFreeSpace.clear();
     }
 
     /**
@@ -180,12 +180,12 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 PersistentStorageUnit storageUnit = loadStorageUnitFromPath(path);
                 // load the keys from the storage unit
                 for (String key : storageUnit.getKeys()) {
-                    keyToFilePaths.put(key, path);
+                    filePaths.put(key, path);
                     logger.debug(CustomStringJoiner.join(" ", "Key", key,
                             "is put in the persistent store metastore from path", path.toString()));
                 }
                 if (!storageUnit.isFull()) {
-                    haveFreeSpaces.add(path);
+                    unitsWithFreeSpace.add(path);
                 }
             } catch (StorageException ex) {
                 logger.error(join(" ", file.toString(), ex.getMessage()));
@@ -257,8 +257,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         storageUnit.putEntry(entry);
         saveStorageUnitToPath(storageUnit, path);
 
-        if (storageUnit.isFull() && haveFreeSpaces.contains(path)) {
-            haveFreeSpaces.remove();
+        if (storageUnit.isFull() && unitsWithFreeSpace.contains(path)) {
+            unitsWithFreeSpace.remove(path);
         }
     }
 
