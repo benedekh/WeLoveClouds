@@ -10,11 +10,11 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayDeque;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -49,7 +49,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             throw new IllegalArgumentException("Root path does not exist.");
         }
 
-        this.filePaths = new HashMap<>();
+        this.filePaths = new ConcurrentHashMap<>();
         this.unitsWithFreeSpace = new ArrayDeque<>();
 
         this.rootPath = rootPath.toAbsolutePath();
@@ -124,7 +124,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 storageUnit.removeEntry(key);
 
                 if (storageUnit.isEmpty()) {
-                    FileUtility.deleteFile(path);
+                    removePathOfAnEmptyStorageUnit(path);
                 } else {
                     saveStorageUnitToPath(storageUnit, path);
                     if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(path)) {
@@ -148,8 +148,19 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                     "File for key cannot be removed from persistent storage due to permission problems.");
         }
 
+        removeKeyFromPathEntries(key);
+    }
+
+    protected void removeKeyFromPathEntries(String key) {
         filePaths.remove(key);
         notifyObservers(key);
+    }
+
+    protected void removePathOfAnEmptyStorageUnit(Path path) throws IOException {
+        if (unitsWithFreeSpace.contains(path)) {
+            unitsWithFreeSpace.remove(path);
+        }
+        FileUtility.deleteFile(path);
     }
 
     @Override

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -18,24 +17,24 @@ import weloveclouds.server.utils.FileUtility;
 
 public class ControllablePersistentStorage extends KVPersistentStorage {
 
-    private boolean writeLockIsActive;
+    private volatile boolean writeLockActive;
     private Logger logger;
 
     public ControllablePersistentStorage(Path rootPath) throws IllegalArgumentException {
         super(rootPath);
 
-        this.writeLockIsActive = true;
+        this.writeLockActive = true;
         this.logger = Logger.getLogger(getClass());
     }
 
     public void setWriteLockActive(boolean isActive) {
-        this.writeLockIsActive = isActive;
+        this.writeLockActive = isActive;
     }
 
     @Override
     public synchronized PutType putEntry(KVEntry entry) throws StorageException {
-        if (!writeLockIsActive) {
-            return putEntry(entry);
+        if (!writeLockActive) {
+            return super.putEntry(entry);
         } else {
             throw new StorageException("Persistent storage is not writable.");
         }
@@ -43,58 +42,60 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
 
     @Override
     public synchronized void removeEntry(String key) throws StorageException {
-        if (!writeLockIsActive) {
-            removeEntry(key);
+        if (!writeLockActive) {
+            super.removeEntry(key);
         } else {
             throw new StorageException("Persistent storage is not modifyable.");
         }
     }
 
     public Set<MovableStorageUnit> copyEntries(HashRange range) {
-        // TODO make the algorithm more efficient
-
-        Set<Path> processedPaths = new HashSet<>();
         Set<MovableStorageUnit> toBeCopied = new HashSet<>();
-
-        for (Entry<String, Path> entry : filePaths.entrySet()) {
-            Path path = entry.getValue();
-            if (!processedPaths.contains(path)) {
-                try {
-                    toBeCopied.add(new MovableStorageUnit(loadStorageUnitFromPath(path))
-                            .copyEntries(range));
-                    processedPaths.add(path);
-                } catch (StorageException e) {
-                    logger.error(e);
-                }
+        for (Path path : filePaths.values()) {
+            try {
+                toBeCopied.add(
+                        new MovableStorageUnit(loadStorageUnitFromPath(path)).copyEntries(range));
+            } catch (StorageException e) {
+                logger.error(e);
             }
         }
-
         return toBeCopied;
     }
 
-    public void removeEntries(HashRange range) {
-        // TODO make the algorithm more efficient
+    public void removeEntries(HashRange range) throws StorageException {
+        Set<String> keysToBeRemoved = new HashSet<>();
 
-        Set<Path> processedPaths = new HashSet<>();
+        for (Path path : filePaths.values()) {
+            try {
+                MovableStorageUnit storageUnit =
+                        new MovableStorageUnit(loadStorageUnitFromPath(path));
+                Set<String> removedKeys = storageUnit.removeEntries(range);
 
-        for (Entry<String, Path> entry : filePaths.entrySet()) {
-            Path path = entry.getValue();
-            if (!processedPaths.contains(path)) {
-                try {
-                    MovableStorageUnit storageUnit =
-                            new MovableStorageUnit(loadStorageUnitFromPath(path));
-                    Set<String> removedKeys = storageUnit.removeEntries(range);
-                    for (String key : removedKeys) {
-                        removeEntry(key);
+                if (!removedKeys.isEmpty()) {
+                    if (storageUnit.isEmpty()) {
+                        // remove the path if the storage unit is emptied
+                        removePathOfAnEmptyStorageUnit(path);
+                    } else {
+                        // it has free space because some keys were removed
+                        if (!unitsWithFreeSpace.contains(path)) {
+                            unitsWithFreeSpace.add(path);
+                        }
+                        // save changes
+                        saveStorageUnitToPath(storageUnit, path);
                     }
-                    processedPaths.add(path);
-                } catch (StorageException e) {
-                    logger.error(e);
+                    keysToBeRemoved.addAll(removedKeys);
                 }
+            } catch (StorageException e) {
+                logger.error(e);
+            } catch (IOException e) {
+                logger.error(e);
             }
         }
-    }
 
+        for (String key : keysToBeRemoved) {
+            removeKeyFromPathEntries(key);
+        }
+    }
 
     public void compact() throws StorageException, IOException {
         Iterator<Path> pathIterator = unitsWithFreeSpace.iterator();

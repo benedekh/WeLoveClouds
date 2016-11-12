@@ -1,9 +1,9 @@
 package weloveclouds.server.store.models;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.store.PutType;
@@ -24,7 +24,7 @@ public class PersistentStorageUnit implements Serializable {
      * @param maxSize at most how many entries can be stored in the storage unit
      */
     public PersistentStorageUnit(int maxSize) {
-        this.entries = new HashMap<>();
+        this.entries = new ConcurrentHashMap<>();
         this.maxSize = maxSize;
     }
 
@@ -33,7 +33,7 @@ public class PersistentStorageUnit implements Serializable {
      * @param maxSize at most how many entries can be stored in the storage unit
      */
     public PersistentStorageUnit(Map<String, String> initializerMap, int maxSize) {
-        this.entries = new HashMap<>(initializerMap);
+        this.entries = new ConcurrentHashMap<>(initializerMap);
         this.maxSize = maxSize;
     }
 
