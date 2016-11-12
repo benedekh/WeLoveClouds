@@ -35,13 +35,13 @@ import weloveclouds.server.utils.FileUtility;
  */
 public class KVPersistentStorage extends Observable implements IDataAccessService {
 
-    private static final String FILE_EXTENSION = "ser";
-    private static final int MAX_NUMBER_OF_ENTRIES = 100;
+    protected static final String FILE_EXTENSION = "ser";
+    protected static final int MAX_NUMBER_OF_ENTRIES = 100;
 
     protected Map<String, Path> filePaths;
     protected Queue<Path> unitsWithFreeSpace;
 
-    private Path rootPath;
+    protected Path rootPath;
     private Logger logger;
 
     public KVPersistentStorage(Path rootPath) throws IllegalArgumentException {

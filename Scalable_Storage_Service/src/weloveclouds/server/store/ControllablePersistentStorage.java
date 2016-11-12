@@ -1,11 +1,15 @@
 package weloveclouds.server.store;
 
+import static weloveclouds.client.utils.CustomStringJoiner.join;
+
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -46,6 +50,27 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
             super.removeEntry(key);
         } else {
             throw new StorageException("Persistent storage is not modifyable.");
+        }
+    }
+
+    public void putEntries(Set<MovableStorageUnit> fromStorageUnits) {
+        for (MovableStorageUnit storageUnit : fromStorageUnits) {
+            try {
+                String filename = UUID.randomUUID().toString();
+                Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
+                saveStorageUnitToPath(storageUnit, path);
+
+                for (String key : storageUnit.getKeys()) {
+                    filePaths.put(key, path);
+                    notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
+                }
+
+                if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(path)) {
+                    unitsWithFreeSpace.add(path);
+                }
+            } catch (StorageException e) {
+                logger.error(e);
+            }
         }
     }
 
