@@ -14,6 +14,7 @@ import weloveclouds.server.models.ServerConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.models.requests.RequestFactory;
 import weloveclouds.server.services.DataAccessService;
+import weloveclouds.server.store.ControllablePersistentStorage;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
@@ -49,7 +50,7 @@ public class Start extends AbstractServerCommand {
             Path storagePath = context.getStoragePath();
 
             KVCache cache = new KVCache(cacheSize, startegy);
-            KVPersistentStorage persistentStorage = new KVPersistentStorage(storagePath);
+            KVPersistentStorage persistentStorage = new ControllablePersistentStorage(storagePath);
             DataAccessService dataAccessService = new DataAccessService(cache, persistentStorage);
 
             Server server = new Server.ServerBuilder().port(port)
