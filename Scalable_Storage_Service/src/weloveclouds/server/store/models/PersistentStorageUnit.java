@@ -32,7 +32,7 @@ public class PersistentStorageUnit implements Serializable {
      * @param initializerMap contains the key-value pairs which shall initialize this storage unit
      * @param maxSize at most how many entries can be stored in the storage unit
      */
-    public PersistentStorageUnit(Map<String, String> initializerMap, int maxSize) {
+    protected PersistentStorageUnit(Map<String, String> initializerMap, int maxSize) {
         this.entries = new ConcurrentHashMap<>(initializerMap);
         this.maxSize = maxSize;
     }

@@ -15,12 +15,12 @@ public class MovableStorageUnit extends PersistentStorageUnit {
 
     private static final long serialVersionUID = -5804417133252642642L;
 
-    public MovableStorageUnit(Map<String, String> entries, int maxSize) {
-        super(entries, maxSize);
-    }
-
     public MovableStorageUnit(PersistentStorageUnit other) {
         super(other.entries, other.maxSize);
+    }
+
+    protected MovableStorageUnit(Map<String, String> entries, int maxSize) {
+        super(entries, maxSize);
     }
 
     public MovableStorageUnit copyEntries(HashRange range) {
@@ -37,14 +37,12 @@ public class MovableStorageUnit extends PersistentStorageUnit {
 
     private Map<String, String> filterEntries(HashRange range) {
         Map<String, String> filtered = new HashMap<>();
-
         for (String key : entries.keySet()) {
             Hash hash = HashingUtil.getHash(key);
             if (range.contains(hash)) {
                 filtered.put(key, entries.get(key));
             }
         }
-
         return filtered;
     }
 
