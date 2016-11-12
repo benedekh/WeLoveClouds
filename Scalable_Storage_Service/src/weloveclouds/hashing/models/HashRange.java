@@ -21,7 +21,7 @@ public class HashRange {
         this.end = end;
     }
 
-    public boolean isInRange(Hash target) {
+    public boolean contains(Hash target) {
         if (end.compareTo(start) > 0) {
             // if the range does not wrap over
             return (target.compareTo(start) >= 0) && (target.compareTo(end) <= 0);

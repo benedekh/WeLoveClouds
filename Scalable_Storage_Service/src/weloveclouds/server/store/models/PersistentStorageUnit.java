@@ -17,8 +17,8 @@ public class PersistentStorageUnit implements Serializable {
 
     private static final long serialVersionUID = -7369636797976489112L;
 
-    private Map<String, String> entries;
-    private int maxSize;
+    protected Map<String, String> entries;
+    protected int maxSize;
 
     /**
      * @param maxSize at most how many entries can be stored in the storage unit
@@ -98,6 +98,34 @@ public class PersistentStorageUnit implements Serializable {
      */
     public void removeEntry(String key) {
         entries.remove(key);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((entries == null) ? 0 : entries.hashCode());
+        result = prime * result + maxSize;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PersistentStorageUnit other = (PersistentStorageUnit) obj;
+        if (entries == null) {
+            if (other.entries != null)
+                return false;
+        } else if (!entries.equals(other.entries))
+            return false;
+        if (maxSize != other.maxSize)
+            return false;
+        return true;
     }
 
 }

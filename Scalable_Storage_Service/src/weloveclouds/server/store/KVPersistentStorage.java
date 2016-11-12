@@ -38,8 +38,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     private static final String FILE_EXTENSION = "ser";
     private static final int MAX_NUMBER_OF_ENTRIES = 100;
 
-    private Map<String, Path> filePaths;
-    private Queue<Path> unitsWithFreeSpace;
+    protected Map<String, Path> filePaths;
+    protected Queue<Path> unitsWithFreeSpace;
 
     private Path rootPath;
     private Logger logger;
@@ -211,7 +211,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      * 
      * @throws StorageException if any error occurs
      */
-    private PersistentStorageUnit loadStorageUnitFromPath(Path path) throws StorageException {
+    protected PersistentStorageUnit loadStorageUnitFromPath(Path path) throws StorageException {
         try {
             return FileUtility.<PersistentStorageUnit>loadFromFile(path);
         } catch (IOException ex) {
@@ -230,7 +230,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      * 
      * @throws StorageException if any error occurs
      */
-    private void saveStorageUnitToPath(PersistentStorageUnit storageUnit, Path path)
+    protected void saveStorageUnitToPath(PersistentStorageUnit storageUnit, Path path)
             throws StorageException {
         try {
             FileUtility.<PersistentStorageUnit>saveToFile(path, storageUnit);
