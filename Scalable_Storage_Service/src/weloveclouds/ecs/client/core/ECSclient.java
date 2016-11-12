@@ -1,4 +1,4 @@
-package ecs.ecsclient.core;
+package weloveclouds.ecs.client.core;
 
 import java.io.IOException;
 import java.io.InputStream;

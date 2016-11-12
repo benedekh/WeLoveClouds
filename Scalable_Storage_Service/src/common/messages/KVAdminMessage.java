@@ -4,7 +4,14 @@ package common.messages;
 public interface KVAdminMessage {
 
     public enum StatusType{
-        //stubcode, there'll be stuff in here if we decide that this is a good package structure
+        INITKVSERVER,
+        START,
+        STOP,
+        SHUTDOWN,
+        LOCKWRITE,
+        UNLOCKWRITE,
+        MOVEDATA,
+        UPDATE
     }
     
     /**
