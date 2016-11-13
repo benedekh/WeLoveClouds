@@ -1,7 +1,6 @@
 package weloveclouds.ecs.models.commands;
 
 import weloveclouds.ecs.models.commands.IValidatable;
-import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
  * Represents an object (command) that can be executed.
@@ -15,5 +14,6 @@ public interface ICommand extends IValidatable {
      *
      * @throws ClientSideException if any error occurs
      */
-    void execute() throws ClientSideException;
+    void execute() throws Exception;
+    //TODO: write custom exception
 }
