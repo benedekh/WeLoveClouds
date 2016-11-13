@@ -8,7 +8,7 @@ import weloveclouds.ecs.models.commands.ICommand;
  * Abstract common class for processing commands. It stores the {@link #arguments} that a specific
  * command may have.
  *
- * @author Benoit, hb added it here.
+ * @author Benoit, hb added it to the ecs package
  */
 public abstract class AbstractCommand implements ICommand {
     protected String[] arguments;
