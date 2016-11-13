@@ -8,20 +8,36 @@ import org.apache.log4j.Logger;
 import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
-import weloveclouds.client.models.commands.CommandFactory;
+import weloveclouds.ecs.models.commands.ECSCommandFactory;
 
+/**
+ * ECS client, lets the admin(user) interact with the actual ECS service.
+ * Reads, validates and executes input from the admin.
+ * @author hb
+ *
+ */
 public class ECSclient {
 
 
     private InputStream inputStream;
-    private CommandFactory commandFactory;
+    private ECSCommandFactory commandFactory;
 
     private Logger logger;
     
-    public void ESCclient(){
-        //TODO: build constructor.
+    /**
+     * @param inputStream from which it receives command from the user
+     * @param commandFactory that processes (validate and execute) the various commands
+     */
+    public void ESCclient(InputStream inputStream, ECSCommandFactory ecsCommandFactory){
+        this.inputStream = inputStream;
+        this.commandFactory = ecsCommandFactory;
+        this.logger = Logger.getLogger(getClass());
     }
     
+    /**
+     * Reads commands with arguments from the user via the {@link #inputStream}. After, it forwards
+     * the respective command to the {@link #commandFactory} that will validate and execute it.
+     */
     public void run(){
         //TODO: write run method.
     }

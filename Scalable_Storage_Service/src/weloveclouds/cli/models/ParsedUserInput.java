@@ -1,6 +1,7 @@
 package weloveclouds.cli.models;
 
 import weloveclouds.client.models.commands.Command;
+import weloveclouds.ecs.models.commands.ECSCommand;
 import weloveclouds.server.models.commands.ServerCommand;
 
 /**
@@ -23,6 +24,10 @@ public class ParsedUserInput {
 
     public ServerCommand getServerCommand() {
         return ServerCommand.fromString(command);
+    }
+    
+    public ECSCommand getEcsCommand(){
+        return ECSCommand.fromString(command);
     }
 
     public String[] getArguments() {

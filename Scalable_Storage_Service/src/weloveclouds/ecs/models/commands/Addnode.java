@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 /**
  * 
  * @author hb
- *
+ *  This class contains only stubs
  */
 public class Addnode extends AbstractEcsApiCommand{
 

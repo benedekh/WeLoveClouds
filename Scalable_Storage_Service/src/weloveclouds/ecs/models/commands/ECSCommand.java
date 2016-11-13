@@ -12,18 +12,18 @@ import weloveclouds.client.utils.CustomStringJoiner;
  * An implementantion of a command system like that of the client and of the server
  *
  */
-public enum Command {
+public enum ECSCommand {
     INIT("initService"), START("start"), STOP("stop"), SHUTDOWN("shutdown"),
     ADDNODE("addnode"), REMOVENODE("removenode"), DEFAULT("default");
     //do we need a loglevel command?
     
-    private static final Logger LOGGER = Logger.getLogger(Command.class);
+    private static final Logger LOGGER = Logger.getLogger(ECSCommand.class);
 
-    private static final Map<String, Command> commandNames = getCommandNames();
+    private static final Map<String, ECSCommand> commandNames = getCommandNames();
 
     private String customName;
     
-    Command(String customName) {
+    ECSCommand(String customName) {
         this.customName = customName;
     }
 
@@ -34,9 +34,9 @@ public enum Command {
     /**
      * Creates a map from the names of the commands and its command object.
      */
-    private static Map<String, Command> getCommandNames() {
-        Map<String, Command> names = new TreeMap<>();
-        for (Command command : Command.values()) {
+    private static Map<String, ECSCommand> getCommandNames() {
+        Map<String, ECSCommand> names = new TreeMap<>();
+        for (ECSCommand command : ECSCommand.values()) {
             names.put(command.getCustomName(), command);
         }
         return names;
@@ -46,8 +46,8 @@ public enum Command {
      * Converts the parameter to a command if its name matches with one of the commands. Otherwise
      * it returns {@link #DEFAULT}
      */
-    public static Command fromString(String command) {
-        Command recognized = (command == null || !commandNames.containsKey(command) ? DEFAULT
+    public static ECSCommand fromString(String command) {
+        ECSCommand recognized = (command == null || !commandNames.containsKey(command) ? DEFAULT
                 : commandNames.get(command));
         if (recognized == DEFAULT) {
             LOGGER.warn(CustomStringJoiner.join("", "Command (", command, ") is not recognized."));
