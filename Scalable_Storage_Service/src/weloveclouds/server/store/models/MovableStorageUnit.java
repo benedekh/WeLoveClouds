@@ -13,6 +13,11 @@ import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.store.exceptions.StorageException;
 
+/**
+ * Represents a {@link PersistedStorageUnit} whose entries can be copied, moved or removed.
+ * 
+ * @author Benedek
+ */
 public class MovableStorageUnit extends PersistedStorageUnit {
 
     private static final long serialVersionUID = -5804417133252642642L;
@@ -29,6 +34,13 @@ public class MovableStorageUnit extends PersistedStorageUnit {
         return new MovableStorageUnit(filterEntries(range), getPath());
     }
 
+    /**
+     * Removes those entries from the storage unit whose keys are in the specified range.
+     * 
+     * @param range within that shall be the hash values of the keys
+     * @return the keys of the entries which were removed
+     * @throws StorageException if an error occurs
+     */
     public Set<String> removeEntries(HashRange range) {
         Set<String> removable = filterEntries(range).keySet();
         for (String key : removable) {
@@ -41,17 +53,13 @@ public class MovableStorageUnit extends PersistedStorageUnit {
         return removable;
     }
 
-    private Map<String, String> filterEntries(HashRange range) {
-        Map<String, String> filtered = new HashMap<>();
-        for (String key : entries.keySet()) {
-            Hash hash = HashingUtil.getHash(key);
-            if (range.contains(hash)) {
-                filtered.put(key, entries.get(key));
-            }
-        }
-        return filtered;
-    }
-
+    /**
+     * Moves entries from the storage unit referred by the parameter to this storage unit until this
+     * storage unit is either full or otherUnit has no more entries.
+     * 
+     * @param otherUnit from which entries shall be moved
+     * @return the keys of the entries which were moved from the other unit
+     */
     public Set<String> moveEntriesFrom(PersistedStorageUnit otherUnit) {
         Set<String> movedKeys = new HashSet<>();
         Iterator<String> otherKeysIterator = otherUnit.getKeys().iterator();
@@ -69,5 +77,23 @@ public class MovableStorageUnit extends PersistedStorageUnit {
 
         return movedKeys;
     }
+
+    /**
+     * Filters those entries from the storage unit whose keys are in the specified range.
+     * 
+     * @param range within that shall be the hash values of the keys
+     * @return the key-value pairs of those entries which satisfy the filter
+     */
+    private Map<String, String> filterEntries(HashRange range) {
+        Map<String, String> filtered = new HashMap<>();
+        for (String key : entries.keySet()) {
+            Hash hash = HashingUtil.getHash(key);
+            if (range.contains(hash)) {
+                filtered.put(key, entries.get(key));
+            }
+        }
+        return filtered;
+    }
+
 }
 

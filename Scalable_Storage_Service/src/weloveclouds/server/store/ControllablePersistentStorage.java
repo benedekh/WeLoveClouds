@@ -19,6 +19,15 @@ import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.PersistedStorageUnit;
 
+/**
+ * Represents a {@link KVPersistentStorage}, whose entries and storage units can be filtered,
+ * removed, or new storage units can be added to that.
+ * 
+ * Besides, the {@link #putEntry(KVEntry)} and {@link #removeEntry(String)} method's accessibility
+ * can be limited by applying a {@link #writeLockActive} flag.
+ * 
+ * @author Benedek
+ */
 public class ControllablePersistentStorage extends KVPersistentStorage {
 
     private volatile boolean writeLockActive;
@@ -51,6 +60,12 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
         }
     }
 
+    /**
+     * Saves the entries which are stored in the parameter storage units into the recent persistent
+     * storage.
+     * 
+     * @param fromStorageUnits from where the entries will be copied.
+     */
     public void putEntries(Set<MovableStorageUnit> fromStorageUnits) {
         for (MovableStorageUnit storageUnit : fromStorageUnits) {
             try {
@@ -73,18 +88,35 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
         }
     }
 
-    public Set<MovableStorageUnit> copyEntries(HashRange range) {
+    /**
+     * Filters those entries from the persistent storage whose keys are in the specified range.
+     * 
+     * @param range within that shall be the hash values of the keys
+     * @return the storage units of those entries whose keys are in the given range
+     * @throws StorageException if an error occurs
+     */
+    public Set<MovableStorageUnit> filterEntries(HashRange range) {
+        Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<MovableStorageUnit> toBeCopied = new HashSet<>();
-        for (PersistedStorageUnit storageUnit : storageUnits.values()) {
+
+        for (PersistedStorageUnit storageUnit : storedUnits) {
             toBeCopied.add(new MovableStorageUnit(storageUnit).copyEntries(range));
         }
+
         return toBeCopied;
     }
 
+    /**
+     * Removes those entries from the persistent storage whose keys are in the specified range.
+     * 
+     * @param range within that shall be the hash values of the keys
+     * @throws StorageException if an error occurs
+     */
     public void removeEntries(HashRange range) throws StorageException {
+        Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<String> keysToBeRemoved = new HashSet<>();
 
-        for (PersistedStorageUnit persistedUnit : storageUnits.values()) {
+        for (PersistedStorageUnit persistedUnit : storedUnits) {
             try {
                 MovableStorageUnit storageUnit = new MovableStorageUnit(persistedUnit);
                 Set<String> removedKeys = storageUnit.removeEntries(range);
@@ -109,43 +141,131 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
         }
     }
 
-    public void compact() throws StorageException, IOException {
-        Iterator<PersistedStorageUnit> storageUnitIterator = unitsWithFreeSpace.iterator();
-        Set<PersistedStorageUnit> toBeRemovedFromUnitsWithFreeSpace = new HashSet<>();
+    /**
+     * Merges those storage units which are not full yet. Updates the #unitsWithFreeSpace
+     * accordingly after the operation is finished.
+     */
+    public void defragment() {
+        Iterator<PersistedStorageUnit> storageUnitIterator =
+                collectNotFullStorageUnits().iterator();
 
         try {
+            PersistedStorageUnit willBeCompacted = storageUnitIterator.next();
+
             while (storageUnitIterator.hasNext()) {
-                MovableStorageUnit storageUnit = new MovableStorageUnit(storageUnitIterator.next());
-                MovableStorageUnit otherUnit = new MovableStorageUnit(storageUnitIterator.next());
+                PersistedStorageUnit afterThatWillBeCompacted = storageUnitIterator.next();
+
+                MovableStorageUnit storageUnit = new MovableStorageUnit(willBeCompacted);
+                MovableStorageUnit otherUnit = new MovableStorageUnit(afterThatWillBeCompacted);
                 Set<String> movedKeys = storageUnit.moveEntriesFrom(otherUnit);
 
-                // save the storage units
-                storageUnit.save();
-                otherUnit.save();
+                try {
+                    // save the storage units
+                    storageUnit.save();
+                    otherUnit.save();
+                } catch (StorageException ex) {
+                    logger.error(ex);
+                }
 
                 // update references for the moved keys
                 for (String movedKey : movedKeys) {
                     storageUnits.put(movedKey, storageUnit);
                 }
 
-                // handle if the storage unit to which the data was moved is full
                 if (storageUnit.isFull()) {
-                    toBeRemovedFromUnitsWithFreeSpace.add(storageUnit);
+                    // handle if the storage unit to which the data was moved is full
+                    unitsWithFreeSpace.remove(storageUnit);
+                } else {
+                    // if it is not full, then move data from the forthcoming storage units
+                    afterThatWillBeCompacted =
+                            defragmentFromCurrent(storageUnit, storageUnitIterator);
                 }
 
-                // handle if the storage unit from which data was moved is empty
                 if (otherUnit.isEmpty()) {
-                    otherUnit.deleteFile();
-                    toBeRemovedFromUnitsWithFreeSpace.add(otherUnit);
+                    // handle if the storage unit from which data was moved is empty
+                    try {
+                        otherUnit.deleteFile();
+                    } catch (IOException ex) {
+                        logger.error(ex);
+                    }
+                    unitsWithFreeSpace.remove(otherUnit);
                 }
+
+                willBeCompacted = afterThatWillBeCompacted;
             }
         } catch (NoSuchElementException ex) {
             // iterator is over
         } finally {
-            for (PersistedStorageUnit toBeRemoved : toBeRemovedFromUnitsWithFreeSpace) {
-                unitsWithFreeSpace.remove(toBeRemoved);
+            unitsWithFreeSpace.clear();
+
+            for (PersistedStorageUnit hasFreeSpace : collectNotFullStorageUnits()) {
+                if (!unitsWithFreeSpace.contains(hasFreeSpace)) {
+                    unitsWithFreeSpace.add(hasFreeSpace);
+                }
             }
         }
+    }
+
+    /**
+     * Moves data to the current storage unit from those storage units which are still availabile in
+     * the iterator.
+     * 
+     * @param current to which data will be moved
+     * @param iterator over those storage units from which data can be moved
+     * 
+     * @return a reference to the storage unit from which data was moved the last time
+     */
+    private PersistedStorageUnit defragmentFromCurrent(MovableStorageUnit current,
+            Iterator<PersistedStorageUnit> iterator) {
+
+        PersistedStorageUnit next = iterator.next();
+        MovableStorageUnit nextUnit = new MovableStorageUnit(next);
+        Set<String> movedKeys = current.moveEntriesFrom(nextUnit);
+
+        try {
+            // save the storage units
+            current.save();
+            nextUnit.save();
+        } catch (StorageException ex) {
+            logger.error(ex);
+        }
+
+        // update references for the moved keys
+        for (String movedKey : movedKeys) {
+            storageUnits.put(movedKey, current);
+        }
+
+        // handle if the storage unit to which the data was moved is full
+        if (current.isFull()) {
+            unitsWithFreeSpace.remove(current);
+        } else {
+            next = defragmentFromCurrent(current, iterator);
+        }
+
+        // handle if the storage unit from which data was moved is empty
+        if (nextUnit.isEmpty()) {
+            try {
+                nextUnit.deleteFile();
+            } catch (IOException ex) {
+                logger.error(ex);
+            }
+            unitsWithFreeSpace.remove(nextUnit);
+        }
+
+        return next;
+    }
+
+    /**
+     * @return those storage units which are stored in the #storageUnits field and have free space.
+     */
+    private Set<PersistedStorageUnit> collectNotFullStorageUnits() {
+        Set<PersistedStorageUnit> result = new HashSet<>();
+        for (PersistedStorageUnit storageUnit : new HashSet<>(storageUnits.values())) {
+            if (!storageUnit.isFull()) {
+                result.add(storageUnit);
+            }
+        }
+        return result;
     }
 
 }
