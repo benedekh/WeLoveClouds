@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,21 +23,18 @@ import weloveclouds.server.utils.FileUtility;
  */
 public class PersistedStorageUnit implements Serializable {
 
-    private static final long serialVersionUID = -7369636797976489112L;
+    private static final long serialVersionUID = 1582338246635272891L;
     protected static final int MAX_NUMBER_OF_ENTRIES = 100;
 
     protected Map<String, String> entries;
-
-    protected Path filePath;
-    private Logger logger;
+    protected String filePath;
 
     /**
      * @param maxSize at most how many entries can be stored in the storage unit
      */
     public PersistedStorageUnit(Path filePath) {
+        setPath(filePath);
         this.entries = new ConcurrentHashMap<>();
-        this.filePath = filePath;
-        this.logger = Logger.getLogger(getClass());
     }
 
     /**
@@ -44,9 +42,8 @@ public class PersistedStorageUnit implements Serializable {
      * @param filePath where the storage unit shall be persisted.
      */
     public PersistedStorageUnit(Map<String, String> initializerMap, Path filePath) {
+        setPath(filePath);
         this.entries = initializerMap;
-        this.filePath = filePath;
-        this.logger = Logger.getLogger(getClass());
     }
 
     /**
@@ -121,7 +118,7 @@ public class PersistedStorageUnit implements Serializable {
      * @throws IOException if any error occurs
      */
     public void deleteFile() throws IOException {
-        FileUtility.deleteFile(filePath);
+        FileUtility.deleteFile(getPath());
     }
 
     /**
@@ -131,12 +128,13 @@ public class PersistedStorageUnit implements Serializable {
      */
     public void save() throws StorageException {
         try {
-            FileUtility.<PersistedStorageUnit>saveToFile(filePath, this);
+            FileUtility.saveToFile(getPath(), this);
         } catch (FileNotFoundException e) {
-            logger.error(e);
+            getLogger().error(e);
             throw new StorageException("File was not found.");
         } catch (IOException e) {
-            logger.error(e);
+            getLogger().error(e);
+            e.printStackTrace();
             throw new StorageException(
                     "Storage unit was not saved to the persistent storage due to IO error.");
         }
@@ -146,44 +144,21 @@ public class PersistedStorageUnit implements Serializable {
      * Set the path where this storage unit is persisted.
      */
     public void setPath(Path path) {
-        this.filePath = path;
+        this.filePath = path.toAbsolutePath().toString();
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((entries == null) ? 0 : entries.hashCode());
-        result = prime * result + ((filePath == null) ? 0 : filePath.hashCode());
-        result = prime * result + ((logger == null) ? 0 : logger.hashCode());
-        return result;
+    /**
+     * Gets the path from the string representation.
+     */
+    protected Path getPath() {
+        return Paths.get(filePath);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        PersistedStorageUnit other = (PersistedStorageUnit) obj;
-        if (entries == null) {
-            if (other.entries != null)
-                return false;
-        } else if (!entries.equals(other.entries))
-            return false;
-        if (filePath == null) {
-            if (other.filePath != null)
-                return false;
-        } else if (!filePath.equals(other.filePath))
-            return false;
-        if (logger == null) {
-            if (other.logger != null)
-                return false;
-        } else if (!logger.equals(other.logger))
-            return false;
-        return true;
+    /**
+     * Because logger is not serializable, we have to get it every time.
+     */
+    protected Logger getLogger() {
+        return Logger.getLogger(getClass());
     }
 
 }

@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -18,20 +16,17 @@ import weloveclouds.server.store.exceptions.StorageException;
 public class MovableStorageUnit extends PersistedStorageUnit {
 
     private static final long serialVersionUID = -5804417133252642642L;
-    private Logger logger;
 
     public MovableStorageUnit(PersistedStorageUnit other) {
-        super(other.entries, other.filePath);
-        this.logger = Logger.getLogger(getClass());
+        super(other.entries, other.getPath());
     }
 
     protected MovableStorageUnit(Map<String, String> entries, Path filePath) {
         super(entries, filePath);
-        this.logger = Logger.getLogger(getClass());
     }
 
     public MovableStorageUnit copyEntries(HashRange range) {
-        return new MovableStorageUnit(filterEntries(range), filePath);
+        return new MovableStorageUnit(filterEntries(range), getPath());
     }
 
     public Set<String> removeEntries(HashRange range) {
@@ -40,7 +35,7 @@ public class MovableStorageUnit extends PersistedStorageUnit {
             try {
                 removeEntry(key);
             } catch (StorageException ex) {
-                logger.error(ex);
+                getLogger().error(ex);
             }
         }
         return removable;
@@ -68,7 +63,7 @@ public class MovableStorageUnit extends PersistedStorageUnit {
                 otherUnit.removeEntry(key);
                 movedKeys.add(key);
             } catch (StorageException ex) {
-                logger.error(ex);
+                getLogger().error(ex);
             }
         }
 
