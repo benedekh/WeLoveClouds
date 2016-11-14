@@ -26,8 +26,6 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
 
     public ControllablePersistentStorage(Path rootPath) throws IllegalArgumentException {
         super(rootPath);
-
-        this.writeLockActive = true;
         this.logger = Logger.getLogger(getClass());
     }
 
