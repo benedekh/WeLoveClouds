@@ -1,36 +1,47 @@
 package weloveclouds.server.store.models;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.server.store.exceptions.StorageException;
 
-public class MovableStorageUnit extends PersistentStorageUnit {
+public class MovableStorageUnit extends PersistedStorageUnit {
 
     private static final long serialVersionUID = -5804417133252642642L;
+    private Logger logger;
 
-    public MovableStorageUnit(PersistentStorageUnit other) {
-        super(other.entries, other.maxSize);
+    public MovableStorageUnit(PersistedStorageUnit other) {
+        super(other.entries, other.filePath);
+        this.logger = Logger.getLogger(getClass());
     }
 
-    protected MovableStorageUnit(Map<String, String> entries, int maxSize) {
-        super(entries, maxSize);
+    protected MovableStorageUnit(Map<String, String> entries, Path filePath) {
+        super(entries, filePath);
+        this.logger = Logger.getLogger(getClass());
     }
 
     public MovableStorageUnit copyEntries(HashRange range) {
-        return new MovableStorageUnit(filterEntries(range), maxSize);
+        return new MovableStorageUnit(filterEntries(range), filePath);
     }
 
     public Set<String> removeEntries(HashRange range) {
         Set<String> removable = filterEntries(range).keySet();
         for (String key : removable) {
-            entries.remove(key);
+            try {
+                removeEntry(key);
+            } catch (StorageException ex) {
+                logger.error(ex);
+            }
         }
         return removable;
     }
@@ -46,15 +57,19 @@ public class MovableStorageUnit extends PersistentStorageUnit {
         return filtered;
     }
 
-    public Set<String> moveEntries(PersistentStorageUnit fromOther) {
+    public Set<String> moveEntriesFrom(PersistedStorageUnit otherUnit) {
         Set<String> movedKeys = new HashSet<>();
-        Iterator<String> otherKeysIterator = fromOther.getKeys().iterator();
+        Iterator<String> otherKeysIterator = otherUnit.getKeys().iterator();
 
         while (!isFull() && otherKeysIterator.hasNext()) {
-            String key = otherKeysIterator.next();
-            putEntry(new KVEntry(key, fromOther.getValue(key)));
-            fromOther.removeEntry(key);
-            movedKeys.add(key);
+            try {
+                String key = otherKeysIterator.next();
+                putEntry(new KVEntry(key, otherUnit.getValue(key)));
+                otherUnit.removeEntry(key);
+                movedKeys.add(key);
+            } catch (StorageException ex) {
+                logger.error(ex);
+            }
         }
 
         return movedKeys;

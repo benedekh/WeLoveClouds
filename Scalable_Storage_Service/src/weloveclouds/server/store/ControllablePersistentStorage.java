@@ -17,7 +17,7 @@ import weloveclouds.hashing.models.HashRange;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
-import weloveclouds.server.utils.FileUtility;
+import weloveclouds.server.store.models.PersistedStorageUnit;
 
 public class ControllablePersistentStorage extends KVPersistentStorage {
 
@@ -58,15 +58,16 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
             try {
                 String filename = UUID.randomUUID().toString();
                 Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
-                saveStorageUnitToPath(storageUnit, path);
+                storageUnit.setPath(path);
+                storageUnit.save();
 
                 for (String key : storageUnit.getKeys()) {
-                    filePaths.put(key, path);
+                    storageUnits.put(key, storageUnit);
                     notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
                 }
 
                 if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(path)) {
-                    unitsWithFreeSpace.add(path);
+                    unitsWithFreeSpace.add(storageUnit);
                 }
             } catch (StorageException e) {
                 logger.error(e);
@@ -76,13 +77,8 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
 
     public Set<MovableStorageUnit> copyEntries(HashRange range) {
         Set<MovableStorageUnit> toBeCopied = new HashSet<>();
-        for (Path path : filePaths.values()) {
-            try {
-                toBeCopied.add(
-                        new MovableStorageUnit(loadStorageUnitFromPath(path)).copyEntries(range));
-            } catch (StorageException e) {
-                logger.error(e);
-            }
+        for (PersistedStorageUnit storageUnit : storageUnits.values()) {
+            toBeCopied.add(new MovableStorageUnit(storageUnit).copyEntries(range));
         }
         return toBeCopied;
     }
@@ -90,80 +86,65 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
     public void removeEntries(HashRange range) throws StorageException {
         Set<String> keysToBeRemoved = new HashSet<>();
 
-        for (Path path : filePaths.values()) {
+        for (PersistedStorageUnit persistedUnit : storageUnits.values()) {
             try {
-                MovableStorageUnit storageUnit =
-                        new MovableStorageUnit(loadStorageUnitFromPath(path));
+                MovableStorageUnit storageUnit = new MovableStorageUnit(persistedUnit);
                 Set<String> removedKeys = storageUnit.removeEntries(range);
 
                 if (!removedKeys.isEmpty()) {
                     if (storageUnit.isEmpty()) {
-                        // remove the path if the storage unit is emptied
-                        removePathOfAnEmptyStorageUnit(path);
-                    } else {
+                        removeStorageUnit(storageUnit);
+                    } else if (!unitsWithFreeSpace.contains(storageUnit)) {
                         // it has free space because some keys were removed
-                        if (!unitsWithFreeSpace.contains(path)) {
-                            unitsWithFreeSpace.add(path);
-                        }
-                        // save changes
-                        saveStorageUnitToPath(storageUnit, path);
+                        unitsWithFreeSpace.add(storageUnit);
                     }
+
                     keysToBeRemoved.addAll(removedKeys);
                 }
-            } catch (StorageException e) {
-                logger.error(e);
             } catch (IOException e) {
                 logger.error(e);
             }
         }
 
         for (String key : keysToBeRemoved) {
-            removeKeyFromPathEntries(key);
+            removeKeyFromStore(key);
         }
     }
 
     public void compact() throws StorageException, IOException {
-        Iterator<Path> pathIterator = unitsWithFreeSpace.iterator();
-        Set<Path> toBeRemovedFromUnitsWithFreeSpace = new HashSet<>();
+        Iterator<PersistedStorageUnit> storageUnitIterator = unitsWithFreeSpace.iterator();
+        Set<PersistedStorageUnit> toBeRemovedFromUnitsWithFreeSpace = new HashSet<>();
 
         try {
-            while (pathIterator.hasNext()) {
-                Path nextPath = pathIterator.next();
-                Path pathAfterNext = pathIterator.next();
-
-                MovableStorageUnit storageUnit =
-                        new MovableStorageUnit(loadStorageUnitFromPath(nextPath));
-                MovableStorageUnit otherUnit =
-                        new MovableStorageUnit(loadStorageUnitFromPath(pathAfterNext));
-
-                Set<String> movedKeys = storageUnit.moveEntries(otherUnit);
+            while (storageUnitIterator.hasNext()) {
+                MovableStorageUnit storageUnit = new MovableStorageUnit(storageUnitIterator.next());
+                MovableStorageUnit otherUnit = new MovableStorageUnit(storageUnitIterator.next());
+                Set<String> movedKeys = storageUnit.moveEntriesFrom(otherUnit);
 
                 // save the storage units
-                saveStorageUnitToPath(storageUnit, nextPath);
-                saveStorageUnitToPath(otherUnit, pathAfterNext);
+                storageUnit.save();
+                otherUnit.save();
 
-                // update paths for the moved keys
+                // update references for the moved keys
                 for (String movedKey : movedKeys) {
-                    filePaths.put(movedKey, nextPath);
+                    storageUnits.put(movedKey, storageUnit);
                 }
 
                 // handle if the storage unit to which the data was moved is full
                 if (storageUnit.isFull()) {
-                    toBeRemovedFromUnitsWithFreeSpace.add(nextPath);
+                    toBeRemovedFromUnitsWithFreeSpace.add(storageUnit);
                 }
 
                 // handle if the storage unit from which data was moved is empty
                 if (otherUnit.isEmpty()) {
-                    // remove the file and the path from the store as well
-                    FileUtility.deleteFile(pathAfterNext);
-                    toBeRemovedFromUnitsWithFreeSpace.add(pathAfterNext);
+                    otherUnit.deleteFile();
+                    toBeRemovedFromUnitsWithFreeSpace.add(otherUnit);
                 }
             }
         } catch (NoSuchElementException ex) {
             // iterator is over
         } finally {
-            // remove those paths which are not sufficient for the unitsWithFreeSpace
-            for (Path toBeRemoved : toBeRemovedFromUnitsWithFreeSpace) {
+            for (PersistedStorageUnit toBeRemoved : toBeRemovedFromUnitsWithFreeSpace) {
                 unitsWithFreeSpace.remove(toBeRemoved);
             }
         }
