@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,10 +62,10 @@ public class PersistedStorageUnit implements Serializable {
     }
 
     /**
-     * @return keys stored in the storage unit
+     * @return keys stored in the storage unit as an unmodifiable set
      */
     public Set<String> getKeys() {
-        return entries.keySet();
+        return Collections.unmodifiableSet(entries.keySet());
     }
 
     /**
