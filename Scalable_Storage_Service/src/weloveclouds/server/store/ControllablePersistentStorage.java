@@ -79,7 +79,7 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
                     notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
                 }
 
-                if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(path)) {
+                if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
                     unitsWithFreeSpace.add(storageUnit);
                 }
             } catch (StorageException e) {
