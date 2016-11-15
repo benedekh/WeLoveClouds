@@ -27,8 +27,6 @@ public class ECSCommandFactory {
         ICommand recognizedCommand = null;
         ECSCommand userCommand = input.getEcsCommand();
         
-        /*INIT("initService"), START("start"), STOP("stop"), SHUTDOWN("shutdown"),
-        ADDNODE("addnode"), REMOVENODE("removenode"), DEFAULT("default");*/
         switch(userCommand){
             case ADDNODE:
                 recognizedCommand = new Addnode(input.getArguments());
@@ -44,6 +42,9 @@ public class ECSCommandFactory {
                 break;
             case REMOVENODE:
                 recognizedCommand = new Removenode(input.getArguments());
+                break;
+            case LOGLEVEL:
+                recognizedCommand = new Loglevel(input.getArguments());
                 break;
             default:
                 logger.info(join(" ", "Unrecognized command:", userCommand.toString()));
