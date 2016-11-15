@@ -9,10 +9,10 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageDeserializer;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
+import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.models.requests.RequestFactory;
 
 /**
@@ -24,8 +24,8 @@ import weloveclouds.server.models.requests.RequestFactory;
 public class Server extends AbstractServer {
     private CommunicationApiFactory communicationApiFactory;
     private RequestFactory requestFactory;
-    private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
-    private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
+    private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
+    private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
 
     private ServerShutdownHook shutdownHook;
     private Logger logger;
@@ -106,8 +106,8 @@ public class Server extends AbstractServer {
         private CommunicationApiFactory communicationApiFactory;
         private ServerSocketFactory serverSocketFactory;
         private RequestFactory requestFactory;
-        private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
-        private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
+        private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
+        private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
         private int port;
 
         public ServerBuilder serverSocketFactory(ServerSocketFactory serverSocketFactory) {
@@ -132,13 +132,13 @@ public class Server extends AbstractServer {
         }
 
         public ServerBuilder messageSerializer(
-                IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer) {
+                IMessageSerializer<SerializedMessage, KVMessage> messageSerializer) {
             this.messageSerializer = messageSerializer;
             return this;
         }
 
         public ServerBuilder messageDeserializer(
-                IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer) {
+                IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return this;
         }

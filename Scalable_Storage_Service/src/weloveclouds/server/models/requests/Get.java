@@ -1,13 +1,13 @@
 package weloveclouds.server.models.requests;
 
-import static weloveclouds.kvstore.models.IKVMessage.StatusType.GET_ERROR;
-import static weloveclouds.kvstore.models.IKVMessage.StatusType.GET_SUCCESS;
+import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_ERROR;
+import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.models.IKVMessage.StatusType;
-import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
+import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;

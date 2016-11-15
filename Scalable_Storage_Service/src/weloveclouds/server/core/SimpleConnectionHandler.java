@@ -8,11 +8,11 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageDeserializer;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
+import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.models.requests.RequestFactory;
 
 /**
@@ -26,8 +26,8 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
     private IConcurrentCommunicationApi communicationApi;
     private RequestFactory requestFactory;
     private Connection connection;
-    private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
-    private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
+    private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
+    private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
 
     private Logger logger;
 
@@ -80,8 +80,8 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
         private IConcurrentCommunicationApi communicationApi;
         private RequestFactory requestFactory;
         private Connection connection;
-        private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
-        private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
+        private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
+        private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
 
         public SimpleConnectionBuilder connection(Connection connection) {
             this.connection = connection;
@@ -100,13 +100,13 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
         }
 
         public SimpleConnectionBuilder messageSerializer(
-                IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer) {
+                IMessageSerializer<SerializedMessage, KVMessage> messageSerializer) {
             this.messageSerializer = messageSerializer;
             return this;
         }
 
         public SimpleConnectionBuilder messageDeserializer(
-                IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer) {
+                IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return this;
         }

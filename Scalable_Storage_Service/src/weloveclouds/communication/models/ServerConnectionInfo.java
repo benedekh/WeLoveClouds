@@ -11,6 +11,8 @@ import weloveclouds.client.utils.CustomStringJoiner;
  * @author Benoit, Benedek
  */
 public class ServerConnectionInfo {
+    public static String FIELD_DELIMITER = "-\r-";
+
     private InetAddress ipAddress;
     private int port;
 
@@ -27,9 +29,15 @@ public class ServerConnectionInfo {
         return port;
     }
 
+    public String toStringWithDelimiter() {
+        return CustomStringJoiner.join(FIELD_DELIMITER, ipAddress.getHostAddress(),
+                String.valueOf(port));
+    }
+
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", ipAddress.toString(), String.valueOf(port));
+        return CustomStringJoiner.join("", "<", ipAddress.getHostAddress(), " , ",
+                String.valueOf(port), ">");
     }
 
     /**

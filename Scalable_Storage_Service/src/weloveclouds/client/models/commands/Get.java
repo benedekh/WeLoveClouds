@@ -8,7 +8,7 @@ import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
-import weloveclouds.kvstore.models.IKVMessage;
+import weloveclouds.kvstore.models.messages.IKVMessage;
 
 /**
  * Get command which means the client would like to query the value for a respective key.

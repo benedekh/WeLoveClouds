@@ -1,5 +1,7 @@
 package weloveclouds.hashing.models;
 
+import weloveclouds.client.utils.CustomStringJoiner;
+
 /**
  * The following properties should be held for the range:<br>
  * (1) end >= start, and <br>
@@ -12,6 +14,8 @@ package weloveclouds.hashing.models;
  * @author Benedek
  */
 public class HashRange {
+
+    public static String FIELD_DELIMITER = "-\r-";
 
     private Hash start;
     private Hash end;
@@ -35,6 +39,15 @@ public class HashRange {
                 return false;
             }
         }
+    }
+
+    public String toStringWithDelimiter() {
+        return CustomStringJoiner.join(FIELD_DELIMITER, start.toString(), end.toString());
+    }
+
+    @Override
+    public String toString() {
+        return CustomStringJoiner.join("", "(", start.toString(), ",", end.toString(), ")");
     }
 
 }

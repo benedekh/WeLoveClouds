@@ -1,9 +1,11 @@
-package weloveclouds.kvstore.models;
+package weloveclouds.kvstore.models.messages;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.kvstore.models.KVEntry;
 
 /**
- * Represents a Key-value message that is transferred through the network (the entry and the message type).
+ * Represents a Key-value message that is transferred through the network (the entry and the message
+ * type).
  * 
  * @author Benedek
  */
@@ -65,8 +67,8 @@ public class KVMessage implements IKVMessage {
     @Override
     public String toString() {
         return CustomStringJoiner.join(" ", "Message status:",
-                status == null ? "null" : status.toString(), "KVEntry:",
-                entry == null ? "null" : entry.toString());
+                status == null ? null : status.toString(), "KVEntry:",
+                entry == null ? null : entry.toString());
     }
 
 }
