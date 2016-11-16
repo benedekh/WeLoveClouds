@@ -5,11 +5,14 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.RangeInfo;
-import weloveclouds.hashing.models.RangeInfos;
+import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.kvstore.serialization.helper.ISerializer;
+import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
+import weloveclouds.kvstore.serialization.helper.ServerInitializationContextSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.server.models.ServerInitializationContext;
 
 /**
  * An exact serializer which converts a {@link KVAdminMessage} to a {@link SerializedMessage}.
@@ -19,7 +22,11 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 public class KVAdminMessageSerializer
         implements IMessageSerializer<SerializedMessage, KVAdminMessage> {
 
-    private static final String SEPARATOR = "-\r-";
+    public static final String SEPARATOR = "-\r-";
+
+    private ISerializer<String, ServerInitializationContext> initializationContextSerializer =
+            new ServerInitializationContextSerializer();
+    private ISerializer<String, RingMetadataPart> rangeInfoSerializer = new RingMetadataPartSerializer();
 
     private Logger logger = Logger.getLogger(getClass());
 
@@ -29,20 +36,21 @@ public class KVAdminMessageSerializer
 
         // original fields
         StatusType status = unserializedMessage.getStatus();
-        RangeInfos ringMetadata = unserializedMessage.getRingMetadata();
-        RangeInfo targetServerInfo = unserializedMessage.getTargetServerInfo();
+        ServerInitializationContext initializationContext =
+                unserializedMessage.getInitializationContext();
+        RingMetadataPart targetServerInfo = unserializedMessage.getTargetServerInfo();
 
         // string representation
         String statusStr = status == null ? null : status.toString();
-        String ringMetadataStr = ringMetadata == null ? null : ringMetadata.toStringWithDelimiter();
-        String targetServerStr =
-                targetServerInfo == null ? null : targetServerInfo.toStringWithDelimiter();
+        String initializationContextStr =
+                initializationContextSerializer.serialize(initializationContext);
+        String targetServerStr = rangeInfoSerializer.serialize(targetServerInfo);
         String responseMessage = unserializedMessage.getResponseMessage();
 
         // merged string representation
-        String serialized = CustomStringJoiner.join(SEPARATOR, statusStr, ringMetadataStr,
+        String serialized = CustomStringJoiner.join(SEPARATOR, statusStr, initializationContextStr,
                 targetServerStr, responseMessage);
-        
+
         logger.debug(join(" ", "Serialized message:", serialized));
         return new SerializedMessage(serialized);
     }

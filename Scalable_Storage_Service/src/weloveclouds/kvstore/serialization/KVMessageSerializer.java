@@ -15,7 +15,7 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
  */
 public class KVMessageSerializer implements IMessageSerializer<SerializedMessage, KVMessage> {
 
-    private static final String SEPARATOR = "-\r-";
+    public static final String SEPARATOR = "-\r-";
 
     private Logger logger = Logger.getLogger(getClass());
 

@@ -15,14 +15,20 @@ import weloveclouds.client.utils.CustomStringJoiner;
  */
 public class HashRange {
 
-    public static String FIELD_DELIMITER = "-\r-";
-
     private Hash start;
     private Hash end;
 
     public HashRange(Hash start, Hash end) {
         this.start = start;
         this.end = end;
+    }
+
+    public Hash getStart() {
+        return start;
+    }
+
+    public Hash getEnd() {
+        return end;
     }
 
     public boolean contains(Hash target) {
@@ -39,10 +45,6 @@ public class HashRange {
                 return false;
             }
         }
-    }
-
-    public String toStringWithDelimiter() {
-        return CustomStringJoiner.join(FIELD_DELIMITER, start.toString(), end.toString());
     }
 
     @Override

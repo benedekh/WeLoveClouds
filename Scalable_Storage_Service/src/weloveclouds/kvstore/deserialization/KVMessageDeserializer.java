@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.serialization;
+package weloveclouds.kvstore.deserialization;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 import static weloveclouds.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
@@ -8,17 +8,19 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
+import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 /**
- * An exact deserializer which converts a {@link SerializedMessage} to a {@link KVMessage}.
+ * A deserializer which converts a {@link SerializedMessage} to a {@link KVMessage}.
  * 
  * @author Benoit
  */
 public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, SerializedMessage> {
-    private static String SEPARATOR = "-\r-";
+
     private static int NUMBER_OF_MESSAGE_PARTS = 3;
+
     private static int MESSAGE_STATUS_INDEX = 0;
     private static int MESSAGE_KEY_INDEX = 1;
     private static int MESSAGE_VALUE_INDEX = 2;
@@ -37,7 +39,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
 
         // raw message split
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
-        String[] messageParts = serializedMessageStr.split(SEPARATOR);
+        String[] messageParts = serializedMessageStr.split(KVMessageSerializer.SEPARATOR);
 
         // length check
         if (messageParts.length != NUMBER_OF_MESSAGE_PARTS) {

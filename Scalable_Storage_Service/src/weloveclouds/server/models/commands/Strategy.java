@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.server.models.ServerConfigurationContext;
+import weloveclouds.server.models.ServerCLIConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
@@ -22,7 +22,7 @@ public class Strategy extends AbstractServerCommand {
 
     private static final int STRATEGY_INDEX = 0;
 
-    private ServerConfigurationContext context;
+    private ServerCLIConfigurationContext context;
     private Logger logger;
 
     /**
@@ -30,7 +30,7 @@ public class Strategy extends AbstractServerCommand {
      *        the displacement startegy
      * @param context contains the server parameter configuration
      */
-    public Strategy(String[] arguments, ServerConfigurationContext context) {
+    public Strategy(String[] arguments, ServerCLIConfigurationContext context) {
         super(arguments);
         this.context = context;
         this.logger = Logger.getLogger(getClass());

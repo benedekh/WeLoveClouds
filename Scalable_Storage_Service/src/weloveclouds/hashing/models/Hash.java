@@ -4,8 +4,6 @@ import weloveclouds.client.utils.CustomStringJoiner;
 
 public class Hash implements Comparable<Hash> {
 
-    public static String DELIMITER = "|";
-
     public static final Hash MAX_VALUE;
     public static final Hash MIN_VALUE;
 
@@ -28,6 +26,10 @@ public class Hash implements Comparable<Hash> {
 
     public Hash(byte[] hash) {
         this.hash = hash;
+    }
+
+    public byte[] getHash() {
+        return hash;
     }
 
     @Override
@@ -57,21 +59,16 @@ public class Hash implements Comparable<Hash> {
         return EQUALS;
     }
 
-    public String toStringWithDelimiter() {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : hash) {
-            sb.append(String.valueOf(b));
-            sb.append(DELIMITER);
-        }
-        sb.setLength(sb.length() - DELIMITER.length());
-        return sb.toString();
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        sb.append(toStringWithDelimiter());
+        String delimiter = "|";
+        for (byte b : hash) {
+            sb.append(String.valueOf(b));
+            sb.append(delimiter);
+        }
+        sb.setLength(sb.length() - delimiter.length());
         sb.append("]");
         return sb.toString();
     }

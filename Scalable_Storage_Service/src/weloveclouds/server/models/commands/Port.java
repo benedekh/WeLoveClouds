@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.server.models.ServerConfigurationContext;
+import weloveclouds.server.models.ServerCLIConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.utils.ArgumentsValidator;
 
@@ -19,14 +19,14 @@ public class Port extends AbstractServerCommand {
 
     private static final int PORT_INDEX = 0;
 
-    private ServerConfigurationContext context;
+    private ServerCLIConfigurationContext context;
     private Logger logger;
 
     /**
      * @param arguments the {@link #PORT_INDEX} element of the array shall contain new port
      * @param context contains the server parameter configuration
      */
-    public Port(String[] arguments, ServerConfigurationContext context) {
+    public Port(String[] arguments, ServerCLIConfigurationContext context) {
         super(arguments);
         this.context = context;
         this.logger = Logger.getLogger(getClass());

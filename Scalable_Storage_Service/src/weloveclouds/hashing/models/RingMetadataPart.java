@@ -9,14 +9,12 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * 
  * @author Benedek
  */
-public class RangeInfo {
-
-    public static String FIELD_DELIMITER = "-\t-";
+public class RingMetadataPart {
 
     private ServerConnectionInfo connectionInfo;
     private HashRange range;
 
-    public RangeInfo(RangeInfoBuilder builder) {
+    public RingMetadataPart(RingMetadataPartBuilder builder) {
         this.connectionInfo = builder.connectionInfo;
         this.range = builder.range;
     }
@@ -24,14 +22,13 @@ public class RangeInfo {
     public ServerConnectionInfo getConnectionInfo() {
         return connectionInfo;
     }
+    
+    public HashRange getRange(){
+        return range;
+    }
 
     public boolean rangeContains(Hash hash) {
         return range.contains(hash);
-    }
-
-    public String toStringWithDelimiter() {
-        return CustomStringJoiner.join(FIELD_DELIMITER, connectionInfo.toString(),
-                range.toString());
     }
 
     @Override
@@ -40,22 +37,22 @@ public class RangeInfo {
                 ", Range: ", range.toString(), "}");
     }
 
-    public static class RangeInfoBuilder {
+    public static class RingMetadataPartBuilder {
         private ServerConnectionInfo connectionInfo;
         private HashRange range;
 
-        public RangeInfoBuilder connectionInfo(ServerConnectionInfo connectionInfo) {
+        public RingMetadataPartBuilder connectionInfo(ServerConnectionInfo connectionInfo) {
             this.connectionInfo = connectionInfo;
             return this;
         }
 
-        public RangeInfoBuilder range(HashRange range) {
+        public RingMetadataPartBuilder range(HashRange range) {
             this.range = range;
             return this;
         }
 
-        public RangeInfo build() {
-            return new RangeInfo(this);
+        public RingMetadataPart build() {
+            return new RingMetadataPart(this);
         }
     }
 

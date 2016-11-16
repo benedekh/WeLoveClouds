@@ -1,8 +1,8 @@
 package weloveclouds.kvstore.models.messages;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.RangeInfo;
-import weloveclouds.hashing.models.RangeInfos;
+import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.server.models.ServerInitializationContext;
 
 /**
  * Represents an administrative message between the ECS and the KVServer.
@@ -13,13 +13,13 @@ public class KVAdminMessage implements IKVAdminMessage {
 
     private StatusType status;
 
-    private RangeInfos ringMetadata;
-    private RangeInfo targetServerInfo;
+    private ServerInitializationContext initializationContext;
+    private RingMetadataPart targetServerInfo;
     private String responseMessage;
 
     protected KVAdminMessage(KVAdminMessageBuilder builder) {
         this.status = builder.status;
-        this.ringMetadata = builder.ringMetadata;
+        this.initializationContext = builder.initializationContext;
         this.targetServerInfo = builder.targetServerInfo;
         this.responseMessage = builder.responseMessage;
     }
@@ -30,12 +30,12 @@ public class KVAdminMessage implements IKVAdminMessage {
     }
 
     @Override
-    public RangeInfos getRingMetadata() {
-        return ringMetadata;
+    public ServerInitializationContext getInitializationContext() {
+        return initializationContext;
     }
 
     @Override
-    public RangeInfo getTargetServerInfo() {
+    public RingMetadataPart getTargetServerInfo() {
         return targetServerInfo;
     }
 
@@ -46,8 +46,8 @@ public class KVAdminMessage implements IKVAdminMessage {
 
     public static class KVAdminMessageBuilder {
         private StatusType status;
-        private RangeInfos ringMetadata;
-        private RangeInfo targetServerInfo;
+        private ServerInitializationContext initializationContext;
+        private RingMetadataPart targetServerInfo;
         private String responseMessage;
 
         public KVAdminMessageBuilder status(StatusType status) {
@@ -55,12 +55,13 @@ public class KVAdminMessage implements IKVAdminMessage {
             return this;
         }
 
-        public KVAdminMessageBuilder ringMetadata(RangeInfos metadata) {
-            this.ringMetadata = metadata;
+        public KVAdminMessageBuilder initializationContext(
+                ServerInitializationContext initializationContext) {
+            this.initializationContext = initializationContext;
             return this;
         }
 
-        public KVAdminMessageBuilder targetServerInfo(RangeInfo targetServerInfo) {
+        public KVAdminMessageBuilder targetServerInfo(RingMetadataPart targetServerInfo) {
             this.targetServerInfo = targetServerInfo;
             return this;
         }
@@ -78,9 +79,9 @@ public class KVAdminMessage implements IKVAdminMessage {
     @Override
     public String toString() {
         return CustomStringJoiner.join(" ", "Message status:",
-                status == null ? null : status.toString(), "Metadata:",
-                ringMetadata == null ? null : ringMetadata.toString(),
-                "Target server info (IP, range):",
+                status == null ? null : status.toString(), "Initialization context:",
+                initializationContext == null ? null : initializationContext.toString(),
+                "Target server info:",
                 targetServerInfo == null ? null : targetServerInfo.toString(), "Response message: ",
                 responseMessage == null ? null : responseMessage.toString());
     }

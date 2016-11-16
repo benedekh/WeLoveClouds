@@ -1,7 +1,7 @@
 package weloveclouds.kvstore.models.messages;
 
-import weloveclouds.hashing.models.RangeInfo;
-import weloveclouds.hashing.models.RangeInfos;
+import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.server.models.ServerInitializationContext;
 
 /**
  * Represents an administrative message between the ECS and the KVServer.
@@ -9,7 +9,7 @@ import weloveclouds.hashing.models.RangeInfos;
 public interface IKVAdminMessage {
 
     public enum StatusType {
-        INITKVSERVER, /* Initialize the server with the metadata range - request */
+        INITKVSERVER, /* Initialize the server with the context - request */
         START, /* Start the server for the client - request */
         STOP, /* Stop the server, but keep it alive - request */
         SHUTDOWN, /* Shut down the server - request */
@@ -28,15 +28,15 @@ public interface IKVAdminMessage {
     public StatusType getStatus();
 
     /**
-     * @return the structure which stores the <ip,port,range> metadata
+     * @return the structure which stores the initialization information for the server
      */
-    public RangeInfos getRingMetadata();
+    public ServerInitializationContext getInitializationContext();
 
     /**
      * @return the ip+port of the server to which data shall be transferred, and the hash range in
      *         which the hash values of keys of the the transferable entries have to be
      */
-    public RangeInfo getTargetServerInfo();
+    public RingMetadataPart getTargetServerInfo();
 
     /**
      * @return if the message is a response then the message can be obtained here.
