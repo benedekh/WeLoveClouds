@@ -7,8 +7,8 @@ import org.apache.log4j.Level;
 import weloveclouds.client.core.Client;
 import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.api.v1.IKVCommunicationApi;
+import weloveclouds.server.api.IKVCommunicationApi;
+import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.utils.LogSetup;
 
 /**
@@ -29,7 +29,7 @@ public class KVClient {
             new LogSetup(logFile, Level.OFF);
 
             IKVCommunicationApi serverCommunication =
-                    new CommunicationApiFactory().createKVCommunicationApiV1();
+                    new KVCommunicationApiFactory().createKVCommunicationApiV1();
             CommandFactory commandFactory = new CommandFactory(serverCommunication);
             Client client = new Client(System.in, commandFactory);
             client.run();

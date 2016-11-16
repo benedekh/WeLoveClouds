@@ -1,4 +1,4 @@
-package weloveclouds.server.models.exceptions;
+package weloveclouds.server.exceptions;
 
 /**
  * Represents an exception that occurred on the server side.

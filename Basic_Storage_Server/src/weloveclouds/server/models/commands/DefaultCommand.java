@@ -3,7 +3,7 @@ package weloveclouds.server.models.commands;
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 import static weloveclouds.server.utils.HelpMessageGenerator.generateHelpMessage;
 
-import weloveclouds.server.models.exceptions.ServerSideException;
+import weloveclouds.server.exceptions.ServerSideException;
 
 /**
  * An unrecognized command.

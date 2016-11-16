@@ -1,6 +1,6 @@
 package weloveclouds.client.models.commands;
 
-import weloveclouds.communication.api.v1.IKVCommunicationApi;
+import weloveclouds.server.api.IKVCommunicationApi;
 
 /**
  * Represents an {@link AbstractCommunicationApiCommand} that shall use the

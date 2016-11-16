@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.client.utils.PutCommandUtils;
-import weloveclouds.communication.api.v1.IKVCommunicationApi;
+import weloveclouds.server.api.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.kvstore.models.IKVMessage;
 

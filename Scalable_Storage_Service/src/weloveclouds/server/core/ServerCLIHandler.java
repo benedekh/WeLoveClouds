@@ -9,7 +9,7 @@ import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
 import weloveclouds.server.models.commands.ServerCommandFactory;
-import weloveclouds.server.models.exceptions.ServerSideException;
+import weloveclouds.server.exceptions.ServerSideException;
 
 /**
  * CommandLineInterface handler for the Server so it can be run as a standalone application. Handles

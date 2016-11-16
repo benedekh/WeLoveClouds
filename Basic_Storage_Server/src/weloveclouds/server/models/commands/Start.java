@@ -11,7 +11,7 @@ import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerSocketFactory;
 import weloveclouds.server.models.ServerConfigurationContext;
-import weloveclouds.server.models.exceptions.ServerSideException;
+import weloveclouds.server.exceptions.ServerSideException;
 import weloveclouds.server.models.requests.RequestFactory;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.store.KVCache;
