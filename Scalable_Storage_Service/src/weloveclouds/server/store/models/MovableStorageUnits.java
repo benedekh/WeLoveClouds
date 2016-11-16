@@ -28,4 +28,24 @@ public class MovableStorageUnits {
         return Collections.unmodifiableSet(storageUnits);
     }
 
+    public String toStringWithDelimiter(String betweenStorageUnits, String betweenEntries,
+            String withinEntry) {
+        StringBuilder sb = new StringBuilder();
+        for (MovableStorageUnit storageUnit : storageUnits) {
+            sb.append(storageUnit.toStringWithDelimiter(betweenEntries, withinEntry));
+            sb.append(betweenStorageUnits);
+        }
+        sb.setLength(sb.length() - betweenStorageUnits.length());
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append(toStringWithDelimiter(",", ";", "::"));
+        sb.append("}");
+        return sb.toString();
+    }
+
 }

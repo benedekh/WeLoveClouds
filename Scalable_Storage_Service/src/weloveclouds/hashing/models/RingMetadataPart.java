@@ -22,13 +22,13 @@ public class RingMetadataPart {
     public ServerConnectionInfo getConnectionInfo() {
         return connectionInfo;
     }
-    
-    public HashRange getRange(){
-        return range;
-    }
 
     public boolean rangeContains(Hash hash) {
         return range.contains(hash);
+    }
+
+    public String toStringWithDelimiter(String delimiter) {
+        return CustomStringJoiner.join(delimiter, connectionInfo.toString(), range.toString());
     }
 
     @Override

@@ -23,14 +23,6 @@ public class HashRange {
         this.end = end;
     }
 
-    public Hash getStart() {
-        return start;
-    }
-
-    public Hash getEnd() {
-        return end;
-    }
-
     public boolean contains(Hash target) {
         if (end.compareTo(start) > 0) {
             // if the range does not wrap over
@@ -45,6 +37,10 @@ public class HashRange {
                 return false;
             }
         }
+    }
+
+    public String toStringWithDelimiter(String delimiter) {
+        return CustomStringJoiner.join(delimiter, start.toString(), end.toString());
     }
 
     @Override

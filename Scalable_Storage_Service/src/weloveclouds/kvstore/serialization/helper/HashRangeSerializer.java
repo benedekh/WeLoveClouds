@@ -1,6 +1,5 @@
 package weloveclouds.kvstore.serialization.helper;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.HashRange;
 
 public class HashRangeSerializer implements ISerializer<String, HashRange> {
@@ -12,8 +11,7 @@ public class HashRangeSerializer implements ISerializer<String, HashRange> {
         String serialized = null;
 
         if (target != null) {
-            serialized = CustomStringJoiner.join(SEPARATOR, target.getStart().toString(),
-                    target.getEnd().toString());
+            serialized = target.toStringWithDelimiter(SEPARATOR);
         }
 
         return serialized;

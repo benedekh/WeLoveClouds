@@ -42,7 +42,7 @@ public class PersistedStorageUnit implements Serializable {
      * @param initializerMap contains the key-value pairs which shall initialize this storage unit
      * @param filePath where the storage unit shall be persisted.
      */
-    public PersistedStorageUnit(Map<String, String> initializerMap, Path filePath) {
+    protected PersistedStorageUnit(Map<String, String> initializerMap, Path filePath) {
         setPath(filePath);
         this.entries = initializerMap;
     }

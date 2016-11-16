@@ -17,7 +17,7 @@ public interface IKVTransferMessage {
 
     /**
      * @return a status string that is used to identify request types, response types and error
-     *         types associated to the message.
+     *         types associated to the message
      */
     public StatusType getStatus();
 
@@ -27,7 +27,7 @@ public interface IKVTransferMessage {
     public MovableStorageUnits getStorageUnits();
 
     /**
-     * @return if the message is a response then the message can be obtained here.
+     * @return if the message is a response then the message text can be obtained here.
      */
     public String getResponseMessage();
 

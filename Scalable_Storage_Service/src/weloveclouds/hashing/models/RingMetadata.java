@@ -1,6 +1,5 @@
 package weloveclouds.hashing.models;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,21 +44,22 @@ public class RingMetadata {
         return null;
     }
 
-    public Set<RingMetadataPart> getMetadataParts() {
-        return Collections.unmodifiableSet(metadataParts);
+    public String toStringWithDelimiter(String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        for (RingMetadataPart metadataPart : metadataParts) {
+            sb.append(metadataPart);
+            sb.append(delimiter);
+        }
+        sb.setLength(sb.length() - delimiter.length());
+        return sb.toString();
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{Ring metadata parts: {");
-        String delimiter = ", ";
-        for (RingMetadataPart info : metadataParts) {
-            sb.append(info);
-            sb.append(delimiter);
-        }
-        sb.setLength(sb.length() - delimiter.length());
-        sb.append("}}");
+        sb.append("{");
+        sb.append(toStringWithDelimiter(", "));
+        sb.append("}");
         return sb.toString();
     }
 

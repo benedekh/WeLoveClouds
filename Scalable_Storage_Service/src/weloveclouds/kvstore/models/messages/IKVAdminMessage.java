@@ -1,5 +1,6 @@
 package weloveclouds.kvstore.models.messages;
 
+import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.server.models.ServerInitializationContext;
 
@@ -23,7 +24,7 @@ public interface IKVAdminMessage {
 
     /**
      * @return a status string that is used to identify request types, response types and error
-     *         types associated to the message.
+     *         types associated to the message
      */
     public StatusType getStatus();
 
@@ -33,13 +34,18 @@ public interface IKVAdminMessage {
     public ServerInitializationContext getInitializationContext();
 
     /**
+     * @return the ring metadata parts (<IP, port, range>) for each server
+     */
+    public RingMetadata getRingMetadata();
+
+    /**
      * @return the ip+port of the server to which data shall be transferred, and the hash range in
      *         which the hash values of keys of the the transferable entries have to be
      */
     public RingMetadataPart getTargetServerInfo();
 
     /**
-     * @return if the message is a response then the message can be obtained here.
+     * @return if the message is a response then the message text can be obtained here
      */
     public String getResponseMessage();
 }

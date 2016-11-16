@@ -21,15 +21,10 @@ public class Hash implements Comparable<Hash> {
         MIN_VALUE = new Hash(minValues);
     }
 
-
     private byte[] hash;
 
     public Hash(byte[] hash) {
         this.hash = hash;
-    }
-
-    public byte[] getHash() {
-        return hash;
     }
 
     @Override
@@ -59,16 +54,21 @@ public class Hash implements Comparable<Hash> {
         return EQUALS;
     }
 
-    @Override
-    public String toString() {
+    public String toStringWithDelimiter(String delimiter) {
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        String delimiter = "|";
         for (byte b : hash) {
             sb.append(String.valueOf(b));
             sb.append(delimiter);
         }
         sb.setLength(sb.length() - delimiter.length());
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        sb.append(toStringWithDelimiter("|"));
         sb.append("]");
         return sb.toString();
     }

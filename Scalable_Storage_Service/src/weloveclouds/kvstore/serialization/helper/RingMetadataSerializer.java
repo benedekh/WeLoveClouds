@@ -1,6 +1,5 @@
 package weloveclouds.kvstore.serialization.helper;
 
-import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.hashing.models.RingMetadata;;
 
 public class RingMetadataSerializer implements ISerializer<String, RingMetadata> {
@@ -12,13 +11,7 @@ public class RingMetadataSerializer implements ISerializer<String, RingMetadata>
         String serialized = null;
 
         if (target != null) {
-            StringBuilder sb = new StringBuilder();
-            for (RingMetadataPart info : target.getMetadataParts()) {
-                sb.append(info);
-                sb.append(SEPARATOR);
-            }
-            sb.setLength(sb.length() - SEPARATOR.length());
-            serialized = sb.toString();
+            serialized = target.toStringWithDelimiter(SEPARATOR);
         }
 
         return serialized;

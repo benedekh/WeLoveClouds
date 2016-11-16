@@ -35,7 +35,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
 
     @Override
     public KVMessage deserialize(byte[] serializedMessage) throws DeserializationException {
-        logger.debug("Deserializing message from byte[].");
+        logger.debug("Deserializing KVMessage from byte[].");
 
         // raw message split
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
@@ -51,14 +51,17 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
 
         try {
             // raw fields
-            StatusType status = StatusType.valueOf(messageParts[MESSAGE_STATUS_INDEX]);
+            String statusStr = messageParts[MESSAGE_STATUS_INDEX];
+
+            // deserialized fields
+            StatusType status = StatusType.valueOf(statusStr);
             String key = messageParts[MESSAGE_KEY_INDEX];
             String value = messageParts[MESSAGE_VALUE_INDEX];
 
             // deserialized object
             KVMessage deserialized =
                     new KVMessage.KVMessageBuilder().status(status).key(key).value(value).build();
-            logger.debug(join(" ", "Deserialized message is:", deserialized.toString()));
+            logger.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
 
             return deserialized;
         } catch (IllegalArgumentException ex) {

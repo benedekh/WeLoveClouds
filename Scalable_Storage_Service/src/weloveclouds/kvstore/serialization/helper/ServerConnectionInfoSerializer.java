@@ -1,6 +1,5 @@
 package weloveclouds.kvstore.serialization.helper;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 public class ServerConnectionInfoSerializer implements ISerializer<String, ServerConnectionInfo> {
@@ -12,8 +11,7 @@ public class ServerConnectionInfoSerializer implements ISerializer<String, Serve
         String serialized = null;
 
         if (target != null) {
-            serialized = CustomStringJoiner.join(SEPARATOR, target.getIpAddress().getHostAddress(),
-                    String.valueOf(target.getPort()));
+            serialized = target.toStringWithDelimiter(SEPARATOR);
         }
 
         return serialized;

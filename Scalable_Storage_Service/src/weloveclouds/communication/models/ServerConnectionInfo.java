@@ -28,6 +28,10 @@ public class ServerConnectionInfo {
         return port;
     }
 
+    public String toStringWithDelimiter(String delimiter) {
+        return CustomStringJoiner.join(delimiter, ipAddress.getHostAddress(), String.valueOf(port));
+    }
+
     @Override
     public String toString() {
         return CustomStringJoiner.join("", "<", ipAddress.getHostAddress(), " , ",
