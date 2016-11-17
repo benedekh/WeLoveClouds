@@ -1,5 +1,7 @@
 package weloveclouds.hashing.models;
 
+import java.util.Arrays;
+
 import weloveclouds.client.utils.CustomStringJoiner;
 
 public class Hash implements Comparable<Hash> {
@@ -71,6 +73,32 @@ public class Hash implements Comparable<Hash> {
         sb.append(toStringWithDelimiter("|"));
         sb.append("]");
         return sb.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(hash);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Hash)) {
+            return false;
+        }
+        Hash other = (Hash) obj;
+        if (!Arrays.equals(hash, other.hash)) {
+            return false;
+        }
+        return true;
     }
 
 }

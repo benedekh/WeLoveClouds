@@ -9,7 +9,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
+import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
 
 public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataPart, String> {
 
@@ -28,9 +28,9 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
     public RingMetadataPart deserialize(String from) throws DeserializationException {
         RingMetadataPart deserialized = null;
 
-        if (from != null) {
+        if (from != null && !"null".equals(from)) {
             // raw message split
-            String[] parts = from.split(RingMetadataSerializer.SEPARATOR);
+            String[] parts = from.split(RingMetadataPartSerializer.SEPARATOR);
 
             // length check
             if (parts.length != NUMBER_OF_RANGE_INFO_PARTS) {
@@ -53,9 +53,9 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
             // deserialized object
             deserialized = new RingMetadataPart.RingMetadataPartBuilder()
                     .connectionInfo(connectionInfo).range(range).build();
+            logger.debug(join(" ", "Deserialized metadata part is:", deserialized.toString()));
         }
 
-        logger.debug(join(" ", "Deserialized metadata part is:", deserialized.toString()));
         return deserialized;
     }
 

@@ -11,7 +11,7 @@ import weloveclouds.kvstore.serialization.helper.HashSerializer;
 
 public class HashDeserializer implements IDeserializer<Hash, String> {
 
-    private static final int NUMBER_OF_HASH_PARTS = 128;
+    private static final int NUMBER_OF_HASH_PARTS = 16;
 
     private Logger logger = Logger.getLogger(getClass());
 
@@ -19,9 +19,9 @@ public class HashDeserializer implements IDeserializer<Hash, String> {
     public Hash deserialize(String from) throws DeserializationException {
         Hash deserialized = null;
 
-        if (from != null) {
+        if (from != null && !"null".equals(from)) {
             // raw message split
-            String[] parts = from.split(HashSerializer.SEPARATOR);
+            String[] parts = from.split(HashSerializer.SEPARATOR_INSIDE_HASH);
 
             // length check
             if (parts.length != NUMBER_OF_HASH_PARTS) {
@@ -41,6 +41,7 @@ public class HashDeserializer implements IDeserializer<Hash, String> {
 
                 // deserialized object
                 deserialized = new Hash(hash);
+                logger.debug(join(" ", "Deserialized hash is:", deserialized.toString()));
             } catch (NumberFormatException ex) {
                 String errorMessage =
                         CustomStringJoiner.join("", "Deserialized hash byte segment at index ",
@@ -49,8 +50,7 @@ public class HashDeserializer implements IDeserializer<Hash, String> {
                 throw new DeserializationException(errorMessage);
             }
         }
-
-        logger.debug(join(" ", "Deserialized hash is:", deserialized.toString()));
+        
         return deserialized;
     }
 

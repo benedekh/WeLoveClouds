@@ -1,10 +1,8 @@
 package weloveclouds.kvstore.deserialization.helper;
 
 import static weloveclouds.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_BETWEEN_ENTRIES;
-import static weloveclouds.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_WITHIN_ENTRY;
+import static weloveclouds.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_INSIDE_ENTRY;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +11,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.utils.FileUtility;
 
 public class MovableStorageUnitDeserializer implements IDeserializer<MovableStorageUnit, String> {
 
@@ -27,13 +26,13 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
     public MovableStorageUnit deserialize(String from) throws DeserializationException {
         MovableStorageUnit deserialized = null;
 
-        if (from != null) {
+        if (from != null && !"null".equals(from)) {
             // raw message split
             String[] entries = from.split(SEPARATOR_BETWEEN_ENTRIES);
 
             Map<String, String> deserializedEntries = new HashMap<>();
             for (String rawEntry : entries) {
-                String[] rawEntryParts = rawEntry.split(SEPARATOR_WITHIN_ENTRY);
+                String[] rawEntryParts = rawEntry.split(SEPARATOR_INSIDE_ENTRY);
 
                 // length check
                 if (rawEntryParts.length != NUMBER_OF_ENTRY_PARTS) {
@@ -53,15 +52,11 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
             }
 
             // deserialized object
-            deserialized = new MovableStorageUnit(deserializedEntries, getDummyPath());
+            deserialized =
+                    new MovableStorageUnit(deserializedEntries, FileUtility.createDummyPath());
         }
 
         return deserialized;
-    }
-
-    private Path getDummyPath() {
-        return new File(getClass().getProtectionDomain().getCodeSource().getLocation().getFile())
-                .toPath();
     }
 
 }

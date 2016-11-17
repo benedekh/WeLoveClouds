@@ -14,7 +14,7 @@ import weloveclouds.server.store.models.MovableStorageUnits;
 public class KVTransferMessageSerializer
         implements IMessageSerializer<SerializedMessage, KVTransferMessage> {
 
-    public static final String SEPARATOR = "-\r-";
+    public static final String SEPARATOR = "-\r\r-";
 
     private ISerializer<String, MovableStorageUnits> storageUnitsSerializer =
             new MovableStorageUnitsSerializer();

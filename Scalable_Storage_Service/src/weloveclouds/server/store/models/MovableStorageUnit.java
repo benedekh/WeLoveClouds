@@ -96,11 +96,11 @@ public class MovableStorageUnit extends PersistedStorageUnit {
         return filtered;
     }
 
-    public String toStringWithDelimiter(String betweenEntries, String withinEntry) {
+    public String toStringWithDelimiter(String betweenEntries, String insideEntry) {
         StringBuilder sb = new StringBuilder();
         for (Entry<String, String> entry : entries.entrySet()) {
             KVEntry compact = new KVEntry(entry.getKey(), entry.getValue());
-            sb.append(compact.toStringWithDelimiter(withinEntry));
+            sb.append(compact.toStringWithDelimiter(insideEntry));
             sb.append(betweenEntries);
         }
         sb.setLength(sb.length() - betweenEntries.length());
@@ -111,7 +111,7 @@ public class MovableStorageUnit extends PersistedStorageUnit {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        sb.append(toStringWithDelimiter(";", "::"));
+        sb.append(toStringWithDelimiter("; ", "::"));
         sb.append("]");
         return sb.toString();
     }

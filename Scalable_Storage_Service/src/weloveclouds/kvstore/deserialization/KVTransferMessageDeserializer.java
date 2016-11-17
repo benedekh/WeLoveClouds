@@ -9,7 +9,7 @@ import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.deserialization.helper.MovableStorageUnitsDeserializer;
 import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.kvstore.serialization.KVTransferMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -40,7 +40,7 @@ public class KVTransferMessageDeserializer
 
         // raw message split
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
-        String[] messageParts = serializedMessageStr.split(KVMessageSerializer.SEPARATOR);
+        String[] messageParts = serializedMessageStr.split(KVTransferMessageSerializer.SEPARATOR);
 
         // length check
         if (messageParts.length != NUMBER_OF_MESSAGE_PARTS) {
@@ -54,12 +54,13 @@ public class KVTransferMessageDeserializer
             // raw fields
             String statusStr = messageParts[MESSAGE_STATUS_INDEX];
             String storageUnitsStr = messageParts[MESSAGE_STORAGE_UNITS_INDEX];
+            String responseMessageStr = messageParts[MESSAGE_RESPONSE_MESSAGE_INDEX];
 
             // deserialized fields
             StatusType status = StatusType.valueOf(statusStr);
             MovableStorageUnits storageUnits =
                     storageUnitsDeserializer.deserialize(storageUnitsStr);
-            String responseMessage = messageParts[MESSAGE_RESPONSE_MESSAGE_INDEX];
+            String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;;
 
             // deserialized object
             KVTransferMessage deserialized =

@@ -25,7 +25,7 @@ public class ServerConnectionInfoDeserializer
     public ServerConnectionInfo deserialize(String from) throws DeserializationException {
         ServerConnectionInfo deserialized = null;
 
-        if (from != null) {
+        if (from != null && !"null".equals(from)) {
             // raw message split
             String[] parts = from.split(ServerConnectionInfoSerializer.SEPARATOR);
 
@@ -49,6 +49,8 @@ public class ServerConnectionInfoDeserializer
                 // deserialized object
                 deserialized = new ServerConnectionInfo.ServerConnectionInfoBuilder()
                         .ipAddress(ipAddress).port(port).build();
+                logger.debug(
+                        join(" ", "Deserialized connection info is:", deserialized.toString()));
             } catch (NumberFormatException ex) {
                 String errorMessage =
                         CustomStringJoiner.join(": ", "Port is NaN", parts[PORT_INDEX]);
@@ -61,8 +63,6 @@ public class ServerConnectionInfoDeserializer
                 throw new DeserializationException(errorMessage);
             }
         }
-
-        logger.debug(join(" ", "Deserialized connection info is:", deserialized.toString()));
         return deserialized;
     }
 

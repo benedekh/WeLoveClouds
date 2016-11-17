@@ -33,6 +33,47 @@ public class KVMessage implements IKVMessage {
     public StatusType getStatus() {
         return status;
     }
+    
+    @Override
+    public String toString() {
+        return CustomStringJoiner.join(" ", "Message status:",
+                status == null ? null : status.toString(), ", KVEntry:",
+                entry == null ? null : entry.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((entry == null) ? 0 : entry.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof KVMessage)) {
+            return false;
+        }
+        KVMessage other = (KVMessage) obj;
+        if (entry == null) {
+            if (other.entry != null) {
+                return false;
+            }
+        } else if (!entry.equals(other.entry)) {
+            return false;
+        }
+        if (status != other.status) {
+            return false;
+        }
+        return true;
+    }
 
     public static class KVMessageBuilder {
         private KVEntry entry;
@@ -62,13 +103,6 @@ public class KVMessage implements IKVMessage {
         public KVMessage build() {
             return new KVMessage(this);
         }
-    }
-
-    @Override
-    public String toString() {
-        return CustomStringJoiner.join(" ", "Message status:",
-                status == null ? null : status.toString(), "KVEntry:",
-                entry == null ? null : entry.toString());
     }
 
 }

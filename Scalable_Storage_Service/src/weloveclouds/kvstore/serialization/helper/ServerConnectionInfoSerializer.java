@@ -4,7 +4,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 
 public class ServerConnectionInfoSerializer implements ISerializer<String, ServerConnectionInfo> {
 
-    public static final String SEPARATOR = "-\r-";
+    public static final String SEPARATOR = "-\t-";
 
     @Override
     public String serialize(ServerConnectionInfo target) {

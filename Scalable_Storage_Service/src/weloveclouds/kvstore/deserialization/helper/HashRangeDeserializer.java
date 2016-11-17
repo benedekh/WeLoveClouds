@@ -25,7 +25,7 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
     public HashRange deserialize(String from) throws DeserializationException {
         HashRange deserialized = null;
 
-        if (from != null) {
+        if (from != null && !"null".equals(from)) {
             // raw message split
             String[] parts = from.split(HashRangeSerializer.SEPARATOR);
 
@@ -48,9 +48,9 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
 
             // deserialized object
             deserialized = new HashRange(startHash, endHash);
+            logger.debug(join(" ", "Deserialized hash range is:", deserialized.toString()));
         }
 
-        logger.debug(join(" ", "Deserialized hash range is:", deserialized.toString()));
         return deserialized;
     }
 

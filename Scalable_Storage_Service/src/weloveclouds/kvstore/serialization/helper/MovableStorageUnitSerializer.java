@@ -5,7 +5,7 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 public class MovableStorageUnitSerializer implements ISerializer<String, MovableStorageUnit> {
 
     public static final String SEPARATOR_BETWEEN_ENTRIES = "-\t-";
-    public static final String SEPARATOR_WITHIN_ENTRY = "::\r::";
+    public static final String SEPARATOR_INSIDE_ENTRY = "::\r::";
 
     @Override
     public String serialize(MovableStorageUnit target) {
@@ -13,7 +13,7 @@ public class MovableStorageUnitSerializer implements ISerializer<String, Movable
 
         if (target != null) {
             serialized =
-                    target.toStringWithDelimiter(SEPARATOR_BETWEEN_ENTRIES, SEPARATOR_WITHIN_ENTRY);
+                    target.toStringWithDelimiter(SEPARATOR_BETWEEN_ENTRIES, SEPARATOR_INSIDE_ENTRY);
         }
 
         return serialized;

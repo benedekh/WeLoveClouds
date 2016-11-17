@@ -22,7 +22,7 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
     public RingMetadata deserialize(String from) throws DeserializationException {
         RingMetadata deserialized = null;
 
-        if (from != null) {
+        if (from != null && !"null".equals(from)) {
             // raw message split
             String[] parts = from.split(RingMetadataSerializer.SEPARATOR);
 
@@ -34,9 +34,9 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
 
             // deserialized object
             deserialized = new RingMetadata(metadataParts);
+            logger.debug(join(" ", "Deserialized ring metadata is:", deserialized.toString()));
         }
-
-        logger.debug(join(" ", "Deserialized ring metadata is:", deserialized.toString()));
+        
         return deserialized;
     }
 

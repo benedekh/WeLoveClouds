@@ -52,11 +52,13 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
         try {
             // raw fields
             String statusStr = messageParts[MESSAGE_STATUS_INDEX];
+            String keyStr = messageParts[MESSAGE_KEY_INDEX];
+            String valueStr = messageParts[MESSAGE_VALUE_INDEX];
 
             // deserialized fields
             StatusType status = StatusType.valueOf(statusStr);
-            String key = messageParts[MESSAGE_KEY_INDEX];
-            String value = messageParts[MESSAGE_VALUE_INDEX];
+            String key = "null".equals(keyStr) ? null : keyStr;
+            String value = "null".equals(valueStr) ? null : valueStr;
 
             // deserialized object
             KVMessage deserialized =

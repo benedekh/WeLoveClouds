@@ -18,7 +18,7 @@ public class MovableStorageUnitsDeserializer implements IDeserializer<MovableSto
         MovableStorageUnits deserialized = null;
         Set<MovableStorageUnit> deserializedUnits = new HashSet<>();
 
-        if (from != null) {
+        if (from != null && !"null".equals(from)) {
             // raw message split
             String[] rawStorageUnits =
                     from.split(MovableStorageUnitsSerializer.SEPARATOR_BETWEEN_STORAGE_UNITS);

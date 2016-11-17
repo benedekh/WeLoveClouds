@@ -3,6 +3,8 @@ package weloveclouds.hashing.models;
 import java.util.HashSet;
 import java.util.Set;
 
+import weloveclouds.kvstore.serialization.helper.ISerializer;
+
 /**
  * Stores <IP, port> and <hash-range> triplets, which defines respective server (denoted by its
  * <ip,port>) is responsible for which hash range.
@@ -44,10 +46,11 @@ public class RingMetadata {
         return null;
     }
 
-    public String toStringWithDelimiter(String delimiter) {
+    public String toStringWithDelimiter(String delimiter,
+            ISerializer<String, RingMetadataPart> metadataPartSerializer) {
         StringBuilder sb = new StringBuilder();
         for (RingMetadataPart metadataPart : metadataParts) {
-            sb.append(metadataPart);
+            sb.append(metadataPartSerializer.serialize(metadataPart));
             sb.append(delimiter);
         }
         sb.setLength(sb.length() - delimiter.length());
@@ -56,11 +59,51 @@ public class RingMetadata {
 
     @Override
     public String toString() {
+        ISerializer<String, RingMetadataPart> defaultSerializer =
+                new ISerializer<String, RingMetadataPart>() {
+                    @Override
+                    public String serialize(RingMetadataPart target) {
+                        return target.toString();
+                    }
+                };
+
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        sb.append(toStringWithDelimiter(", "));
+        String delimiter = ", ";
+        sb.append(toStringWithDelimiter(delimiter, defaultSerializer));
         sb.append("}");
+
         return sb.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((metadataParts == null) ? 0 : metadataParts.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof RingMetadata)) {
+            return false;
+        }
+        RingMetadata other = (RingMetadata) obj;
+        if (metadataParts == null) {
+            if (other.metadataParts != null) {
+                return false;
+            }
+        } else if (!metadataParts.equals(other.metadataParts)) {
+            return false;
+        }
+        return true;
     }
 
 }

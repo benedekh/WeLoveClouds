@@ -28,6 +28,40 @@ public class ServerConnectionInfo {
         return port;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
+        result = prime * result + port;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof ServerConnectionInfo)) {
+            return false;
+        }
+        ServerConnectionInfo other = (ServerConnectionInfo) obj;
+        if (ipAddress == null) {
+            if (other.ipAddress != null) {
+                return false;
+            }
+        } else if (!ipAddress.equals(other.ipAddress)) {
+            return false;
+        }
+        if (port != other.port) {
+            return false;
+        }
+        return true;
+    }
+
     public String toStringWithDelimiter(String delimiter) {
         return CustomStringJoiner.join(delimiter, ipAddress.getHostAddress(), String.valueOf(port));
     }

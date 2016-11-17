@@ -72,6 +72,7 @@ public class KVAdminMessageDeserializer
             String initializationContextStr = messageParts[MESSAGE_INITIALIZATION_CONTEXT_INDEX];
             String ringMetadataStr = messageParts[MESSAGE_RING_METADATA_INDEX];
             String targetServerInfoStr = messageParts[MESSAGE_TARGET_SERVER_INFO_INDEX];
+            String responseMessageStr = messageParts[MESSAGE_RESPONSE_MESSAGE_INDEX];
 
             // deserialized fields
             StatusType status = StatusType.valueOf(statusStr);
@@ -80,7 +81,7 @@ public class KVAdminMessageDeserializer
             RingMetadata ringMetadata = metadataDeserializer.deserialize(ringMetadataStr);
             RingMetadataPart targetServerInfo =
                     metadataPartDeserializer.deserialize(targetServerInfoStr);
-            String responseMessage = messageParts[MESSAGE_RESPONSE_MESSAGE_INDEX];
+            String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;
 
             // deserialized object
             KVAdminMessage deserialized = new KVAdminMessage.KVAdminMessageBuilder().status(status)

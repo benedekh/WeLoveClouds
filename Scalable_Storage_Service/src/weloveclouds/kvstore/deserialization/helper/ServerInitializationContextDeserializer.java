@@ -28,7 +28,7 @@ public class ServerInitializationContextDeserializer
     public ServerInitializationContext deserialize(String from) throws DeserializationException {
         ServerInitializationContext deserialized = null;
 
-        if (from != null) {
+        if (from != null && !"null".equals(from)) {
             // raw message split
             String[] parts = from.split(ServerInitializationContextSerializer.SEPARATOR);
 
@@ -54,6 +54,8 @@ public class ServerInitializationContextDeserializer
                 // deserialized object
                 deserialized = new ServerInitializationContext(ringMetadata, cacheSize,
                         displacementStrategy);
+                logger.debug(join(" ", "Deserialized server initialization info is:",
+                        deserialized.toString()));
             } catch (NumberFormatException ex) {
                 String errorMessage =
                         CustomStringJoiner.join(": ", "Cache size is NaN", parts[CACHE_SIZE_INDEX]);
@@ -62,7 +64,6 @@ public class ServerInitializationContextDeserializer
             }
         }
 
-        logger.debug(join(" ", "Deserialized connection info is:", deserialized.toString()));
         return deserialized;
     }
 

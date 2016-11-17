@@ -162,4 +162,42 @@ public class PersistedStorageUnit implements Serializable {
         return Logger.getLogger(getClass());
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((entries == null) ? 0 : entries.hashCode());
+        result = prime * result + ((filePath == null) ? 0 : filePath.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof PersistedStorageUnit)) {
+            return false;
+        }
+        PersistedStorageUnit other = (PersistedStorageUnit) obj;
+        if (entries == null) {
+            if (other.entries != null) {
+                return false;
+            }
+        } else if (!entries.equals(other.entries)) {
+            return false;
+        }
+        if (filePath == null) {
+            if (other.filePath != null) {
+                return false;
+            }
+        } else if (!filePath.equals(other.filePath)) {
+            return false;
+        }
+        return true;
+    }
+
 }
