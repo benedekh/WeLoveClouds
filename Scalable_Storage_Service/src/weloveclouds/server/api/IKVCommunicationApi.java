@@ -1,4 +1,4 @@
-package weloveclouds.communication.api.v1;
+package weloveclouds.server.api;
 
 import weloveclouds.communication.api.ICommunicationApi;
 

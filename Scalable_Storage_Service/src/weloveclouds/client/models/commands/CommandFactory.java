@@ -7,7 +7,7 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.cli.models.ParsedUserInput;
-import weloveclouds.communication.api.v1.IKVCommunicationApi;
+import weloveclouds.server.api.IKVCommunicationApi;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It

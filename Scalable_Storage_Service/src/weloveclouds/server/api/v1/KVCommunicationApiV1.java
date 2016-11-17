@@ -1,10 +1,11 @@
-package weloveclouds.communication.api.v1;
+package weloveclouds.server.api.v1;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.ICommunicationApi;
+import weloveclouds.communication.api.v1.CommunicationApiV1;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
@@ -20,6 +21,7 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.KVMessageDeserializer;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
+import weloveclouds.server.api.IKVCommunicationApi;
 
 /**
  * First version implementation of the Key-value store communication API. Simply forwards the method

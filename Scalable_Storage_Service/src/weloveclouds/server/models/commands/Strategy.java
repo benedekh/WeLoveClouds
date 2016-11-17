@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.server.models.ServerConfigurationContext;
-import weloveclouds.server.models.exceptions.ServerSideException;
+import weloveclouds.server.exceptions.ServerSideException;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;

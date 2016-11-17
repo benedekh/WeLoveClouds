@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import org.apache.log4j.Logger;
 
 import weloveclouds.server.models.ServerConfigurationContext;
-import weloveclouds.server.models.exceptions.ServerSideException;
+import weloveclouds.server.exceptions.ServerSideException;
 import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.utils.ArgumentsValidator;
 

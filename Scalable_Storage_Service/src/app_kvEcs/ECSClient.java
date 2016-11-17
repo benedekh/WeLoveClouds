@@ -11,8 +11,7 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.server.utils.LogSetup;
 
-public class ECSClient {
-    
+public class ECSClient {    
     /**
      * The entry point of the application.
      * 
@@ -27,6 +26,4 @@ public class ECSClient {
             //TODO: handle exception.
         }
    }
-
-
 }
