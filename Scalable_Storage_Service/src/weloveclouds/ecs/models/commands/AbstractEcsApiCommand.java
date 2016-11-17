@@ -1,7 +1,7 @@
 package weloveclouds.ecs.models.commands;
 
-import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.communication.api.v1.IECSCommunicationApi;
+import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.commands.ICommand;
 
 
