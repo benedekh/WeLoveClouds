@@ -16,20 +16,23 @@ import weloveclouds.kvstore.serialization.helper.ISerializer;
 
 public class HashRangeTest {
 
-    public static final IDeserializer<HashRange, String> deserializer = new HashRangeDeserializer();
-    public static final ISerializer<String, HashRange> serializer = new HashRangeSerializer();
+    private static final IDeserializer<HashRange, String> hashRangeDeserializer =
+            new HashRangeDeserializer();
+    private static final ISerializer<String, HashRange> hashRangeSerializer =
+            new HashRangeSerializer();
 
     @Test
-    public void test() throws DeserializationException, UnknownHostException {
+    public void testHashRangeSerializationAndDeserialization()
+            throws DeserializationException, UnknownHostException {
         Hash start = HashingUtil.getHash("a");
         Hash end = HashingUtil.getHash("z");
         HashRange range = new HashRange(start, end);
 
-        String ser = serializer.serialize(range);
-        HashRange deser = deserializer.deserialize(ser);
+        String serializedRange = hashRangeSerializer.serialize(range);
+        HashRange deserializedRange = hashRangeDeserializer.deserialize(serializedRange);
 
-        Assert.assertEquals(range.toString(), deser.toString());
-        Assert.assertEquals(range, deser);
+        Assert.assertEquals(range.toString(), deserializedRange.toString());
+        Assert.assertEquals(range, deserializedRange);
     }
 
 }

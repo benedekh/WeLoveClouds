@@ -14,18 +14,23 @@ import weloveclouds.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 
 public class ServerConnectionInfoTest {
 
-    public static final IDeserializer<ServerConnectionInfo, String> deserializer = new ServerConnectionInfoDeserializer();
-    public static final ISerializer<String, ServerConnectionInfo> serializer = new ServerConnectionInfoSerializer();
+    private static final IDeserializer<ServerConnectionInfo, String> connectionInfoDeserializer =
+            new ServerConnectionInfoDeserializer();
+    private static final ISerializer<String, ServerConnectionInfo> connectionInfoSerializer =
+            new ServerConnectionInfoSerializer();
 
     @Test
-    public void test() throws DeserializationException, UnknownHostException {
-        ServerConnectionInfo info = new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress("localhost").port(8080).build();
+    public void testServerConnectionInfoSerializationAndDeserialization()
+            throws DeserializationException, UnknownHostException {
+        ServerConnectionInfo connectionInfo = new ServerConnectionInfo.ServerConnectionInfoBuilder()
+                .ipAddress("localhost").port(8080).build();
 
-        String ser = serializer.serialize(info);
-        ServerConnectionInfo deser = deserializer.deserialize(ser);
+        String serializedConnectionInfo = connectionInfoSerializer.serialize(connectionInfo);
+        ServerConnectionInfo deserializedConnectionInfo =
+                connectionInfoDeserializer.deserialize(serializedConnectionInfo);
 
-        Assert.assertEquals(info.toString(), deser.toString());
-        Assert.assertEquals(info, deser);
+        Assert.assertEquals(connectionInfo.toString(), deserializedConnectionInfo.toString());
+        Assert.assertEquals(connectionInfo, deserializedConnectionInfo);
     }
-    
+
 }

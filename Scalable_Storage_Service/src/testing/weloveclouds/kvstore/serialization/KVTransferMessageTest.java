@@ -23,13 +23,14 @@ import weloveclouds.server.utils.FileUtility;
 
 public class KVTransferMessageTest {
 
-    private static IMessageDeserializer<KVTransferMessage, SerializedMessage> deserializer =
+    private static IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer =
             new KVTransferMessageDeserializer();
-    private static IMessageSerializer<SerializedMessage, KVTransferMessage> serializer =
+    private static IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer =
             new KVTransferMessageSerializer();
 
     @Test
-    public void test() throws DeserializationException, UnknownHostException {
+    public void testKVTransferMessageSerializationAndDeserialization()
+            throws DeserializationException, UnknownHostException {
         Map<String, String> keyval1 = new HashMap<>();
         keyval1.put("hello", "world");
         keyval1.put("apple", "juice");
@@ -42,14 +43,15 @@ public class KVTransferMessageTest {
         MovableStorageUnits storageUnits =
                 new MovableStorageUnits(new HashSet<>(Arrays.asList(unit1, unit2)));
 
-        KVTransferMessage message = new KVTransferMessage.KVTransferMessageBuilder()
+        KVTransferMessage transferMessage = new KVTransferMessage.KVTransferMessageBuilder()
                 .storageUnits(storageUnits).status(StatusType.TRANSFER).build();
 
-        SerializedMessage ser = serializer.serialize(message);
-        KVTransferMessage deser = deserializer.deserialize(ser);
+        SerializedMessage serializedMessage = transferMessageSerializer.serialize(transferMessage);
+        KVTransferMessage deserializedMessage =
+                transferMessageDeserializer.deserialize(serializedMessage);
 
-        Assert.assertEquals(message.toString(), deser.toString());
-        Assert.assertEquals(message, deser);
+        Assert.assertEquals(transferMessage.toString(), deserializedMessage.toString());
+        Assert.assertEquals(transferMessage, deserializedMessage);
     }
 
 }

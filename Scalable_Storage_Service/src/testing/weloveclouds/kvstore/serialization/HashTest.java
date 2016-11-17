@@ -15,18 +15,19 @@ import weloveclouds.kvstore.serialization.helper.ISerializer;
 
 public class HashTest {
 
-    public static final IDeserializer<Hash, String> deserializer = new HashDeserializer();
-    public static final ISerializer<String, Hash> serializer = new HashSerializer();
+    private static final IDeserializer<Hash, String> hashDeserializer = new HashDeserializer();
+    private static final ISerializer<String, Hash> hashSerializer = new HashSerializer();
 
     @Test
-    public void test() throws DeserializationException, UnknownHostException {
+    public void testHashSerializationAndDeserialization()
+            throws DeserializationException, UnknownHostException {
         Hash hash = HashingUtil.getHash("a");
 
-        String ser = serializer.serialize(hash);
-        Hash deser = deserializer.deserialize(ser);
+        String serializedHash = hashSerializer.serialize(hash);
+        Hash deserializedHash = hashDeserializer.deserialize(serializedHash);
 
-        Assert.assertEquals(hash.toString(), deser.toString());
-        Assert.assertEquals(hash, deser);
+        Assert.assertEquals(hash.toString(), deserializedHash.toString());
+        Assert.assertEquals(hash, deserializedHash);
     }
 
 }

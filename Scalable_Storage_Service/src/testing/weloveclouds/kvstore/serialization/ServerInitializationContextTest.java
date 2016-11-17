@@ -22,14 +22,14 @@ import weloveclouds.server.models.ServerInitializationContext;
 
 public class ServerInitializationContextTest {
 
-    public static final IDeserializer<ServerInitializationContext, String> deserializer =
+    private static final IDeserializer<ServerInitializationContext, String> initializiationContextDeserializer =
             new ServerInitializationContextDeserializer();
-    public static final ISerializer<String, ServerInitializationContext> serializer =
+    private static final ISerializer<String, ServerInitializationContext> initializiationContextSerializer =
             new ServerInitializationContextSerializer();
 
-
     @Test
-    public void test() throws UnknownHostException, DeserializationException {
+    public void testServerInitializationContextSerializationAndDeserialization()
+            throws UnknownHostException, DeserializationException {
         RingMetadata metadata = new RingMetadata(new HashSet<>(Arrays.asList(
                 new RingMetadataPart.RingMetadataPartBuilder()
                         .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
@@ -43,13 +43,16 @@ public class ServerInitializationContextTest {
         int cacheSize = 10;
         String displacementStrategyName = "LRU";
 
-        ServerInitializationContext context =
+        ServerInitializationContext initializationContext =
                 new ServerInitializationContext(metadata, cacheSize, displacementStrategyName);
 
-        String ser = serializer.serialize(context);
-        ServerInitializationContext deser = deserializer.deserialize(ser);
+        String serializedInitializationContext =
+                initializiationContextSerializer.serialize(initializationContext);
+        ServerInitializationContext deserializedInitializationContext =
+                initializiationContextDeserializer.deserialize(serializedInitializationContext);
 
-        Assert.assertEquals(context.toString(), deser.toString());
-        Assert.assertEquals(context, deser);
+        Assert.assertEquals(initializationContext.toString(),
+                deserializedInitializationContext.toString());
+        Assert.assertEquals(initializationContext, deserializedInitializationContext);
     }
 }

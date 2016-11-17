@@ -17,23 +17,26 @@ import weloveclouds.server.utils.FileUtility;
 
 public class MovableStorageUnitTest {
 
-    public static final IDeserializer<MovableStorageUnit, String> deserializer =
+    private static final IDeserializer<MovableStorageUnit, String> storageUnitDeserializer =
             new MovableStorageUnitDeserializer();
-    public static final ISerializer<String, MovableStorageUnit> serializer =
+    private static final ISerializer<String, MovableStorageUnit> storageUnitSerializer =
             new MovableStorageUnitSerializer();
 
     @Test
-    public void test() throws DeserializationException, UnknownHostException {
+    public void testMovableStorageUnitSerializationAndDeserialization()
+            throws DeserializationException, UnknownHostException {
         Map<String, String> keyval = new HashMap<>();
         keyval.put("hello", "world");
         keyval.put("apple", "juice");
-        
-        MovableStorageUnit unit = new MovableStorageUnit(keyval, FileUtility.createDummyPath());
 
-        String ser = serializer.serialize(unit);
-        MovableStorageUnit deser = deserializer.deserialize(ser);
+        MovableStorageUnit storageUnit =
+                new MovableStorageUnit(keyval, FileUtility.createDummyPath());
 
-        Assert.assertEquals(unit.toString(), deser.toString());
-        Assert.assertEquals(unit, deser);
+        String serializedStorageUnit = storageUnitSerializer.serialize(storageUnit);
+        MovableStorageUnit deserializedStorageUnit =
+                storageUnitDeserializer.deserialize(serializedStorageUnit);
+
+        Assert.assertEquals(storageUnit.toString(), deserializedStorageUnit.toString());
+        Assert.assertEquals(storageUnit, deserializedStorageUnit);
     }
 }

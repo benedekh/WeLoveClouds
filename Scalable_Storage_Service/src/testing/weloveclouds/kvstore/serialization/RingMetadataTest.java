@@ -21,12 +21,15 @@ import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
 
 public class RingMetadataTest {
 
-    public static final IDeserializer<RingMetadata, String> deserializer =
+    private static final IDeserializer<RingMetadata, String> metadataDeserializer =
             new RingMetadataDeserializer();
-    public static final ISerializer<String, RingMetadata> serializer = new RingMetadataSerializer();
+    private static final ISerializer<String, RingMetadata> metadataSerializer =
+            new RingMetadataSerializer();
 
     @Test
-    public void test() throws DeserializationException, UnknownHostException {
+    public void testMovableStorageUnitSerializationAndDeserialization()
+            throws DeserializationException, UnknownHostException {
+
         RingMetadataPart metadataPart1 = new RingMetadataPart.RingMetadataPartBuilder()
                 .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
                         .ipAddress("localhost").port(8080).build())
@@ -40,11 +43,11 @@ public class RingMetadataTest {
         RingMetadata metadata =
                 new RingMetadata(new HashSet<>(Arrays.asList(metadataPart1, metadataPart2)));
 
-        String ser = serializer.serialize(metadata);
-        RingMetadata deser = deserializer.deserialize(ser);
+        String serializedMetadata = metadataSerializer.serialize(metadata);
+        RingMetadata deserializedMetadata = metadataDeserializer.deserialize(serializedMetadata);
 
-        Assert.assertEquals(metadata.toString(), deser.toString());
-        Assert.assertEquals(metadata, deser);
+        Assert.assertEquals(metadata.toString(), deserializedMetadata.toString());
+        Assert.assertEquals(metadata, deserializedMetadata);
     }
 
 }

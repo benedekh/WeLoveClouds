@@ -14,21 +14,21 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 public class KVMessageTest {
 
-    private static IMessageDeserializer<KVMessage, SerializedMessage> deserializer =
+    private static IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer =
             new KVMessageDeserializer();
-    private static IMessageSerializer<SerializedMessage, KVMessage> serializer =
+    private static IMessageSerializer<SerializedMessage, KVMessage> messageSerializer =
             new KVMessageSerializer();
 
     @Test
-    public void test() throws DeserializationException {
-        KVMessage message = new KVMessage.KVMessageBuilder().key("hello").value("world")
+    public void testKVMessageSerializationAndDeserialization() throws DeserializationException {
+        KVMessage kvMessage = new KVMessage.KVMessageBuilder().key("hello").value("world")
                 .status(StatusType.PUT).build();
 
-        SerializedMessage ser = serializer.serialize(message);
-        KVMessage deser = deserializer.deserialize(ser);
+        SerializedMessage serializedMessage = messageSerializer.serialize(kvMessage);
+        KVMessage deserializedMessage = messageDeserializer.deserialize(serializedMessage);
 
-        Assert.assertEquals(message.toString(), deser.toString());
-        Assert.assertEquals(message, deser);
+        Assert.assertEquals(kvMessage.toString(), deserializedMessage.toString());
+        Assert.assertEquals(kvMessage, deserializedMessage);
     }
 
 }

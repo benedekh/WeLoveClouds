@@ -25,13 +25,14 @@ import weloveclouds.server.models.ServerInitializationContext;
 
 public class KVAdminMessageTest {
 
-    private static IMessageDeserializer<KVAdminMessage, SerializedMessage> deserializer =
+    private static IMessageDeserializer<KVAdminMessage, SerializedMessage> adminMessageDeserializer =
             new KVAdminMessageDeserializer();
-    private static IMessageSerializer<SerializedMessage, KVAdminMessage> serializer =
+    private static IMessageSerializer<SerializedMessage, KVAdminMessage> adminMessageSerializer =
             new KVAdminMessageSerializer();
 
     @Test
-    public void test() throws DeserializationException, UnknownHostException {
+    public void testKVAdminMessageSerializationAndDeserialization()
+            throws DeserializationException, UnknownHostException {
         RingMetadataPart metadataPart = new RingMetadataPart.RingMetadataPartBuilder()
                 .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
                         .ipAddress("localhost").port(8080).build())
@@ -43,14 +44,15 @@ public class KVAdminMessageTest {
                         .range(new HashRange(Hash.MIN_VALUE, Hash.MAX_VALUE)).build())));
         ServerInitializationContext context = new ServerInitializationContext(metadata, 10, "LRU");
 
-        KVAdminMessage message = new KVAdminMessage.KVAdminMessageBuilder()
+        KVAdminMessage adminMessage = new KVAdminMessage.KVAdminMessageBuilder()
                 .initializationContext(context).status(StatusType.INITKVSERVER).build();
 
-        SerializedMessage ser = serializer.serialize(message);
-        KVAdminMessage deser = deserializer.deserialize(ser);
-        
-        Assert.assertEquals(message.toString(), deser.toString());
-        Assert.assertEquals(message, deser);
+        SerializedMessage serializedMessage = adminMessageSerializer.serialize(adminMessage);
+        KVAdminMessage deserializedAdminMessage =
+                adminMessageDeserializer.deserialize(serializedMessage);
+
+        Assert.assertEquals(adminMessage.toString(), deserializedAdminMessage.toString());
+        Assert.assertEquals(adminMessage, deserializedAdminMessage);
     }
 
 }
