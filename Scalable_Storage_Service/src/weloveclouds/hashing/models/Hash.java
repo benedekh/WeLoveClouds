@@ -1,5 +1,7 @@
 package weloveclouds.hashing.models;
 
+import java.util.Arrays;
+
 import weloveclouds.client.utils.CustomStringJoiner;
 
 public class Hash implements Comparable<Hash> {
@@ -22,10 +24,50 @@ public class Hash implements Comparable<Hash> {
     }
 
 
-    private byte[] hash;
+    private final byte[] hash;
 
     public Hash(byte[] hash) {
         this.hash = hash;
+    }
+
+    /**
+     * Creates a new Hash, whose value is incremented by one.
+     */
+    public Hash incrementByOne() {
+        byte[] hashArray = Arrays.copyOf(hash, hash.length);
+
+        for (int i = hashArray.length - 1; i >= 0; --i) {
+            byte previousValue = hashArray[i];
+            hashArray[i] = (byte) (previousValue + 1);
+
+            boolean overflowHappened =
+                    hashArray[i] == Byte.MIN_VALUE && previousValue == Byte.MAX_VALUE;
+            if (!overflowHappened) {
+                break;
+            }
+        }
+
+        return new Hash(hashArray);
+    }
+
+    /**
+     * Creates a new Hash, whose value is decremented by one.
+     */
+    public Hash decrementByOne() {
+        byte[] hashArray = Arrays.copyOf(hash, hash.length);
+
+        for (int i = hashArray.length - 1; i >= 0; --i) {
+            byte previousValue = hashArray[i];
+            hashArray[i] = (byte) (previousValue - 1);
+
+            boolean underflowHappened =
+                    hashArray[i] == Byte.MAX_VALUE && previousValue == Byte.MIN_VALUE;
+            if (!underflowHappened) {
+                break;
+            }
+        }
+
+        return new Hash(hashArray);
     }
 
     @Override
