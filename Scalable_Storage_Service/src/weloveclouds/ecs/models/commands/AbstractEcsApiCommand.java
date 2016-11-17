@@ -1,8 +1,9 @@
 package weloveclouds.ecs.models.commands;
 
 import weloveclouds.ecs.models.commands.AbstractCommand;
+import weloveclouds.communication.api.v1.IECSCommunicationApi;
 import weloveclouds.ecs.models.commands.ICommand;
-import weloveclouds.ecs.service.api.IEcsApi;
+
 
 
 /**
@@ -13,7 +14,7 @@ import weloveclouds.ecs.service.api.IEcsApi;
  * @author adapted from AbstractedCommunicationApiCommand by hb
  */
 public abstract class AbstractEcsApiCommand extends AbstractCommand implements ICommand {
-    protected IEcsApi EcsApi; //<-- this remains to be implemented
+    protected IECSCommunicationApi ecsCommsApi; //<-- this remains to be implemented
     /**
      * @param arguments        the arguments of the command
      * @param communicationApi a reference to the communication module

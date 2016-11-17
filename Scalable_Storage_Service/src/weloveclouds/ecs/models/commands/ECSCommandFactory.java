@@ -4,7 +4,7 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.ecs.service.api.IEcsApi;
+import weloveclouds.communication.api.v1.IECSCommunicationApi;
 import weloveclouds.cli.models.ParsedUserInput;
 
 /**
@@ -13,12 +13,12 @@ import weloveclouds.cli.models.ParsedUserInput;
  *
  */
 public class ECSCommandFactory {
-    private IEcsApi ecsApi;
+    private IECSCommunicationApi ecsCommsApi;
     private Logger logger;
 
     //ecsApi will be an instance of the ecs service that the client can interact with.
-    public ECSCommandFactory(IEcsApi ecsApi){
-        this.ecsApi = ecsApi;
+    public ECSCommandFactory(IECSCommunicationApi ecsApi){
+        this.ecsCommsApi = ecsApi;
         this.logger = Logger.getLogger(getClass());
     }
     
