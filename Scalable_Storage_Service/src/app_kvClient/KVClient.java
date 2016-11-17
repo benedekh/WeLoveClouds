@@ -8,7 +8,9 @@ import weloveclouds.client.core.Client;
 import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.api.v1.IKVCommunicationApi;
+import weloveclouds.communication.api.v2.IKVCommunicationApiV2;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.server.utils.LogSetup;
 
 /**
@@ -28,9 +30,16 @@ public class KVClient {
         try {
             new LogSetup(logFile, Level.OFF);
 
-            IKVCommunicationApi serverCommunication =
-                    new CommunicationApiFactory().createKVCommunicationApiV1();
-            CommandFactory commandFactory = new CommandFactory(serverCommunication);
+            ServerConnectionInfo bootstrapConnectionInfo =
+                    new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress("localhost")
+                            .port(8080).build();
+            IKVCommunicationApiV2 serverCommunication = new CommunicationApiFactory()
+                    .createKVCommunicationApiV2(bootstrapConnectionInfo);
+
+            RingMetadataDeserializer ringMetadataDeserializer = new RingMetadataDeserializer();
+            CommandFactory commandFactory =
+                    new CommandFactory(serverCommunication, ringMetadataDeserializer);
+
             Client client = new Client(System.in, commandFactory);
             client.run();
         } catch (IOException ex) {
