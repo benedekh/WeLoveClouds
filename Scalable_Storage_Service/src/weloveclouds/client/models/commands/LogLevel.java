@@ -16,33 +16,32 @@ import weloveclouds.communication.exceptions.ClientSideException;
  * @author Benoit, Benedek, Hunton
  */
 public class LogLevel extends AbstractCommand {
-    private static final int LEVEL_INDEX = 0;
 
-    private Logger logger;
+    private static final int LEVEL_INDEX = 0;
+    private static final Logger LOGGER = Logger.getLogger(LogLevel.class);
 
     /**
      * @param arguments the {@link #LEVEL_INDEX} element of the array shall contain new log level
      */
     public LogLevel(String[] arguments) {
         super(arguments);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ClientSideException {
         try {
-            logger.info("Executing logLevel command.");
+            LOGGER.info("Executing logLevel command.");
             String logLevel = arguments[LEVEL_INDEX];
             Logger.getRootLogger().setLevel(Level.toLevel(logLevel));
 
             String statusMessage = CustomStringJoiner.join(" ", "Latest log level:", logLevel);
             userOutputWriter.writeLine(statusMessage);
-            logger.debug(statusMessage);
+            LOGGER.debug(statusMessage);
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new ClientSideException(ex.getMessage(), ex);
         } finally {
-            logger.info("logLevel command execution finished.");
+            LOGGER.info("logLevel command execution finished.");
         }
     }
 

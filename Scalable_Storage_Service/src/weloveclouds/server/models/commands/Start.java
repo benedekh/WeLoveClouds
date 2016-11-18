@@ -27,8 +27,9 @@ import weloveclouds.server.utils.ArgumentsValidator;
  */
 public class Start extends AbstractServerCommand {
 
+    private static final Logger LOGGER = Logger.getLogger(Start.class);
+    
     private ServerConfigurationContext context;
-    private Logger logger;
 
     /**
      * @param context contains the server parameter configuration
@@ -36,13 +37,12 @@ public class Start extends AbstractServerCommand {
     public Start(String[] arguments, ServerConfigurationContext context) {
         super(arguments);
         this.context = context;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ServerSideException {
         try {
-            logger.info("Executing start command.");
+            LOGGER.info("Executing start command.");
 
             int port = context.getPort();
             int cacheSize = context.getCacheSize();
@@ -64,13 +64,13 @@ public class Start extends AbstractServerCommand {
             context.setStarted(true);
             String statusMessage = "Server is running.";
             userOutputWriter.writeLine(statusMessage);
-            logger.info(statusMessage);
+            LOGGER.info(statusMessage);
         } catch (IOException ex) {
             context.setStarted(false);
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new ServerSideException(ex.getMessage(), ex);
         } finally {
-            logger.info("start command execution finished.");
+            LOGGER.info("start command execution finished.");
         }
     }
 

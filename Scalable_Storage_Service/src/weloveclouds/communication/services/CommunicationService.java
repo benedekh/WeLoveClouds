@@ -22,11 +22,12 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * @author Benoit, Benedek
  */
 public class CommunicationService implements ICommunicationService {
-    private Connection connectionToEndpoint;
-    private Thread connectionShutdownHook;
+
+    private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
 
     private SocketFactory socketFactory;
-    private Logger logger;
+    private Connection connectionToEndpoint;
+    private Thread connectionShutdownHook;
 
     /**
      * @param socketFactory a factory to create a socket for connection
@@ -34,7 +35,6 @@ public class CommunicationService implements ICommunicationService {
     public CommunicationService(SocketFactory socketFactory) {
         this.connectionToEndpoint = new Connection.ConnectionBuilder().build();
         this.socketFactory = socketFactory;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -47,18 +47,18 @@ public class CommunicationService implements ICommunicationService {
             throws IOException, AlreadyConnectedException {
         if (!connectionToEndpoint.isConnected()) {
             try {
-                logger.debug("Removing previously registered shutdown hook.");
+                LOGGER.debug("Removing previously registered shutdown hook.");
                 if (connectionShutdownHook != null) {
                     Runtime.getRuntime().removeShutdownHook(connectionShutdownHook);
                 }
             } catch (IllegalStateException | NullPointerException e) {
                 // No hook previously added
-                logger.debug(e.getMessage(), e);
+                LOGGER.debug(e.getMessage(), e);
             }
             initializeConnection(remoteServer);
-            logger.info("Connection established.");
+            LOGGER.info("Connection established.");
         } else {
-            logger.debug("Already connected to a server.");
+            LOGGER.debug("Already connected to a server.");
             throw new AlreadyConnectedException();
         }
     }
@@ -69,26 +69,26 @@ public class CommunicationService implements ICommunicationService {
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
-        logger.debug(CustomStringJoiner.join(" ", "Trying to connect to", remoteServer.toString()));
+        LOGGER.debug(CustomStringJoiner.join(" ", "Trying to connect to", remoteServer.toString()));
         connectionToEndpoint = new Connection.ConnectionBuilder().remoteServer(remoteServer)
                 .socket(socketFactory.createTcpSocketFromInfo(remoteServer)).build();
 
         // create shutdown hook to automatically close the connection
-        logger.debug("Creating shutdown hook for connection.");
-        connectionShutdownHook = new Thread(new ConnectionCloser(connectionToEndpoint, logger));
-        logger.debug("Registering shutdown hook to JVM.");
+        LOGGER.debug("Creating shutdown hook for connection.");
+        connectionShutdownHook = new Thread(new ConnectionCloser(connectionToEndpoint));
+        LOGGER.debug("Registering shutdown hook to JVM.");
         Runtime.getRuntime().addShutdownHook(connectionShutdownHook);
     }
 
     @Override
     public void disconnect() throws IOException, AlreadyDisconnectedException {
         if (connectionToEndpoint.isConnected()) {
-            logger.debug("Closing the connection.");
+            LOGGER.debug("Closing the connection.");
             connectionToEndpoint.kill();
-            logger.info("Disconnected from the server.");
+            LOGGER.info("Disconnected from the server.");
         } else {
             String message = "The communication service is already disconnected";
-            logger.debug(message);
+            LOGGER.debug(message);
             throw new AlreadyDisconnectedException(message);
         }
     }
@@ -96,14 +96,14 @@ public class CommunicationService implements ICommunicationService {
     @Override
     public void send(byte[] content) throws IOException, UnableToSendContentToServerException {
         if (connectionToEndpoint.isConnected()) {
-            logger.debug("Getting output stream from the connection.");
+            LOGGER.debug("Getting output stream from the connection.");
             OutputStream outputStream = connectionToEndpoint.getOutputStream();
-            logger.debug("Sending message over the connection.");
+            LOGGER.debug("Sending message over the connection.");
             outputStream.write(content);
             outputStream.flush();
-            logger.info("Message sent.");
+            LOGGER.info("Message sent.");
         } else {
-            logger.debug("Client is not connected, so message cannot be sent.");
+            LOGGER.debug("Client is not connected, so message cannot be sent.");
             throw new ClientNotConnectedException();
         }
     }
@@ -118,16 +118,16 @@ public class CommunicationService implements ICommunicationService {
             while (receivedData == null) {
                 int availableBytes = socketDataReader.available();
                 if (availableBytes != 0) {
-                    logger.debug(CustomStringJoiner.join(" ", "Receiving",
+                    LOGGER.debug(CustomStringJoiner.join(" ", "Receiving",
                             String.valueOf(availableBytes), "from the connection."));
                     receivedData = new byte[availableBytes];
                     socketDataReader.read(receivedData);
-                    logger.debug("Data received from the network.");
+                    LOGGER.debug("Data received from the network.");
                 }
             }
             return receivedData;
         } else {
-            logger.debug("Client is not connected, so message cannot be received.");
+            LOGGER.debug("Client is not connected, so message cannot be received.");
             throw new ClientNotConnectedException();
         }
     }
@@ -139,25 +139,24 @@ public class CommunicationService implements ICommunicationService {
      * @author Benedek
      */
     private static class ConnectionCloser implements Runnable {
+        private static final Logger LOGGER = Logger.getLogger(ConnectionCloser.class);
         private Connection connection;
-        private Logger logger;
 
-        public ConnectionCloser(Connection connection, Logger logger) {
+        public ConnectionCloser(Connection connection) {
             this.connection = connection;
-            this.logger = logger;
         }
 
         @Override
         public void run() {
             if (connection.isConnected()) {
                 try {
-                    logger.debug("Closing unclosed connection in the shutdown hook.");
+                    LOGGER.debug("Closing unclosed connection in the shutdown hook.");
                     connection.kill();
-                    logger.debug("Connection is closed in the shutdown hook.");
+                    LOGGER.debug("Connection is closed in the shutdown hook.");
                 } catch (IOException e) {
                     // suppress exception because the thread is invoked as soon as JVM is to be shut
                     // down
-                    logger.error(e);
+                    LOGGER.error(e);
                 }
             }
         }

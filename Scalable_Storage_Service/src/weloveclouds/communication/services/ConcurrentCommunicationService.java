@@ -17,20 +17,20 @@ import weloveclouds.communication.models.Connection;
  */
 public class ConcurrentCommunicationService implements IConcurrentCommunicationService {
 
-    private Logger logger = Logger.getLogger(getClass());
+    private static final Logger LOGGER = Logger.getLogger(ConcurrentCommunicationService.class);
 
     @Override
     public void send(byte[] message, Connection connection) throws IOException {
         if (connection.isConnected()) {
-            logDebug("Getting output stream from the connection.");
+            LOGGER.debug("Getting output stream from the connection.");
             OutputStream outputStream = connection.getOutputStream();
-            logDebug("Sending message over the connection.");
+            LOGGER.debug("Sending message over the connection.");
             outputStream.write(message);
             outputStream.flush();
-            logInfo("Message sent.");
+            LOGGER.info("Message sent.");
         } else {
             String errorMessage = "Client is not connected, so message cannot be sent.";
-            logDebug(errorMessage);
+            LOGGER.debug(errorMessage);
             throw new IOException(errorMessage);
         }
     }
@@ -44,37 +44,20 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
             while (receivedData == null) {
                 int availableBytes = socketDataReader.available();
                 if (availableBytes != 0) {
-                    logDebug(CustomStringJoiner.join(" ", "Receiving",
+                    LOGGER.debug(CustomStringJoiner.join(" ", "Receiving",
                             String.valueOf(availableBytes), "from the connection."));
                     receivedData = new byte[availableBytes];
                     socketDataReader.read(receivedData);
-                    logDebug("Data received from the network.");
+                    LOGGER.debug("Data received from the network.");
                 }
             }
 
             return receivedData;
         } else {
             String errorMessage = "Client is not connected, so message cannot be received.";
-            logDebug(errorMessage);
+            LOGGER.debug(errorMessage);
             throw new IOException(errorMessage);
         }
     }
 
-    /**
-     * Thread-safe logging of a message with DEBUG level.
-     */
-    private void logDebug(Object message) {
-        synchronized (logger) {
-            logger.debug(message);
-        }
-    }
-
-    /**
-     * Thread-safe logging of a message with INFO level.
-     */
-    private void logInfo(Object message) {
-        synchronized (logger) {
-            logger.info(message);
-        }
-    }
 }

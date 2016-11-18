@@ -21,7 +21,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
     private static int MESSAGE_KEY_INDEX = 1;
     private static int MESSAGE_VALUE_INDEX = 2;
 
-    private Logger logger = Logger.getLogger(getClass());
+    private static final Logger LOGGER = Logger.getLogger(KVMessageDeserializer.class);
 
     @Override
     public KVMessage deserialize(SerializedKVMessage serializedMessage)
@@ -31,7 +31,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
 
     @Override
     public KVMessage deserialize(byte[] serializedMessage) throws DeserializationException {
-        logger.debug("Deserializing message from byte[].");
+        LOGGER.debug("Deserializing message from byte[].");
 
         String serializedMessageAsString =
                 new String(serializedMessage, SerializedKVMessage.MESSAGE_ENCODING);
@@ -39,7 +39,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
 
         if (messageParts.length > NUMBER_OF_MESSAGE_PARTS) {
             String errorMessage = "Message contains more than three parts.";
-            logger.debug(errorMessage);
+            LOGGER.debug(errorMessage);
             throw new DeserializationException(errorMessage);
         }
 
@@ -51,11 +51,11 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
 
             KVMessage deserialized =
                     new KVMessage.KVMessageBuilder().status(status).key(key).value(value).build();
-            logger.debug(join(" ", "Deserialized message is:", deserialized.toString()));
+            LOGGER.debug(join(" ", "Deserialized message is:", deserialized.toString()));
 
             return deserialized;
         } catch (IllegalArgumentException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new DeserializationException("StatusType is not recognized.");
         }
     }

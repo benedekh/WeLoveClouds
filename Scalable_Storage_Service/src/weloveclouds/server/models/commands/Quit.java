@@ -16,23 +16,21 @@ import weloveclouds.server.utils.ArgumentsValidator;
 public class Quit extends AbstractServerCommand {
 
     private static final String APPLICATION_EXITED_MESSAGE = "Application exit!";
-
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Quit.class);
 
     public Quit(String[] arguments) {
         super(arguments);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ServerSideException {
         try {
-            logger.info("Executing quit command.");
+            LOGGER.info("Executing quit command.");
             userOutputWriter.writeLine(APPLICATION_EXITED_MESSAGE);
-            logger.debug(APPLICATION_EXITED_MESSAGE);
+            LOGGER.debug(APPLICATION_EXITED_MESSAGE);
             System.exit(0);
         } catch (IOException e) {
-            logger.error(e);
+            LOGGER.error(e);
             throw new ServerSideException(e.getMessage(), e);
         }
     }

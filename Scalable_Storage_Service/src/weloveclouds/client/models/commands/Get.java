@@ -18,7 +18,7 @@ import weloveclouds.kvstore.models.IKVMessage;
 public class Get extends AbstractKVCommunicationApiCommand {
 
     private static final int KEY_INDEX = 0;
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Get.class);
 
     /**
      * @param arguments contains the key in the {@link #KEY_INDEX} position
@@ -26,16 +26,15 @@ public class Get extends AbstractKVCommunicationApiCommand {
      */
     public Get(String[] arguments, IKVCommunicationApi communicationApi) {
         super(arguments, communicationApi);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ClientSideException {
         try {
-            logger.info("Executing get command.");
+            LOGGER.info("Executing get command.");
 
             IKVMessage response = communicationApi.get(arguments[KEY_INDEX]);
-            logger.debug(response.toString());
+            LOGGER.debug(response.toString());
             String responseValue = response.getValue();
 
             switch (response.getStatus()) {
@@ -51,10 +50,10 @@ public class Get extends AbstractKVCommunicationApiCommand {
                     break;
             }
         } catch (Exception e) {
-            logger.error(e);
+            LOGGER.error(e);
             throw new ClientSideException(e.getMessage(), e);
         } finally {
-            logger.info("Get command execution finished.");
+            LOGGER.info("Get command execution finished.");
         }
     }
 

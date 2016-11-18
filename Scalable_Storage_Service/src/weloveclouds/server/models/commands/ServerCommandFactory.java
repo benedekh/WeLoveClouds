@@ -18,12 +18,12 @@ import weloveclouds.server.models.ServerConfigurationContext;
  * @author Benedek
  */
 public class ServerCommandFactory {
+    private static final Logger LOGGER = Logger.getLogger(ServerCommandFactory.class);
+
     private ServerConfigurationContext context;
-    private Logger logger;
 
     public ServerCommandFactory() {
         this.context = new ServerConfigurationContext();
-        this.logger = Logger.getLogger(getClass());
     }
 
     /**
@@ -66,7 +66,7 @@ public class ServerCommandFactory {
                 recognizedCommand = new Quit(arguments);
                 break;
             default:
-                logger.info(join(" ", "Unrecognized command:", userCommand.toString()));
+                LOGGER.info(join(" ", "Unrecognized command:", userCommand.toString()));
                 recognizedCommand = new DefaultCommand(null);
                 break;
         }

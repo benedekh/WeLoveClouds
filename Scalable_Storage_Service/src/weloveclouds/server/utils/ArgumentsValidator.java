@@ -250,10 +250,7 @@ public class ArgumentsValidator {
      * @param command which command sent the warning
      */
     private static void logWarning(String command) {
-        String warning = join(" ", command, "command is invalid.");
-        synchronized (LOGGER) {
-            LOGGER.warn(warning);
-        }
+        LOGGER.warn(join(" ", command, "command is invalid."));
     }
 
 }

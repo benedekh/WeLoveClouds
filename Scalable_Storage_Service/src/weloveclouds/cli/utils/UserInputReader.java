@@ -17,15 +17,15 @@ import weloveclouds.client.utils.CustomStringJoiner;
  */
 public class UserInputReader implements AutoCloseable {
 
+    private static final Logger LOGGER = Logger.getLogger(UserInputReader.class);
+
     private BufferedReader inputReader;
-    private Logger logger;
 
     /**
      * @param inputStream from which the user input can be read
      */
     public UserInputReader(InputStream inputStream) {
         this.inputReader = new BufferedReader(new InputStreamReader(inputStream));
-        this.logger = Logger.getLogger(getClass());
     }
 
     /**
@@ -36,7 +36,7 @@ public class UserInputReader implements AutoCloseable {
      */
     public ParsedUserInput readAndParseUserInput() throws IOException {
         String line = inputReader.readLine();
-        logger.debug(CustomStringJoiner.join(" ", "Line read from the user:", line));
+        LOGGER.debug(CustomStringJoiner.join(" ", "Line read from the user:", line));
         return UserInputParser.parse(line);
     }
 
@@ -45,7 +45,7 @@ public class UserInputReader implements AutoCloseable {
         try {
             inputReader.close();
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
         }
     }
 
