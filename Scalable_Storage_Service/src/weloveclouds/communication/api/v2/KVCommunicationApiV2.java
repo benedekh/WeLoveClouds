@@ -17,19 +17,18 @@ import weloveclouds.kvstore.models.messages.IKVMessage;
 
 public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
 
+    private static final Logger LOGGER = Logger.getLogger(KVCommunicationApiV2.class);
+
     private KVCommunicationApiV1 communicationApi;
 
     private ServerConnectionInfo recentConnectionInfo;
     private RingMetadata metadata;
-
-    private Logger logger;
 
     public KVCommunicationApiV2(ServerConnectionInfo bootstrapConnectionInfo) {
         this.communicationApi =
                 new KVCommunicationApiV1(bootstrapConnectionInfo.getIpAddress().getHostAddress(),
                         bootstrapConnectionInfo.getPort());
         this.recentConnectionInfo = bootstrapConnectionInfo;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -106,26 +105,26 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
                     try {
                         connectTo(connectionDetails);
                     } catch (UnableToConnectException ex) {
-                        logger.error(ex);
+                        LOGGER.error(ex);
                     }
                 }
             } else {
-                logger.error("No suitable server is found for the range.");
+                LOGGER.error("No suitable server is found for the range.");
 
                 if (!isConnected()) {
                     try {
-                        logger.debug(CustomStringJoiner.join(" ",
+                        LOGGER.debug(CustomStringJoiner.join(" ",
                                 "Trying to connect with the most recent connection details:",
                                 recentConnectionInfo.toString()));
 
                         connectTo(recentConnectionInfo);
                     } catch (Exception ex) {
-                        logger.error(ex);
+                        LOGGER.error(ex);
                     }
                 }
             }
         } else {
-            logger.error("Server hash range metadata is empty.");
+            LOGGER.error("Server hash range metadata is empty.");
         }
 
     }
