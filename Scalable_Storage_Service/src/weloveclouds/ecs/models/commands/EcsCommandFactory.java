@@ -13,13 +13,12 @@ import weloveclouds.cli.models.ParsedUserInput;
  *
  */
 public class EcsCommandFactory {
+    private static final Logger LOGGER = Logger.getLogger(EcsCommandFactory.class);
     private IECSCommunicationApi ecsCommsApi;
-    private Logger logger;
 
     //ecsApi will be an instance of the ecs service that the client can interact with.
     public EcsCommandFactory(IECSCommunicationApi ecsApi){
         this.ecsCommsApi = ecsApi;
-        this.logger = Logger.getLogger(getClass());
     }
     
     //In the future this will invariably need to throw an exception for some things
@@ -47,7 +46,7 @@ public class EcsCommandFactory {
                 recognizedCommand = new Loglevel(input.getArguments());
                 break;
             default:
-                logger.info(join(" ", "Unrecognized command:", userCommand.toString()));
+                LOGGER.info(join(" ", "Unrecognized command:", userCommand.toString()));
                 recognizedCommand = new DefaultCommand(null);
                 break;
         }

@@ -10,11 +10,10 @@ import org.apache.log4j.Logger;
 
 public class Stop extends AbstractEcsApiCommand{
 
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Stop.class);
     
     public Stop(String[] arguments) {
         super(arguments);
-        this.logger = Logger.getLogger(getClass());
         // TODO Auto-generated constructor stub
     }
 

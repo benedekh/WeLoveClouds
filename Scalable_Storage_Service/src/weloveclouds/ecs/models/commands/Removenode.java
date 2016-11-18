@@ -10,11 +10,10 @@ import org.apache.log4j.Logger;
 
 public class Removenode extends AbstractEcsApiCommand{
     
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Removenode.class);
     
     public Removenode(String[] arguments) {
         super(arguments);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override

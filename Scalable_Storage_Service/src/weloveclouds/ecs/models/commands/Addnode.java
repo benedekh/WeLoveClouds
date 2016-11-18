@@ -9,11 +9,10 @@ import org.apache.log4j.Logger;
  */
 public class Addnode extends AbstractEcsApiCommand{
 
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Addnode.class);
     
     public Addnode(String[] arguments) {
         super(arguments);
-        this.logger = Logger.getLogger(getClass());
         // TODO Auto-generated constructor stub
     }
 

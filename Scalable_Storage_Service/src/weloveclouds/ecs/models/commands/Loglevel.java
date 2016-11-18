@@ -4,11 +4,10 @@ import org.apache.log4j.Logger;
 
 public class Loglevel extends AbstractEcsApiCommand {
 
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Loglevel.class);
     
     public Loglevel(String[] arguments){
         super(arguments);
-        this.logger = Logger.getLogger(getClass());
     }
     @Override
     public ICommand validate() throws IllegalArgumentException {
