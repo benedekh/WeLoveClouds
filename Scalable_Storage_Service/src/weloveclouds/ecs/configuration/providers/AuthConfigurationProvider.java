@@ -1,43 +1,50 @@
 package weloveclouds.ecs.configuration.providers;
 
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
+
+import weloveclouds.ecs.exceptions.authentication.InvalidAuthenticationInfosException;
+import weloveclouds.ecs.models.ssh.AuthInfos;
 
 /**
  * Created by Benoit on 2016-11-16.
  */
 public class AuthConfigurationProvider {
-    private static final String AUTH_PROPERTIES_FILE = "auth.properties";
+    private static final String AUTH_PROPERTIES_FILE_PATH = "./auth.properties";
     private static final String USERNAME_PROPERTIES = "username";
-    private static final String PRIVATE_AUTH_KEY_PATH = "privateAuthKeyPath";
+    private static final String PASSWORD_PROPERTIES = "password";
+    private static final String PRIVATE_AUTH_KEY_PATH_PROPERTIES = "privateAuthKeyPath";
     private static AuthConfigurationProvider INSTANCE = null;
 
     private Properties properties;
+    private AuthInfos authenticationInfos;
 
-    private AuthConfigurationProvider() throws IOException {
-        try (InputStream propertiesStream = getClass().getClassLoader().getResourceAsStream(AUTH_PROPERTIES_FILE)) {
+    private AuthConfigurationProvider() throws IOException, InvalidAuthenticationInfosException {
+        try (FileInputStream authPropertiesFile = new FileInputStream(AUTH_PROPERTIES_FILE_PATH)) {
             properties = new Properties();
-
-            if (propertiesStream != null) {
-                properties.load(propertiesStream);
-            } else {
-                throw new FileNotFoundException("property file '" + AUTH_PROPERTIES_FILE + "' not found in the " +
-                        "classpath");
-            }
+            properties.load(authPropertiesFile);
+            authenticationInfos = new AuthInfos.AuthInfosBuilder()
+                    .username(properties.getProperty(USERNAME_PROPERTIES))
+                    .password(properties.getProperty(PASSWORD_PROPERTIES))
+                    .privateKey(properties.getProperty(PRIVATE_AUTH_KEY_PATH_PROPERTIES))
+                    .build();
         }
     }
 
     public String getUsername() {
-        return properties.getProperty(USERNAME_PROPERTIES);
+        return authenticationInfos.getUsername();
+    }
+
+    public String getPassword() {
+        return authenticationInfos.getPassword();
     }
 
     public String getAuthPrivateKeyFilePath() {
-        return properties.getProperty(PRIVATE_AUTH_KEY_PATH);
+        return authenticationInfos.getPrivateKey();
     }
 
-    public static AuthConfigurationProvider getInstance() throws IOException {
+    public static AuthConfigurationProvider getInstance() throws IOException, InvalidAuthenticationInfosException {
         if (INSTANCE == null) {
             INSTANCE = new AuthConfigurationProvider();
         }

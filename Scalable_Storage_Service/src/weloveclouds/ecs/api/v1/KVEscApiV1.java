@@ -10,7 +10,7 @@ import weloveclouds.ecs.api.IKVEscApi;
  * Created by Benoit on 2016-11-15.
  */
 public class KVEscApiV1  implements IKVEscApi{
-    public KVEscApiV1(ICommunicationApi communicationService) {
+    public KVEscApiV1(IConcurrentCommunicationService communicationService) {
 
     }
 
