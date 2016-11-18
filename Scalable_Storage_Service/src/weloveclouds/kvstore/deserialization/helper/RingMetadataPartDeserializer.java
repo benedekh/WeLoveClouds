@@ -17,12 +17,12 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
 
     private static final int CONNECTION_INFO_INDEX = 0;
     private static final int RANGE_INDEX = 1;
+    
+    private static final Logger LOGGER = Logger.getLogger(RingMetadataPartDeserializer.class);
 
     private IDeserializer<ServerConnectionInfo, String> connectionInfoDeserializer =
             new ServerConnectionInfoDeserializer();
     private IDeserializer<HashRange, String> hashRangeDeserializer = new HashRangeDeserializer();
-
-    private Logger logger = Logger.getLogger(getClass());
 
     @Override
     public RingMetadataPart deserialize(String from) throws DeserializationException {
@@ -37,7 +37,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
                 String errorMessage =
                         CustomStringJoiner.join("", "Ring metadata part must consist of exactly ",
                                 String.valueOf(NUMBER_OF_RANGE_INFO_PARTS), " parts.");
-                logger.debug(errorMessage);
+                LOGGER.debug(errorMessage);
                 throw new DeserializationException(errorMessage);
             }
 
@@ -53,7 +53,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
             // deserialized object
             deserialized = new RingMetadataPart.RingMetadataPartBuilder()
                     .connectionInfo(connectionInfo).range(range).build();
-            logger.debug(join(" ", "Deserialized metadata part is:", deserialized.toString()));
+            LOGGER.debug(join(" ", "Deserialized metadata part is:", deserialized.toString()));
         }
 
         return deserialized;

@@ -19,7 +19,7 @@ public class ServerConnectionInfoDeserializer
     private static final int IP_ADDRESS_INDEX = 0;
     private static final int PORT_INDEX = 1;
 
-    private Logger logger = Logger.getLogger(getClass());
+    private static final Logger LOGGER = Logger.getLogger(ServerConnectionInfoDeserializer.class);
 
     @Override
     public ServerConnectionInfo deserialize(String from) throws DeserializationException {
@@ -34,7 +34,7 @@ public class ServerConnectionInfoDeserializer
                 String errorMessage =
                         CustomStringJoiner.join("", "Connection info must consist of exactly ",
                                 String.valueOf(NUMBER_OF_CONNECTION_INFO_PARTS), " parts.");
-                logger.debug(errorMessage);
+                LOGGER.debug(errorMessage);
                 throw new DeserializationException(errorMessage);
             }
 
@@ -49,17 +49,17 @@ public class ServerConnectionInfoDeserializer
                 // deserialized object
                 deserialized = new ServerConnectionInfo.ServerConnectionInfoBuilder()
                         .ipAddress(ipAddress).port(port).build();
-                logger.debug(
+                LOGGER.debug(
                         join(" ", "Deserialized connection info is:", deserialized.toString()));
             } catch (NumberFormatException ex) {
                 String errorMessage =
                         CustomStringJoiner.join(": ", "Port is NaN", parts[PORT_INDEX]);
-                logger.error(errorMessage);
+                LOGGER.error(errorMessage);
                 throw new DeserializationException(errorMessage);
             } catch (UnknownHostException ex) {
                 String errorMessage = CustomStringJoiner.join(": ",
                         "Host referred by IP address is unknown", ipAddress);
-                logger.error(errorMessage);
+                LOGGER.error(errorMessage);
                 throw new DeserializationException(errorMessage);
             }
         }

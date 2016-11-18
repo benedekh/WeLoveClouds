@@ -20,7 +20,7 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
 
-    private Logger logger = Logger.getLogger(getClass());
+    private static final Logger LOGGER = Logger.getLogger(MovableStorageUnitDeserializer.class);
 
     @Override
     public MovableStorageUnit deserialize(String from) throws DeserializationException {
@@ -39,7 +39,7 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
                     String errorMessage =
                             CustomStringJoiner.join("", "KVEntry must consist of exactly ",
                                     String.valueOf(NUMBER_OF_ENTRY_PARTS), " parts.");
-                    logger.debug(errorMessage);
+                    LOGGER.debug(errorMessage);
                     throw new DeserializationException(errorMessage);
                 }
 

@@ -19,13 +19,13 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
  */
 public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, SerializedMessage> {
 
-    private static int NUMBER_OF_MESSAGE_PARTS = 3;
-
-    private static int MESSAGE_STATUS_INDEX = 0;
-    private static int MESSAGE_KEY_INDEX = 1;
-    private static int MESSAGE_VALUE_INDEX = 2;
-
-    private Logger logger = Logger.getLogger(getClass());
+    private static final int NUMBER_OF_MESSAGE_PARTS = 3;
+    
+    private static final int MESSAGE_STATUS_INDEX = 0;
+    private static final int MESSAGE_KEY_INDEX = 1;
+    private static final int MESSAGE_VALUE_INDEX = 2;
+    
+    private static final Logger LOGGER = Logger.getLogger(KVMessageDeserializer.class);
 
     @Override
     public KVMessage deserialize(SerializedMessage serializedMessage)
@@ -35,7 +35,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
 
     @Override
     public KVMessage deserialize(byte[] serializedMessage) throws DeserializationException {
-        logger.debug("Deserializing KVMessage from byte[].");
+        LOGGER.debug("Deserializing KVMessage from byte[].");
 
         // raw message split
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
@@ -45,7 +45,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
         if (messageParts.length != NUMBER_OF_MESSAGE_PARTS) {
             String errorMessage = CustomStringJoiner.join("", "Message must consist of exactly ",
                     String.valueOf(NUMBER_OF_MESSAGE_PARTS), " parts.");
-            logger.debug(errorMessage);
+            LOGGER.debug(errorMessage);
             throw new DeserializationException(errorMessage);
         }
 
@@ -63,11 +63,11 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
             // deserialized object
             KVMessage deserialized =
                     new KVMessage.KVMessageBuilder().status(status).key(key).value(value).build();
-            logger.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
+            LOGGER.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
 
             return deserialized;
         } catch (IllegalArgumentException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new DeserializationException("StatusType is not recognized.");
         }
     }

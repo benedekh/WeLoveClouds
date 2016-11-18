@@ -26,17 +26,17 @@ public class KVAdminMessageSerializer
 
     public static final String SEPARATOR = "-\t\t-";
 
+    private static final Logger LOGGER = Logger.getLogger(KVAdminMessageSerializer.class);
+
     private ISerializer<String, ServerInitializationContext> initializationContextSerializer =
             new ServerInitializationContextSerializer();
     private ISerializer<String, RingMetadata> metadataSerializer = new RingMetadataSerializer();
     private ISerializer<String, RingMetadataPart> metadataPartSerializer =
             new RingMetadataPartSerializer();
 
-    private Logger logger = Logger.getLogger(getClass());
-
     @Override
     public SerializedMessage serialize(KVAdminMessage unserializedMessage) {
-        logger.debug(join(" ", "Serializing message:", unserializedMessage.toString()));
+        LOGGER.debug(join(" ", "Serializing message:", unserializedMessage.toString()));
 
         // original fields
         StatusType status = unserializedMessage.getStatus();
@@ -58,7 +58,7 @@ public class KVAdminMessageSerializer
         String serialized = CustomStringJoiner.join(SEPARATOR, statusStr, initializationContextStr,
                 ringMetadataStr, targetServerStr, responseMessage);
 
-        logger.debug(join(" ", "Serialized message:", serialized));
+        LOGGER.debug(join(" ", "Serialized message:", serialized));
         return new SerializedMessage(serialized);
     }
 

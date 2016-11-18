@@ -19,10 +19,11 @@ public class ServerInitializationContextDeserializer
     private static final int CACHE_SIZE_INDEX = 1;
     private static final int DISPLACEMENT_STARTEGY_INDEX = 2;
 
+    private static final Logger LOGGER =
+            Logger.getLogger(ServerInitializationContextDeserializer.class);
+
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer =
             new RingMetadataDeserializer();
-
-    private Logger logger = Logger.getLogger(getClass());
 
     @Override
     public ServerInitializationContext deserialize(String from) throws DeserializationException {
@@ -37,7 +38,7 @@ public class ServerInitializationContextDeserializer
                 String errorMessage =
                         CustomStringJoiner.join("", "Initialization info must consist of exactly ",
                                 String.valueOf(NUMBER_OF_INITIALIZATION_INFO_PARTS), " parts.");
-                logger.debug(errorMessage);
+                LOGGER.debug(errorMessage);
                 throw new DeserializationException(errorMessage);
             }
 
@@ -54,12 +55,12 @@ public class ServerInitializationContextDeserializer
                 // deserialized object
                 deserialized = new ServerInitializationContext(ringMetadata, cacheSize,
                         displacementStrategy);
-                logger.debug(join(" ", "Deserialized server initialization info is:",
+                LOGGER.debug(join(" ", "Deserialized server initialization info is:",
                         deserialized.toString()));
             } catch (NumberFormatException ex) {
                 String errorMessage =
                         CustomStringJoiner.join(": ", "Cache size is NaN", parts[CACHE_SIZE_INDEX]);
-                logger.error(errorMessage);
+                LOGGER.error(errorMessage);
                 throw new DeserializationException(errorMessage);
             }
         }

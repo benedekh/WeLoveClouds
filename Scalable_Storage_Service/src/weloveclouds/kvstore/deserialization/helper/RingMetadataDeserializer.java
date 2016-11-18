@@ -14,9 +14,9 @@ import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;;
 
 public class RingMetadataDeserializer implements IDeserializer<RingMetadata, String> {
 
+    private static final Logger LOGGER = Logger.getLogger(RingMetadataDeserializer.class);
+    
     private IDeserializer<RingMetadataPart, String> metadataPartDeserializer = new RingMetadataPartDeserializer();
-
-    private Logger logger = Logger.getLogger(getClass());
 
     @Override
     public RingMetadata deserialize(String from) throws DeserializationException {
@@ -34,7 +34,7 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
 
             // deserialized object
             deserialized = new RingMetadata(metadataParts);
-            logger.debug(join(" ", "Deserialized ring metadata is:", deserialized.toString()));
+            LOGGER.debug(join(" ", "Deserialized ring metadata is:", deserialized.toString()));
         }
         
         return deserialized;

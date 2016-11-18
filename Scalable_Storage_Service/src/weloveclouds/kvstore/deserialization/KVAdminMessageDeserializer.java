@@ -35,14 +35,14 @@ public class KVAdminMessageDeserializer
     private static final int MESSAGE_TARGET_SERVER_INFO_INDEX = 3;
     private static final int MESSAGE_RESPONSE_MESSAGE_INDEX = 4;
 
+    private static final Logger LOGGER = Logger.getLogger(KVAdminMessageDeserializer.class);
+
     private IDeserializer<ServerInitializationContext, String> initializationContextDeserializer =
             new ServerInitializationContextDeserializer();
     private IDeserializer<RingMetadata, String> metadataDeserializer =
             new RingMetadataDeserializer();
     private IDeserializer<RingMetadataPart, String> metadataPartDeserializer =
-            new RingMetadataPartDeserializer();
-
-    private Logger logger = Logger.getLogger(getClass());
+            new RingMetadataPartDeserializer();;
 
     @Override
     public KVAdminMessage deserialize(SerializedMessage serializedMessage)
@@ -52,7 +52,7 @@ public class KVAdminMessageDeserializer
 
     @Override
     public KVAdminMessage deserialize(byte[] serializedMessage) throws DeserializationException {
-        logger.debug("Deserializing KVAdminMessage from byte[].");
+        LOGGER.debug("Deserializing KVAdminMessage from byte[].");
 
         // raw message split
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
@@ -62,7 +62,7 @@ public class KVAdminMessageDeserializer
         if (messageParts.length != NUMBER_OF_MESSAGE_PARTS) {
             String errorMessage = CustomStringJoiner.join("", "Message must consist of exactly ",
                     String.valueOf(NUMBER_OF_MESSAGE_PARTS), " parts.");
-            logger.debug(errorMessage);
+            LOGGER.debug(errorMessage);
             throw new DeserializationException(errorMessage);
         }
 
@@ -88,10 +88,10 @@ public class KVAdminMessageDeserializer
                     .initializationContext(initializationContext).ringMetadata(ringMetadata)
                     .targetServerInfo(targetServerInfo).responseMessage(responseMessage).build();
 
-            logger.debug(join(" ", "Deserialized KVAdminMessage is:", deserialized.toString()));
+            LOGGER.debug(join(" ", "Deserialized KVAdminMessage is:", deserialized.toString()));
             return deserialized;
         } catch (IllegalArgumentException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new DeserializationException("StatusType is not recognized.");
         }
     }
