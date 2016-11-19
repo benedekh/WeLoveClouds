@@ -32,6 +32,11 @@ public class InitializeKVServer implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
+        if (dataAccessService != null) {
+            return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
+                    .responseMessage("Service is already initialized.").build();
+        }
+
         String displacementStrategyName = serverInitializationContext.getDisplacementStrategyName();
         DisplacementStrategy displacementStrategy =
                 StrategyFactory.createDisplacementStrategy(displacementStrategyName);

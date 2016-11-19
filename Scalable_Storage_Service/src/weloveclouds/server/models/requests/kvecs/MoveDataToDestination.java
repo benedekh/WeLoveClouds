@@ -31,6 +31,12 @@ public class MoveDataToDestination implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
+        if (dataAccessService == null) {
+            return new KVAdminMessage.Builder()
+                    .status(weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR)
+                    .responseMessage("Service is not initialized yet.").build();
+        }
+
         HashRange hashRange = targetServerInfo.getRange();
         MovableStorageUnits filteredEntries = dataAccessService.filterEntries(hashRange);
 

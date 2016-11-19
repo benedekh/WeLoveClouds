@@ -1,6 +1,4 @@
-package weloveclouds.server.store.cache.exceptions;
-
-import weloveclouds.server.store.exceptions.StorageException;
+package weloveclouds.server.store.exceptions;
 
 public class ServerIsStoppedException extends StorageException {
 

@@ -12,11 +12,11 @@ import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.PutType;
-import weloveclouds.server.store.cache.exceptions.KeyIsNotManagedByServerException;
-import weloveclouds.server.store.cache.exceptions.ServerIsStoppedException;
-import weloveclouds.server.store.cache.exceptions.WriteLockIsActiveException;
+import weloveclouds.server.store.exceptions.KeyIsNotManagedByServerException;
+import weloveclouds.server.store.exceptions.ServerIsStoppedException;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
+import weloveclouds.server.store.exceptions.WriteLockIsActiveException;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
 public class MovableDataAccessService extends DataAccessService

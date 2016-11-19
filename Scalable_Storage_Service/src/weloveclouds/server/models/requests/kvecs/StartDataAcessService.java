@@ -15,6 +15,11 @@ public class StartDataAcessService implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
+        if (dataAccessService == null) {
+            return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
+                    .responseMessage("Service is not initialized yet.").build();
+        }
+
         dataAccessService.setServiceStatus(DataAccessServiceStatus.STARTED);
         return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
     }

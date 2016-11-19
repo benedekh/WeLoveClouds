@@ -16,10 +16,10 @@ import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.PutType;
-import weloveclouds.server.store.cache.exceptions.KeyIsNotManagedByServerException;
-import weloveclouds.server.store.cache.exceptions.ServerIsStoppedException;
-import weloveclouds.server.store.cache.exceptions.WriteLockIsActiveException;
+import weloveclouds.server.store.exceptions.KeyIsNotManagedByServerException;
+import weloveclouds.server.store.exceptions.ServerIsStoppedException;
 import weloveclouds.server.store.exceptions.StorageException;
+import weloveclouds.server.store.exceptions.WriteLockIsActiveException;
 
 /**
  * A put request to store a key and a value in the {@link DataAccessService}.

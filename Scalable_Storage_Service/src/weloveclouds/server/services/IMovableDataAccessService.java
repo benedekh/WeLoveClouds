@@ -53,4 +53,5 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * @param range
      */
     public void setManagedHashRange(HashRange rangeManagedByServer);
+    
 }

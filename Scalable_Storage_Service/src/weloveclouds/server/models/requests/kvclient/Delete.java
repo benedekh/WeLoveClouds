@@ -13,10 +13,10 @@ import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
-import weloveclouds.server.store.cache.exceptions.KeyIsNotManagedByServerException;
-import weloveclouds.server.store.cache.exceptions.ServerIsStoppedException;
-import weloveclouds.server.store.cache.exceptions.WriteLockIsActiveException;
+import weloveclouds.server.store.exceptions.KeyIsNotManagedByServerException;
+import weloveclouds.server.store.exceptions.ServerIsStoppedException;
 import weloveclouds.server.store.exceptions.StorageException;
+import weloveclouds.server.store.exceptions.WriteLockIsActiveException;
 
 /**
  * A delete request to remove the key and its respective value stored in the
