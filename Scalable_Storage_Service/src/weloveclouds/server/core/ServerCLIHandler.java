@@ -18,10 +18,10 @@ import weloveclouds.server.models.exceptions.ServerSideException;
  * @author Benedek
  */
 public class ServerCLIHandler {
+    private static final Logger LOGGER = Logger.getLogger(ServerCLIHandler.class);
+
     private InputStream inputStream;
     private ServerCommandFactory commandFactory;
-
-    private Logger logger;
 
     /**
      * @param inputStream from which it receives command from the user
@@ -30,7 +30,6 @@ public class ServerCLIHandler {
     public ServerCLIHandler(InputStream inputStream, ServerCommandFactory commandFactory) {
         this.inputStream = inputStream;
         this.commandFactory = commandFactory;
-        this.logger = Logger.getLogger(getClass());
     }
 
     /**
@@ -41,27 +40,27 @@ public class ServerCLIHandler {
         try (UserInputReader inputReader = new UserInputReader(inputStream);
                 UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
             UserOutputWriter.setPrefix("Server> ");
-            logger.info("Server started.");
+            LOGGER.info("Server started.");
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     outputWriter.writePrefix();
                     ParsedUserInput userInput = inputReader.readAndParseUserInput();
                     commandFactory.createCommandFromUserInput(userInput).validate().execute();
-                    logger.info("Command executed.");
+                    LOGGER.info("Command executed.");
                 } catch (IOException ex) {
                     outputWriter.writeLine(ex.getMessage());
-                    logger.error(ex);
+                    LOGGER.error(ex);
                 } catch (ServerSideException | IllegalArgumentException ex) {
                     outputWriter.writeLine(ex.getMessage());
-                    logger.error(ex);
+                    LOGGER.error(ex);
                 }
             }
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
         } catch (Throwable ex) {
-            logger.fatal(ex);
+            LOGGER.fatal(ex);
         } finally {
-            logger.info("Server stopped.");
+            LOGGER.info("Server stopped.");
         }
     }
 }

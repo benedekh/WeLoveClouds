@@ -17,8 +17,9 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * @author Benoit, Benedek, Hunton
  */
 public class Connect extends AbstractCommunicationApiCommand {
+    
+    private static final Logger LOGGER = Logger.getLogger(Connect.class);
     private ServerConnectionInfo remoteServer;
-    private Logger logger;
 
     /**
      * @param arguments contains the IP address (0. element of the array), and the port (1st element
@@ -30,19 +31,18 @@ public class Connect extends AbstractCommunicationApiCommand {
             throws UnknownHostException {
         super(arguments, communicationApi);
         this.remoteServer = UserInputParser.extractConnectionInfoFrom(arguments);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ClientSideException {
         try {
-            logger.info("Executing connect command.");
+            LOGGER.info("Executing connect command.");
             communicationApi.connectTo(remoteServer);
             userOutputWriter.writeLine("Connected to server.");
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
         } finally {
-            logger.info("Connect command execution finished.");
+            LOGGER.info("Connect command execution finished.");
         }
     }
 

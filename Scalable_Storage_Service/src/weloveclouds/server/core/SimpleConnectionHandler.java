@@ -23,13 +23,14 @@ import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
  * @author Benoit
  */
 public class SimpleConnectionHandler extends Thread implements IConnectionHandler {
+
+    private static final Logger LOGGER = Logger.getLogger(SimpleConnectionHandler.class);
+
     private IConcurrentCommunicationApi communicationApi;
     private KVClientRequestFactory requestFactory;
     private Connection connection;
     private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
     private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
-
-    private Logger logger;
 
     private SimpleConnectionHandler(SimpleConnectionBuilder simpleConnectionBuilder) {
         this.communicationApi = simpleConnectionBuilder.communicationApi;
@@ -37,7 +38,6 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
         this.requestFactory = simpleConnectionBuilder.requestFactory;
         this.messageSerializer = simpleConnectionBuilder.messageSerializer;
         this.messageDeserializer = simpleConnectionBuilder.messageDeserializer;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -47,28 +47,28 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
 
     @Override
     public void run() {
-        logger.info("Client is connected to server.");
+        LOGGER.info("Client is connected to server.");
 
         while (connection.isConnected()) {
             try {
                 KVMessage receivedMessage =
                         messageDeserializer.deserialize(communicationApi.receiveFrom(connection));
-                logger.debug(CustomStringJoiner.join(" ", "Message received:",
+                LOGGER.debug(CustomStringJoiner.join(" ", "Message received:",
                         receivedMessage.toString()));
 
                 KVMessage response =
                         requestFactory.createRequestFromReceivedMessage(receivedMessage).execute();
                 communicationApi.send(messageSerializer.serialize(response).getBytes(), connection);
 
-                logger.debug(CustomStringJoiner.join(" ", "Sent response:", response.toString()));
+                LOGGER.debug(CustomStringJoiner.join(" ", "Sent response:", response.toString()));
             } catch (IOException | DeserializationException e) {
-                logger.error(e);
+                LOGGER.error(e);
             } catch (Throwable e) {
-                logger.fatal(e);
+                LOGGER.fatal(e);
             }
         }
 
-        logger.info("Client is disconnected.");
+        LOGGER.info("Client is disconnected.");
     }
 
     /**

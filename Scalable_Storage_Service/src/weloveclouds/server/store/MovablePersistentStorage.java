@@ -31,11 +31,10 @@ import weloveclouds.server.store.models.PersistedStorageUnit;
  */
 public class MovablePersistentStorage extends KVPersistentStorage {
 
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(MovablePersistentStorage.class);
 
     public MovablePersistentStorage(Path rootPath) throws IllegalArgumentException {
         super(rootPath);
-        this.logger = Logger.getLogger(getClass());
     }
 
     /**
@@ -105,7 +104,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                     keysToBeRemoved.addAll(removedKeys);
                 }
             } catch (IOException e) {
-                logger.error(e);
+                LOGGER.error(e);
                 throw new StorageException("Storage unit cannot be removed due to an IO Error.");
             }
         }
@@ -138,7 +137,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                     storageUnit.save();
                     otherUnit.save();
                 } catch (StorageException ex) {
-                    logger.error(ex);
+                    LOGGER.error(ex);
                 }
 
                 // update references for the moved keys
@@ -160,7 +159,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                     try {
                         otherUnit.deleteFile();
                     } catch (IOException ex) {
-                        logger.error(ex);
+                        LOGGER.error(ex);
                     }
                     unitsWithFreeSpace.remove(otherUnit);
                 }
@@ -201,7 +200,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             current.save();
             nextUnit.save();
         } catch (StorageException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
         }
 
         // update references for the moved keys
@@ -221,7 +220,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             try {
                 nextUnit.deleteFile();
             } catch (IOException ex) {
-                logger.error(ex);
+                LOGGER.error(ex);
             }
             unitsWithFreeSpace.remove(nextUnit);
         }

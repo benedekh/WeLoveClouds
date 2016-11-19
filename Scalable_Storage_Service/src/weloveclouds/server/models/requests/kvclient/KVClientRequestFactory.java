@@ -16,13 +16,12 @@ import weloveclouds.server.services.IDataAccessService;
  * @author Benoit
  */
 public class KVClientRequestFactory {
-    private IDataAccessService dataAccessService;
+    private static final Logger LOGGER = Logger.getLogger(Put.class);
 
-    private Logger logger;
+    private IDataAccessService dataAccessService;
 
     public KVClientRequestFactory(IDataAccessService dataAccessService) {
         this.dataAccessService = dataAccessService;
-        this.logger = Logger.getLogger(getClass());
     }
 
     public IKVClientRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
@@ -47,7 +46,7 @@ public class KVClientRequestFactory {
                 break;
             default:
                 String errorMessage = "Unrecognized command for KV message";
-                logger.error(join(" ", errorMessage, receivedMessage.toString()));
+                LOGGER.error(join(" ", errorMessage, receivedMessage.toString()));
                 request = new DefaultRequest(receivedMessage.getKey(), errorMessage);
                 break;
         }

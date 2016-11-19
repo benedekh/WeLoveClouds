@@ -1,8 +1,8 @@
 package weloveclouds.server.store.cache.strategy;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import org.apache.log4j.Logger;
+
+import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
  * To ccreate a displacement startegy based on its name.
@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  */
 public class StrategyFactory {
 
-    private static Logger LOGGER = Logger.getLogger(StrategyFactory.class);
+    private static final Logger LOGGER = Logger.getLogger(StrategyFactory.class);
 
     /**
      * Creates a {@link DisplacementStrategy} from the respective name.
@@ -32,8 +32,8 @@ public class StrategyFactory {
                 displacementStrategy = new LFUStrategy();
                 break;
             default:
-                LOGGER.error(
-                        join(" ", "Unrecognized displacement startegy:", displacementStrategyName));
+                LOGGER.error(CustomStringJoiner.join(" ", "Unrecognized displacement startegy:",
+                        displacementStrategyName));
                 break;
         }
 

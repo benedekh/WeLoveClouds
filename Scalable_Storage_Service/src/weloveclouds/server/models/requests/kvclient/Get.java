@@ -21,23 +21,24 @@ import weloveclouds.server.store.exceptions.StorageException;
  * 
  * @author Benoit
  */
+
 public class Get implements IKVClientRequest {
+
+    private static final Logger LOGGER = Logger.getLogger(Get.class);
+
     private IDataAccessService dataAccessService;
     private String key;
-
-    private Logger logger;
 
     public Get(IDataAccessService dataAccessService, String key) {
         this.dataAccessService = dataAccessService;
         this.key = key;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public KVMessage execute() {
         KVMessage response = null;
         try {
-            logger.debug(CustomStringJoiner.join(" ", "Trying to get value for key", key));
+            LOGGER.debug(CustomStringJoiner.join(" ", "Trying to get value for key", key));
             response = createResponse(GET_SUCCESS, key, dataAccessService.getValue(key));
         } catch (KeyIsNotManagedByServerException ex) {
             response = createResponse(SERVER_NOT_RESPONSIBLE, key, ex.getMessage());
@@ -46,7 +47,7 @@ public class Get implements IKVClientRequest {
         } catch (StorageException e) {
             response = createResponse(GET_ERROR, key, e.getMessage());
         } finally {
-            logger.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
+            LOGGER.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
         }
         return response;
     }

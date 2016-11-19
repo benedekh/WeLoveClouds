@@ -22,13 +22,15 @@ import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
  * @author Benoit
  */
 public class Server extends AbstractServer {
+
+    private static final Logger LOGGER = Logger.getLogger(Server.class);
+
     private CommunicationApiFactory communicationApiFactory;
     private KVClientRequestFactory requestFactory;
     private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
     private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
 
     private ServerShutdownHook shutdownHook;
-    private Logger logger;
 
     private Server(ServerBuilder serverBuilder) throws IOException {
         super(serverBuilder.serverSocketFactory, serverBuilder.port);
@@ -36,7 +38,6 @@ public class Server extends AbstractServer {
         this.requestFactory = serverBuilder.requestFactory;
         this.messageSerializer = serverBuilder.messageSerializer;
         this.messageDeserializer = serverBuilder.messageDeserializer;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -55,11 +56,11 @@ public class Server extends AbstractServer {
                         .messageDeserializer(messageDeserializer).build().handleConnection();
             }
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
         } catch (Throwable ex) {
-            logger.fatal(ex);
+            LOGGER.fatal(ex);
         } finally {
-            logger.info("Active server stopped.");
+            LOGGER.info("Active server stopped.");
         }
     }
 
@@ -77,10 +78,10 @@ public class Server extends AbstractServer {
      * 
      * @author Benedek
      */
-    private class ServerShutdownHook extends Thread {
+    private static class ServerShutdownHook extends Thread {
 
+        private static final Logger LOGGER = Logger.getLogger(ServerShutdownHook.class);
         private ServerSocket socket;
-        private Logger logger;
 
         public ServerShutdownHook(ServerSocket socket) {
             this.socket = socket;
@@ -91,7 +92,7 @@ public class Server extends AbstractServer {
             try {
                 socket.close();
             } catch (IOException e) {
-                logger.error(e);
+                LOGGER.error(e);
             }
         }
     }

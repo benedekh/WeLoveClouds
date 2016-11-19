@@ -27,24 +27,24 @@ import weloveclouds.server.store.exceptions.WriteLockIsActiveException;
  * @author Benoit
  */
 public class Put implements IKVClientRequest {
+
+    private static final Logger LOGGER = Logger.getLogger(Put.class);
+
     private IDataAccessService dataAccessService;
     private String key;
     private String value;
-
-    private Logger logger;
 
     public Put(IDataAccessService dataAccessService, String key, String value) {
         this.dataAccessService = dataAccessService;
         this.key = key;
         this.value = value;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public KVMessage execute() {
         KVMessage response = null;
         try {
-            logger.debug(CustomStringJoiner.join(" ", "Trying to put record", key, value));
+            LOGGER.debug(CustomStringJoiner.join(" ", "Trying to put record", key, value));
 
             PutType putType = dataAccessService.putEntry(new KVEntry(key, value));
             switch (putType) {
@@ -64,7 +64,7 @@ public class Put implements IKVClientRequest {
         } catch (StorageException ex) {
             response = createResponse(PUT_ERROR, key, ex.getMessage());
         } finally {
-            logger.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
+            LOGGER.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
         }
         return response;
     }

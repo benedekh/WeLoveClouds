@@ -25,22 +25,21 @@ import weloveclouds.server.store.exceptions.WriteLockIsActiveException;
  * @author Benoit
  */
 public class Delete implements IKVClientRequest {
+    private static final Logger LOGGER = Logger.getLogger(Delete.class);
+
     private IDataAccessService dataAccessService;
     private String key;
-
-    private Logger logger;
 
     public Delete(IDataAccessService dataAccessService, String key) {
         this.dataAccessService = dataAccessService;
         this.key = key;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public KVMessage execute() {
         KVMessage response = null;
         try {
-            logger.debug(CustomStringJoiner.join(" ", "Trying to remove key", key));
+            LOGGER.debug(CustomStringJoiner.join(" ", "Trying to remove key", key));
             dataAccessService.removeEntry(key);
             response = createResponse(DELETE_SUCCESS, key, null);
         } catch (KeyIsNotManagedByServerException ex) {
@@ -52,7 +51,7 @@ public class Delete implements IKVClientRequest {
         } catch (StorageException e) {
             response = createResponse(DELETE_ERROR, key, e.getMessage());
         } finally {
-            logger.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
+            LOGGER.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
         }
         return response;
     }
