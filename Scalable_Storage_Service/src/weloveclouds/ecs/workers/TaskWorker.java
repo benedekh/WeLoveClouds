@@ -4,25 +4,31 @@ import java.util.Observable;
 
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.exceptions.task.RetryableException;
-import weloveclouds.ecs.models.tasks.AbstractTask;
+import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
 import weloveclouds.ecs.models.tasks.Status;
 import weloveclouds.ecs.models.tasks.WorkerStatus;
 
 import static weloveclouds.ecs.models.tasks.Status.*;
 import static weloveclouds.ecs.models.tasks.WorkerStatus.*;
+import static weloveclouds.ecs.models.tasks.WorkerStatus.WAITING;
 
 /**
  * Created by Benoit on 2016-11-18.
  */
-public class TaskWorker<T extends AbstractTask> extends Observable implements Runnable {
-    private T task;
+public class TaskWorker extends Observable implements Runnable {
+    private AbstractRetryableTask task;
     private WorkerStatus status;
 
-    public TaskWorker(T task) {
+    public TaskWorker(AbstractRetryableTask task) {
         this.task = task;
+        status = WAITING;
     }
 
-    public T getTask() {
+    public WorkerStatus getStatus() {
+        return status;
+    }
+
+    public AbstractRetryableTask getTask() {
         return this.task;
     }
 

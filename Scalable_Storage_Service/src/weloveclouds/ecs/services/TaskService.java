@@ -1,34 +1,50 @@
 package weloveclouds.ecs.services;
 
+import java.util.LinkedHashSet;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
-import weloveclouds.ecs.models.tasks.AbstractTask;
 import weloveclouds.ecs.models.tasks.IBatchTasks;
 import weloveclouds.ecs.workers.TaskWorker;
+
+import static weloveclouds.ecs.models.tasks.WorkerStatus.ERROR;
 
 /**
  * Created by Benoit on 2016-11-19.
  */
 public class TaskService implements ITaskService, Observer {
+    Set<AbstractRetryableTask> failedTasks;
+    Set<AbstractRetryableTask> succeededTasks;
+
+    public TaskService() {
+        failedTasks = new LinkedHashSet<>();
+        succeededTasks = new LinkedHashSet<>();
+    }
 
     @Override
-    public <T extends AbstractTask> void launchTask(T task) {
+    public void launchTask(AbstractRetryableTask task) {
 
     }
 
     @Override
-    public <T extends AbstractTask> void launchBatchTasks(IBatchTasks<T> batchTasks) {
-        for (T task : batchTasks.getTasks()) {
-            TaskWorker<T> taskWorker = new TaskWorker<>(task);
+    public void launchBatchTasks(IBatchTasks<AbstractRetryableTask> batchTasks) {
+        for (AbstractRetryableTask task : batchTasks.getTasks()) {
+            TaskWorker taskWorker = new TaskWorker(task);
             taskWorker.addObserver(this);
             new Thread(taskWorker).start();
         }
     }
 
     @Override
-    public void update(Observable o, Object arg) {
-
+    synchronized public void update(Observable obs, Object arg) {
+        TaskWorker worker = (TaskWorker) obs;
+        if (worker.getStatus() == ERROR) {
+            failedTasks.add(worker.getTask());
+        } else {
+            succeededTasks.add(worker.getTask());
+            //LOG error
+        }
     }
 }

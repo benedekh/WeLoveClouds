@@ -4,20 +4,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
-import weloveclouds.ecs.models.commands.ICommand;
+import weloveclouds.ecs.models.commands.UpdateServerRepository;
 import weloveclouds.ecs.models.commands.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.ServerRepository;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
-import weloveclouds.ecs.models.tasks.AbstractTask;
 import weloveclouds.ecs.models.tasks.BatchRetryableTasks;
-import weloveclouds.ecs.models.tasks.BatchTasks;
 import weloveclouds.ecs.models.tasks.IBatchTasks;
-import weloveclouds.ecs.models.tasks.InitializeNodeTask;
+import weloveclouds.ecs.models.tasks.InitialiseNodeTask;
 import weloveclouds.ecs.services.ISecureShellService;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.ListUtils;
-import weloveclouds.ecs.workers.TaskWorker;
 import weloveclouds.kvstore.serialization.IMessageDeserializer;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 
@@ -45,15 +42,18 @@ public class ExternalConfigurationService {
                 .getPreciseNumberOfRandomObjectsFrom(repository.getIdledNodes(), numberOfNodes);
 
         for (StorageNode storageNode : storageNodesToInitialize) {
-            ICommand taskCommand = new LaunchJar.Builder()
+            LaunchJar taskCommand = new LaunchJar.Builder()
                     .jarFilePath(JAR_FILE_PATH)
                     .arguments(Arrays.asList(Integer.toString(cacheSize), displacementStrategy))
                     .secureShellService(secureShellService)
                     .targettedNode(storageNode)
                     .build();
 
+            UpdateServerRepository successTask = new UpdateServerRepository(repository);
+
             nodeInitialisationBatch.addTask(
-                    new InitializeNodeTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
+                    new InitialiseNodeTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES,
+                            taskCommand, successTask));
         }
 
         taskService.launchBatchTasks(nodeInitialisationBatch);
