@@ -24,10 +24,5 @@ public class DefaultCommand extends AbstractCommand{
         
     }
 
-    @Override
-    public ICommand validate() throws InvalidParameterException{
-        return this;
-    }
-
 }
 
