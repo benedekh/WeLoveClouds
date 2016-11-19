@@ -18,7 +18,7 @@ public class DefaultRequest implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
-        return new KVAdminMessage.KVAdminMessageBuilder().status(StatusType.RESPONSE_ERROR)
+        return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
                 .responseMessage(errorMessage).build();
     }
 

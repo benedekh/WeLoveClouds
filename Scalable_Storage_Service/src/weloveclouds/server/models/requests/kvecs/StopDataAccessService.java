@@ -16,8 +16,7 @@ public class StopDataAccessService implements IKVECSRequest {
     @Override
     public KVAdminMessage execute() {
         dataAccessService.setServiceStatus(DataAccessServiceStatus.STOPPED);
-        return new KVAdminMessage.KVAdminMessageBuilder().status(StatusType.RESPONSE_SUCCESS)
-                .build();
+        return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
     }
 
 }

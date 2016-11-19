@@ -16,7 +16,6 @@ public class UnlockWriteAccess implements IKVECSRequest {
     @Override
     public KVAdminMessage execute() {
         dataAccessService.setServiceStatus(DataAccessServiceStatus.WRITELOCK_INACTIVE);
-        return new KVAdminMessage.KVAdminMessageBuilder().status(StatusType.RESPONSE_SUCCESS)
-                .build();
+        return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
     }
 }

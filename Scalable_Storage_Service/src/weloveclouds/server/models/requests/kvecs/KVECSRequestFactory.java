@@ -5,7 +5,10 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
+import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.server.services.DataAccessServiceFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**
@@ -19,10 +22,20 @@ public class KVECSRequestFactory {
 
     private static final Logger LOGGER = Logger.getLogger(KVECSRequestFactory.class);
 
+    private DataAccessServiceFactory dataAccessServiceFactory;
     private IMovableDataAccessService dataAccessService;
 
-    public KVECSRequestFactory(IMovableDataAccessService dataAccessService) {
+    private RingMetadata ringMetadata;
+    private RingMetadataPart rangeManagedByServer;
+
+    public KVECSRequestFactory(DataAccessServiceFactory dataAccessServiceFactory,
+            IMovableDataAccessService dataAccessService, RingMetadata ringMetadata,
+            RingMetadataPart rangeManagedByServer) {
+
+        this.dataAccessServiceFactory = dataAccessServiceFactory;
         this.dataAccessService = dataAccessService;
+        this.ringMetadata = ringMetadata;
+        this.rangeManagedByServer = rangeManagedByServer;
     }
 
     public IKVECSRequest createRequestFromReceivedMessage(KVAdminMessage receivedMessage) {
@@ -31,7 +44,11 @@ public class KVECSRequestFactory {
 
         switch (status) {
             case INITKVSERVER:
-                new InitializeKVServer();
+                request = new InitializeKVServer(dataAccessServiceFactory, dataAccessService,
+                        receivedMessage.getInitializationContext());
+                new UpdateRingMetadata(ringMetadata, rangeManagedByServer,
+                        receivedMessage.getRingMetadata(), receivedMessage.getServerInfo())
+                                .execute();
                 break;
             case START:
                 new StartDataAcessService(dataAccessService);
@@ -46,10 +63,11 @@ public class KVECSRequestFactory {
                 new UnlockWriteAccess(dataAccessService);
                 break;
             case MOVEDATA:
-                new MoveDataToDestination();
+                new MoveDataToDestination(dataAccessService, receivedMessage.getServerInfo());
                 break;
             case UPDATE:
-                new UpdateRingMetadata();
+                new UpdateRingMetadata(ringMetadata, rangeManagedByServer,
+                        receivedMessage.getRingMetadata(), receivedMessage.getServerInfo());
                 break;
             case SHUTDOWN:
                 new ShutdownServer();

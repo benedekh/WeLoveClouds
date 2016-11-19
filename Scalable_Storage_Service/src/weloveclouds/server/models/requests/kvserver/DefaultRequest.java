@@ -18,7 +18,7 @@ public class DefaultRequest implements IKVServerRequest {
 
     @Override
     public KVTransferMessage execute() {
-        return new KVTransferMessage.KVTransferMessageBuilder().status(StatusType.TRANSFER_ERROR)
+        return new KVTransferMessage.Builder().status(StatusType.TRANSFER_ERROR)
                 .responseMessage(errorMessage).build();
     }
 

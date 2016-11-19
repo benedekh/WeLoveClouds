@@ -4,8 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.models.ServerInitializationContext;
@@ -24,15 +22,11 @@ public class InitializeKVServer implements IKVECSRequest {
 
     private ServerInitializationContext serverInitializationContext;
 
-    private RingMetadata ringMetadata;
-    private HashRange serverHashRange;
-
-    public InitializeKVServer(IMovableDataAccessService dataAccessService,
-            DataAccessServiceFactory dataAccessServiceFactory,
+    public InitializeKVServer(DataAccessServiceFactory dataAccessServiceFactory,
+            IMovableDataAccessService dataAccessService,
             ServerInitializationContext initializationContext) {
-        this.dataAccessService = dataAccessService;
         this.dataAccessServiceFactory = dataAccessServiceFactory;
-
+        this.dataAccessService = dataAccessService;
         this.serverInitializationContext = initializationContext;
     }
 
@@ -43,17 +37,13 @@ public class InitializeKVServer implements IKVECSRequest {
                 StrategyFactory.createDisplacementStrategy(displacementStrategyName);
 
         if (displacementStrategy == null) {
-            return new KVAdminMessage.KVAdminMessageBuilder().status(StatusType.RESPONSE_ERROR)
+            return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
                     .responseMessage(CustomStringJoiner.join(": ", "Unknown displacement startegy",
                             displacementStrategyName))
                     .build();
         }
 
-        this.ringMetadata = serverInitializationContext.getRingMetadata();
-        this.serverHashRange = serverInitializationContext.getRangeManagedByServer();
-
         int cacheSize = serverInitializationContext.getCacheSize();
-
         DataAccessServiceInitializationInfo dataAccessServiceInitializationInfo =
                 new DataAccessServiceInitializationInfo.Builder().cacheSize(cacheSize)
                         .displacementStrategy(displacementStrategy)
@@ -62,8 +52,7 @@ public class InitializeKVServer implements IKVECSRequest {
         dataAccessService = dataAccessServiceFactory
                 .createServiceWithMovablePersistentStorage(dataAccessServiceInitializationInfo);
 
-        return new KVAdminMessage.KVAdminMessageBuilder().status(StatusType.RESPONSE_SUCCESS)
-                .build();
+        return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
     }
 
 }

@@ -20,11 +20,10 @@ public class Transfer implements IKVServerRequest {
     public KVTransferMessage execute() {
         try {
             dataAccessService.putEntries(storageUnits);
-            return new KVTransferMessage.KVTransferMessageBuilder()
-                    .status(StatusType.TRANSFER_SUCCESS).build();
+            return new KVTransferMessage.Builder().status(StatusType.TRANSFER_SUCCESS).build();
         } catch (StorageException ex) {
-            return new KVTransferMessage.KVTransferMessageBuilder()
-                    .status(StatusType.TRANSFER_ERROR).responseMessage(ex.getMessage()).build();
+            return new KVTransferMessage.Builder().status(StatusType.TRANSFER_ERROR)
+                    .responseMessage(ex.getMessage()).build();
         }
     }
 
