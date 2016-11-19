@@ -6,14 +6,14 @@ import java.util.Set;
 /**
  * Created by Benoit on 2016-11-19.
  */
-public interface IBatchTasks {
-    void addTask(AbstractTask task);
+public interface IBatchTasks<T> {
+    void addTask(T task);
 
-    void addTasks(List<AbstractTask> tasks);
+    void addTasks(List<T> tasks);
 
-    Set<AbstractTask> getTasks();
+    Set<T> getTasks();
 
-    Set<AbstractTask> getFailedTasks();
+    Set<T> getFailedTasks();
 
-    Set<AbstractTask> getSucceededTasks();
+    Set<T> getSucceededTasks();
 }

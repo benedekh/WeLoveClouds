@@ -2,6 +2,7 @@ package weloveclouds.ecs.models.tasks;
 
 import static weloveclouds.ecs.models.tasks.Status.*;
 
+import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.commands.ICommand;
 
 /**
@@ -52,5 +53,5 @@ public abstract class AbstractTask {
         this.failCommand = failCommand;
     }
 
-    public abstract void run() throws Exception;
+    public abstract void run() throws ClientSideException;
 }

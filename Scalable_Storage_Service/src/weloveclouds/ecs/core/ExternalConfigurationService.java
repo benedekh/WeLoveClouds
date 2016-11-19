@@ -8,8 +8,11 @@ import weloveclouds.ecs.models.commands.ICommand;
 import weloveclouds.ecs.models.commands.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.ServerRepository;
 import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
 import weloveclouds.ecs.models.tasks.AbstractTask;
+import weloveclouds.ecs.models.tasks.BatchRetryableTasks;
 import weloveclouds.ecs.models.tasks.BatchTasks;
+import weloveclouds.ecs.models.tasks.IBatchTasks;
 import weloveclouds.ecs.models.tasks.InitializeNodeTask;
 import weloveclouds.ecs.services.ISecureShellService;
 import weloveclouds.ecs.services.ITaskService;
@@ -37,7 +40,7 @@ public class ExternalConfigurationService {
 
     @SuppressWarnings("unchecked")
     void initService(int numberOfNodes, int cacheSize, String displacementStrategy) {
-        BatchTasks nodeInitialisationBatch = new BatchTasks();
+        IBatchTasks<AbstractRetryableTask> nodeInitialisationBatch = new BatchRetryableTasks();
         List<StorageNode> storageNodesToInitialize = (List<StorageNode>) ListUtils
                 .getPreciseNumberOfRandomObjectsFrom(repository.getIdledNodes(), numberOfNodes);
 

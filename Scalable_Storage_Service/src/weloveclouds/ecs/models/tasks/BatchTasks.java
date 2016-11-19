@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Created by Benoit on 2016-11-19.
  */
-public class BatchTasks implements IBatchTasks {
+public class BatchTasks implements IBatchTasks<AbstractTask> {
     Set<AbstractTask> tasks;
     Set<AbstractTask> failedTasks;
     Set<AbstractTask> succeededTasks;
