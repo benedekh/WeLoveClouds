@@ -36,7 +36,7 @@ public class ExternalConfigurationService {
     }
 
     @SuppressWarnings("unchecked")
-    void initService(int numberOfNodes, int cacheSize, String displacementStrategy) {
+    public void initService(int numberOfNodes, int cacheSize, String displacementStrategy) {
         IBatchTasks<AbstractRetryableTask> nodeInitialisationBatch = new BatchRetryableTasks();
         List<StorageNode> storageNodesToInitialize = (List<StorageNode>) ListUtils
                 .getPreciseNumberOfRandomObjectsFrom(repository.getIdledNodes(), numberOfNodes);
@@ -59,23 +59,23 @@ public class ExternalConfigurationService {
         taskService.launchBatchTasks(nodeInitialisationBatch);
     }
 
-    void start() {
+    public void start() {
 
     }
 
-    void stop() {
+    public void stop() {
 
     }
 
-    void shutDown() {
+    public void shutDown() {
 
     }
 
-    void addNode(int cacheSize, String displacementStrategy) {
+    public void addNode(int cacheSize, String displacementStrategy) {
 
     }
 
-    void removeNode() {
+    public void removeNode() {
 
     }
 
