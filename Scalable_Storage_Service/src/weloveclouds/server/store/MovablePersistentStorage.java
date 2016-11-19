@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -228,6 +229,11 @@ public class MovablePersistentStorage extends KVPersistentStorage
             }
         }
         return result;
+    }
+
+    @Override
+    public void setServiceStatus(DataAccessServiceStatus serviceNewStatus) {
+        // left empty on purpose
     }
 
 }

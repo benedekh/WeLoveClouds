@@ -5,7 +5,7 @@ import weloveclouds.kvstore.models.messages.KVTransferMessage;
 /**
  * An executable request which produces the response {@link KVTransferMessage}.
  * 
- * @author Benoit
+ * @author Benedek
  */
 public interface IKVServerRequest {
     /**

@@ -1,6 +1,7 @@
 package weloveclouds.server.services;
 
 import weloveclouds.hashing.models.HashRange;
+import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
@@ -34,4 +35,9 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * Merges those storage units which are not full yet.
      */
     public void defragment();
+
+    /**
+     * Sets the status of the data access service.
+     */
+    public void setServiceStatus(DataAccessServiceStatus serviceNewStatus);
 }

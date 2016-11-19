@@ -1,6 +1,6 @@
 package weloveclouds.server.services;
 
-import static weloveclouds.server.services.models.DataAccessServiceStatus.STOPPED;
+import static weloveclouds.server.services.models.DataAccessServiceStatus.*;
 
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.kvstore.models.KVEntry;
@@ -15,18 +15,21 @@ import weloveclouds.server.store.models.MovableStorageUnits;
 public class MovableDataAccessService extends DataAccessService
         implements IMovableDataAccessService {
 
-    private volatile DataAccessServiceStatus serviceStatus;
+    private DataAccessServiceStatus servicePreviousStatus;
+    private volatile DataAccessServiceStatus serviceRecentStatus;
+
     protected MovablePersistentStorage movablePersistentStorage;
 
     public MovableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage) {
         super(cache, persistentStorage);
         this.movablePersistentStorage = persistentStorage;
-        this.serviceStatus = STOPPED;
+        this.servicePreviousStatus = STOPPED;
+        this.serviceRecentStatus = STOPPED;
     }
 
     @Override
     public synchronized PutType putEntry(KVEntry entry) throws StorageException {
-        switch (serviceStatus) {
+        switch (serviceRecentStatus) {
             case STARTED:
                 return super.putEntry(entry);
             case STOPPED:
@@ -41,7 +44,7 @@ public class MovableDataAccessService extends DataAccessService
     @Override
     public synchronized String getValue(String key)
             throws StorageException, ValueNotFoundException {
-        switch (serviceStatus) {
+        switch (serviceRecentStatus) {
             case STARTED:
             case WRITELOCK_ACTIVE:
                 return super.getValue(key);
@@ -54,7 +57,7 @@ public class MovableDataAccessService extends DataAccessService
 
     @Override
     public synchronized void removeEntry(String key) throws StorageException {
-        switch (serviceStatus) {
+        switch (serviceRecentStatus) {
             case STARTED:
                 super.removeEntry(key);
                 break;
@@ -87,8 +90,20 @@ public class MovableDataAccessService extends DataAccessService
         movablePersistentStorage.defragment();
     }
 
-    public void setServiceStatus(DataAccessServiceStatus newServiceStatus) {
-        this.serviceStatus = newServiceStatus;
+    @Override
+    public void setServiceStatus(DataAccessServiceStatus serviceNewStatus) {
+        switch (serviceNewStatus) {
+            case WRITELOCK_INACTIVE:
+                serviceRecentStatus = servicePreviousStatus;
+                break;
+            case STARTED:
+            case STOPPED:
+                serviceRecentStatus = serviceNewStatus;
+                servicePreviousStatus = serviceRecentStatus;
+                break;
+            case WRITELOCK_ACTIVE:
+                serviceRecentStatus = serviceNewStatus;
+        }
     }
 
 }

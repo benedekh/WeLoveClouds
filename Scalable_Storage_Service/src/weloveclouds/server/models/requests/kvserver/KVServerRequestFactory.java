@@ -13,7 +13,7 @@ import weloveclouds.server.services.IMovableDataAccessService;
  * handles several requests (see {@link StatusType} for the possible types) by dispatching the
  * command to its respective handler.
  *
- * @author Benoit
+ * @author Benedek
  */
 public class KVServerRequestFactory {
 
