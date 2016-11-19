@@ -19,9 +19,11 @@ import static weloveclouds.ecs.models.ssh.AuthenticationMethod.*;
 public class JshSecureShellService implements ISecureShellService {
     private static final int SECURE_SHELL_PORT = 22;
     private static final String EXEC_CHANNEL = "exec";
+    private AuthInfos authenticationInfos;
     private JSch secureShell;
 
-    public JshSecureShellService() {
+    public JshSecureShellService(AuthInfos authenticationInfos) {
+        this.authenticationInfos = authenticationInfos;
         this.secureShell = new JSch();
     }
 
@@ -29,7 +31,6 @@ public class JshSecureShellService implements ISecureShellService {
     @Override
     public void runCommand(AbstractRemoteCommand command) throws SecureShellServiceException {
         String targettedHostIp = command.getTargettedHostIp();
-        AuthInfos authInfos = command.getAuthenticationInfos();
 
         try {
             Session secureShellSession;
@@ -37,14 +38,14 @@ public class JshSecureShellService implements ISecureShellService {
             Properties config = new Properties();
             config.put("StrictHostKeyChecking", "no");
 
-            if (authInfos.getAuthenticationMethod() == PRIVATE_KEY) {
-                secureShell.addIdentity(authInfos.getPrivateKey());
-                secureShellSession = secureShell.getSession(authInfos.getUsername(), targettedHostIp,
+            if (authenticationInfos.getAuthenticationMethod() == PRIVATE_KEY) {
+                secureShell.addIdentity(authenticationInfos.getPrivateKey());
+                secureShellSession = secureShell.getSession(authenticationInfos.getUsername(), targettedHostIp,
                         SECURE_SHELL_PORT);
             } else {
-                secureShellSession = secureShell.getSession(authInfos.getUsername(), targettedHostIp,
+                secureShellSession = secureShell.getSession(authenticationInfos.getUsername(), targettedHostIp,
                         SECURE_SHELL_PORT);
-                secureShellSession.setPassword(authInfos.getPassword());
+                secureShellSession.setPassword(authenticationInfos.getPassword());
             }
 
             secureShellSession.setConfig(config);

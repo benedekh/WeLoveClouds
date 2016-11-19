@@ -24,6 +24,10 @@ public abstract class AbstractTask {
         return this.status;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public ICommand getCommand() {
         return command;
     }

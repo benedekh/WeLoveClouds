@@ -1,18 +1,19 @@
 package weloveclouds.ecs.models.tasks;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Benoit on 2016-11-19.
  */
 public interface IBatchTasks {
-    void addTask(AbstractRetryableTask task);
+    void addTask(AbstractTask task);
 
-    void addTasks(List<AbstractRetryableTask> tasks);
+    void addTasks(List<AbstractTask> tasks);
 
-    List<AbstractRetryableTask> getTasks();
+    Set<AbstractTask> getTasks();
 
-    List<AbstractRetryableTask> getFailedTasks();
+    Set<AbstractTask> getFailedTasks();
 
-    List<AbstractRetryableTask> getSucceededTasks();
+    Set<AbstractTask> getSucceededTasks();
 }

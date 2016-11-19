@@ -4,7 +4,7 @@ package weloveclouds.ecs.models.commands.ssh;
 import java.util.List;
 
 import weloveclouds.ecs.exceptions.ssh.SecureShellServiceException;
-import weloveclouds.ecs.models.metadata.StorageNode;
+import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.ssh.AuthInfos;
 import weloveclouds.ecs.services.ISecureShellService;
 
@@ -17,8 +17,7 @@ public class LaunchJar extends AbstractRemoteCommand {
     private ISecureShellService secureShellService;
 
     public LaunchJar(Builder commandBuilder) {
-        super(COMMAND, commandBuilder.arguments, commandBuilder.targettedNode, commandBuilder
-                .authenticationInfos);
+        super(COMMAND, commandBuilder.arguments, commandBuilder.targettedNode);
         this.secureShellService = commandBuilder.secureShellService;
         this.jarFilePath = commandBuilder.jarFilePath;
     }
@@ -31,7 +30,6 @@ public class LaunchJar extends AbstractRemoteCommand {
     public static class Builder {
         private String jarFilePath;
         private List<String> arguments;
-        private AuthInfos authenticationInfos;
         private StorageNode targettedNode;
         private ISecureShellService secureShellService;
 
@@ -45,11 +43,6 @@ public class LaunchJar extends AbstractRemoteCommand {
             return this;
         }
 
-        public Builder authenticationInfos(AuthInfos authenticationInfos) {
-            this.authenticationInfos = authenticationInfos;
-            return this;
-        }
-
         public Builder targettedNode(StorageNode targettedNode) {
             this.targettedNode = targettedNode;
             return this;
@@ -58,6 +51,10 @@ public class LaunchJar extends AbstractRemoteCommand {
         public Builder secureShellService(ISecureShellService secureShellService) {
             this.secureShellService = secureShellService;
             return this;
+        }
+
+        public LaunchJar build() {
+            return new LaunchJar(this);
         }
     }
 }
