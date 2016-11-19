@@ -2,7 +2,11 @@ package weloveclouds.server.services;
 
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.server.services.exceptions.ServiceIsInitializedException;
+import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
+import weloveclouds.server.store.KVCache;
+import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
@@ -20,9 +24,9 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * 
      * @param range within that shall be the hash values of the keys
      * @return the storage units of those entries whose keys are in the given range
-     * @throws StorageException if an error occurs
+     * @throws StorageException if the service was not initialized yet
      */
-    public MovableStorageUnits filterEntries(HashRange range);
+    public MovableStorageUnits filterEntries(HashRange range) throws UninitializedServiceException;
 
     /**
      * Removes those entries from the persistent storage whose keys are in the specified range.
@@ -34,13 +38,18 @@ public interface IMovableDataAccessService extends IDataAccessService {
 
     /**
      * Merges those storage units which are not full yet.
+     * 
+     * @throws StorageException if the service was not initialized yet
      */
-    public void defragment();
+    public void defragment() throws UninitializedServiceException;
 
     /**
      * Sets the status of the data access service.
+     * 
+     * @throws UninitializedServiceException if the service was not initialized yet
      */
-    public void setServiceStatus(DataAccessServiceStatus serviceNewStatus);
+    public void setServiceStatus(DataAccessServiceStatus serviceNewStatus)
+            throws UninitializedServiceException;
 
     /**
      * Ring hash metadata information.
@@ -53,5 +62,16 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * @param range
      */
     public void setManagedHashRange(HashRange rangeManagedByServer);
-    
+
+    /**
+     * @return true if the data access service is initialized, false otherwise
+     */
+    public boolean isServiceInitialized();
+
+    /**
+     * Initializes the data access service with the cache and the persistent storage.
+     */
+    public void initializeService(KVCache cache, MovablePersistentStorage persistentStorage)
+            throws ServiceIsInitializedException;
+
 }

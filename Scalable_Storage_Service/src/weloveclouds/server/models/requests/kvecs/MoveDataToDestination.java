@@ -10,6 +10,7 @@ import weloveclouds.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
 public class MoveDataToDestination implements IKVECSRequest {
@@ -31,48 +32,46 @@ public class MoveDataToDestination implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
-        if (dataAccessService == null) {
-            return new KVAdminMessage.Builder()
-                    .status(weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR)
-                    .responseMessage("Service is not initialized yet.").build();
-        }
+        try {
+            HashRange hashRange = targetServerInfo.getRange();
+            MovableStorageUnits filteredEntries = dataAccessService.filterEntries(hashRange);
 
-        HashRange hashRange = targetServerInfo.getRange();
-        MovableStorageUnits filteredEntries = dataAccessService.filterEntries(hashRange);
-
-        if (!filteredEntries.getStorageUnits().isEmpty()) {
-            try {
-                KVTransferMessage transferMessage = new KVTransferMessage.Builder()
-                        .status(StatusType.TRANSFER).storageUnits(filteredEntries).build();
-
+            if (!filteredEntries.getStorageUnits().isEmpty()) {
                 try {
-                    communicationApi.disconnect();
-                } catch (Exception ex) {
-                    // suppress exception
-                }
+                    KVTransferMessage transferMessage = new KVTransferMessage.Builder()
+                            .status(StatusType.TRANSFER).storageUnits(filteredEntries).build();
 
-                communicationApi.connectTo(targetServerInfo.getConnectionInfo());
-                SerializedMessage serializedMessage =
-                        transferMessageSerializer.serialize(transferMessage);
-                communicationApi.send(serializedMessage.getBytes());
-                KVTransferMessage response =
-                        transferMessageDeserializer.deserialize(communicationApi.receive());
+                    try {
+                        communicationApi.disconnect();
+                    } catch (Exception ex) {
+                        // suppress exception
+                    }
 
-                if (response.getStatus() == StatusType.TRANSFER_ERROR) {
-                    return createErrorKVAdminMessage(response.getResponseMessage());
-                } else {
-                    dataAccessService.removeEntries(hashRange);
-                    dataAccessService.defragment();
-                }
-            } catch (Exception e) {
-                return createErrorKVAdminMessage(e.getMessage());
-            } finally {
-                try {
-                    communicationApi.disconnect();
+                    communicationApi.connectTo(targetServerInfo.getConnectionInfo());
+                    SerializedMessage serializedMessage =
+                            transferMessageSerializer.serialize(transferMessage);
+                    communicationApi.send(serializedMessage.getBytes());
+                    KVTransferMessage response =
+                            transferMessageDeserializer.deserialize(communicationApi.receive());
+
+                    if (response.getStatus() == StatusType.TRANSFER_ERROR) {
+                        return createErrorKVAdminMessage(response.getResponseMessage());
+                    } else {
+                        dataAccessService.removeEntries(hashRange);
+                        dataAccessService.defragment();
+                    }
                 } catch (Exception ex) {
-                    // suppress exception
+                    return createErrorKVAdminMessage(ex.getMessage());
+                } finally {
+                    try {
+                        communicationApi.disconnect();
+                    } catch (Exception ex) {
+                        // suppress exception
+                    }
                 }
             }
+        } catch (UninitializedServiceException ex) {
+            return createErrorKVAdminMessage(ex.getMessage());
         }
 
         return new KVAdminMessage.Builder()

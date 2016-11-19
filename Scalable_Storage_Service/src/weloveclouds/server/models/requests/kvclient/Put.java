@@ -15,11 +15,11 @@ import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
+import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
+import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
+import weloveclouds.server.services.exceptions.WriteLockIsActiveException;
 import weloveclouds.server.store.PutType;
-import weloveclouds.server.store.exceptions.KeyIsNotManagedByServerException;
-import weloveclouds.server.store.exceptions.ServerIsStoppedException;
 import weloveclouds.server.store.exceptions.StorageException;
-import weloveclouds.server.store.exceptions.WriteLockIsActiveException;
 
 /**
  * A put request to store a key and a value in the {@link DataAccessService}.
@@ -55,9 +55,9 @@ public class Put implements IKVClientRequest {
                     response = createResponse(PUT_UPDATE, key, value);
                     break;
             }
-        } catch (KeyIsNotManagedByServerException ex) {
+        } catch (KeyIsNotManagedByServiceException ex) {
             response = createResponse(SERVER_NOT_RESPONSIBLE, key, ex.getMessage());
-        } catch (ServerIsStoppedException ex) {
+        } catch (ServiceIsStoppedException ex) {
             response = createResponse(SERVER_STOPPED, key, null);
         } catch (WriteLockIsActiveException ex) {
             response = createResponse(SERVER_WRITE_LOCK, key, null);

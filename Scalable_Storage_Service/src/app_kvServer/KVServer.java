@@ -96,7 +96,7 @@ public class KVServer {
                         .rootFolderPath(defaultStoragePath).build();
 
         DataAccessService dataAccessService = new DataAccessServiceFactory()
-                .createServiceWithPersistentStorage(initializationContext);
+                .createServiceWithInitializedPersistentStorage(initializationContext);
 
         try {
             Server<KVMessage, IKVClientRequest> server =

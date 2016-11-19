@@ -13,10 +13,10 @@ import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
-import weloveclouds.server.store.exceptions.KeyIsNotManagedByServerException;
-import weloveclouds.server.store.exceptions.ServerIsStoppedException;
+import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
+import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
+import weloveclouds.server.services.exceptions.WriteLockIsActiveException;
 import weloveclouds.server.store.exceptions.StorageException;
-import weloveclouds.server.store.exceptions.WriteLockIsActiveException;
 
 /**
  * A delete request to remove the key and its respective value stored in the
@@ -42,9 +42,9 @@ public class Delete implements IKVClientRequest {
             LOGGER.debug(CustomStringJoiner.join(" ", "Trying to remove key", key));
             dataAccessService.removeEntry(key);
             response = createResponse(DELETE_SUCCESS, key, null);
-        } catch (KeyIsNotManagedByServerException ex) {
+        } catch (KeyIsNotManagedByServiceException ex) {
             response = createResponse(SERVER_NOT_RESPONSIBLE, key, ex.getMessage());
-        } catch (ServerIsStoppedException ex) {
+        } catch (ServiceIsStoppedException ex) {
             response = createResponse(SERVER_STOPPED, key, null);
         } catch (WriteLockIsActiveException ex) {
             response = createResponse(SERVER_WRITE_LOCK, key, null);

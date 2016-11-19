@@ -21,11 +21,6 @@ public class UpdateRingMetadata implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
-        if (dataAccessService == null) {
-            return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
-                    .responseMessage("Service is not initialized yet.").build();
-        }
-
         dataAccessService.setRingMetadata(ringMetadata);
         dataAccessService.setManagedHashRange(rangeManagedByServer);
         return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();

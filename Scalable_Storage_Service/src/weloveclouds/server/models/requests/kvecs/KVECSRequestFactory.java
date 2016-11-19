@@ -9,7 +9,6 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.core.requests.IRequestFactory;
-import weloveclouds.server.services.DataAccessServiceFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**
@@ -19,20 +18,15 @@ import weloveclouds.server.services.IMovableDataAccessService;
  *
  * @author Benedek
  */
-public class KVECSRequestFactory  implements IRequestFactory<KVAdminMessage, IKVECSRequest> {
+public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVECSRequest> {
 
     private static final Logger LOGGER = Logger.getLogger(KVECSRequestFactory.class);
 
-    private DataAccessServiceFactory dataAccessServiceFactory;
-    private volatile IMovableDataAccessService dataAccessService;
-
+    private IMovableDataAccessService dataAccessService;
     private ICommunicationApi communicationApi;
 
-    public KVECSRequestFactory(DataAccessServiceFactory dataAccessServiceFactory,
-            IMovableDataAccessService dataAccessService,
+    public KVECSRequestFactory(IMovableDataAccessService dataAccessService,
             CommunicationApiFactory communicationApiFactory) {
-
-        this.dataAccessServiceFactory = dataAccessServiceFactory;
         this.dataAccessService = dataAccessService;
         this.communicationApi = communicationApiFactory.createCommunicationApiV1();
     }
@@ -44,7 +38,7 @@ public class KVECSRequestFactory  implements IRequestFactory<KVAdminMessage, IKV
 
         switch (status) {
             case INITKVSERVER:
-                request = new InitializeKVServer(dataAccessServiceFactory, dataAccessService,
+                request = new InitializeKVServer(dataAccessService,
                         receivedMessage.getInitializationContext());
                 new UpdateRingMetadata(dataAccessService, receivedMessage.getRingMetadata(),
                         receivedMessage.getTargetServerInfo().getRange()).execute();

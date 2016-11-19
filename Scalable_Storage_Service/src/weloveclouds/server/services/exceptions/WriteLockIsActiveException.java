@@ -1,4 +1,6 @@
-package weloveclouds.server.store.exceptions;
+package weloveclouds.server.services.exceptions;
+
+import weloveclouds.server.store.exceptions.StorageException;
 
 public class WriteLockIsActiveException extends StorageException {
 

@@ -3,6 +3,7 @@ package weloveclouds.server.models.requests.kvecs;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 
 public class StopDataAccessService implements IKVECSRequest {
@@ -15,13 +16,13 @@ public class StopDataAccessService implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
-        if (dataAccessService == null) {
+        try {
+            dataAccessService.setServiceStatus(DataAccessServiceStatus.STOPPED);
+            return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
+        } catch (UninitializedServiceException ex) {
             return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
-                    .responseMessage("Service is not initialized yet.").build();
+                    .responseMessage(ex.getMessage()).build();
         }
-
-        dataAccessService.setServiceStatus(DataAccessServiceStatus.STOPPED);
-        return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
     }
 
 }
