@@ -15,7 +15,7 @@ public class Connection {
     private ServerConnectionInfo remoteServer;
     private Socket socket;
 
-    protected Connection(ConnectionBuilder builder) {
+    protected Connection(Builder builder) {
         this.remoteServer = builder.remoteServer;
         this.socket = builder.socket;
     }
@@ -62,16 +62,16 @@ public class Connection {
      *
      * @author Benedek
      */
-    public static class ConnectionBuilder {
+    public static class Builder {
         private ServerConnectionInfo remoteServer;
         private Socket socket;
 
-        public ConnectionBuilder remoteServer(ServerConnectionInfo remoteServer) {
+        public Builder remoteServer(ServerConnectionInfo remoteServer) {
             this.remoteServer = remoteServer;
             return this;
         }
 
-        public ConnectionBuilder socket(Socket socket) {
+        public Builder socket(Socket socket) {
             this.socket = socket;
             return this;
         }

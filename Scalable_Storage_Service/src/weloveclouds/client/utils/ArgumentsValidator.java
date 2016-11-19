@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.models.commands.Command;
 import weloveclouds.client.models.commands.LogLevel;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
+import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 /**
  * Validates the arguments of the different commands ({@link Command}).
@@ -117,7 +117,7 @@ public class ArgumentsValidator {
      */
     private static void validateSize(String field, int limit, String commandName, String fieldName)
             throws IllegalArgumentException {
-        byte[] key = field.getBytes(SerializedKVMessage.MESSAGE_ENCODING);
+        byte[] key = field.getBytes(SerializedMessage.MESSAGE_ENCODING);
         if (key.length > limit) {
             logWarning(commandName);
             throw new IllegalArgumentException(

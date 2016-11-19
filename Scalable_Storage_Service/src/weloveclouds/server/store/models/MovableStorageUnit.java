@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import weloveclouds.hashing.models.Hash;
@@ -26,7 +27,7 @@ public class MovableStorageUnit extends PersistedStorageUnit {
         super(other.entries, other.getPath());
     }
 
-    protected MovableStorageUnit(Map<String, String> entries, Path filePath) {
+    public MovableStorageUnit(Map<String, String> entries, Path filePath) {
         super(entries, filePath);
     }
 
@@ -93,6 +94,26 @@ public class MovableStorageUnit extends PersistedStorageUnit {
             }
         }
         return filtered;
+    }
+
+    public String toStringWithDelimiter(String betweenEntries, String insideEntry) {
+        StringBuilder sb = new StringBuilder();
+        for (Entry<String, String> entry : entries.entrySet()) {
+            KVEntry compact = new KVEntry(entry.getKey(), entry.getValue());
+            sb.append(compact.toStringWithDelimiter(insideEntry));
+            sb.append(betweenEntries);
+        }
+        sb.setLength(sb.length() - betweenEntries.length());
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        sb.append(toStringWithDelimiter("; ", "::"));
+        sb.append("]");
+        return sb.toString();
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.commands.LogLevel;
-import weloveclouds.server.models.ServerConfigurationContext;
+import weloveclouds.server.models.ServerCLIConfigurationContext;
 import weloveclouds.server.models.commands.ServerCommand;
 
 /**
@@ -52,7 +52,7 @@ public class ArgumentsValidator {
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateStartArguments(String[] arguments,
-            ServerConfigurationContext context) throws IllegalArgumentException {
+            ServerCLIConfigurationContext context) throws IllegalArgumentException {
         String command = "start";
         if (!isNullOrEmpty(arguments)) {
             logWarning(command);

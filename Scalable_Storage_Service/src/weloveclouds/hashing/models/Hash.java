@@ -23,7 +23,6 @@ public class Hash implements Comparable<Hash> {
         MIN_VALUE = new Hash(minValues);
     }
 
-
     private final byte[] hash;
 
     public Hash(byte[] hash) {
@@ -97,13 +96,49 @@ public class Hash implements Comparable<Hash> {
         return EQUALS;
     }
 
+    public String toStringWithDelimiter(String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hash) {
+            sb.append(String.valueOf(b));
+            sb.append(delimiter);
+        }
+        sb.setLength(sb.length() - delimiter.length());
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (byte b : hash) {
-            sb.append(CustomStringJoiner.join("", String.valueOf(b), "|"));
-        }
+        sb.append("[");
+        sb.append(toStringWithDelimiter("|"));
+        sb.append("]");
         return sb.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(hash);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Hash)) {
+            return false;
+        }
+        Hash other = (Hash) obj;
+        if (!Arrays.equals(hash, other.hash)) {
+            return false;
+        }
+        return true;
     }
 
 }

@@ -12,14 +12,14 @@ import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
-import weloveclouds.kvstore.models.IKVMessage;
-import weloveclouds.kvstore.models.IKVMessage.StatusType;
-import weloveclouds.kvstore.models.KVMessage;
-import weloveclouds.kvstore.serialization.IMessageDeserializer;
+import weloveclouds.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
+import weloveclouds.kvstore.models.messages.IKVMessage;
+import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
+import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.KVMessageDeserializer;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
+import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 /**
  * First version implementation of the Key-value store communication API. Simply forwards the method
@@ -33,8 +33,8 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
 
     private ServerConnectionInfo remoteServer;
     private ICommunicationApi serverCommunication;
-    private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
-    private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
+    private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
+    private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
     private Logger logger;
 
     private String address;
@@ -62,8 +62,8 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      * @param messageDeserializer to deserialize {@link KVMessage} from byte[].
      */
     public KVCommunicationApiV1(ICommunicationApi communicationApi,
-            IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer,
-            IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer) {
+            IMessageSerializer<SerializedMessage, KVMessage> messageSerializer,
+            IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer) {
         this.serverCommunication = communicationApi;
         this.messageSerializer = messageSerializer;
         this.messageDeserializer = messageDeserializer;
@@ -74,8 +74,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
     public void connect() throws Exception {
         if (remoteServer == null) {
             // only for test purposes in the testing package
-            remoteServer = new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(address)
-                    .port(port).build();
+            remoteServer = new ServerConnectionInfo.Builder().ipAddress(address).port(port).build();
         }
 
         serverCommunication.connectTo(remoteServer);
@@ -147,7 +146,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
     private void sendMessage(StatusType messageType, String key, String value)
             throws UnableToSendContentToServerException {
         KVMessage message =
-                new KVMessage.KVMessageBuilder().status(messageType).key(key).value(value).build();
+                new KVMessage.Builder().status(messageType).key(key).value(value).build();
         byte[] rawMessage = messageSerializer.serialize(message).getBytes();
         send(rawMessage);
         logger.debug(CustomStringJoiner.join(" ", message.toString(), "is sent."));

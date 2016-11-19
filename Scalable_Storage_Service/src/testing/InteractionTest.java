@@ -5,8 +5,8 @@ import org.junit.Test;
 import junit.framework.TestCase;
 import weloveclouds.communication.api.v1.IKVServerApi;
 import weloveclouds.communication.api.v1.KVCommunicationApiV1;
-import weloveclouds.kvstore.models.IKVMessage;
-import weloveclouds.kvstore.models.IKVMessage.StatusType;
+import weloveclouds.kvstore.models.messages.IKVMessage;
+import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 
 
 public class InteractionTest extends TestCase {
