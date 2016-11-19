@@ -1,5 +1,7 @@
 package weloveclouds.hashing.models;
 
+import java.util.Arrays;
+
 import weloveclouds.client.utils.CustomStringJoiner;
 
 public class Hash implements Comparable<Hash> {
@@ -21,11 +23,50 @@ public class Hash implements Comparable<Hash> {
         MIN_VALUE = new Hash(minValues);
     }
 
-
-    private byte[] hash;
+    private final byte[] hash;
 
     public Hash(byte[] hash) {
         this.hash = hash;
+    }
+
+    /**
+     * Creates a new Hash, whose value is incremented by one.
+     */
+    public Hash incrementByOne() {
+        byte[] hashArray = Arrays.copyOf(hash, hash.length);
+
+        for (int i = hashArray.length - 1; i >= 0; --i) {
+            byte previousValue = hashArray[i];
+            hashArray[i] = (byte) (previousValue + 1);
+
+            boolean overflowHappened =
+                    hashArray[i] == Byte.MIN_VALUE && previousValue == Byte.MAX_VALUE;
+            if (!overflowHappened) {
+                break;
+            }
+        }
+
+        return new Hash(hashArray);
+    }
+
+    /**
+     * Creates a new Hash, whose value is decremented by one.
+     */
+    public Hash decrementByOne() {
+        byte[] hashArray = Arrays.copyOf(hash, hash.length);
+
+        for (int i = hashArray.length - 1; i >= 0; --i) {
+            byte previousValue = hashArray[i];
+            hashArray[i] = (byte) (previousValue - 1);
+
+            boolean underflowHappened =
+                    hashArray[i] == Byte.MAX_VALUE && previousValue == Byte.MIN_VALUE;
+            if (!underflowHappened) {
+                break;
+            }
+        }
+
+        return new Hash(hashArray);
     }
 
     @Override
@@ -55,13 +96,49 @@ public class Hash implements Comparable<Hash> {
         return EQUALS;
     }
 
+    public String toStringWithDelimiter(String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hash) {
+            sb.append(String.valueOf(b));
+            sb.append(delimiter);
+        }
+        sb.setLength(sb.length() - delimiter.length());
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (byte b : hash) {
-            sb.append(CustomStringJoiner.join("", String.valueOf(b), "|"));
-        }
+        sb.append("[");
+        sb.append(toStringWithDelimiter("|"));
+        sb.append("]");
         return sb.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(hash);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Hash)) {
+            return false;
+        }
+        Hash other = (Hash) obj;
+        if (!Arrays.equals(hash, other.hash)) {
+            return false;
+        }
+        return true;
     }
 
 }

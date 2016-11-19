@@ -73,9 +73,13 @@ public class KVEntry implements Serializable {
         return true;
     }
 
+    public String toStringWithDelimiter(String delimiter) {
+        return CustomStringJoiner.join(delimiter, key, value);
+    }
+
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "{", key, "::", value, "}");
+        return CustomStringJoiner.join(" ", "{", toStringWithDelimiter("::"), "}");
     }
 
 }

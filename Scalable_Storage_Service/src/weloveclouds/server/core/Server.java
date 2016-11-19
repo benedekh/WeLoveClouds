@@ -9,10 +9,10 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.kvstore.models.KVMessage;
-import weloveclouds.kvstore.serialization.IMessageDeserializer;
+import weloveclouds.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
+import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.models.requests.RequestFactory;
 
 /**
@@ -22,13 +22,15 @@ import weloveclouds.server.models.requests.RequestFactory;
  * @author Benoit
  */
 public class Server extends AbstractServer {
+
+    private static final Logger LOGGER = Logger.getLogger(Server.class);
+
     private CommunicationApiFactory communicationApiFactory;
     private RequestFactory requestFactory;
-    private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
-    private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
+    private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
+    private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
 
     private ServerShutdownHook shutdownHook;
-    private Logger logger;
 
     private Server(ServerBuilder serverBuilder) throws IOException {
         super(serverBuilder.serverSocketFactory, serverBuilder.port);
@@ -36,7 +38,6 @@ public class Server extends AbstractServer {
         this.requestFactory = serverBuilder.requestFactory;
         this.messageSerializer = serverBuilder.messageSerializer;
         this.messageDeserializer = serverBuilder.messageDeserializer;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -47,8 +48,7 @@ public class Server extends AbstractServer {
 
             while (status == RUNNING) {
                 new SimpleConnectionHandler.SimpleConnectionBuilder()
-                        .connection(
-                                new Connection.ConnectionBuilder().socket(socket.accept()).build())
+                        .connection(new Connection.Builder().socket(socket.accept()).build())
                         .requestFactory(requestFactory)
                         .communicationApi(
                                 communicationApiFactory.createConcurrentCommunicationApiV1())
@@ -56,11 +56,11 @@ public class Server extends AbstractServer {
                         .messageDeserializer(messageDeserializer).build().handleConnection();
             }
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
         } catch (Throwable ex) {
-            logger.fatal(ex);
+            LOGGER.fatal(ex);
         } finally {
-            logger.info("Active server stopped.");
+            LOGGER.info("Active server stopped.");
         }
     }
 
@@ -78,10 +78,10 @@ public class Server extends AbstractServer {
      * 
      * @author Benedek
      */
-    private class ServerShutdownHook extends Thread {
+    private static class ServerShutdownHook extends Thread {
 
+        private static final Logger LOGGER = Logger.getLogger(ServerShutdownHook.class);
         private ServerSocket socket;
-        private Logger logger;
 
         public ServerShutdownHook(ServerSocket socket) {
             this.socket = socket;
@@ -92,7 +92,7 @@ public class Server extends AbstractServer {
             try {
                 socket.close();
             } catch (IOException e) {
-                logger.error(e);
+                LOGGER.error(e);
             }
         }
     }
@@ -106,8 +106,8 @@ public class Server extends AbstractServer {
         private CommunicationApiFactory communicationApiFactory;
         private ServerSocketFactory serverSocketFactory;
         private RequestFactory requestFactory;
-        private IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer;
-        private IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer;
+        private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
+        private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
         private int port;
 
         public ServerBuilder serverSocketFactory(ServerSocketFactory serverSocketFactory) {
@@ -132,13 +132,13 @@ public class Server extends AbstractServer {
         }
 
         public ServerBuilder messageSerializer(
-                IMessageSerializer<SerializedKVMessage, KVMessage> messageSerializer) {
+                IMessageSerializer<SerializedMessage, KVMessage> messageSerializer) {
             this.messageSerializer = messageSerializer;
             return this;
         }
 
         public ServerBuilder messageDeserializer(
-                IMessageDeserializer<KVMessage, SerializedKVMessage> messageDeserializer) {
+                IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return this;
         }

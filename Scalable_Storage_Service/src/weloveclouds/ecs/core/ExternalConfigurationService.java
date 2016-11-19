@@ -15,7 +15,7 @@ import weloveclouds.ecs.models.tasks.InitialiseNodeTask;
 import weloveclouds.ecs.services.ISecureShellService;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.ListUtils;
-import weloveclouds.kvstore.serialization.IMessageDeserializer;
+import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 
 /**

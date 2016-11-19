@@ -19,16 +19,14 @@ public enum Command {
 
     private static final Logger LOGGER = Logger.getLogger(Command.class);
 
-    private static final Map<String, Command> commandNames = getCommandNames();
+    private String name;
 
-    private String customName;
-
-    Command(String customName) {
-        this.customName = customName;
+    Command(String name) {
+        this.name = name;
     }
 
-    private String getCustomName() {
-        return customName;
+    private String getName() {
+        return name;
     }
 
     /**
@@ -37,7 +35,7 @@ public enum Command {
     private static Map<String, Command> getCommandNames() {
         Map<String, Command> names = new TreeMap<>();
         for (Command command : Command.values()) {
-            names.put(command.getCustomName(), command);
+            names.put(command.getName(), command);
         }
         return names;
     }
@@ -46,13 +44,18 @@ public enum Command {
      * Converts the parameter to a command if its name matches with one of the commands. Otherwise
      * it returns {@link #DEFAULT}
      */
-    public static Command fromString(String command) {
-        Command recognized = (command == null || !commandNames.containsKey(command) ? DEFAULT
-                : commandNames.get(command));
-        if (recognized == DEFAULT) {
-            LOGGER.warn(CustomStringJoiner.join("", "Command (", command, ") is not recognized."));
+    public static Command createCommandFromString(String commandAsString) {
+        Map<String, Command> commandNames = getCommandNames();
+        Command recognizedCommand =
+                (commandAsString == null || !commandNames.containsKey(commandAsString) ? DEFAULT
+                        : commandNames.get(commandAsString));
+
+        if (recognizedCommand == DEFAULT) {
+            LOGGER.warn(CustomStringJoiner.join("", "Command (", commandAsString,
+                    ") is not recognized."));
         }
-        return recognized;
+
+        return recognizedCommand;
     }
 
 }

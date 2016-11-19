@@ -35,8 +35,7 @@ public class ArgumentsValidatorTest extends TestCase {
         try {
             String[] connectCommandArguments = {INVALID_IP_ADDRESS, VALID_NETWORK_PORT_NUMBER};
             ArgumentsValidator.validateConnectArguments(connectCommandArguments,
-                    new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                            .ipAddress(INVALID_IP_ADDRESS)
+                    new ServerConnectionInfo.Builder().ipAddress(INVALID_IP_ADDRESS)
                             .port(Integer.parseInt(VALID_NETWORK_PORT_NUMBER)).build());
         } catch (Exception e) {
             ex = e;
@@ -54,14 +53,12 @@ public class ArgumentsValidatorTest extends TestCase {
 
             try {
                 ArgumentsValidator.validateConnectArguments(connectCommandArguments,
-                        new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                                .ipAddress(VALID_IP_ADDRESS)
+                        new ServerConnectionInfo.Builder().ipAddress(VALID_IP_ADDRESS)
                                 .port(Integer.parseInt(INVALID_NETWORK_PORT_LOWER_LIMIT)).build());
             } catch (IllegalArgumentException e) {
                 hasThrown = true;
                 ArgumentsValidator.validateConnectArguments(connectCommandArguments,
-                        new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                                .ipAddress(VALID_IP_ADDRESS)
+                        new ServerConnectionInfo.Builder().ipAddress(VALID_IP_ADDRESS)
                                 .port(Integer.parseInt(INVALID_NETWORK_PORT_UPPER_LIMIT)).build());
             } finally {
                 assertThat(hasThrown).isTrue();
@@ -83,8 +80,8 @@ public class ArgumentsValidatorTest extends TestCase {
             Integer nullIntValue = null;
 
             ArgumentsValidator.validateConnectArguments(NULL_COMMAND_ARGUMENTS,
-                    new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                            .ipAddress(nullStringValue).port(nullIntValue).build());
+                    new ServerConnectionInfo.Builder().ipAddress(nullStringValue).port(nullIntValue)
+                            .build());
         } catch (Exception e) {
             ex = e;
         } finally {

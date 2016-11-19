@@ -6,7 +6,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.server.exceptions.ServerSideException;
+import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.utils.ArgumentsValidator;
 
 /**

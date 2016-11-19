@@ -16,13 +16,12 @@ import weloveclouds.server.store.exceptions.StorageException;
  */
 public class LRUStrategy implements DisplacementStrategy {
 
+    private static final Logger LOGGER = Logger.getLogger(LRUStrategy.class);
+    
     private Deque<String> recentKeys;
-
-    private Logger logger;
 
     public LRUStrategy() {
         this.recentKeys = new ArrayDeque<>();
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -30,12 +29,12 @@ public class LRUStrategy implements DisplacementStrategy {
         try {
             // the last element of the queue is the least recently used one
             String displaced = recentKeys.removeLast();
-            logger.debug(CustomStringJoiner.join(" ", displaced,
+            LOGGER.debug(CustomStringJoiner.join(" ", displaced,
                     "to be removed from cache by LRU strategy."));
             return displaced;
         } catch (NoSuchElementException ex) {
             String errorMessage = "LRU strategy store is empty so it cannot remove anything.";
-            logger.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         }
     }
@@ -44,9 +43,9 @@ public class LRUStrategy implements DisplacementStrategy {
     public synchronized void put(String key) {
         try {
             recentKeys.addFirst(key);
-            logger.debug(CustomStringJoiner.join(" ", key, "is added to the LRU strategy store."));
+            LOGGER.debug(CustomStringJoiner.join(" ", key, "is added to the LRU strategy store."));
         } catch (NullPointerException ex) {
-            logger.error("Key cannot be null for put in LRU strategy.");
+            LOGGER.error("Key cannot be null for put in LRU strategy.");
         }
     }
 
@@ -57,10 +56,10 @@ public class LRUStrategy implements DisplacementStrategy {
             // because it was most recently used
             recentKeys.remove(key);
             recentKeys.addFirst(key);
-            logger.debug(CustomStringJoiner.join(" ", key,
+            LOGGER.debug(CustomStringJoiner.join(" ", key,
                     "is the most recently used in the LRU strategy store."));
         } catch (NullPointerException ex) {
-            logger.error("Key cannot be null for get in LRU strategy.");
+            LOGGER.error("Key cannot be null for get in LRU strategy.");
         }
     }
 
@@ -69,11 +68,11 @@ public class LRUStrategy implements DisplacementStrategy {
         try {
             boolean isRemoved = recentKeys.remove(key);
             if (isRemoved) {
-                logger.debug(CustomStringJoiner.join(" ", key,
+                LOGGER.debug(CustomStringJoiner.join(" ", key,
                         "is removed from the LRU strategy store."));
             }
         } catch (NullPointerException ex) {
-            logger.error("Key cannot be null for remove in LRU strategy.");
+            LOGGER.error("Key cannot be null for remove in LRU strategy.");
         }
     }
 

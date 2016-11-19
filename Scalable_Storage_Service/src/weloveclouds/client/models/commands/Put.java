@@ -9,7 +9,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.client.utils.PutCommandUtils;
 import weloveclouds.server.api.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
-import weloveclouds.kvstore.models.IKVMessage;
+import weloveclouds.kvstore.models.messages.IKVMessage;
 
 /**
  * Put command which means the client would like to send a key along with a value to the server.
@@ -20,7 +20,7 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Put.class);
 
     /**
      * @param arguments contains the key in the {@link #KEY_INDEX} position and the value is merged
@@ -30,18 +30,17 @@ public class Put extends AbstractKVCommunicationApiCommand {
      */
     public Put(String[] arguments, IKVCommunicationApi communicationApi) {
         super(arguments, communicationApi);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ClientSideException {
         try {
-            logger.info("Executing put command.");
+            LOGGER.info("Executing put command.");
             String key = arguments[KEY_INDEX];
             String value = PutCommandUtils.mergeValuesToOneString(VALUE_INDEX, arguments);
 
             IKVMessage response = communicationApi.put(key, value);
-            logger.debug(response.toString());
+            LOGGER.debug(response.toString());
 
             switch (response.getStatus()) {
                 case PUT_UPDATE:
@@ -66,10 +65,10 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     break;
             }
         } catch (Exception e) {
-            logger.error(e);
+            LOGGER.error(e);
             throw new ClientSideException(e.getMessage(), e);
         } finally {
-            logger.info("Put command execution finished.");
+            LOGGER.info("Put command execution finished.");
         }
     }
 

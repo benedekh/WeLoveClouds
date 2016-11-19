@@ -1,5 +1,6 @@
 package weloveclouds.server.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -48,6 +49,15 @@ public class FileUtility {
      */
     public static void deleteFile(Path path) throws IOException {
         Files.delete(path);
+    }
+
+    /**
+     * Creates a dummy, but valid path which locates the folder of this ({@link FileUtility}) class.
+     */
+    public static Path createDummyPath() {
+        return new File(
+                FileUtility.class.getProtectionDomain().getCodeSource().getLocation().getFile())
+                        .toPath();
     }
 
 }

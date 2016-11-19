@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.kvstore.serialization.KVMessageDeserializer;
+import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerCLIHandler;
@@ -17,6 +17,7 @@ import weloveclouds.server.core.ServerSocketFactory;
 import weloveclouds.server.models.commands.ServerCommandFactory;
 import weloveclouds.server.models.requests.RequestFactory;
 import weloveclouds.server.services.DataAccessService;
+import weloveclouds.server.store.ControllablePersistentStorage;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
@@ -88,7 +89,8 @@ public class KVServer {
         }
 
         KVCache cache = new KVCache(cacheSize, displacementStrategy);
-        KVPersistentStorage persistentStorage = new KVPersistentStorage(defaultStoragePath);
+        KVPersistentStorage persistentStorage =
+                new ControllablePersistentStorage(defaultStoragePath);
         DataAccessService dataAccessService = new DataAccessService(cache, persistentStorage);
 
         try {

@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.client.models.commands.Connect;
-import weloveclouds.server.models.ServerConfigurationContext;
+import weloveclouds.server.models.ServerCLIConfigurationContext;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
@@ -18,12 +18,13 @@ import weloveclouds.server.models.ServerConfigurationContext;
  * @author Benedek
  */
 public class ServerCommandFactory {
-    private ServerConfigurationContext context;
-    private Logger logger;
+
+    private static final Logger LOGGER = Logger.getLogger(ServerCommandFactory.class);
+
+    private ServerCLIConfigurationContext context;
 
     public ServerCommandFactory() {
-        this.context = new ServerConfigurationContext();
-        this.logger = Logger.getLogger(getClass());
+        this.context = new ServerCLIConfigurationContext();
     }
 
     /**
@@ -66,7 +67,7 @@ public class ServerCommandFactory {
                 recognizedCommand = new Quit(arguments);
                 break;
             default:
-                logger.info(join(" ", "Unrecognized command:", userCommand.toString()));
+                LOGGER.info(join(" ", "Unrecognized command:", userCommand.toString()));
                 recognizedCommand = new DefaultCommand(null);
                 break;
         }
