@@ -10,3 +10,4 @@ public interface ICommand extends IValidatable {
 
     void execute() throws ClientSideException;
 }
+

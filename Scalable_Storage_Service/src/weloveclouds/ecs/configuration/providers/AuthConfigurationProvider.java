@@ -21,15 +21,7 @@ public class AuthConfigurationProvider {
     private AuthInfos authenticationInfos;
 
     private AuthConfigurationProvider() throws IOException, InvalidAuthenticationInfosException {
-        try (FileInputStream authPropertiesFile = new FileInputStream(AUTH_PROPERTIES_FILE_PATH)) {
-            properties = new Properties();
-            properties.load(authPropertiesFile);
-            authenticationInfos = new AuthInfos.AuthInfosBuilder()
-                    .username(properties.getProperty(USERNAME_PROPERTIES))
-                    .password(properties.getProperty(PASSWORD_PROPERTIES))
-                    .privateKey(properties.getProperty(PRIVATE_AUTH_KEY_PATH_PROPERTIES))
-                    .build();
-        }
+        loadConfiguration();
     }
 
     public String getUsername() {
@@ -42,6 +34,22 @@ public class AuthConfigurationProvider {
 
     public String getAuthPrivateKeyFilePath() {
         return authenticationInfos.getPrivateKey();
+    }
+
+    public void reloadConfiguration() throws IOException, InvalidAuthenticationInfosException{
+        loadConfiguration();
+    }
+
+    private void loadConfiguration() throws IOException, InvalidAuthenticationInfosException{
+        try (FileInputStream authPropertiesFile = new FileInputStream(AUTH_PROPERTIES_FILE_PATH)) {
+            properties = new Properties();
+            properties.load(authPropertiesFile);
+            authenticationInfos = new AuthInfos.AuthInfosBuilder()
+                    .username(properties.getProperty(USERNAME_PROPERTIES))
+                    .password(properties.getProperty(PASSWORD_PROPERTIES))
+                    .privateKey(properties.getProperty(PRIVATE_AUTH_KEY_PATH_PROPERTIES))
+                    .build();
+        }
     }
 
     public static AuthConfigurationProvider getInstance() throws IOException, InvalidAuthenticationInfosException {

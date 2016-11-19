@@ -1,24 +1,28 @@
-package weloveclouds.ecs.models.metadata;
+package weloveclouds.ecs.models.repository;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
+
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.IDLE;
 
 /**
  * Created by Benoit on 2016-11-16.
  */
 public class StorageNode {
-    private String Id;
+    private String id;
+    private StorageNodeStatus status;
     private ServerConnectionInfo serverConnectionInfo;
     private HashRange hashRange;
 
     public StorageNode(String id, ServerConnectionInfo serverConnectionInfo, HashRange hashRange) {
-        Id = id;
+        this.id = id;
         this.serverConnectionInfo = serverConnectionInfo;
         this.hashRange = hashRange;
+        this.status = IDLE;
     }
 
     public String getId() {
-        return Id;
+        return id;
     }
 
     public String getIpAddress() {
@@ -35,5 +39,9 @@ public class StorageNode {
 
     public void setHashRange(HashRange hashRange) {
         this.hashRange = hashRange;
+    }
+
+    public StorageNodeStatus getStatus() {
+        return status;
     }
 }
