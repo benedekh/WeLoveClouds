@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.log4j.Level;
 import weloveclouds.server.utils.LogSetup;
-import weloveclouds.ecs.configuration.providers.AuthConfigurationProvider;
 
 public class ECSClient {    
     /**
@@ -13,8 +12,6 @@ public class ECSClient {
      * @param args is discarded so far
      */
     public static void main(String[] args){
-        AuthConfigurationProvider auth = AuthConfigurationProvider.getInstance();
-        System.out.println(auth.getPassword());
         String logFile = "logs/client.log";
         try {
             new LogSetup(logFile, Level.OFF);
@@ -24,5 +21,3 @@ public class ECSClient {
         }
    }
 }
-
-

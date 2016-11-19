@@ -14,9 +14,9 @@ public class AuthenticableCommandExecutionRequest<E> implements IAuthenticable {
     }
 
     @Override
-    public RemoteCommandExecutionRequest withAuthInfos(AuthInfos authInfos) {
+    public IExecutableRemoteCommandRequest withAuthInfos(AuthInfos authInfos) {
         this.authInfos = authInfos;
-        return new RemoteCommandExecutionRequest(this);
+        return new ExecutableRemoteCommandExecutionRequest(this);
     }
 
     public IRemoteCommand getCommand() {
