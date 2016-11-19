@@ -53,8 +53,7 @@ public class UserInputParser {
                 LOGGER.debug(CustomStringJoiner.join(" ", debugMessages));
             }
         }
-        return new ParsedUserInput.ParsedUserInputBuilder().command(command).arguments(arguments)
-                .build();
+        return new ParsedUserInput.Builder().command(command).arguments(arguments).build();
     }
 
     /**
@@ -64,7 +63,7 @@ public class UserInputParser {
      *
      * @return the IP address and port stored in one server connection information object
      * @throws UnknownHostException see
-     *         {@link ServerConnectionInfo.ServerConnectionInfoBuilder#ipAddress(java.net.InetAddress)}
+     *         {@link ServerConnectionInfo.Builder#ipAddress(java.net.InetAddress)}
      */
     public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments)
             throws UnknownHostException {
@@ -74,8 +73,7 @@ public class UserInputParser {
             int port = Integer.parseInt(arguments[PORT_INDEX]);
 
             ServerConnectionInfo connectionInfo =
-                    new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress(ipAddress)
-                            .port(port).build();
+                    new ServerConnectionInfo.Builder().ipAddress(ipAddress).port(port).build();
             LOGGER.debug(CustomStringJoiner.join(" ", "Connection parameters are extracted",
                     connectionInfo.toString()));
             return connectionInfo;

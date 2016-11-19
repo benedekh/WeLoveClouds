@@ -6,11 +6,11 @@ import java.nio.file.Path;
 import org.apache.log4j.Logger;
 
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.kvstore.serialization.KVMessageDeserializer;
+import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerSocketFactory;
-import weloveclouds.server.models.ServerConfigurationContext;
+import weloveclouds.server.models.ServerCLIConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.models.requests.RequestFactory;
 import weloveclouds.server.services.DataAccessService;
@@ -27,13 +27,13 @@ import weloveclouds.server.utils.ArgumentsValidator;
  */
 public class Start extends AbstractServerCommand {
 
-    private ServerConfigurationContext context;
+    private ServerCLIConfigurationContext context;
     private Logger logger;
 
     /**
      * @param context contains the server parameter configuration
      */
-    public Start(String[] arguments, ServerConfigurationContext context) {
+    public Start(String[] arguments, ServerCLIConfigurationContext context) {
         super(arguments);
         this.context = context;
         this.logger = Logger.getLogger(getClass());

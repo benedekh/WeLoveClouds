@@ -10,7 +10,7 @@ import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
  * 
  * @author Benedek
  */
-public class ServerConfigurationContext {
+public class ServerCLIConfigurationContext {
 
     private int port;
     private int cacheSize;
@@ -18,7 +18,7 @@ public class ServerConfigurationContext {
     private Path storagePath;
     private boolean isStarted;
 
-    public ServerConfigurationContext() {
+    public ServerCLIConfigurationContext() {
         this.port = -1;
         this.cacheSize = -1;
     }

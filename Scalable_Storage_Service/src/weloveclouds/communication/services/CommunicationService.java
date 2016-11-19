@@ -32,7 +32,7 @@ public class CommunicationService implements ICommunicationService {
      * @param socketFactory a factory to create a socket for connection
      */
     public CommunicationService(SocketFactory socketFactory) {
-        this.connectionToEndpoint = new Connection.ConnectionBuilder().build();
+        this.connectionToEndpoint = new Connection.Builder().build();
         this.socketFactory = socketFactory;
         this.logger = Logger.getLogger(getClass());
     }
@@ -70,7 +70,7 @@ public class CommunicationService implements ICommunicationService {
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
         logger.debug(CustomStringJoiner.join(" ", "Trying to connect to", remoteServer.toString()));
-        connectionToEndpoint = new Connection.ConnectionBuilder().remoteServer(remoteServer)
+        connectionToEndpoint = new Connection.Builder().remoteServer(remoteServer)
                 .socket(socketFactory.createTcpSocketFromInfo(remoteServer)).build();
 
         // create shutdown hook to automatically close the connection
