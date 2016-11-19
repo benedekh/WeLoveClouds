@@ -14,8 +14,8 @@ public class Start extends AbstractEcsApiCommand{
     
     private static final Logger LOGGER = Logger.getLogger(Start.class);
     
-    public Start(String[] arguments, IKVEcsApi ecsApi) {
-        super(arguments, ecsApi);
+    public Start(String[] arguments, IKVEcsApi ecsCommunicationApi) {
+        super(arguments, ecsCommunicationApi);
     }
 
     @Override

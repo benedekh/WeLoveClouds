@@ -2,12 +2,16 @@ package weloveclouds.ecs.models.commands;
 
 import org.apache.log4j.Logger;
 
-public class Quit extends AbstractCommand {
+import weloveclouds.ecs.api.IKVEcsApi;
 
+public class Quit extends AbstractEcsApiCommand {
+
+    /*  Quit extends AbstractEcsApiCommand as there may still be services running that need to be
+        terminated when the admin decides to quit the ecs*/
     private static final Logger LOGGER = Logger.getLogger(Quit.class);
     
-    public Quit(String[] arguments) {
-        super(arguments);
+    public Quit(String[] arguments, IKVEcsApi ecsCommunicationApi) {
+        super(arguments, ecsCommunicationApi);
     }
 
     

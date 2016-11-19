@@ -14,14 +14,14 @@ import weloveclouds.ecs.models.commands.ICommand;
  * @author adapted from AbstractedCommunicationApiCommand by hb
  */
 public abstract class AbstractEcsApiCommand extends AbstractCommand implements ICommand {
-    protected IKVEcsApi ecsApi; //<-- this remains to be implemented
+    protected IKVEcsApi ecsCommunicationApi; //<-- this remains to be implemented
     /**
      * @param arguments        the arguments of the command
      * @param communicationApi a reference to the communication module
      */
-    public AbstractEcsApiCommand(String[] arguments, IKVEcsApi ecsApi) {
+    public AbstractEcsApiCommand(String[] arguments, IKVEcsApi ecsCommunicationApi) {
         super(arguments);
-        this.ecsApi = ecsApi;
+        this.ecsCommunicationApi = ecsCommunicationApi;
     }
 }
 

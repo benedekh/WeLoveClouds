@@ -14,8 +14,8 @@ public class Stop extends AbstractEcsApiCommand{
 
     private static final Logger LOGGER = Logger.getLogger(Stop.class);
     
-    public Stop(String[] arguments, IKVEcsApi escApi) {
-        super(arguments, escApi);
+    public Stop(String[] arguments, IKVEcsApi escCommunicationApi) {
+        super(arguments, escCommunicationApi);
     }
 
     @Override

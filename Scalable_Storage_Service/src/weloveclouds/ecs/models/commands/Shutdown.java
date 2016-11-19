@@ -14,8 +14,8 @@ public class Shutdown extends AbstractEcsApiCommand{
    
     private static final Logger LOGGER = Logger.getLogger(Shutdown.class);
     
-    public Shutdown(String[] arguments, IKVEcsApi ecsApi) {
-        super(arguments, ecsApi);
+    public Shutdown(String[] arguments, IKVEcsApi ecsCommunicationApi) {
+        super(arguments, ecsCommunicationApi);
     }
 
     @Override

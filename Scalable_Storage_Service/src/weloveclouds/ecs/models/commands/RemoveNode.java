@@ -14,8 +14,8 @@ public class RemoveNode extends AbstractEcsApiCommand{
     
     private static final Logger LOGGER = Logger.getLogger(RemoveNode.class);
     
-    public RemoveNode(String[] arguments, IKVEcsApi ecsApi) {
-        super(arguments, ecsApi);
+    public RemoveNode(String[] arguments, IKVEcsApi ecsCommunicationApi) {
+        super(arguments, ecsCommunicationApi);
 
     }
 

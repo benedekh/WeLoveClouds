@@ -13,8 +13,8 @@ public class AddNode extends AbstractEcsApiCommand{
 
     private static Logger logger;
     
-    public AddNode(String[] arguments, IKVEcsApi ecsApi) {
-        super(arguments, ecsApi);
+    public AddNode(String[] arguments, IKVEcsApi ecsCommunicationApi) {
+        super(arguments, ecsCommunicationApi);
         logger = Logger.getLogger(getClass());
     }
 

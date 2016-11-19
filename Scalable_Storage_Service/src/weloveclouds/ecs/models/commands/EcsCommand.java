@@ -45,13 +45,13 @@ public enum EcsCommand {
      * Converts the parameter to a command if its name matches with one of the commands. Otherwise
      * it returns {@link #DEFAULT}
      */
-    public static EcsCommand convertToString(String command) {
+    public static EcsCommand fromString(String command) {
         Map<String, EcsCommand> commandNames = getCommandNames();
-        EcsCommand recognized = (command == null || !commandNames.containsKey(command) ? DEFAULT
+        EcsCommand recognizedCommand = (command == null || !commandNames.containsKey(command) ? DEFAULT
                 : commandNames.get(command));
-        if (recognized == DEFAULT) {
+        if (recognizedCommand == DEFAULT) {
             LOGGER.warn(CustomStringJoiner.join("", "Command (", command, ") is not recognized."));
         }
-        return recognized;
+        return recognizedCommand;
     }
 }
