@@ -9,11 +9,11 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
+import weloveclouds.server.core.requests.IExecutable;
+import weloveclouds.server.core.requests.IRequestFactory;
 
 /**
  * A handler for a client connected to the {@link Server}. It receives and interprets different
@@ -22,17 +22,18 @@ import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
  * 
  * @author Benoit
  */
-public class SimpleConnectionHandler extends Thread implements IConnectionHandler {
+public class SimpleConnectionHandler<M, R extends IExecutable<M>> extends Thread
+        implements IConnectionHandler {
 
     private static final Logger LOGGER = Logger.getLogger(SimpleConnectionHandler.class);
 
     private IConcurrentCommunicationApi communicationApi;
-    private KVClientRequestFactory requestFactory;
+    private IRequestFactory<M, R> requestFactory;
     private Connection connection;
-    private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
-    private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
+    private IMessageSerializer<SerializedMessage, M> messageSerializer;
+    private IMessageDeserializer<M, SerializedMessage> messageDeserializer;
 
-    private SimpleConnectionHandler(SimpleConnectionBuilder simpleConnectionBuilder) {
+    protected SimpleConnectionHandler(Builder<M, R> simpleConnectionBuilder) {
         this.communicationApi = simpleConnectionBuilder.communicationApi;
         this.connection = simpleConnectionBuilder.connection;
         this.requestFactory = simpleConnectionBuilder.requestFactory;
@@ -51,12 +52,12 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
 
         while (connection.isConnected()) {
             try {
-                KVMessage receivedMessage =
+                M receivedMessage =
                         messageDeserializer.deserialize(communicationApi.receiveFrom(connection));
                 LOGGER.debug(CustomStringJoiner.join(" ", "Message received:",
                         receivedMessage.toString()));
 
-                KVMessage response =
+                M response =
                         requestFactory.createRequestFromReceivedMessage(receivedMessage).execute();
                 communicationApi.send(messageSerializer.serialize(response).getBytes(), connection);
 
@@ -76,43 +77,42 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
      * 
      * @author Benoit
      */
-    public static class SimpleConnectionBuilder {
+    public static class Builder<M, R extends IExecutable<M>> {
         private IConcurrentCommunicationApi communicationApi;
-        private KVClientRequestFactory requestFactory;
+        private IRequestFactory<M, R> requestFactory;
         private Connection connection;
-        private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
-        private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
+        private IMessageSerializer<SerializedMessage, M> messageSerializer;
+        private IMessageDeserializer<M, SerializedMessage> messageDeserializer;
 
-        public SimpleConnectionBuilder connection(Connection connection) {
+        public Builder<M, R> connection(Connection connection) {
             this.connection = connection;
             return this;
         }
 
-        public SimpleConnectionBuilder requestFactory(KVClientRequestFactory requestFactory) {
+        public Builder<M, R> requestFactory(IRequestFactory<M, R> requestFactory) {
             this.requestFactory = requestFactory;
             return this;
         }
 
-        public SimpleConnectionBuilder communicationApi(
-                IConcurrentCommunicationApi communicationApi) {
+        public Builder<M, R> communicationApi(IConcurrentCommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
             return this;
         }
 
-        public SimpleConnectionBuilder messageSerializer(
-                IMessageSerializer<SerializedMessage, KVMessage> messageSerializer) {
+        public Builder<M, R> messageSerializer(
+                IMessageSerializer<SerializedMessage, M> messageSerializer) {
             this.messageSerializer = messageSerializer;
             return this;
         }
 
-        public SimpleConnectionBuilder messageDeserializer(
-                IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer) {
+        public Builder<M, R> messageDeserializer(
+                IMessageDeserializer<M, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return this;
         }
 
-        public SimpleConnectionHandler build() {
-            return new SimpleConnectionHandler(this);
+        public SimpleConnectionHandler<M, R> build() {
+            return new SimpleConnectionHandler<M, R>(this);
         }
     }
 }

@@ -10,16 +10,17 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
+import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerSocketFactory;
 import weloveclouds.server.models.commands.ServerCommandFactory;
+import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.services.DataAccessService;
-import weloveclouds.server.store.MovablePersistentStorage;
-import weloveclouds.server.store.KVCache;
-import weloveclouds.server.store.KVPersistentStorage;
+import weloveclouds.server.services.DataAccessServiceFactory;
+import weloveclouds.server.services.models.DataAccessServiceInitializationInfo;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.FIFOStrategy;
 import weloveclouds.server.store.cache.strategy.LFUStrategy;
@@ -43,7 +44,8 @@ public class KVServer {
         String logFile = "logs/server.log";
         try {
             new LogSetup(logFile, Level.OFF);
-            ServerCLIHandler cli = new ServerCLIHandler(System.in, new ServerCommandFactory());
+            ServerCLIHandler cli = new ServerCLIHandler(System.in,
+                    new ServerCommandFactory(new DataAccessServiceFactory()));
             cli.run();
         } catch (IOException ex) {
             System.err.println(CustomStringJoiner.join(" ", "Log file cannot be created on path ",
@@ -88,18 +90,22 @@ public class KVServer {
                     "Invalid port number. Valid value is between 0 and 65535.");
         }
 
-        KVCache cache = new KVCache(cacheSize, displacementStrategy);
-        KVPersistentStorage persistentStorage =
-                new MovablePersistentStorage(defaultStoragePath);
-        DataAccessService dataAccessService = new DataAccessService(cache, persistentStorage);
+        DataAccessServiceInitializationInfo initializationContext =
+                new DataAccessServiceInitializationInfo.Builder().cacheSize(cacheSize)
+                        .displacementStrategy(displacementStrategy)
+                        .rootFolderPath(defaultStoragePath).build();
+
+        DataAccessService dataAccessService = new DataAccessServiceFactory()
+                .createServiceWithPersistentStorage(initializationContext);
 
         try {
-            Server server = new Server.ServerBuilder().port(port)
-                    .serverSocketFactory(new ServerSocketFactory())
-                    .requestFactory(new KVClientRequestFactory(dataAccessService))
-                    .communicationApiFactory(new CommunicationApiFactory())
-                    .messageSerializer(new KVMessageSerializer())
-                    .messageDeserializer(new KVMessageDeserializer()).build();
+            Server<KVMessage, IKVClientRequest> server =
+                    new Server.Builder<KVMessage, IKVClientRequest>().port(port)
+                            .serverSocketFactory(new ServerSocketFactory())
+                            .requestFactory(new KVClientRequestFactory(dataAccessService))
+                            .communicationApiFactory(new CommunicationApiFactory())
+                            .messageSerializer(new KVMessageSerializer())
+                            .messageDeserializer(new KVMessageDeserializer()).build();
             server.start();
         } catch (IOException e) {
             Logger.getLogger(getClass()).error(e);

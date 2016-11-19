@@ -8,6 +8,7 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.server.core.requests.IRequestFactory;
 import weloveclouds.server.services.DataAccessServiceFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
 
@@ -18,7 +19,7 @@ import weloveclouds.server.services.IMovableDataAccessService;
  *
  * @author Benedek
  */
-public class KVECSRequestFactory {
+public class KVECSRequestFactory  implements IRequestFactory<KVAdminMessage, IKVECSRequest> {
 
     private static final Logger LOGGER = Logger.getLogger(KVECSRequestFactory.class);
 
@@ -36,6 +37,7 @@ public class KVECSRequestFactory {
         this.communicationApi = communicationApiFactory.createCommunicationApiV1();
     }
 
+    @Override
     public IKVECSRequest createRequestFromReceivedMessage(KVAdminMessage receivedMessage) {
         IKVECSRequest request = null;
         StatusType status = receivedMessage.getStatus();
