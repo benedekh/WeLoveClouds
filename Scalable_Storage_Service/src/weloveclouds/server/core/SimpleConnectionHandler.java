@@ -13,7 +13,7 @@ import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.models.requests.DataServiceRequestFactory;
+import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
 
 /**
  * A handler for a client connected to the {@link Server}. It receives and interprets different
@@ -24,7 +24,7 @@ import weloveclouds.server.models.requests.DataServiceRequestFactory;
  */
 public class SimpleConnectionHandler extends Thread implements IConnectionHandler {
     private IConcurrentCommunicationApi communicationApi;
-    private DataServiceRequestFactory requestFactory;
+    private KVClientRequestFactory requestFactory;
     private Connection connection;
     private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
     private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
@@ -78,7 +78,7 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
      */
     public static class SimpleConnectionBuilder {
         private IConcurrentCommunicationApi communicationApi;
-        private DataServiceRequestFactory requestFactory;
+        private KVClientRequestFactory requestFactory;
         private Connection connection;
         private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
         private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
@@ -88,7 +88,7 @@ public class SimpleConnectionHandler extends Thread implements IConnectionHandle
             return this;
         }
 
-        public SimpleConnectionBuilder requestFactory(DataServiceRequestFactory requestFactory) {
+        public SimpleConnectionBuilder requestFactory(KVClientRequestFactory requestFactory) {
             this.requestFactory = requestFactory;
             return this;
         }

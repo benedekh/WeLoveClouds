@@ -13,7 +13,7 @@ import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.models.requests.DataServiceRequestFactory;
+import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
 
 /**
  * An exact KV server instance which accepts messages over the network and can handle multiple
@@ -23,7 +23,7 @@ import weloveclouds.server.models.requests.DataServiceRequestFactory;
  */
 public class Server extends AbstractServer {
     private CommunicationApiFactory communicationApiFactory;
-    private DataServiceRequestFactory requestFactory;
+    private KVClientRequestFactory requestFactory;
     private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
     private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
 
@@ -104,7 +104,7 @@ public class Server extends AbstractServer {
     public static class ServerBuilder {
         private CommunicationApiFactory communicationApiFactory;
         private ServerSocketFactory serverSocketFactory;
-        private DataServiceRequestFactory requestFactory;
+        private KVClientRequestFactory requestFactory;
         private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
         private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
         private int port;
@@ -119,7 +119,7 @@ public class Server extends AbstractServer {
             return this;
         }
 
-        public ServerBuilder requestFactory(DataServiceRequestFactory requestFactory) {
+        public ServerBuilder requestFactory(KVClientRequestFactory requestFactory) {
             this.requestFactory = requestFactory;
             return this;
         }

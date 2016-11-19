@@ -1,4 +1,4 @@
-package weloveclouds.server.models.requests;
+package weloveclouds.server.models.requests.kvclient;
 
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.PUT_ERROR;
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.PUT_SUCCESS;
@@ -20,7 +20,7 @@ import weloveclouds.server.store.exceptions.StorageException;
  * 
  * @author Benoit
  */
-public class Put implements IDataServiceRequest {
+public class Put implements IKVClientRequest {
     private IDataAccessService dataAccessService;
     private String key;
     private String value;

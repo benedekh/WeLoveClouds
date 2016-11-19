@@ -1,4 +1,4 @@
-package weloveclouds.server.models.requests;
+package weloveclouds.server.models.requests.kvclient;
 
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_ERROR;
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
@@ -17,7 +17,7 @@ import weloveclouds.server.store.exceptions.StorageException;
  * 
  * @author Benoit
  */
-public class Get implements IDataServiceRequest {
+public class Get implements IKVClientRequest {
     private IDataAccessService dataAccessService;
     private String key;
 

@@ -1,6 +1,6 @@
 package weloveclouds.server.services;
 
-import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
+import weloveclouds.server.services.models.DataAccessServiceInitializationInfo;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.store.MovablePersistentStorage;
@@ -8,7 +8,7 @@ import weloveclouds.server.store.MovablePersistentStorage;
 public class DataAccessServiceFactory {
 
     public DataAccessService createServiceWithPersistentStorage(
-            DataAccessServiceInitializationContext initializationContext) {
+            DataAccessServiceInitializationInfo initializationContext) {
         return new DataAccessService(
                 new KVCache(initializationContext.getCacheSize(),
                         initializationContext.getDisplacementStrategy()),
@@ -16,7 +16,7 @@ public class DataAccessServiceFactory {
     }
 
     public MovableDataAccessService createServiceWithMovablePersistentStorage(
-            DataAccessServiceInitializationContext initializationContext) {
+            DataAccessServiceInitializationInfo initializationContext) {
         return new MovableDataAccessService(
                 new KVCache(initializationContext.getCacheSize(),
                         initializationContext.getDisplacementStrategy()),
