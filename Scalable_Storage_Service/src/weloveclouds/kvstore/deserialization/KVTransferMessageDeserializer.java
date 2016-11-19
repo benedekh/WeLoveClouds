@@ -64,8 +64,7 @@ public class KVTransferMessageDeserializer
 
             // deserialized object
             KVTransferMessage deserialized =
-                    new KVTransferMessage.KVTransferMessageBuilder().status(status)
-                            .storageUnits(storageUnits).responseMessage(responseMessage).build();
+                    new KVTransferMessage.Builder().status(status).storageUnits(storageUnits).responseMessage(responseMessage).build();
 
             LOGGER.debug("KVTransferMessage deserialization finished.");
             return deserialized;

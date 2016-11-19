@@ -14,7 +14,7 @@ public class KVMessage implements IKVMessage {
     private KVEntry entry;
     private StatusType status;
 
-    protected KVMessage(KVMessageBuilder builder) {
+    protected KVMessage(Builder builder) {
         this.status = builder.status;
         this.entry = builder.entry;
     }
@@ -33,7 +33,7 @@ public class KVMessage implements IKVMessage {
     public StatusType getStatus() {
         return status;
     }
-    
+
     @Override
     public String toString() {
         return CustomStringJoiner.join(" ", "Message status:",
@@ -75,16 +75,16 @@ public class KVMessage implements IKVMessage {
         return true;
     }
 
-    public static class KVMessageBuilder {
+    public static class Builder {
         private KVEntry entry;
         private StatusType status;
 
-        public KVMessageBuilder status(StatusType status) {
+        public Builder status(StatusType status) {
             this.status = status;
             return this;
         }
 
-        public KVMessageBuilder key(String key) {
+        public Builder key(String key) {
             if (entry == null) {
                 entry = new KVEntry();
             }
@@ -92,7 +92,7 @@ public class KVMessage implements IKVMessage {
             return this;
         }
 
-        public KVMessageBuilder value(String value) {
+        public Builder value(String value) {
             if (entry == null) {
                 entry = new KVEntry();
             }

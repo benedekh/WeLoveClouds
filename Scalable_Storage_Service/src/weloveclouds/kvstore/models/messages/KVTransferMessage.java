@@ -15,7 +15,7 @@ public class KVTransferMessage implements IKVTransferMessage {
     private MovableStorageUnits storageUnits;
     private String responseMessage;
 
-    protected KVTransferMessage(KVTransferMessageBuilder builder) {
+    protected KVTransferMessage(Builder builder) {
         this.status = builder.status;
         this.storageUnits = builder.storageUnits;
         this.responseMessage = builder.responseMessage;
@@ -86,22 +86,22 @@ public class KVTransferMessage implements IKVTransferMessage {
                 responseMessage == null ? null : responseMessage.toString());
     }
 
-    public static class KVTransferMessageBuilder {
+    public static class Builder {
         private StatusType status;
         private MovableStorageUnits storageUnits;
         private String responseMessage;
 
-        public KVTransferMessageBuilder status(StatusType status) {
+        public Builder status(StatusType status) {
             this.status = status;
             return this;
         }
 
-        public KVTransferMessageBuilder storageUnits(MovableStorageUnits storageUnits) {
+        public Builder storageUnits(MovableStorageUnits storageUnits) {
             this.storageUnits = storageUnits;
             return this;
         }
 
-        public KVTransferMessageBuilder responseMessage(String message) {
+        public Builder responseMessage(String message) {
             this.responseMessage = message;
             return this;
         }

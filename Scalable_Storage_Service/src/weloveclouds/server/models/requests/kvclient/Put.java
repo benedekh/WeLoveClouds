@@ -58,6 +58,6 @@ public class Put implements IKVClientRequest {
     }
 
     private KVMessage createResponse(StatusType status, String key, String value) {
-        return new KVMessage.KVMessageBuilder().status(status).key(key).value(value).build();
+        return new KVMessage.Builder().status(status).key(key).value(value).build();
     }
 }
