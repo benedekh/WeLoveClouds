@@ -17,31 +17,30 @@ import weloveclouds.server.utils.ArgumentsValidator;
 public class LogLevel extends AbstractServerCommand {
 
     private static final int LEVEL_INDEX = 0;
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Help.class);
 
     /**
      * @param arguments the {@link #LEVEL_INDEX} element of the array shall contain new log level
      */
     public LogLevel(String[] arguments) {
         super(arguments);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ServerSideException {
         try {
-            logger.info("Executing logLevel command.");
+            LOGGER.info("Executing logLevel command.");
             String logLevel = arguments[LEVEL_INDEX];
             Logger.getRootLogger().setLevel(Level.toLevel(logLevel));
 
             String statusMessage = CustomStringJoiner.join(" ", "Latest log level:", logLevel);
             userOutputWriter.writeLine(statusMessage);
-            logger.debug(statusMessage);
+            LOGGER.debug(statusMessage);
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new ServerSideException(ex.getMessage(), ex);
         } finally {
-            logger.info("logLevel command execution finished.");
+            LOGGER.info("logLevel command execution finished.");
         }
     }
 

@@ -15,14 +15,14 @@ import org.apache.log4j.Logger;
 public class UserOutputWriter implements AutoCloseable {
 
     private static final UserOutputWriter instance = new UserOutputWriter();
+    private static final Logger LOGGER = Logger.getLogger(UserOutputWriter.class);
+
     private static String PREFIX = "Client> ";
 
     private BufferedWriter outputWriter;
-    private Logger logger;
 
     private UserOutputWriter() {
         this.outputWriter = new BufferedWriter(new OutputStreamWriter(System.out));
-        this.logger = Logger.getLogger(getClass());
     }
 
     /**
@@ -68,7 +68,7 @@ public class UserOutputWriter implements AutoCloseable {
         try {
             outputWriter.close();
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
         }
     }
 

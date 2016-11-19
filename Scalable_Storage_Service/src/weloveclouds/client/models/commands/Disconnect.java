@@ -15,30 +15,29 @@ import weloveclouds.communication.exceptions.ClientSideException;
  * @author Benoit, Benedek, Hunton
  */
 public class Disconnect extends AbstractCommunicationApiCommand {
+
     private static String SUCCESSFULLY_DISCONNECTED_MESSAGE =
             "Successfully disconnected from server.";
-
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Disconnect.class);
 
     public Disconnect(String[] arguments, ICommunicationApi communicationApi) {
         super(arguments, communicationApi);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ClientSideException {
         try {
-            logger.info("Executing disconnect command.");
+            LOGGER.info("Executing disconnect command.");
             communicationApi.disconnect();
-            logger.info("Disconnect was successful.");
+            LOGGER.info("Disconnect was successful.");
 
             userOutputWriter.writeLine(SUCCESSFULLY_DISCONNECTED_MESSAGE);
-            logger.debug(SUCCESSFULLY_DISCONNECTED_MESSAGE);
+            LOGGER.debug(SUCCESSFULLY_DISCONNECTED_MESSAGE);
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new ClientSideException(ex.getMessage(), ex);
         } finally {
-            logger.info("Disconnect command execution finished.");
+            LOGGER.info("Disconnect command execution finished.");
         }
     }
 

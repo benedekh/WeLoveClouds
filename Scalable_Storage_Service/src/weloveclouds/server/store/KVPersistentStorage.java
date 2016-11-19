@@ -35,12 +35,12 @@ import weloveclouds.server.utils.FileUtility;
 public class KVPersistentStorage extends Observable implements IDataAccessService {
 
     protected static final String FILE_EXTENSION = "ser";
+    private static final Logger LOGGER = Logger.getLogger(KVPersistentStorage.class);
 
     protected Map<String, PersistedStorageUnit> storageUnits;
     protected Queue<PersistedStorageUnit> unitsWithFreeSpace;
 
     protected Path rootPath;
-    private Logger logger;
 
     public KVPersistentStorage(Path rootPath) throws IllegalArgumentException {
         if (rootPath == null || !rootPath.toAbsolutePath().toFile().exists()) {
@@ -51,7 +51,6 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         this.unitsWithFreeSpace = new ArrayDeque<>();
 
         this.rootPath = rootPath.toAbsolutePath();
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -87,7 +86,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             }
         }
 
-        logger.debug(CustomStringJoiner.join(" ", entry.toString(),
+        LOGGER.debug(CustomStringJoiner.join(" ", entry.toString(),
                 "is persisted to permanent storage unit."));
         notifyObservers(entry);
 
@@ -104,7 +103,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         PersistedStorageUnit storageUnit = storageUnits.get(key);
         String value = storageUnit.getValue(key);
 
-        logger.debug(join("", "Value <", value, "> is read for key <", key, "> ."));
+        LOGGER.debug(join("", "Value <", value, "> is read for key <", key, "> ."));
         return value;
     }
 
@@ -125,16 +124,16 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             }
         } catch (NullPointerException ex) {
             String errorMessage = "Key cannot be null for removing from persistent storage.";
-            logger.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         } catch (NoSuchFileException ex) {
             storageUnits.remove(key);
             String errorMessage = CustomStringJoiner.join(" ", "File for key", key,
                     "was already removed from persistent storage.");
-            logger.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         } catch (IOException e) {
-            logger.error(e);
+            LOGGER.error(e);
             throw new StorageException(
                     "File for key cannot be removed from persistent storage due to permission problems.");
         }
@@ -173,7 +172,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      * on what paths.
      */
     public void loadStorageUnits() {
-        logger.debug("Initializing persistent store with already stored keys.");
+        LOGGER.debug("Initializing persistent store with already stored keys.");
         clear();
 
         for (File file : filterFilesInRootPath()) {
@@ -183,17 +182,17 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 // load the keys from the storage unit
                 for (String key : storageUnit.getKeys()) {
                     storageUnits.put(key, storageUnit);
-                    logger.debug(CustomStringJoiner.join(" ", "Key", key,
+                    LOGGER.debug(CustomStringJoiner.join(" ", "Key", key,
                             "is put in the persistent store metastore from path", path.toString()));
                 }
                 if (!storageUnit.isFull()) {
                     unitsWithFreeSpace.add(storageUnit);
                 }
             } catch (StorageException ex) {
-                logger.error(join(" ", file.toString(), ex.getMessage()));
+                LOGGER.error(join(" ", file.toString(), ex.getMessage()));
             }
         }
-        logger.debug("Initializing persistent store finished.");
+        LOGGER.debug("Initializing persistent store finished.");
     }
 
     /**
@@ -217,11 +216,11 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         try {
             return FileUtility.<PersistedStorageUnit>loadFromFile(path);
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new StorageException(
                     "Storage unit was not read from persistent storage due to IO error.");
         } catch (ClassNotFoundException | ClassCastException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new StorageException(
                     "Storage unit was not read from persistent storage due to format conversion error.");
         }

@@ -15,12 +15,8 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public class SocketFactory {
 
-    private Logger logger;
-
-    public SocketFactory() {
-        this.logger = Logger.getLogger(getClass());
-    }
-
+    private static final Logger LOGGER = Logger.getLogger(SocketFactory.class);
+    
     /**
      * Creates a TCP Socket using server connection information
      * ({@link ServerConnectionInfo#getIpAddress()} and {@link ServerConnectionInfo#getPort()}).
@@ -28,7 +24,7 @@ public class SocketFactory {
      * @throws IOException see {@link Socket}
      */
     public Socket createTcpSocketFromInfo(ServerConnectionInfo connectionInfo) throws IOException {
-        logger.debug(CustomStringJoiner.join(" ", "Creating socket for", connectionInfo.toString()));
+        LOGGER.debug(CustomStringJoiner.join(" ", "Creating socket for", connectionInfo.toString()));
         return new Socket(connectionInfo.getIpAddress(), connectionInfo.getPort());
     }
 }
