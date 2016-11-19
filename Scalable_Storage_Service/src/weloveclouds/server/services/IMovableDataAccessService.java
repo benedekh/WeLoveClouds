@@ -1,6 +1,7 @@
 package weloveclouds.server.services;
 
 import weloveclouds.hashing.models.HashRange;
+import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -40,4 +41,16 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * Sets the status of the data access service.
      */
     public void setServiceStatus(DataAccessServiceStatus serviceNewStatus);
+
+    /**
+     * Ring hash metadata information.
+     */
+    public void setRingMetadata(RingMetadata ringMetadata);
+
+    /**
+     * Sets the hash range that is managed by the data access service.
+     * 
+     * @param range
+     */
+    public void setManagedHashRange(HashRange rangeManagedByServer);
 }

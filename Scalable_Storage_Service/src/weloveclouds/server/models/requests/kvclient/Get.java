@@ -2,6 +2,8 @@ package weloveclouds.server.models.requests.kvclient;
 
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_ERROR;
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
+import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_NOT_RESPONSIBLE;
+import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_STOPPED;
 
 import org.apache.log4j.Logger;
 
@@ -10,6 +12,8 @@ import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
+import weloveclouds.server.store.cache.exceptions.KeyIsNotManagedByServerException;
+import weloveclouds.server.store.cache.exceptions.ServerIsStoppedException;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
@@ -35,6 +39,10 @@ public class Get implements IKVClientRequest {
         try {
             logger.debug(CustomStringJoiner.join(" ", "Trying to get value for key", key));
             response = createResponse(GET_SUCCESS, key, dataAccessService.getValue(key));
+        } catch (KeyIsNotManagedByServerException ex) {
+            response = createResponse(SERVER_NOT_RESPONSIBLE, key, ex.getMessage());
+        } catch (ServerIsStoppedException ex) {
+            response = createResponse(SERVER_STOPPED, key, null);
         } catch (StorageException e) {
             response = createResponse(GET_ERROR, key, e.getMessage());
         } finally {

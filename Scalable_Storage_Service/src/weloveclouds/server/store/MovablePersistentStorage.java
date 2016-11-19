@@ -15,8 +15,6 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.kvstore.models.KVEntry;
-import weloveclouds.server.services.IMovableDataAccessService;
-import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -31,8 +29,7 @@ import weloveclouds.server.store.models.PersistedStorageUnit;
  * 
  * @author Benedek
  */
-public class MovablePersistentStorage extends KVPersistentStorage
-        implements IMovableDataAccessService {
+public class MovablePersistentStorage extends KVPersistentStorage {
 
     private Logger logger;
 
@@ -41,7 +38,11 @@ public class MovablePersistentStorage extends KVPersistentStorage
         this.logger = Logger.getLogger(getClass());
     }
 
-    @Override
+    /**
+     * Saves the entries from the parameter storage units into this persistent storage.
+     * 
+     * @param fromStorageUnits from where the entries will be copied
+     */
     public void putEntries(MovableStorageUnits fromStorageUnits) throws StorageException {
         for (MovableStorageUnit storageUnit : fromStorageUnits.getStorageUnits()) {
             String filename = UUID.randomUUID().toString();
@@ -60,7 +61,13 @@ public class MovablePersistentStorage extends KVPersistentStorage
         }
     }
 
-    @Override
+    /**
+     * Filters those entries from the persistent storage whose keys are in the specified range.
+     * 
+     * @param range within that shall be the hash values of the keys
+     * @return the storage units of those entries whose keys are in the given range
+     * @throws StorageException if an error occurs
+     */
     public MovableStorageUnits filterEntries(HashRange range) {
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<MovableStorageUnit> toBeCopied = new HashSet<>();
@@ -72,7 +79,12 @@ public class MovablePersistentStorage extends KVPersistentStorage
         return new MovableStorageUnits(toBeCopied);
     }
 
-    @Override
+    /**
+     * Removes those entries from the persistent storage whose keys are in the specified range.
+     * 
+     * @param range within that shall be the hash values of the keys
+     * @throws StorageException if an error occurs
+     */
     public void removeEntries(HashRange range) throws StorageException {
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<String> keysToBeRemoved = new HashSet<>();
@@ -107,7 +119,6 @@ public class MovablePersistentStorage extends KVPersistentStorage
      * Merges those storage units which are not full yet. Updates the #unitsWithFreeSpace
      * accordingly after the operation is finished.
      */
-    @Override
     public void defragment() {
         Iterator<PersistedStorageUnit> storageUnitIterator =
                 collectNotFullStorageUnits().iterator();
@@ -229,11 +240,6 @@ public class MovablePersistentStorage extends KVPersistentStorage
             }
         }
         return result;
-    }
-
-    @Override
-    public void setServiceStatus(DataAccessServiceStatus serviceNewStatus) {
-        // left empty on purpose
     }
 
 }

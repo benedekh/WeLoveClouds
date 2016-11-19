@@ -18,7 +18,7 @@ public class InitializeKVServer implements IKVECSRequest {
     private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("/");
 
     private DataAccessServiceFactory dataAccessServiceFactory;
-    private IMovableDataAccessService dataAccessService;
+    private volatile IMovableDataAccessService dataAccessService;
 
     private ServerInitializationContext serverInitializationContext;
 

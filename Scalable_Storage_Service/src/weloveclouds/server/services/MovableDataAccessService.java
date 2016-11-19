@@ -1,13 +1,20 @@
 package weloveclouds.server.services;
 
-import static weloveclouds.server.services.models.DataAccessServiceStatus.*;
+import static weloveclouds.server.services.models.DataAccessServiceStatus.STOPPED;
 
 import weloveclouds.hashing.models.HashRange;
+import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.kvstore.serialization.helper.ISerializer;
+import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.PutType;
+import weloveclouds.server.store.cache.exceptions.KeyIsNotManagedByServerException;
+import weloveclouds.server.store.cache.exceptions.ServerIsStoppedException;
+import weloveclouds.server.store.cache.exceptions.WriteLockIsActiveException;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -15,10 +22,15 @@ import weloveclouds.server.store.models.MovableStorageUnits;
 public class MovableDataAccessService extends DataAccessService
         implements IMovableDataAccessService {
 
+    private MovablePersistentStorage movablePersistentStorage;
+
     private DataAccessServiceStatus servicePreviousStatus;
     private volatile DataAccessServiceStatus serviceRecentStatus;
 
-    protected MovablePersistentStorage movablePersistentStorage;
+    private volatile RingMetadata ringMetadata;
+    private volatile HashRange rangeManagedByServer;
+
+    private ISerializer<String, RingMetadata> ringMetadatSerializer = new RingMetadataSerializer();
 
     public MovableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage) {
         super(cache, persistentStorage);
@@ -31,11 +43,12 @@ public class MovableDataAccessService extends DataAccessService
     public synchronized PutType putEntry(KVEntry entry) throws StorageException {
         switch (serviceRecentStatus) {
             case STARTED:
+                checkIfKeyIsManagedByServer(entry.getKey());
                 return super.putEntry(entry);
             case STOPPED:
-                throw new StorageException("Storage service is stopped.");
+                throw new ServerIsStoppedException();
             case WRITELOCK_ACTIVE:
-                throw new StorageException("Storage service is not writable.");
+                throw new WriteLockIsActiveException();
             default:
                 throw new StorageException("Storage service is not initialized yet.");
         }
@@ -47,9 +60,10 @@ public class MovableDataAccessService extends DataAccessService
         switch (serviceRecentStatus) {
             case STARTED:
             case WRITELOCK_ACTIVE:
+                checkIfKeyIsManagedByServer(key);
                 return super.getValue(key);
             case STOPPED:
-                throw new StorageException("Storage service is stopped.");
+                throw new ServerIsStoppedException();
             default:
                 throw new StorageException("Storage service is not initialized yet.");
         }
@@ -59,12 +73,13 @@ public class MovableDataAccessService extends DataAccessService
     public synchronized void removeEntry(String key) throws StorageException {
         switch (serviceRecentStatus) {
             case STARTED:
+                checkIfKeyIsManagedByServer(key);
                 super.removeEntry(key);
                 break;
             case STOPPED:
-                throw new StorageException("Storage service is stopped.");
+                throw new ServerIsStoppedException();
             case WRITELOCK_ACTIVE:
-                throw new StorageException("Storage service is not writable.");
+                throw new WriteLockIsActiveException();
             default:
                 throw new StorageException("Storage service is not initialized yet.");
         }
@@ -104,6 +119,25 @@ public class MovableDataAccessService extends DataAccessService
             case WRITELOCK_ACTIVE:
                 serviceRecentStatus = serviceNewStatus;
         }
+    }
+
+    @Override
+    public void setRingMetadata(RingMetadata ringMetadata) {
+        this.ringMetadata = ringMetadata;
+    }
+
+    @Override
+    public void setManagedHashRange(HashRange rangeManagedByServer) {
+        this.rangeManagedByServer = rangeManagedByServer;
+    }
+
+    public void checkIfKeyIsManagedByServer(String key) throws KeyIsNotManagedByServerException {
+        if (rangeManagedByServer == null
+                || !rangeManagedByServer.contains(HashingUtil.getHash(key))) {
+            throw new KeyIsNotManagedByServerException(
+                    ringMetadatSerializer.serialize(ringMetadata));
+        }
+
     }
 
 }

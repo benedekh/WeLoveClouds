@@ -4,11 +4,9 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.ICommunicationApi;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.services.DataAccessServiceFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
@@ -25,24 +23,17 @@ public class KVECSRequestFactory {
     private static final Logger LOGGER = Logger.getLogger(KVECSRequestFactory.class);
 
     private DataAccessServiceFactory dataAccessServiceFactory;
-    private IMovableDataAccessService dataAccessService;
+    private volatile IMovableDataAccessService dataAccessService;
 
     private ICommunicationApi communicationApi;
 
-    private RingMetadata ringMetadata;
-    private RingMetadataPart rangeManagedByServer;
-
     public KVECSRequestFactory(DataAccessServiceFactory dataAccessServiceFactory,
             IMovableDataAccessService dataAccessService,
-            CommunicationApiFactory communicationApiFactory, RingMetadata ringMetadata,
-            RingMetadataPart rangeManagedByServer) {
+            CommunicationApiFactory communicationApiFactory) {
 
         this.dataAccessServiceFactory = dataAccessServiceFactory;
         this.dataAccessService = dataAccessService;
-
         this.communicationApi = communicationApiFactory.createCommunicationApiV1();
-        this.ringMetadata = ringMetadata;
-        this.rangeManagedByServer = rangeManagedByServer;
     }
 
     public IKVECSRequest createRequestFromReceivedMessage(KVAdminMessage receivedMessage) {
@@ -53,9 +44,8 @@ public class KVECSRequestFactory {
             case INITKVSERVER:
                 request = new InitializeKVServer(dataAccessServiceFactory, dataAccessService,
                         receivedMessage.getInitializationContext());
-                new UpdateRingMetadata(ringMetadata, rangeManagedByServer,
-                        receivedMessage.getRingMetadata(), receivedMessage.getTargetServerInfo())
-                                .execute();
+                new UpdateRingMetadata(dataAccessService, receivedMessage.getRingMetadata(),
+                        receivedMessage.getTargetServerInfo().getRange()).execute();
                 break;
             case START:
                 request = new StartDataAcessService(dataAccessService);
@@ -70,14 +60,13 @@ public class KVECSRequestFactory {
                 request = new UnlockWriteAccess(dataAccessService);
                 break;
             case MOVEDATA:
-                new LockWriteAccess(dataAccessService).execute();
                 request = new MoveDataToDestination(dataAccessService,
                         receivedMessage.getTargetServerInfo(), communicationApi);
-                new UnlockWriteAccess(dataAccessService).execute();
                 break;
             case UPDATE:
-                request = new UpdateRingMetadata(ringMetadata, rangeManagedByServer,
-                        receivedMessage.getRingMetadata(), receivedMessage.getTargetServerInfo());
+                request =
+                        new UpdateRingMetadata(dataAccessService, receivedMessage.getRingMetadata(),
+                                receivedMessage.getTargetServerInfo().getRange());
                 break;
             case SHUTDOWN:
                 request = new ShutdownServer();
