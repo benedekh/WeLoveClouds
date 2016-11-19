@@ -16,12 +16,11 @@ public class ServerInitializationContext {
     private int cacheSize;
     private String displacementStrategyName;
 
-    public ServerInitializationContext(RingMetadata ringMetadata, HashRange rangeManagedByServer,
-            int cacheSize, String displacementStrategyName) {
-        this.ringMetadata = ringMetadata;
-        this.rangeManagedByServer = rangeManagedByServer;
-        this.cacheSize = cacheSize;
-        this.displacementStrategyName = displacementStrategyName;
+    protected ServerInitializationContext(Builder builder) {
+        this.ringMetadata = builder.ringMetadata;
+        this.rangeManagedByServer = builder.rangeManagedByServer;
+        this.cacheSize = builder.cacheSize;
+        this.displacementStrategyName = builder.displacementStrategyName;
     }
 
     public RingMetadata getRingMetadata() {
@@ -99,6 +98,37 @@ public class ServerInitializationContext {
             return false;
         }
         return true;
+    }
+
+    public static class Builder {
+        private RingMetadata ringMetadata;
+        private HashRange rangeManagedByServer;
+        private int cacheSize;
+        private String displacementStrategyName;
+
+        public Builder ringMetadata(RingMetadata ringMetadata) {
+            this.ringMetadata = ringMetadata;
+            return this;
+        }
+
+        public Builder rangeManagedByServer(HashRange rangeManagedByServer) {
+            this.rangeManagedByServer = rangeManagedByServer;
+            return this;
+        }
+
+        public Builder cacheSize(int cacheSize) {
+            this.cacheSize = cacheSize;
+            return this;
+        }
+
+        public Builder displacementStrategyName(String displacementStrategyName) {
+            this.displacementStrategyName = displacementStrategyName;
+            return this;
+        }
+
+        public ServerInitializationContext build() {
+            return new ServerInitializationContext(this);
+        }
     }
 
 }

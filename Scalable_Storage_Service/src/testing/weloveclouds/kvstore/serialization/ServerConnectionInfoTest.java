@@ -22,8 +22,8 @@ public class ServerConnectionInfoTest {
     @Test
     public void testServerConnectionInfoSerializationAndDeserialization()
             throws DeserializationException, UnknownHostException {
-        ServerConnectionInfo connectionInfo = new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                .ipAddress("localhost").port(8080).build();
+        ServerConnectionInfo connectionInfo =
+                new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
 
         String serializedConnectionInfo = connectionInfoSerializer.serialize(connectionInfo);
         ServerConnectionInfo deserializedConnectionInfo =

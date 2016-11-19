@@ -30,19 +30,21 @@ public class ServerInitializationContextTest {
     @Test
     public void testServerInitializationContextSerializationAndDeserialization()
             throws UnknownHostException, DeserializationException {
-        HashRange managedRange = new HashRange(HashingUtil.getHash("a"), HashingUtil.getHash("b"));
-        RingMetadataPart metadataPart =
-                new RingMetadataPart.RingMetadataPartBuilder()
-                        .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                                .ipAddress("localhost").port(8080).build())
-                        .range(managedRange).build();
+        HashRange managedRange = new HashRange.Builder().start(HashingUtil.getHash("a"))
+                .end(HashingUtil.getHash("b")).build();
+        RingMetadataPart metadataPart = new RingMetadataPart.Builder().connectionInfo(
+                new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build())
+                .range(managedRange).build();
         RingMetadata metadata = new RingMetadata(new HashSet<>(Arrays.asList(metadataPart,
-                new RingMetadataPart.RingMetadataPartBuilder()
-                        .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                                .ipAddress("localhost").port(8082).build())
-                        .range(new HashRange(Hash.MIN_VALUE, Hash.MAX_VALUE)).build())));
-        ServerInitializationContext context =
-                new ServerInitializationContext(metadata, managedRange, 10, "LRU");
+                new RingMetadataPart.Builder()
+                        .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost")
+                                .port(8082).build())
+                        .range(new HashRange.Builder().start(Hash.MIN_VALUE).end(Hash.MAX_VALUE)
+                                .build())
+                        .build())));
+        ServerInitializationContext context = new ServerInitializationContext.Builder()
+                .ringMetadata(metadata).rangeManagedByServer(managedRange).cacheSize(10)
+                .displacementStrategyName("LRU").build();
 
         String serializedContext = contextSerializer.serialize(context);
         ServerInitializationContext deserializedContext =

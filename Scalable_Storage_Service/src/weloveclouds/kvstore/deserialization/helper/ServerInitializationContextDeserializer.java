@@ -60,8 +60,9 @@ public class ServerInitializationContextDeserializer
                 int cacheSize = Integer.valueOf(cacheSizeStr);
 
                 // deserialized object
-                deserialized = new ServerInitializationContext(ringMetadata, rangeManagedBySever,
-                        cacheSize, displacementStrategy);
+                deserialized = new ServerInitializationContext.Builder().ringMetadata(ringMetadata)
+                        .rangeManagedByServer(rangeManagedBySever).cacheSize(cacheSize)
+                        .displacementStrategyName(displacementStrategy).build();
                 LOGGER.debug(join(" ", "Deserialized server initialization info is:",
                         deserialized.toString()));
             } catch (NumberFormatException ex) {

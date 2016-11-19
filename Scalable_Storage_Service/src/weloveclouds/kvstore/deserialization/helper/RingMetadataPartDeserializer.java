@@ -51,7 +51,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
             HashRange range = hashRangeDeserializer.deserialize(hashRangeStr);
 
             // deserialized object
-            deserialized = new RingMetadataPart.RingMetadataPartBuilder()
+            deserialized = new RingMetadataPart.Builder()
                     .connectionInfo(connectionInfo).range(range).build();
             LOGGER.debug(join(" ", "Deserialized metadata part is:", deserialized.toString()));
         }
