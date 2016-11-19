@@ -21,16 +21,12 @@ public class StorageNode {
         return Id;
     }
 
-    public void setId(String id) {
-        Id = id;
+    public String getIpAddress() {
+        return serverConnectionInfo.getIpAddress().toString();
     }
 
-    public ServerConnectionInfo getServerConnectionInfo() {
-        return serverConnectionInfo;
-    }
-
-    public void setServerConnectionInfo(ServerConnectionInfo serverConnectionInfo) {
-        this.serverConnectionInfo = serverConnectionInfo;
+    public int getPort() {
+        return serverConnectionInfo.getPort();
     }
 
     public HashRange getHashRange() {

@@ -5,10 +5,10 @@ import weloveclouds.ecs.models.commands.EcsCommandFactory;
 /**
  * Created by Benoit on 2016-11-16.
  */
-public class EcsClient {
+public class Client {
     private EcsCommandFactory ecsCommandFactory;
 
-    public EcsClient(EcsClientBuilder escClientBuilder) {
+    public Client(EcsClientBuilder escClientBuilder) {
         this.ecsCommandFactory = escClientBuilder.ecsCommandFactory;
     }
 
@@ -26,8 +26,8 @@ public class EcsClient {
             return this;
         }
 
-        public EcsClient build() {
-            return new EcsClient(this);
+        public Client build() {
+            return new Client(this);
         }
     }
 }
