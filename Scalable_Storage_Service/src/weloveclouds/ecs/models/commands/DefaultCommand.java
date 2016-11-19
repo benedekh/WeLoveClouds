@@ -4,7 +4,7 @@ import java.security.InvalidParameterException;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.client.utils.HelpMessageGenerator;
-import weloveclouds.communication.exceptions.ClientSideException;
+import weloveclouds.ecs.exceptions.ClientSideException;
 
 /**
  * 
@@ -18,7 +18,7 @@ public class DefaultCommand extends AbstractCommand{
     }
 
     @Override
-    public void execute() throws Exception {
+    public void execute() throws ClientSideException {
         throw new ClientSideException(CustomStringJoiner.join(" ", "Unable to find command.",
                 HelpMessageGenerator.generateHelpMessage()));
         

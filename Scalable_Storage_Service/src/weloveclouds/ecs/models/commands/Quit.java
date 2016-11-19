@@ -3,6 +3,7 @@ package weloveclouds.ecs.models.commands;
 import org.apache.log4j.Logger;
 
 import weloveclouds.ecs.api.IKVEcsApi;
+import weloveclouds.ecs.exceptions.ClientSideException;
 
 public class Quit extends AbstractEcsApiCommand {
 
@@ -23,7 +24,7 @@ public class Quit extends AbstractEcsApiCommand {
     }
 
     @Override
-    public void execute() throws Exception {
+    public void execute() throws ClientSideException {
         // TODO Auto-generated method stub
 
     }
