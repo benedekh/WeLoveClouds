@@ -18,11 +18,11 @@ public class ParsedUserInput {
     }
 
     public Command getCommand() {
-        return Command.fromString(command);
+        return Command.createCommandFromString(command);
     }
 
     public ServerCommand getServerCommand() {
-        return ServerCommand.fromString(command);
+        return ServerCommand.createCommandFromString(command);
     }
 
     public String[] getArguments() {
