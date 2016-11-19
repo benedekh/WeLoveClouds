@@ -74,6 +74,8 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     break;
                 case SERVER_NOT_RESPONSIBLE:
                     try {
+                        LOGGER.error(join(" ", "Server is not responsible for the key:", key,
+                                ". Updating ring metadata information."));
                         RingMetadata ringMetadata =
                                 ringMetadataDeserializer.deserialize(response.getValue());
                         communicationApiV2.setRingMetadata(ringMetadata);
@@ -85,10 +87,12 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     }
                     break;
                 case SERVER_WRITE_LOCK:
+                    LOGGER.error("Write lock is active on the server.");
                     userOutputWriter
                             .writeLine("Server is locked for PUT operations. Try again later.");
                     break;
                 case SERVER_STOPPED:
+                    LOGGER.error("Server stopped.");
                     userOutputWriter
                             .writeLine("Server is stopped for serving requests. Try again later.");
                     break;

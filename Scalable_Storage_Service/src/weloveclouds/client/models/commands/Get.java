@@ -25,7 +25,6 @@ public class Get extends AbstractKVCommunicationApiCommand {
 
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
     private IKVCommunicationApiV2 communicationApiV2;
-    private Logger logger;
 
     /**
      * @param arguments contains the key in the {@link #KEY_INDEX} position
@@ -44,11 +43,12 @@ public class Get extends AbstractKVCommunicationApiCommand {
     public void execute() throws ClientSideException {
         try {
             LOGGER.info("Executing get command.");
+            String key = arguments[KEY_INDEX];
 
-            IKVMessage response = communicationApi.get(arguments[KEY_INDEX]);
+            IKVMessage response = communicationApi.get(key);
             LOGGER.debug(response.toString());
-            String responseValue = response.getValue();
 
+            String responseValue = response.getValue();
             switch (response.getStatus()) {
                 case GET_SUCCESS:
                     userOutputWriter.writeLine(CustomStringJoiner.join(" ", "Value", responseValue,
@@ -59,25 +59,30 @@ public class Get extends AbstractKVCommunicationApiCommand {
                     break;
                 case SERVER_NOT_RESPONSIBLE:
                     try {
+                        LOGGER.error(join(" ", "Server is not responsible for the key:", key,
+                                ". Updating ring metadata information."));
                         RingMetadata ringMetadata =
                                 ringMetadataDeserializer.deserialize(response.getValue());
                         communicationApiV2.setRingMetadata(ringMetadata);
                         execute();
                     } catch (DeserializationException e) {
-                        logger.error(e);
+                        LOGGER.error(e);
                         userOutputWriter.writeLine(
                                 "Error during key GET. The respective server cannot handle the key.");
                     }
                     break;
                 case SERVER_WRITE_LOCK:
+                    LOGGER.error("Write lock is active on the server.");
                     userOutputWriter
                             .writeLine("Server is locked for PUT operations. Try again later.");
                     break;
                 case SERVER_STOPPED:
+                    LOGGER.error("Server stopped.");
                     userOutputWriter
                             .writeLine("Server is stopped for serving requests. Try again later.");
                     break;
                 default:
+                    LOGGER.error("Unexpected response type.");
                     userOutputWriter.writeLine("Unexpected response type.");
                     break;
             }
