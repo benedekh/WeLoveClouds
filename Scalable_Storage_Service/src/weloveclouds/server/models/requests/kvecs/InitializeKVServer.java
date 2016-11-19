@@ -9,8 +9,7 @@ import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.models.ServerInitializationContext;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.exceptions.ServiceIsInitializedException;
-import weloveclouds.server.store.KVCache;
-import weloveclouds.server.store.MovablePersistentStorage;
+import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
 
@@ -29,20 +28,22 @@ public class InitializeKVServer implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
+        int cacheSize = serverInitializationContext.getCacheSize();
+
         String displacementStrategyName = serverInitializationContext.getDisplacementStrategyName();
         DisplacementStrategy displacementStrategy =
                 StrategyFactory.createDisplacementStrategy(displacementStrategyName);
-
         if (displacementStrategy == null) {
             return createErrorKVAdminMessage(CustomStringJoiner.join(": ",
                     "Unknown displacement startegy", displacementStrategyName));
         }
 
-        int cacheSize = serverInitializationContext.getCacheSize();
-
+        DataAccessServiceInitializationContext initializationInfo =
+                new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
+                        .displacementStrategy(displacementStrategy)
+                        .rootFolderPath(PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER).build();
         try {
-            dataAccessService.initializeService(new KVCache(cacheSize, displacementStrategy),
-                    new MovablePersistentStorage(PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER));
+            dataAccessService.initializeService(initializationInfo);
         } catch (ServiceIsInitializedException ex) {
             return createErrorKVAdminMessage(ex.getMessage());
         }

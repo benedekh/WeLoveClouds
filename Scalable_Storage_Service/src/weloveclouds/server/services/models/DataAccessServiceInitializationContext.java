@@ -4,13 +4,13 @@ import java.nio.file.Path;
 
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 
-public class DataAccessServiceInitializationInfo {
+public class DataAccessServiceInitializationContext {
 
     private int cacheSize;
     private DisplacementStrategy displacementStrategy;
     private Path storageRootFolderPath;
 
-    protected DataAccessServiceInitializationInfo(Builder builder) {
+    protected DataAccessServiceInitializationContext(Builder builder) {
         this.cacheSize = builder.cacheSize;
         this.displacementStrategy = builder.displacementStrategy;
         this.storageRootFolderPath = builder.storageRootFolderPath;
@@ -48,8 +48,8 @@ public class DataAccessServiceInitializationInfo {
             return this;
         }
 
-        public DataAccessServiceInitializationInfo build() {
-            return new DataAccessServiceInitializationInfo(this);
+        public DataAccessServiceInitializationContext build() {
+            return new DataAccessServiceInitializationContext(this);
         }
     }
 }

@@ -4,9 +4,8 @@ import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.server.services.exceptions.ServiceIsInitializedException;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
+import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
-import weloveclouds.server.store.KVCache;
-import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
@@ -69,9 +68,9 @@ public interface IMovableDataAccessService extends IDataAccessService {
     public boolean isServiceInitialized();
 
     /**
-     * Initializes the data access service with the cache and the persistent storage.
+     * Initializes the data access service with the referred parameters.
      */
-    public void initializeService(KVCache cache, MovablePersistentStorage persistentStorage)
+    public void initializeService(DataAccessServiceInitializationContext initializationInfo)
             throws ServiceIsInitializedException;
 
 }

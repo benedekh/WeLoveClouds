@@ -2,6 +2,8 @@ package weloveclouds.server.services;
 
 import static weloveclouds.server.services.models.DataAccessServiceStatus.STOPPED;
 
+import java.nio.file.Path;
+
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -13,10 +15,12 @@ import weloveclouds.server.services.exceptions.ServiceIsInitializedException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.exceptions.WriteLockIsActiveException;
+import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.PutType;
+import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -176,14 +180,22 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public void initializeService(KVCache cache, MovablePersistentStorage persistentStorage)
+    public void initializeService(DataAccessServiceInitializationContext initializationInfo)
             throws ServiceIsInitializedException {
         if (isServiceInitialized()) {
             throw new ServiceIsInitializedException();
         }
 
-        super.initialize(cache, persistentStorage);
-        this.movablePersistentStorage = persistentStorage;
+        int cacheSize = initializationInfo.getCacheSize();
+        DisplacementStrategy displacementStrategy = initializationInfo.getDisplacementStrategy();
+        Path storageRootFolderPath = initializationInfo.getStorageRootFolderPath();
+
+        KVCache cache = new KVCache(cacheSize, displacementStrategy);
+        MovablePersistentStorage persistentStroage =
+                new MovablePersistentStorage(storageRootFolderPath);
+
+        super.initialize(cache, persistentStroage);
+        this.movablePersistentStorage = persistentStroage;
         this.servicePreviousStatus = STOPPED;
         this.serviceRecentStatus = STOPPED;
     }

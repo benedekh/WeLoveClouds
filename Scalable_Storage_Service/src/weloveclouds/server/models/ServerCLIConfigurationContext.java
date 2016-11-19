@@ -4,7 +4,7 @@ import java.nio.file.Path;
 
 import weloveclouds.server.core.Server;
 import weloveclouds.server.models.commands.ServerCommand;
-import weloveclouds.server.services.models.DataAccessServiceInitializationInfo;
+import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 
 /**
@@ -18,11 +18,11 @@ public class ServerCLIConfigurationContext {
     private int port;
     private boolean isStarted;
 
-    private DataAccessServiceInitializationInfo.Builder initializationInfoBuilder;
+    private DataAccessServiceInitializationContext.Builder initializationInfoBuilder;
 
     public ServerCLIConfigurationContext() {
         this.port = -1;
-        this.initializationInfoBuilder = new DataAccessServiceInitializationInfo.Builder();
+        this.initializationInfoBuilder = new DataAccessServiceInitializationContext.Builder();
         this.initializationInfoBuilder.cacheSize(-1);
     }
 

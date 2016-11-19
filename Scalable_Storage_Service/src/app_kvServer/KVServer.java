@@ -21,7 +21,7 @@ import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.DataAccessServiceFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
-import weloveclouds.server.services.models.DataAccessServiceInitializationInfo;
+import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.FIFOStrategy;
 import weloveclouds.server.store.cache.strategy.LFUStrategy;
@@ -154,13 +154,10 @@ public class KVServer {
                         "Invalid strategy. Valid values are: FIFO, LRU, LFU");
         }
 
-        if (port < 0 || port > 65535) {
-            throw new IllegalArgumentException(
-                    "Invalid port number. Valid value is between 0 and 65535.");
-        }
+        ArgumentsValidator.validatePortArguments(new String[] {String.valueOf(port)});
 
-        DataAccessServiceInitializationInfo initializationContext =
-                new DataAccessServiceInitializationInfo.Builder().cacheSize(cacheSize)
+        DataAccessServiceInitializationContext initializationContext =
+                new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
                         .displacementStrategy(displacementStrategy)
                         .rootFolderPath(defaultStoragePath).build();
 

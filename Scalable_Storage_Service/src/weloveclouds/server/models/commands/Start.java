@@ -17,7 +17,7 @@ import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.DataAccessServiceFactory;
-import weloveclouds.server.services.models.DataAccessServiceInitializationInfo;
+import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.utils.ArgumentsValidator;
 
@@ -53,8 +53,8 @@ public class Start extends AbstractServerCommand {
             DisplacementStrategy startegy = context.getDisplacementStrategy();
             Path storagePath = context.getStoragePath();
 
-            DataAccessServiceInitializationInfo initializationContext =
-                    new DataAccessServiceInitializationInfo.Builder().cacheSize(cacheSize)
+            DataAccessServiceInitializationContext initializationContext =
+                    new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
                             .displacementStrategy(startegy).rootFolderPath(storagePath).build();
 
             DataAccessService dataAccessService = dataAccessServiceFactory
