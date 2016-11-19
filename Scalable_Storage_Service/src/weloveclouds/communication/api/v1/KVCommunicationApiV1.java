@@ -146,7 +146,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
     private void sendMessage(StatusType messageType, String key, String value)
             throws UnableToSendContentToServerException {
         KVMessage message =
-                new KVMessage.KVMessageBuilder().status(messageType).key(key).value(value).build();
+                new KVMessage.Builder().status(messageType).key(key).value(value).build();
         byte[] rawMessage = messageSerializer.serialize(message).getBytes();
         send(rawMessage);
         logger.debug(CustomStringJoiner.join(" ", message.toString(), "is sent."));

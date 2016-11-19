@@ -20,11 +20,11 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, SerializedMessage> {
 
     private static final int NUMBER_OF_MESSAGE_PARTS = 3;
-    
+
     private static final int MESSAGE_STATUS_INDEX = 0;
     private static final int MESSAGE_KEY_INDEX = 1;
     private static final int MESSAGE_VALUE_INDEX = 2;
-    
+
     private static final Logger LOGGER = Logger.getLogger(KVMessageDeserializer.class);
 
     @Override
@@ -62,7 +62,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
 
             // deserialized object
             KVMessage deserialized =
-                    new KVMessage.KVMessageBuilder().status(status).key(key).value(value).build();
+                    new KVMessage.Builder().status(status).key(key).value(value).build();
             LOGGER.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
 
             return deserialized;

@@ -84,7 +84,7 @@ public class KVAdminMessageDeserializer
             String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;
 
             // deserialized object
-            KVAdminMessage deserialized = new KVAdminMessage.KVAdminMessageBuilder().status(status)
+            KVAdminMessage deserialized = new KVAdminMessage.Builder().status(status)
                     .initializationContext(initializationContext).ringMetadata(ringMetadata)
                     .targetServerInfo(targetServerInfo).responseMessage(responseMessage).build();
 

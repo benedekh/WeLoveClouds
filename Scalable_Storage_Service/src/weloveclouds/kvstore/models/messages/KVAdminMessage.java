@@ -18,7 +18,7 @@ public class KVAdminMessage implements IKVAdminMessage {
     private RingMetadataPart targetServerInfo;
     private String responseMessage;
 
-    protected KVAdminMessage(KVAdminMessageBuilder builder) {
+    protected KVAdminMessage(Builder builder) {
         this.status = builder.status;
         this.ringMetadata = builder.ringMetadata;
         this.initializationContext = builder.initializationContext;
@@ -122,35 +122,34 @@ public class KVAdminMessage implements IKVAdminMessage {
         return true;
     }
 
-    public static class KVAdminMessageBuilder {
+    public static class Builder {
         private StatusType status;
         private ServerInitializationContext initializationContext;
         private RingMetadata ringMetadata;
         private RingMetadataPart targetServerInfo;
         private String responseMessage;
 
-        public KVAdminMessageBuilder status(StatusType status) {
+        public Builder status(StatusType status) {
             this.status = status;
             return this;
         }
 
-        public KVAdminMessageBuilder initializationContext(
-                ServerInitializationContext initializationContext) {
+        public Builder initializationContext(ServerInitializationContext initializationContext) {
             this.initializationContext = initializationContext;
             return this;
         }
 
-        public KVAdminMessageBuilder ringMetadata(RingMetadata ringMetadata) {
+        public Builder ringMetadata(RingMetadata ringMetadata) {
             this.ringMetadata = ringMetadata;
             return this;
         }
 
-        public KVAdminMessageBuilder targetServerInfo(RingMetadataPart targetServerInfo) {
+        public Builder targetServerInfo(RingMetadataPart targetServerInfo) {
             this.targetServerInfo = targetServerInfo;
             return this;
         }
 
-        public KVAdminMessageBuilder responseMessage(String message) {
+        public Builder responseMessage(String message) {
             this.responseMessage = message;
             return this;
         }

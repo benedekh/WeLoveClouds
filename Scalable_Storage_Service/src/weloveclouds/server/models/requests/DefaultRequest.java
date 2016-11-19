@@ -20,8 +20,8 @@ public class DefaultRequest implements IRequest {
 
     @Override
     public KVMessage execute() {
-        return new KVMessage.KVMessageBuilder().status(StatusType.DELETE_ERROR).key(key)
-                .value(errorMessage).build();
+        return new KVMessage.Builder().status(StatusType.DELETE_ERROR).key(key).value(errorMessage)
+                .build();
     }
 
 }

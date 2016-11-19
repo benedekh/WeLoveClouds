@@ -49,8 +49,8 @@ public class KVAdminMessageTest {
                 .ringMetadata(metadata).rangeManagedByServer(managedRange).cacheSize(10)
                 .displacementStrategyName("LRU").build();
 
-        KVAdminMessage adminMessage = new KVAdminMessage.KVAdminMessageBuilder()
-                .initializationContext(context).status(StatusType.INITKVSERVER).build();
+        KVAdminMessage adminMessage = new KVAdminMessage.Builder().initializationContext(context)
+                .status(StatusType.INITKVSERVER).build();
 
         SerializedMessage serializedMessage = adminMessageSerializer.serialize(adminMessage);
         KVAdminMessage deserializedAdminMessage =
