@@ -3,6 +3,8 @@ package weloveclouds.server.models.requests.kvecs;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
@@ -22,6 +24,7 @@ import weloveclouds.server.store.cache.strategy.StrategyFactory;
 public class InitializeKVServer implements IKVECSRequest {
 
     private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("/");
+    private static final Logger LOGGER = Logger.getLogger(InitializeKVServer.class);
 
     private IMovableDataAccessService dataAccessService;
     private ServerInitializationContext serverInitializationContext;
@@ -39,14 +42,18 @@ public class InitializeKVServer implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
+        LOGGER.debug("Executing initialize KVServer request.");
+
         int cacheSize = serverInitializationContext.getCacheSize();
 
         String displacementStrategyName = serverInitializationContext.getDisplacementStrategyName();
         DisplacementStrategy displacementStrategy =
                 StrategyFactory.createDisplacementStrategy(displacementStrategyName);
         if (displacementStrategy == null) {
-            return createErrorKVAdminMessage(CustomStringJoiner.join(": ",
-                    "Unknown displacement startegy", displacementStrategyName));
+            String errorMessage = CustomStringJoiner.join(": ", "Unknown displacement startegy",
+                    displacementStrategyName);
+            LOGGER.error(errorMessage);
+            return createErrorKVAdminMessage(errorMessage);
         }
 
         DataAccessServiceInitializationContext initializationInfo =
@@ -56,9 +63,11 @@ public class InitializeKVServer implements IKVECSRequest {
         try {
             dataAccessService.initializeService(initializationInfo);
         } catch (ServiceIsAlreadyInitializedException ex) {
+            LOGGER.error(ex);
             return createErrorKVAdminMessage(ex.getMessage());
         }
 
+        LOGGER.debug("Initialization finished successfully.");
         return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
     }
 

@@ -28,6 +28,7 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
         RingMetadata deserialized = null;
 
         if (from != null && !"null".equals(from)) {
+            LOGGER.debug("Deserializing a RingMetadata from String.");
             // raw message split
             String[] parts = from.split(RingMetadataSerializer.SEPARATOR);
 

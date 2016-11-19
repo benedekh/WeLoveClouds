@@ -24,6 +24,7 @@ public class HashDeserializer implements IDeserializer<Hash, String> {
         Hash deserialized = null;
 
         if (from != null && !"null".equals(from)) {
+            LOGGER.debug("Deserializing a Hash from String.");
             // raw message split
             String[] parts = from.split(HashSerializer.SEPARATOR_INSIDE_HASH);
 

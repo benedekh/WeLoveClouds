@@ -31,6 +31,7 @@ public class ServerConnectionInfoDeserializer
         ServerConnectionInfo deserialized = null;
 
         if (from != null && !"null".equals(from)) {
+            LOGGER.debug("Deserializing a ServerConnectionInfo from String.");
             // raw message split
             String[] parts = from.split(ServerConnectionInfoSerializer.SEPARATOR);
 

@@ -1,5 +1,7 @@
 package weloveclouds.kvstore.serialization.helper;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;;
 
@@ -11,6 +13,7 @@ import weloveclouds.hashing.models.RingMetadataPart;;
 public class RingMetadataSerializer implements ISerializer<String, RingMetadata> {
 
     public static final String SEPARATOR = "-\r\r-";
+    private static final Logger LOGGER = Logger.getLogger(RingMetadata.class);
 
     private ISerializer<String, RingMetadataPart> metadataPartSerializer =
             new RingMetadataPartSerializer();
@@ -20,7 +23,9 @@ public class RingMetadataSerializer implements ISerializer<String, RingMetadata>
         String serialized = null;
 
         if (target != null) {
+            LOGGER.debug("Serializing a RingMetadata.");
             serialized = target.toStringWithDelimiter(SEPARATOR, metadataPartSerializer);
+            LOGGER.debug("Serializing a RingMetadata finished.");
         }
 
         return serialized;

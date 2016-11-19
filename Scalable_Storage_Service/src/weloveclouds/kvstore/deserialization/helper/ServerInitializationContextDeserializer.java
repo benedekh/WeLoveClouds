@@ -30,6 +30,7 @@ public class ServerInitializationContextDeserializer
         ServerInitializationContext deserialized = null;
 
         if (from != null && !"null".equals(from)) {
+            LOGGER.debug("Deserializing a ServerInitializationContext from String.");
             // raw message split
             String[] parts = from.split(ServerInitializationContextSerializer.SEPARATOR);
 

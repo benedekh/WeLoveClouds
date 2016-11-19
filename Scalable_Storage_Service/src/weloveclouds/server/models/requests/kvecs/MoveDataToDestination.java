@@ -1,5 +1,8 @@
 package weloveclouds.server.models.requests.kvecs;
 
+
+import org.apache.log4j.Logger;
+
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadataPart;
@@ -20,6 +23,8 @@ import weloveclouds.server.store.models.MovableStorageUnits;
  * @author Benedek
  */
 public class MoveDataToDestination implements IKVECSRequest {
+
+    private static final Logger LOGGER = Logger.getLogger(MoveDataToDestination.class);
 
     private IMovableDataAccessService dataAccessService;
     private RingMetadataPart targetServerInfo;
@@ -45,6 +50,8 @@ public class MoveDataToDestination implements IKVECSRequest {
     @Override
     public KVAdminMessage execute() {
         try {
+            LOGGER.debug("Executing move data request.");
+
             HashRange hashRange = targetServerInfo.getRange();
             MovableStorageUnits filteredEntries = dataAccessService.filterEntries(hashRange);
 
@@ -66,14 +73,17 @@ public class MoveDataToDestination implements IKVECSRequest {
                     } else {
                         dataAccessService.removeEntries(hashRange);
                         dataAccessService.defragment();
+                        LOGGER.debug("Move data request finished successfully.");
                     }
                 } catch (Exception ex) {
+                    LOGGER.error(ex);
                     return createErrorKVAdminMessage(ex.getMessage());
                 } finally {
                     disconnect();
                 }
             }
         } catch (UninitializedServiceException ex) {
+            LOGGER.error(ex);
             return createErrorKVAdminMessage(ex.getMessage());
         }
 
@@ -86,7 +96,7 @@ public class MoveDataToDestination implements IKVECSRequest {
         try {
             communicationApi.disconnect();
         } catch (Exception ex) {
-            // suppress exception
+            LOGGER.error(ex);
         }
     }
 

@@ -1,7 +1,9 @@
 package weloveclouds.server.models.requests.kvecs;
 
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import org.apache.log4j.Logger;
+
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
+import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
@@ -14,6 +16,8 @@ import weloveclouds.server.services.models.DataAccessServiceStatus;
  */
 public class UnlockWriteAccess implements IKVECSRequest {
 
+    private static final Logger LOGGER = Logger.getLogger(UnlockWriteAccess.class);
+
     private IMovableDataAccessService dataAccessService;
 
     public UnlockWriteAccess(IMovableDataAccessService dataAccessService) {
@@ -23,9 +27,12 @@ public class UnlockWriteAccess implements IKVECSRequest {
     @Override
     public KVAdminMessage execute() {
         try {
+            LOGGER.debug("Executing unlock write request.");
             dataAccessService.setServiceStatus(DataAccessServiceStatus.WRITELOCK_INACTIVE);
+            LOGGER.debug("Unlock write request finished successfully.");
             return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
         } catch (UninitializedServiceException ex) {
+            LOGGER.error(ex);
             return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
                     .responseMessage(ex.getMessage()).build();
         }

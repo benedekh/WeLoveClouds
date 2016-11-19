@@ -1,5 +1,7 @@
 package weloveclouds.server.models.requests.kvecs;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.server.services.IMovableDataAccessService;
@@ -14,6 +16,8 @@ import weloveclouds.server.services.models.DataAccessServiceStatus;
  */
 public class LockWriteAccess implements IKVECSRequest {
 
+    private static final Logger LOGGER = Logger.getLogger(LockWriteAccess.class);
+    
     private IMovableDataAccessService dataAccessService;
 
     public LockWriteAccess(IMovableDataAccessService dataAccessService) {
@@ -23,9 +27,12 @@ public class LockWriteAccess implements IKVECSRequest {
     @Override
     public KVAdminMessage execute() {
         try {
+            LOGGER.debug("Executing lock write request.");
             dataAccessService.setServiceStatus(DataAccessServiceStatus.WRITELOCK_ACTIVE);
+            LOGGER.debug("Lock write request finished successfully.");
             return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
         } catch (UninitializedServiceException ex) {
+            LOGGER.error(ex);
             return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
                     .responseMessage(ex.getMessage()).build();
         }

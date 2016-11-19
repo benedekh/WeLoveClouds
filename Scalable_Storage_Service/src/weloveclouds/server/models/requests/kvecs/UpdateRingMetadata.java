@@ -1,5 +1,7 @@
 package weloveclouds.server.models.requests.kvecs;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
@@ -14,8 +16,9 @@ import weloveclouds.server.services.IMovableDataAccessService;
  */
 public class UpdateRingMetadata implements IKVECSRequest {
 
-    private IMovableDataAccessService dataAccessService;
+    private static final Logger LOGGER = Logger.getLogger(UpdateRingMetadata.class);
 
+    private IMovableDataAccessService dataAccessService;
     private RingMetadata ringMetadata;
     private HashRange rangeManagedByServer;
 
@@ -32,8 +35,10 @@ public class UpdateRingMetadata implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
+        LOGGER.debug("Executing update ring metadata write request.");
         dataAccessService.setRingMetadata(ringMetadata);
         dataAccessService.setManagedHashRange(rangeManagedByServer);
+        LOGGER.debug("Update ring metadata write request finished successfully.");
         return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
     }
 

@@ -2,6 +2,8 @@ package weloveclouds.server.core;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
 import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
@@ -29,6 +31,8 @@ import weloveclouds.server.services.IMovableDataAccessService;
  */
 public class ServerFactory {
 
+    private static final Logger LOGGER = Logger.getLogger(ServerFactory.class);
+
     /**
      * Create a Server which serves KVClient requests.
      * 
@@ -38,6 +42,7 @@ public class ServerFactory {
      */
     public Server<KVMessage, IKVClientRequest> createServerForKVClientRequests(int port,
             IDataAccessService dataAccessService) throws IOException {
+        LOGGER.debug("Creating Server for KVClient requests.");
         return new Server.Builder<KVMessage, IKVClientRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
                 .requestFactory(new KVClientRequestFactory(dataAccessService))
@@ -46,8 +51,9 @@ public class ServerFactory {
                 .messageDeserializer(new KVMessageDeserializer()).build();
     }
 
+
     /**
-     * Create a Server which serves KVECS requests.
+     * Create a Server which serves KVServer requests.
      * 
      * @param port where the server shall be started
      * @param dataAccessService that will be the data access service
@@ -55,6 +61,7 @@ public class ServerFactory {
      */
     public Server<KVTransferMessage, IKVServerRequest> createServerForKVServerRequests(int port,
             IMovableDataAccessService dataAccessService) throws IOException {
+        LOGGER.debug("Creating Server for KVServer requests.");
         return new Server.Builder<KVTransferMessage, IKVServerRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
                 .requestFactory(new KVServerRequestFactory(dataAccessService))
@@ -64,7 +71,7 @@ public class ServerFactory {
     }
 
     /**
-     * Create a Server which serves KVServer requests.
+     * Create a Server which serves KVECS requests.
      * 
      * @param port where the server shall be started
      * @param dataAccessService that will be the data access service
@@ -72,8 +79,8 @@ public class ServerFactory {
      */
     public Server<KVAdminMessage, IKVECSRequest> createServerForKVECSRequests(int port,
             IMovableDataAccessService dataAccessService) throws IOException {
-
         CommunicationApiFactory communicationApiFactory = new CommunicationApiFactory();
+        LOGGER.debug("Creating Server for KVECS requests.");
         return new Server.Builder<KVAdminMessage, IKVECSRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
                 .requestFactory(new KVECSRequestFactory(dataAccessService, communicationApiFactory))

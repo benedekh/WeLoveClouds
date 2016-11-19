@@ -22,7 +22,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
 
     private static final int CONNECTION_INFO_INDEX = 0;
     private static final int RANGE_INDEX = 1;
-    
+
     private static final Logger LOGGER = Logger.getLogger(RingMetadataPartDeserializer.class);
 
     private IDeserializer<ServerConnectionInfo, String> connectionInfoDeserializer =
@@ -34,6 +34,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
         RingMetadataPart deserialized = null;
 
         if (from != null && !"null".equals(from)) {
+            LOGGER.debug("Deserializing a RingMetadataPart from String.");
             // raw message split
             String[] parts = from.split(RingMetadataPartSerializer.SEPARATOR);
 
@@ -56,8 +57,8 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
             HashRange range = hashRangeDeserializer.deserialize(hashRangeStr);
 
             // deserialized object
-            deserialized = new RingMetadataPart.Builder()
-                    .connectionInfo(connectionInfo).range(range).build();
+            deserialized = new RingMetadataPart.Builder().connectionInfo(connectionInfo)
+                    .range(range).build();
             LOGGER.debug(join(" ", "Deserialized metadata part is:", deserialized.toString()));
         }
 

@@ -68,7 +68,7 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
                 request = new ShutdownServer();
                 break;
             default:
-                String errorMessage = "Unrecognized command for transfer message";
+                String errorMessage = "Unrecognized command for KVAdmin message";
                 LOGGER.error(join(" ", errorMessage, receivedMessage.toString()));
                 request = new DefaultRequest(errorMessage);
                 break;

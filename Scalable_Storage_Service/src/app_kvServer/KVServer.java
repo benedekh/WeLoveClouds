@@ -74,13 +74,16 @@ public class KVServer {
             IMovableDataAccessService dataAccessService =
                     new DataAccessServiceFactory().createUninitializedMovableDataAccessService();
 
+            LOGGER.debug("Creating the servers for the different requests.");
             Server<KVAdminMessage, IKVECSRequest> serverForECSRequests = serverFactory
                     .createServerForKVECSRequests(ECS_REQUESTS_PORT, dataAccessService);
             Server<KVTransferMessage, IKVServerRequest> serverForKVServerRequests = serverFactory
                     .createServerForKVServerRequests(KVSERVER_REQUESTS_PORT, dataAccessService);
             Server<KVMessage, IKVClientRequest> serverForKVClientRequests =
                     serverFactory.createServerForKVClientRequests(port, dataAccessService);
+            LOGGER.debug("Creating the servers for the different requests finished.");
 
+            LOGGER.debug("Starting the servers for the different requests.");
             serverForECSRequests.start();
             serverForKVServerRequests.start();
             serverForKVClientRequests.start();

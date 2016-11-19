@@ -32,6 +32,7 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
         MovableStorageUnit deserialized = null;
 
         if (from != null && !"null".equals(from)) {
+            LOGGER.debug("Deserializing a MovableStorageUnit from String.");
             // raw message split
             String[] entries = from.split(SEPARATOR_BETWEEN_ENTRIES);
 
@@ -59,6 +60,7 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
             // deserialized object
             deserialized =
                     new MovableStorageUnit(deserializedEntries, FileUtility.createDummyPath());
+            LOGGER.debug("Deserializing a MovableStorageUnit from String finished.");
         }
 
         return deserialized;

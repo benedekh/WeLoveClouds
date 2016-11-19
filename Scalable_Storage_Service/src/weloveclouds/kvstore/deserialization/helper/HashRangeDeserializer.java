@@ -31,6 +31,7 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
         HashRange deserialized = null;
 
         if (from != null && !"null".equals(from)) {
+            LOGGER.debug("Deserializing a HashRange from String.");
             // raw message split
             String[] parts = from.split(HashRangeSerializer.SEPARATOR);
 

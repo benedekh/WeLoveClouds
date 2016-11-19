@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.store.exceptions.StorageException;
@@ -40,6 +41,8 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @param fromStorageUnits from where the entries will be copied
      */
     public void putEntries(MovableStorageUnits fromStorageUnits) throws StorageException {
+        LOGGER.debug("Putting storage units from parameter data structure started.");
+
         for (MovableStorageUnit storageUnit : fromStorageUnits.getStorageUnits()) {
             String filename = UUID.randomUUID().toString();
             Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
@@ -55,6 +58,8 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                 unitsWithFreeSpace.add(storageUnit);
             }
         }
+
+        LOGGER.debug("Putting storage units from parameter data structure finished.");
     }
 
     /**
@@ -65,6 +70,10 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @throws StorageException if an error occurs
      */
     public MovableStorageUnits filterEntries(HashRange range) {
+        LOGGER.debug(
+                CustomStringJoiner.join(" ", "Filtering storage units according to range filter (",
+                        range.toString(), ") started."));
+
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<MovableStorageUnit> toBeCopied = new HashSet<>();
 
@@ -72,6 +81,8 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             toBeCopied.add(new MovableStorageUnit(storageUnit).copyEntries(range));
         }
 
+        LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(toBeCopied.size()),
+                " storage units are filtered."));
         return new MovableStorageUnits(toBeCopied);
     }
 
@@ -82,6 +93,11 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @throws StorageException if an error occurs
      */
     public void removeEntries(HashRange range) throws StorageException {
+        LOGGER.debug(
+                CustomStringJoiner.join(" ", "Removing storage units according to range filter (",
+                        range.toString(), ") started."));
+
+
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<String> keysToBeRemoved = new HashSet<>();
 
@@ -109,6 +125,9 @@ public class MovablePersistentStorage extends KVPersistentStorage {
         for (String key : keysToBeRemoved) {
             removeKeyFromStore(key);
         }
+
+        LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(keysToBeRemoved.size()),
+                "storage units were removed from the persistent storage according to the range filter."));
     }
 
     /**
@@ -116,6 +135,8 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * accordingly after the operation is finished.
      */
     public void defragment() {
+        LOGGER.debug("Defragmentation started.");
+
         Iterator<PersistedStorageUnit> storageUnitIterator =
                 collectNotFullStorageUnits().iterator();
 
@@ -168,12 +189,17 @@ public class MovablePersistentStorage extends KVPersistentStorage {
         } finally {
             unitsWithFreeSpace.clear();
 
+            LOGGER.debug("Refreshing the data structure which stores the free stroage units.");
             for (PersistedStorageUnit hasFreeSpace : collectNotFullStorageUnits()) {
                 if (!unitsWithFreeSpace.contains(hasFreeSpace)) {
                     unitsWithFreeSpace.add(hasFreeSpace);
                 }
             }
+            LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(unitsWithFreeSpace.size()),
+                    " storage units have free space after defragmentation."));
         }
+
+        LOGGER.debug("Defragmentation finished.");
     }
 
     /**
