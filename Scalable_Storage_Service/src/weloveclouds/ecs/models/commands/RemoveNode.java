@@ -2,18 +2,21 @@ package weloveclouds.ecs.models.commands;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.ecs.api.IKVEcsApi;
+
 /**
  * 
  * @author hb
  *
  */
 
-public class Removenode extends AbstractEcsApiCommand{
+public class RemoveNode extends AbstractEcsApiCommand{
     
-    private static final Logger LOGGER = Logger.getLogger(Removenode.class);
+    private static final Logger LOGGER = Logger.getLogger(RemoveNode.class);
     
-    public Removenode(String[] arguments) {
-        super(arguments);
+    public RemoveNode(String[] arguments, IKVEcsApi ecsApi) {
+        super(arguments, ecsApi);
+
     }
 
     @Override

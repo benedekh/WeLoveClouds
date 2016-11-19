@@ -14,12 +14,11 @@ import weloveclouds.client.utils.CustomStringJoiner;
  */
 public enum EcsCommand {
     INIT("initService"), START("start"), STOP("stop"), SHUTDOWN("shutdown"),
-    ADDNODE("addnode"), REMOVENODE("removenode"), DEFAULT("default"), LOGLEVEL("loglevel");
+    ADD_NODE("addnode"), REMOVE_NODE("removenode"), DEFAULT("default"), LOGLEVEL("loglevel"),
+    QUIT("quit");
     //do we need a loglevel command?
     
     private static final Logger LOGGER = Logger.getLogger(EcsCommand.class);
-
-    private static final Map<String, EcsCommand> commandNames = getCommandNames();
 
     private String customName;
     
@@ -46,7 +45,8 @@ public enum EcsCommand {
      * Converts the parameter to a command if its name matches with one of the commands. Otherwise
      * it returns {@link #DEFAULT}
      */
-    public static EcsCommand fromString(String command) {
+    public static EcsCommand convertToString(String command) {
+        Map<String, EcsCommand> commandNames = getCommandNames();
         EcsCommand recognized = (command == null || !commandNames.containsKey(command) ? DEFAULT
                 : commandNames.get(command));
         if (recognized == DEFAULT) {

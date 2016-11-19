@@ -2,13 +2,16 @@ package weloveclouds.ecs.models.commands;
 
 import org.apache.log4j.Logger;
 
-public class Loglevel extends AbstractCommand {
+public class Quit extends AbstractCommand {
 
-    private static final Logger LOGGER = Logger.getLogger(Loglevel.class);
+    private static final Logger LOGGER = Logger.getLogger(Quit.class);
     
-    public Loglevel(String[] arguments){
+    public Quit(String[] arguments) {
         super(arguments);
     }
+
+    
+    
     @Override
     public ICommand validate() throws IllegalArgumentException {
         // TODO Auto-generated method stub

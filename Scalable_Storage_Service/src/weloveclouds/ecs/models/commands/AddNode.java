@@ -2,18 +2,20 @@ package weloveclouds.ecs.models.commands;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.ecs.api.IKVEcsApi;
+
 /**
  * 
  * @author hb
- *  This class contains only stubs
+ *  
  */
-public class Addnode extends AbstractEcsApiCommand{
+public class AddNode extends AbstractEcsApiCommand{
 
-    private static final Logger LOGGER = Logger.getLogger(Addnode.class);
+    private static Logger logger;
     
-    public Addnode(String[] arguments) {
-        super(arguments);
-        // TODO Auto-generated constructor stub
+    public AddNode(String[] arguments, IKVEcsApi ecsApi) {
+        super(arguments, ecsApi);
+        logger = Logger.getLogger(getClass());
     }
 
     @Override

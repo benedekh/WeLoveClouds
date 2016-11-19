@@ -2,6 +2,8 @@ package weloveclouds.ecs.models.commands;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.ecs.api.IKVEcsApi;
+
 /**
  * 
  * @author hb
@@ -12,9 +14,8 @@ public class Init extends AbstractEcsApiCommand{
     
     private static final Logger LOGGER = Logger.getLogger(Init.class);
 
-    public Init(String[] arguments) {
-        super(arguments);
-        // TODO Auto-generated constructor stub
+    public Init(String[] arguments, IKVEcsApi ecsApi) {
+        super(arguments, ecsApi);
     }
 
     @Override
