@@ -35,15 +35,13 @@ public class KVAdminMessageTest {
             throws DeserializationException, UnknownHostException {
         HashRange managedRange = new HashRange.Builder().start(HashingUtil.getHash("a"))
                 .end(HashingUtil.getHash("b")).build();
-        RingMetadataPart metadataPart =
-                new RingMetadataPart.Builder()
-                        .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                                .ipAddress("localhost").port(8080).build())
-                        .range(managedRange).build();
+        RingMetadataPart metadataPart = new RingMetadataPart.Builder().connectionInfo(
+                new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build())
+                .range(managedRange).build();
         RingMetadata metadata = new RingMetadata(new HashSet<>(Arrays.asList(metadataPart,
                 new RingMetadataPart.Builder()
-                        .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                                .ipAddress("localhost").port(8082).build())
+                        .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost")
+                                .port(8082).build())
                         .range(new HashRange.Builder().start(Hash.MIN_VALUE).end(Hash.MAX_VALUE)
                                 .build())
                         .build())));

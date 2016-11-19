@@ -31,15 +31,15 @@ public class RingMetadataTest {
             throws DeserializationException, UnknownHostException {
 
         RingMetadataPart metadataPart1 = new RingMetadataPart.Builder()
-                .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                        .ipAddress("localhost").port(8080).build())
+                .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080)
+                        .build())
                 .range(new HashRange.Builder().start(HashingUtil.getHash("a"))
                         .end(HashingUtil.getHash("b")).build())
                 .build();
 
         RingMetadataPart metadataPart2 = new RingMetadataPart.Builder()
-                .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                        .ipAddress("localhost").port(8082).build())
+                .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost").port(8082)
+                        .build())
                 .range(new HashRange.Builder().start(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
                 .build();
 

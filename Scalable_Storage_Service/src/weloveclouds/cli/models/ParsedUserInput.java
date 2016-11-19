@@ -12,7 +12,7 @@ public class ParsedUserInput {
     private String command;
     private String[] arguments = {};
 
-    protected ParsedUserInput(ParsedUserInputBuilder builder) {
+    protected ParsedUserInput(Builder builder) {
         this.command = builder.command;
         this.arguments = builder.argument;
     }
@@ -34,16 +34,16 @@ public class ParsedUserInput {
      *
      * @author Benedek
      */
-    public static class ParsedUserInputBuilder {
+    public static class Builder {
         private String command;
         private String[] argument;
 
-        public ParsedUserInputBuilder command(String command) {
+        public Builder command(String command) {
             this.command = command;
             return this;
         }
 
-        public ParsedUserInputBuilder arguments(String[] argument) {
+        public Builder arguments(String[] argument) {
             this.argument = argument;
             return this;
         }

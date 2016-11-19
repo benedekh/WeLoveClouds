@@ -47,8 +47,7 @@ public class Server extends AbstractServer {
 
             while (status == RUNNING) {
                 new SimpleConnectionHandler.SimpleConnectionBuilder()
-                        .connection(
-                                new Connection.ConnectionBuilder().socket(socket.accept()).build())
+                        .connection(new Connection.Builder().socket(socket.accept()).build())
                         .requestFactory(requestFactory)
                         .communicationApi(
                                 communicationApiFactory.createConcurrentCommunicationApiV1())

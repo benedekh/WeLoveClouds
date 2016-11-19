@@ -49,10 +49,10 @@ public class CommunicationServiceTest {
     public void setUp() throws Exception {
         communicationService = new CommunicationService(socketFactoryMock);
 
-        validServerConnectionInfos = new ServerConnectionInfo.ServerConnectionInfoBuilder()
+        validServerConnectionInfos = new ServerConnectionInfo.Builder()
                 .ipAddress(InetAddress.getByName(VALID_SERVER_IP_ADDRESS)).port(VALID_SERVER_PORT)
                 .build();
-        invalidServerConnectionInfos = new ServerConnectionInfo.ServerConnectionInfoBuilder()
+        invalidServerConnectionInfos = new ServerConnectionInfo.Builder()
                 .ipAddress(InetAddress.getByName(INVALID_SERVER_IP_ADDRESS)).port(VALID_SERVER_PORT)
                 .build();
 

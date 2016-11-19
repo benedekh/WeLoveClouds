@@ -47,8 +47,8 @@ public class ServerConnectionInfoDeserializer
                 int port = Integer.valueOf(portStr);
 
                 // deserialized object
-                deserialized = new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                        .ipAddress(ipAddress).port(port).build();
+                deserialized =
+                        new ServerConnectionInfo.Builder().ipAddress(ipAddress).port(port).build();
                 LOGGER.debug(
                         join(" ", "Deserialized connection info is:", deserialized.toString()));
             } catch (NumberFormatException ex) {
