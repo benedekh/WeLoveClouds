@@ -6,6 +6,11 @@ import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 
+/**
+ * A start request to the {@link IMovableDataAccessService}, which stops the service.
+ * 
+ * @author Benedek
+ */
 public class StopDataAccessService implements IKVECSRequest {
 
     private IMovableDataAccessService dataAccessService;

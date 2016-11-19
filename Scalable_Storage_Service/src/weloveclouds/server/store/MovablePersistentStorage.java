@@ -24,9 +24,6 @@ import weloveclouds.server.store.models.PersistedStorageUnit;
  * Represents a {@link KVPersistentStorage}, whose entries and storage units can be filtered,
  * removed, or new storage units can be added to that.
  * 
- * Besides, the {@link #putEntry(KVEntry)} and {@link #removeEntry(String)} method's accessibility
- * can be limited by applying a {@link #writeLockActive} flag.
- * 
  * @author Benedek
  */
 public class MovablePersistentStorage extends KVPersistentStorage {

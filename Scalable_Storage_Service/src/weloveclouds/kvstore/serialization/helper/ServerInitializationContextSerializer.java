@@ -3,6 +3,11 @@ package weloveclouds.kvstore.serialization.helper;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.server.models.ServerInitializationContext;
 
+/**
+ * A serializer which converts a {@link ServerInitializationContext} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class ServerInitializationContextSerializer
         implements ISerializer<String, ServerInitializationContext> {
 

@@ -10,6 +10,11 @@ import weloveclouds.hashing.models.HashRange;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.HashRangeSerializer;
 
+/**
+ * A deserializer which converts a {@link HashRange} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
 
     private static final int NUMBER_OF_HASH_RANGE_PARTS = 2;

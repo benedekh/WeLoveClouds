@@ -15,6 +15,12 @@ import weloveclouds.kvstore.serialization.helper.MovableStorageUnitSerializer;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.utils.FileUtility;
 
+/**
+ * Tests for the {@link MovableStorageUnit} to verify its serialization and deserialization
+ * processes.
+ * 
+ * @author Benedek
+ */
 public class MovableStorageUnitTest {
 
     private static final IDeserializer<MovableStorageUnit, String> storageUnitDeserializer =

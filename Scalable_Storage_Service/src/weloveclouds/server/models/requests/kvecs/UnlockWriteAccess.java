@@ -6,6 +6,12 @@ import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 
+/**
+ * An unlock request to the {@link IMovableDataAccessService}, which releases the previously
+ * activate write lock.
+ * 
+ * @author Benedek
+ */
 public class UnlockWriteAccess implements IKVECSRequest {
 
     private IMovableDataAccessService dataAccessService;

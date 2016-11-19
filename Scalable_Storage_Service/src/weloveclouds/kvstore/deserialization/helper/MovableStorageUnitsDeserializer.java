@@ -8,6 +8,11 @@ import weloveclouds.kvstore.serialization.helper.MovableStorageUnitsSerializer;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
+/**
+ * A deserializer which converts a {@link MovableStorageUnits} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class MovableStorageUnitsDeserializer implements IDeserializer<MovableStorageUnits, String> {
 
     private IDeserializer<MovableStorageUnit, String> storageUnitDeserializer =

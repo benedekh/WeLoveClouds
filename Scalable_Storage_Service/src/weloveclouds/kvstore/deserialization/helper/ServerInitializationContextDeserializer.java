@@ -9,6 +9,11 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.ServerInitializationContextSerializer;
 import weloveclouds.server.models.ServerInitializationContext;
 
+/**
+ * A deserializer which converts a {@link ServerInitializationContext} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class ServerInitializationContextDeserializer
         implements IDeserializer<ServerInitializationContext, String> {
 

@@ -8,11 +8,17 @@ import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.models.ServerInitializationContext;
 import weloveclouds.server.services.IMovableDataAccessService;
-import weloveclouds.server.services.exceptions.ServiceIsInitializedException;
+import weloveclouds.server.services.exceptions.ServiceIsAlreadyInitializedException;
 import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
 
+/**
+ * An initialization request to the {@link IMovableDataAccessService}, which initializes the
+ * service.
+ * 
+ * @author Benedek
+ */
 public class InitializeKVServer implements IKVECSRequest {
 
     private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("/");
@@ -20,6 +26,11 @@ public class InitializeKVServer implements IKVECSRequest {
     private IMovableDataAccessService dataAccessService;
     private ServerInitializationContext serverInitializationContext;
 
+    /**
+     * @param dataAccessService which is used for the data access
+     * @param initializationContext the context object which contains the initialization parameters
+     *        for the data access service
+     */
     public InitializeKVServer(IMovableDataAccessService dataAccessService,
             ServerInitializationContext initializationContext) {
         this.dataAccessService = dataAccessService;
@@ -44,7 +55,7 @@ public class InitializeKVServer implements IKVECSRequest {
                         .rootFolderPath(PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER).build();
         try {
             dataAccessService.initializeService(initializationInfo);
-        } catch (ServiceIsInitializedException ex) {
+        } catch (ServiceIsAlreadyInitializedException ex) {
             return createErrorKVAdminMessage(ex.getMessage());
         }
 

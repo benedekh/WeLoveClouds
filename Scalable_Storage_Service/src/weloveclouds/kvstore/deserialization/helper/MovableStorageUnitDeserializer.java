@@ -13,6 +13,11 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.utils.FileUtility;
 
+/**
+ * A deserializer which converts a {@link MovableStorageUnit} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class MovableStorageUnitDeserializer implements IDeserializer<MovableStorageUnit, String> {
 
     private static final int NUMBER_OF_ENTRY_PARTS = 2;

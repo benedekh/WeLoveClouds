@@ -86,6 +86,11 @@ public class KVTransferMessage implements IKVTransferMessage {
                 responseMessage == null ? null : responseMessage.toString());
     }
 
+    /**
+     * Builder pattern for creating a {@link KVTransferMessage} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private StatusType status;
         private MovableStorageUnits storageUnits;

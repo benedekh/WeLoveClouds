@@ -8,10 +8,11 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
  * @author Benoit
  */
 public interface IDeserializer<T, E> {
+
     /**
      * Converts a serialized object to a T type.
      * 
-     * @return the T type representation of the source (from) object, or null if target == null
+     * @return the T type representation of the source object, or null if it is null
      * 
      * @throws DeserializationException if any error occurs
      */

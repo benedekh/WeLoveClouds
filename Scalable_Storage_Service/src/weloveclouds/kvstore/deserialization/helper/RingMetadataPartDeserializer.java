@@ -11,6 +11,11 @@ import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
 
+/**
+ * A deserializer which converts a {@link RingMetadataPart} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataPart, String> {
 
     private static final int NUMBER_OF_RANGE_INFO_PARTS = 2;

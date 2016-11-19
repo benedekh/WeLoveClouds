@@ -2,13 +2,19 @@ package weloveclouds.server.services;
 
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.server.services.exceptions.ServiceIsInitializedException;
+import weloveclouds.server.services.exceptions.ServiceIsAlreadyInitializedException;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
+/**
+ * A common interface to those {@link IDataAccessService} implementations whose underlying storage
+ * units can be moved.
+ * 
+ * @author Benedek
+ */
 public interface IMovableDataAccessService extends IDataAccessService {
 
     /**
@@ -71,6 +77,6 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * Initializes the data access service with the referred parameters.
      */
     public void initializeService(DataAccessServiceInitializationContext initializationInfo)
-            throws ServiceIsInitializedException;
+            throws ServiceIsAlreadyInitializedException;
 
 }

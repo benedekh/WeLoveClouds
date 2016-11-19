@@ -4,6 +4,11 @@ import java.util.Arrays;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 
+/**
+ * Represents an arbitrary long hash value stored as a byte array.
+ *
+ * @author Benedek
+ */
 public class Hash implements Comparable<Hash> {
 
     public static final Hash MAX_VALUE;
@@ -96,6 +101,10 @@ public class Hash implements Comparable<Hash> {
         return EQUALS;
     }
 
+    /**
+     * Converts the object to String, using the delimiter character as a separator among the byte
+     * values.
+     */
     public String toStringWithDelimiter(String delimiter) {
         StringBuilder sb = new StringBuilder();
         for (byte b : hash) {

@@ -15,6 +15,11 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.models.ServerInitializationContext;
 
+/**
+ * Tests for the {@link KVAdminMessage} to verify its serialization and deserialization processes.
+ * 
+ * @author Benedek
+ */
 public class KVAdminMessageTest {
 
     private static IMessageDeserializer<KVAdminMessage, SerializedMessage> adminMessageDeserializer =

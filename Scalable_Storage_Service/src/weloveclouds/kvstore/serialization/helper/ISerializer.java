@@ -10,7 +10,7 @@ public interface ISerializer<T, E> {
     /**
      * Serializes an object to a T type.
      * 
-     * @return the T type representation of the target object, or null if target == null
+     * @return the T type representation of the target object, or null if it is null
      */
     T serialize(E target);
 }

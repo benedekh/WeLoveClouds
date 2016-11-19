@@ -20,6 +20,9 @@ import weloveclouds.server.core.requests.IRequestFactory;
  * message from the client over the network, and forwards the clients' requests to the data access
  * layer.
  * 
+ * @param <M> the type of the message the server accepts
+ * @param <R> the type of the request which shall be created from M
+ * 
  * @author Benoit
  */
 public class SimpleConnectionHandler<M, R extends IExecutable<M>> extends Thread

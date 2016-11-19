@@ -122,6 +122,11 @@ public class KVAdminMessage implements IKVAdminMessage {
         return true;
     }
 
+    /**
+     * Builder pattern for creating a {@link KVAdminMessage} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private StatusType status;
         private ServerInitializationContext initializationContext;

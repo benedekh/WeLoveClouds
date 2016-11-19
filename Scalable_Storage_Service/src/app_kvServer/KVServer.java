@@ -1,6 +1,7 @@
 package app_kvServer;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -20,18 +21,17 @@ import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.DataAccessServiceFactory;
+import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
-import weloveclouds.server.store.cache.strategy.FIFOStrategy;
-import weloveclouds.server.store.cache.strategy.LFUStrategy;
-import weloveclouds.server.store.cache.strategy.LRUStrategy;
+import weloveclouds.server.store.cache.strategy.StrategyFactory;
 import weloveclouds.server.utils.ArgumentsValidator;
 import weloveclouds.server.utils.LogSetup;
 
 /**
- * 
- * Server application. See {@link ServerCLIHandler} for more details.
+ * KVServer application which starts a {@link ServerSocket} to accept connections and to transform
+ * them into requests to the {@link IDataAccessService}.
  * 
  * @author Benoit, Benedek, Hunton
  */
@@ -49,8 +49,6 @@ public class KVServer {
 
     /**
      * The entry point of the application.
-     * 
-     * @param args is discarded so far
      */
     public static void main(String[] args) {
         if (args.length == 0) {
@@ -137,21 +135,12 @@ public class KVServer {
             defaultStoragePath.toAbsolutePath().toFile().mkdirs();
         }
 
-        DisplacementStrategy displacementStrategy = null;
+        DisplacementStrategy displacementStrategy =
+                StrategyFactory.createDisplacementStrategy(strategy);
 
-        switch (strategy) {
-            case "FIFO":
-                displacementStrategy = new FIFOStrategy();
-                break;
-            case "LRU":
-                displacementStrategy = new LRUStrategy();
-                break;
-            case "LFU":
-                displacementStrategy = new LFUStrategy();
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        "Invalid strategy. Valid values are: FIFO, LRU, LFU");
+        if (displacementStrategy == null) {
+            throw new IllegalArgumentException(
+                    "Invalid strategy. Valid values are: FIFO, LRU, LFU");
         }
 
         ArgumentsValidator.validatePortArguments(new String[] {String.valueOf(port)});

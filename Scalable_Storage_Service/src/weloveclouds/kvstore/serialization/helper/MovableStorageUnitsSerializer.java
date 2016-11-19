@@ -3,6 +3,11 @@ package weloveclouds.kvstore.serialization.helper;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
+/**
+ * A serializer which converts a {@link MovableStorageUnits} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class MovableStorageUnitsSerializer implements ISerializer<String, MovableStorageUnits> {
 
     public static final String SEPARATOR_BETWEEN_STORAGE_UNITS = "-\r-";

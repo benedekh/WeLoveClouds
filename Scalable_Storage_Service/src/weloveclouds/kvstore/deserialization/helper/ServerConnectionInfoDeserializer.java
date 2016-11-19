@@ -11,6 +11,11 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 
+/**
+ * A deserializer which converts a {@link ServerConnectionInfo} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class ServerConnectionInfoDeserializer
         implements IDeserializer<ServerConnectionInfo, String> {
 

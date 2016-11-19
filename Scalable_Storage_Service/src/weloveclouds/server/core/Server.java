@@ -16,10 +16,13 @@ import weloveclouds.server.core.requests.IExecutable;
 import weloveclouds.server.core.requests.IRequestFactory;
 
 /**
- * An exact KV server instance which accepts messages over the network and can handle multiple
- * clients concurrently. For further details refer to {@link SimpleConnectionHandler}.
+ * A Server instance which accepts messages over the network and can handle multiple clients
+ * concurrently. For further details refer to {@link SimpleConnectionHandler}.
  * 
- * @author Benoit
+ * @param <M> the type of the message the server accepts
+ * @param <R> the type of the request which shall be created from M
+ * 
+ * @author Benoit, Benedek
  */
 public class Server<M, R extends IExecutable<M>> extends AbstractServer {
 

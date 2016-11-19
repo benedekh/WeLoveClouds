@@ -9,6 +9,11 @@ import weloveclouds.hashing.models.Hash;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.HashSerializer;
 
+/**
+ * A deserializer which converts a {@link Hash} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class HashDeserializer implements IDeserializer<Hash, String> {
 
     private static final int NUMBER_OF_HASH_PARTS = 16;

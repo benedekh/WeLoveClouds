@@ -1,7 +1,7 @@
 package weloveclouds.kvstore.serialization.exceptions;
 
 /**
- * An exception which occured during deserialization.
+ * An exception which occurred during deserialization.
  * 
  * @author Benedek
  */

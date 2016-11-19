@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
- * To ccreate a displacement startegy based on its name.
+ * To create a displacement strategy based on its name.
  * 
  * @author Benedek
  */

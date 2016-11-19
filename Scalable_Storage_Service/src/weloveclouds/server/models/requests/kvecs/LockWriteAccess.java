@@ -6,6 +6,12 @@ import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 
+/**
+ * A lock request to the {@link IMovableDataAccessService}, which forbids PUT and DELETE requests to
+ * be processed.
+ * 
+ * @author Benedek
+ */
 public class LockWriteAccess implements IKVECSRequest {
 
     private IMovableDataAccessService dataAccessService;

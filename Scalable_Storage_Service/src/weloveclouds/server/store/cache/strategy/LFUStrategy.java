@@ -20,7 +20,7 @@ import weloveclouds.server.store.exceptions.StorageException;
 public class LFUStrategy implements DisplacementStrategy {
 
     private static final Logger LOGGER = Logger.getLogger(LFUStrategy.class);
-    
+
     private Map<String, KeyFrequency> keyFrequencyPairs;
 
     public LFUStrategy() {
@@ -60,7 +60,7 @@ public class LFUStrategy implements DisplacementStrategy {
     public synchronized void get(String key) {
         try {
             KeyFrequency keyFrequency = keyFrequencyPairs.get(key);
-            keyFrequency.increaseFrequency();
+            keyFrequency.increaseFrequencyByOne();
             LOGGER.debug(CustomStringJoiner.join(" ", keyFrequency.toString(),
                     "is updated in the LFU strategy store."));
         } catch (NullPointerException ex) {

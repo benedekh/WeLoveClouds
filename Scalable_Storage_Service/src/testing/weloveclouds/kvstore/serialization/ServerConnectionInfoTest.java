@@ -12,6 +12,12 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 
+/**
+ * Tests for the {@link ServerConnectionInfo} to verify its serialization and deserialization
+ * processes.
+ * 
+ * @author Benedek
+ */
 public class ServerConnectionInfoTest {
 
     private static final IDeserializer<ServerConnectionInfo, String> connectionInfoDeserializer =

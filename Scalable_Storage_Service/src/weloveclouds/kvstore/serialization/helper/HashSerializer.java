@@ -2,6 +2,11 @@ package weloveclouds.kvstore.serialization.helper;
 
 import weloveclouds.hashing.models.Hash;
 
+/**
+ * A serializer which converts a {@link Hash} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class HashSerializer implements ISerializer<String, Hash> {
 
     public static final String SEPARATOR_INSIDE_HASH = "-\t-";

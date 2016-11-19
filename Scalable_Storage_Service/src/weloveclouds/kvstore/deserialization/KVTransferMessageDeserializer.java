@@ -14,6 +14,11 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
+/**
+ * A deserializer which converts a {@link SerializedMessage} to a {@link KVTransferMessage}.
+ * 
+ * @author Benedek
+ */
 public class KVTransferMessageDeserializer
         implements IMessageDeserializer<KVTransferMessage, SerializedMessage> {
 

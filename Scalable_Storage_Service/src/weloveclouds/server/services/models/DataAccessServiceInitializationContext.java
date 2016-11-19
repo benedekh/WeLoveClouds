@@ -2,8 +2,19 @@ package weloveclouds.server.services.models;
 
 import java.nio.file.Path;
 
+import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
+import weloveclouds.server.store.models.PersistedStorageUnit;
 
+/**
+ * An initialization context object which stores those parameters that are neccessary for the
+ * correct behavior of a {@link DataAccessService}. E.g.:<br>
+ * (1) size of the cache,<br>
+ * (2) displacement startegy to be used in the cache,<br>
+ * (3) path for the {@link PersistedStorageUnit} where it stores the entries.
+ * 
+ * @author Benedek
+ */
 public class DataAccessServiceInitializationContext {
 
     private int cacheSize;
@@ -28,6 +39,11 @@ public class DataAccessServiceInitializationContext {
         return storageRootFolderPath;
     }
 
+    /**
+     * A builder to create a {@link DataAccessServiceInitializationContext} instance.
+     * 
+     * @author Benoit
+     */
     public static class Builder {
         private int cacheSize;
         private DisplacementStrategy displacementStrategy;

@@ -12,6 +12,12 @@ import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.ServerInitializationContextSerializer;
 import weloveclouds.server.models.ServerInitializationContext;
 
+/**
+ * Tests for the {@link ServerInitializationContext} to verify its serialization and deserialization
+ * processes.
+ * 
+ * @author Benedek
+ */
 public class ServerInitializationContextTest {
 
     private static final IDeserializer<ServerInitializationContext, String> contextDeserializer =

@@ -9,7 +9,7 @@ import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 /**
- * An exact serializer which converts a {@link KVMessage} to a {@link SerializedMessage}.
+ * A serializer which converts a {@link KVMessage} to a {@link SerializedMessage}.
  * 
  * @author Benoit
  */

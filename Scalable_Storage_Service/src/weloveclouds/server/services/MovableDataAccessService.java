@@ -11,7 +11,7 @@ import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
-import weloveclouds.server.services.exceptions.ServiceIsInitializedException;
+import weloveclouds.server.services.exceptions.ServiceIsAlreadyInitializedException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.exceptions.WriteLockIsActiveException;
@@ -25,6 +25,12 @@ import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
+/**
+ * An implementation of {@link IMovableDataAccessService} whose underlying storage units can be
+ * moved.
+ * 
+ * @author Benedek
+ */
 public class MovableDataAccessService extends DataAccessService
         implements IMovableDataAccessService {
 
@@ -181,9 +187,9 @@ public class MovableDataAccessService extends DataAccessService
 
     @Override
     public void initializeService(DataAccessServiceInitializationContext initializationInfo)
-            throws ServiceIsInitializedException {
+            throws ServiceIsAlreadyInitializedException {
         if (isServiceInitialized()) {
-            throw new ServiceIsInitializedException();
+            throw new ServiceIsAlreadyInitializedException();
         }
 
         int cacheSize = initializationInfo.getCacheSize();

@@ -17,9 +17,9 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.models.ServerInitializationContext;
 
 /**
- * An exact serializer which converts a {@link KVAdminMessage} to a {@link SerializedMessage}.
+ * A serializer which converts a {@link KVAdminMessage} to a {@link SerializedMessage}.
  * 
- * @author Benoit
+ * @author Benedek
  */
 public class KVAdminMessageSerializer
         implements IMessageSerializer<SerializedMessage, KVAdminMessage> {

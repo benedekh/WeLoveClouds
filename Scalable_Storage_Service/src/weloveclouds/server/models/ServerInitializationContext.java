@@ -66,6 +66,11 @@ public class ServerInitializationContext {
         return true;
     }
 
+    /**
+     * A builder to create a {@link ServerInitializationContext} instance.
+     * 
+     * @author Benedek
+     */
     public static class Builder {
         private int cacheSize;
         private String displacementStrategyName;

@@ -22,7 +22,7 @@ import weloveclouds.server.models.ServerInitializationContext;
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link KVAdminMessage}.
  * 
- * @author Benoit
+ * @author Benedek
  */
 public class KVAdminMessageDeserializer
         implements IMessageDeserializer<KVAdminMessage, SerializedMessage> {

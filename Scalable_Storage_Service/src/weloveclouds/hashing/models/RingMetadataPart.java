@@ -23,15 +23,27 @@ public class RingMetadataPart {
     public ServerConnectionInfo getConnectionInfo() {
         return connectionInfo;
     }
-    
-    public HashRange getRange(){
+
+    public HashRange getRange() {
         return range;
     }
 
+    /**
+     * @return true if the {@link #range} contains the referred hash.
+     */
     public boolean rangeContains(Hash hash) {
         return range.contains(hash);
     }
 
+
+    /**
+     * Converts the object to String.
+     * 
+     * @param delimiter separator character among the fields
+     * @param connectionInfoSerializer to convert the {@link ServerConnectionInfo} into a String
+     *        representation
+     * @param hashRangeSerializer to convert the {@link HashRange} into a String representation
+     */
     public String toStringWithDelimiter(String delimiter,
             ISerializer<String, ServerConnectionInfo> connectionInfoSerializer,
             ISerializer<String, HashRange> hashRangeSerializer) {
@@ -84,6 +96,11 @@ public class RingMetadataPart {
         return true;
     }
 
+    /**
+     * Builder pattern for creating a {@link RingMetadataPart} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private ServerConnectionInfo connectionInfo;
         private HashRange range;
