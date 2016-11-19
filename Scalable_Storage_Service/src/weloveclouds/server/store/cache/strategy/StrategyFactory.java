@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  */
 public class StrategyFactory {
 
-    private static Logger LOGGER = Logger.getLogger(StrategyFactory.class);
+    private static final Logger LOGGER = Logger.getLogger(StrategyFactory.class);
 
     /**
      * Creates a {@link DisplacementStrategy} from the respective name.
@@ -33,21 +33,12 @@ public class StrategyFactory {
                 displacementStrategy = new LFUStrategy();
                 break;
             default:
-                logError(join(" ", "Unrecognized displacement startegy:",
+                LOGGER.error(join(" ", "Unrecognized displacement startegy:",
                         displacemenetStrategyName));
                 break;
         }
 
         return displacementStrategy;
-    }
-
-    /**
-     * Thread-safe logging for errors.
-     */
-    private static void logError(Object error) {
-        synchronized (LOGGER) {
-            LOGGER.error(error);
-        }
     }
 
 }

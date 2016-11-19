@@ -19,10 +19,10 @@ import weloveclouds.kvstore.deserialization.helper.IDeserializer;
  * @author Benoit
  */
 public class CommandFactory {
+    private static final Logger LOGGER = Logger.getLogger(CommandFactory.class);
+
     private IKVCommunicationApiV2 communicationApi;
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
-
-    private Logger logger;
 
     /**
      * @param communicationApi an instance for the communication module for those commands which
@@ -33,7 +33,6 @@ public class CommandFactory {
     public CommandFactory(IKVCommunicationApiV2 communicationApi,
             IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         this.communicationApi = communicationApi;
-        this.logger = Logger.getLogger(getClass());
     }
 
     /**
@@ -74,7 +73,7 @@ public class CommandFactory {
                 recognizedCommand = new Quit(userInput.getArguments());
                 break;
             default:
-                logger.info(join(" ", "Unrecognized command:", userCommand.toString()));
+                LOGGER.info(join(" ", "Unrecognized command:", userCommand.toString()));
                 recognizedCommand = new DefaultCommand(null);
                 break;
         }

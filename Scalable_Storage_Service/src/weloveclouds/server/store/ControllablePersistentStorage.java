@@ -31,12 +31,12 @@ import weloveclouds.server.store.models.PersistedStorageUnit;
  */
 public class ControllablePersistentStorage extends KVPersistentStorage {
 
+    private static final Logger LOGGER = Logger.getLogger(ControllablePersistentStorage.class);
+    
     private volatile boolean writeLockActive;
-    private Logger logger;
 
     public ControllablePersistentStorage(Path rootPath) throws IllegalArgumentException {
         super(rootPath);
-        this.logger = Logger.getLogger(getClass());
     }
 
     public void setWriteLockActive(boolean isActive) {
@@ -83,7 +83,7 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
                     unitsWithFreeSpace.add(storageUnit);
                 }
             } catch (StorageException e) {
-                logger.error(e);
+                LOGGER.error(e);
             }
         }
     }
@@ -132,7 +132,7 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
                     keysToBeRemoved.addAll(removedKeys);
                 }
             } catch (IOException e) {
-                logger.error(e);
+                LOGGER.error(e);
             }
         }
 
@@ -164,7 +164,7 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
                     storageUnit.save();
                     otherUnit.save();
                 } catch (StorageException ex) {
-                    logger.error(ex);
+                    LOGGER.error(ex);
                 }
 
                 // update references for the moved keys
@@ -186,7 +186,7 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
                     try {
                         otherUnit.deleteFile();
                     } catch (IOException ex) {
-                        logger.error(ex);
+                        LOGGER.error(ex);
                     }
                     unitsWithFreeSpace.remove(otherUnit);
                 }
@@ -227,7 +227,7 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
             current.save();
             nextUnit.save();
         } catch (StorageException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
         }
 
         // update references for the moved keys
@@ -247,7 +247,7 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
             try {
                 nextUnit.deleteFile();
             } catch (IOException ex) {
-                logger.error(ex);
+                LOGGER.error(ex);
             }
             unitsWithFreeSpace.remove(nextUnit);
         }

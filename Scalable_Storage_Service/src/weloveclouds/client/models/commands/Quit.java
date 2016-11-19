@@ -14,24 +14,23 @@ import weloveclouds.communication.exceptions.ClientSideException;
  * @author Benoit, Hunton
  */
 public class Quit extends AbstractCommand {
+    
     private static final String APPLICATION_EXITED_MESSAGE = "Application exit!";
-
-    private Logger logger;
-
+    private static final Logger LOGGER = Logger.getLogger(Quit.class);
+    
     public Quit(String[] arguments) {
         super(arguments);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ClientSideException {
         try {
-            logger.info("Executing quit command.");
+            LOGGER.info("Executing quit command.");
             userOutputWriter.writeLine(APPLICATION_EXITED_MESSAGE);
-            logger.debug(APPLICATION_EXITED_MESSAGE);
+            LOGGER.debug(APPLICATION_EXITED_MESSAGE);
             System.exit(0);
         } catch (IOException e) {
-            logger.error(e);
+            LOGGER.error(e);
             throw new ClientSideException(e.getMessage(), e);
         }
     }

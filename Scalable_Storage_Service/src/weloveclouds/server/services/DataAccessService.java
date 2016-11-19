@@ -18,17 +18,15 @@ import weloveclouds.server.store.exceptions.ValueNotFoundException;
  */
 public class DataAccessService implements IDataAccessService {
 
+    private static final Logger LOGGER = Logger.getLogger(DataAccessService.class);
+
     private KVCache cache;
     private KVPersistentStorage persistentStorage;
-
-    private Logger logger;
 
     public DataAccessService(KVCache cache, KVPersistentStorage persistentStorage) {
         this.cache = cache;
         this.persistentStorage = persistentStorage;
         this.persistentStorage.addObserver(cache);
-
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -36,7 +34,7 @@ public class DataAccessService implements IDataAccessService {
         // implicit notification will go the cache as well
         // throw the persistent store
         PutType response = persistentStorage.putEntry(entry);
-        logger.debug(CustomStringJoiner.join(" ", entry.toString(), "is stored."));
+        LOGGER.debug(CustomStringJoiner.join(" ", entry.toString(), "is stored."));
         return response;
     }
 
@@ -46,11 +44,11 @@ public class DataAccessService implements IDataAccessService {
         String value = null;
         try {
             value = cache.getValue(key);
-            logger.debug(CustomStringJoiner.join(" ", "Value", value, "for key", key,
+            LOGGER.debug(CustomStringJoiner.join(" ", "Value", value, "for key", key,
                     "is retireved from cache."));
         } catch (ValueNotFoundException ex) {
             value = persistentStorage.getValue(key);
-            logger.debug(CustomStringJoiner.join(" ", "Value", value, "for key", key,
+            LOGGER.debug(CustomStringJoiner.join(" ", "Value", value, "for key", key,
                     "is retireved from persistent storage."));
             cache.putEntry(new KVEntry(key, value));
         }
@@ -62,7 +60,7 @@ public class DataAccessService implements IDataAccessService {
         // implicit notification will go the cache as well
         // throw the persistent store
         persistentStorage.removeEntry(key);
-        logger.debug(CustomStringJoiner.join(" ", key, "is removed."));
+        LOGGER.debug(CustomStringJoiner.join(" ", key, "is removed."));
     }
 
 }

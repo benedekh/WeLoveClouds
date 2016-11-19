@@ -22,9 +22,9 @@ import weloveclouds.server.utils.ArgumentsValidator;
 public class StoragePath extends AbstractServerCommand {
 
     private static final int STORAGE_PATH_INDEX = 0;
+    private static final Logger LOGGER = Logger.getLogger(StoragePath.class);
 
     private ServerCLIConfigurationContext context;
-    private Logger logger;
 
     /**
      * @param arguments the {@link #STORAGE_PATH_INDEX} element of the array shall contain new
@@ -34,24 +34,23 @@ public class StoragePath extends AbstractServerCommand {
     public StoragePath(String[] arguments, ServerCLIConfigurationContext context) {
         super(arguments);
         this.context = context;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ServerSideException {
         try {
-            logger.info("Executing storagePath command.");
+            LOGGER.info("Executing storagePath command.");
             Path path = Paths.get(arguments[STORAGE_PATH_INDEX]);
             context.setStoragePath(path);
 
             String statusMessage = join(" ", "Latest storage path:", path.toString());
             userOutputWriter.writeLine(statusMessage);
-            logger.debug(statusMessage);
+            LOGGER.debug(statusMessage);
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new ServerSideException(ex.getMessage(), ex);
         } finally {
-            logger.info("storagePath command execution finished.");
+            LOGGER.info("storagePath command execution finished.");
         }
     }
 

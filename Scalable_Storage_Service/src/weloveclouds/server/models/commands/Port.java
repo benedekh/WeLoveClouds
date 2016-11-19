@@ -18,9 +18,9 @@ import weloveclouds.server.utils.ArgumentsValidator;
 public class Port extends AbstractServerCommand {
 
     private static final int PORT_INDEX = 0;
-
+    private static final Logger LOGGER = Logger.getLogger(Port.class);
+    
     private ServerCLIConfigurationContext context;
-    private Logger logger;
 
     /**
      * @param arguments the {@link #PORT_INDEX} element of the array shall contain new port
@@ -29,24 +29,23 @@ public class Port extends AbstractServerCommand {
     public Port(String[] arguments, ServerCLIConfigurationContext context) {
         super(arguments);
         this.context = context;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ServerSideException {
         try {
-            logger.info("Executing port command.");
+            LOGGER.info("Executing port command.");
             int port = Integer.parseInt(arguments[PORT_INDEX]);
             context.setPort(port);
 
             String statusMessage = join(" ", "Latest port:", String.valueOf(port));
             userOutputWriter.writeLine(statusMessage);
-            logger.debug(statusMessage);
+            LOGGER.debug(statusMessage);
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new ServerSideException(ex.getMessage(), ex);
         } finally {
-            logger.info("port command execution finished.");
+            LOGGER.info("port command execution finished.");
         }
     }
 
