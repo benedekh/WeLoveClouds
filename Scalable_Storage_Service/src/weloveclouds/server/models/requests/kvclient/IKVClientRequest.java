@@ -1,4 +1,4 @@
-package weloveclouds.server.models.requests;
+package weloveclouds.server.models.requests.kvclient;
 
 import weloveclouds.kvstore.models.messages.KVMessage;
 
@@ -7,7 +7,7 @@ import weloveclouds.kvstore.models.messages.KVMessage;
  * 
  * @author Benoit
  */
-public interface IRequest {
+public interface IKVClientRequest {
     /**
      * Executing the request it will result in a reponse {@link KVMessage}.
      */

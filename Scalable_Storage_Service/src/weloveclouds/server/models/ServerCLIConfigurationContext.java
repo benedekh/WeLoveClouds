@@ -2,6 +2,9 @@ package weloveclouds.server.models;
 
 import java.nio.file.Path;
 
+import weloveclouds.server.core.Server;
+import weloveclouds.server.models.commands.ServerCommand;
+import weloveclouds.server.services.models.DataAccessServiceInitializationInfo;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 
 /**
@@ -13,56 +16,54 @@ import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 public class ServerCLIConfigurationContext {
 
     private int port;
-    private int cacheSize;
-    private DisplacementStrategy displacementStrategy;
-    private Path storagePath;
     private boolean isStarted;
+
+    private DataAccessServiceInitializationInfo.Builder initializationInfoBuilder;
 
     public ServerCLIConfigurationContext() {
         this.port = -1;
-        this.cacheSize = -1;
+        this.initializationInfoBuilder = new DataAccessServiceInitializationInfo.Builder();
+        this.initializationInfoBuilder.cacheSize(-1);
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
     public int getCacheSize() {
-        return cacheSize;
-    }
-
-    public void setCacheSize(int cacheSize) {
-        this.cacheSize = cacheSize;
+        return initializationInfoBuilder.build().getCacheSize();
     }
 
     public DisplacementStrategy getDisplacementStrategy() {
-        return displacementStrategy;
-    }
-
-    public void setDisplacementStrategy(DisplacementStrategy displacementStrategy) {
-        this.displacementStrategy = displacementStrategy;
+        return initializationInfoBuilder.build().getDisplacementStrategy();
     }
 
     public Path getStoragePath() {
-        return storagePath;
-    }
-
-    public void setStoragePath(Path storagePath) {
-        this.storagePath = storagePath;
+        return initializationInfoBuilder.build().getStorageRootFolderPath();
     }
 
     public boolean isStarted() {
         return isStarted;
     }
 
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setCacheSize(int cacheSize) {
+        initializationInfoBuilder.cacheSize(cacheSize);
+    }
+
+    public void setDisplacementStrategy(DisplacementStrategy displacementStrategy) {
+        initializationInfoBuilder.displacementStrategy(displacementStrategy);
+    }
+
+    public void setStoragePath(Path storagePath) {
+        initializationInfoBuilder.rootFolderPath(storagePath);
+    }
+
     public void setStarted(boolean isStarted) {
         this.isStarted = isStarted;
     }
-
-
 
 }

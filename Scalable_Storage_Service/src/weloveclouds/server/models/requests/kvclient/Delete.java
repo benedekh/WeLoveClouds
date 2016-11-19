@@ -1,7 +1,10 @@
-package weloveclouds.server.models.requests;
+package weloveclouds.server.models.requests.kvclient;
 
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.DELETE_ERROR;
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.DELETE_SUCCESS;
+import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_NOT_RESPONSIBLE;
+import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_STOPPED;
+import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_WRITE_LOCK;
 
 import org.apache.log4j.Logger;
 
@@ -10,6 +13,9 @@ import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
+import weloveclouds.server.store.cache.exceptions.KeyIsNotManagedByServerException;
+import weloveclouds.server.store.cache.exceptions.ServerIsStoppedException;
+import weloveclouds.server.store.cache.exceptions.WriteLockIsActiveException;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
@@ -18,7 +24,7 @@ import weloveclouds.server.store.exceptions.StorageException;
  * 
  * @author Benoit
  */
-public class Delete implements IRequest {
+public class Delete implements IKVClientRequest {
     private IDataAccessService dataAccessService;
     private String key;
 
@@ -37,6 +43,12 @@ public class Delete implements IRequest {
             logger.debug(CustomStringJoiner.join(" ", "Trying to remove key", key));
             dataAccessService.removeEntry(key);
             response = createResponse(DELETE_SUCCESS, key, null);
+        } catch (KeyIsNotManagedByServerException ex) {
+            response = createResponse(SERVER_NOT_RESPONSIBLE, key, ex.getMessage());
+        } catch (ServerIsStoppedException ex) {
+            response = createResponse(SERVER_STOPPED, key, null);
+        } catch (WriteLockIsActiveException ex) {
+            response = createResponse(SERVER_WRITE_LOCK, key, null);
         } catch (StorageException e) {
             response = createResponse(DELETE_ERROR, key, e.getMessage());
         } finally {

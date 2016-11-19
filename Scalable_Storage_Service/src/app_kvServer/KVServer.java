@@ -15,9 +15,9 @@ import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerSocketFactory;
 import weloveclouds.server.models.commands.ServerCommandFactory;
-import weloveclouds.server.models.requests.RequestFactory;
+import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.services.DataAccessService;
-import weloveclouds.server.store.ControllablePersistentStorage;
+import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
@@ -90,13 +90,13 @@ public class KVServer {
 
         KVCache cache = new KVCache(cacheSize, displacementStrategy);
         KVPersistentStorage persistentStorage =
-                new ControllablePersistentStorage(defaultStoragePath);
+                new MovablePersistentStorage(defaultStoragePath);
         DataAccessService dataAccessService = new DataAccessService(cache, persistentStorage);
 
         try {
             Server server = new Server.ServerBuilder().port(port)
                     .serverSocketFactory(new ServerSocketFactory())
-                    .requestFactory(new RequestFactory(dataAccessService))
+                    .requestFactory(new KVClientRequestFactory(dataAccessService))
                     .communicationApiFactory(new CommunicationApiFactory())
                     .messageSerializer(new KVMessageSerializer())
                     .messageDeserializer(new KVMessageDeserializer()).build();

@@ -18,11 +18,10 @@ public class StrategyFactory {
      * 
      * @return the strategy or null if its name wasn't matched
      */
-    public static DisplacementStrategy createDisplacementStrategy(
-            String displacemenetStrategyName) {
+    public static DisplacementStrategy createDisplacementStrategy(String displacementStrategyName) {
         DisplacementStrategy displacementStrategy = null;
 
-        switch (displacemenetStrategyName) {
+        switch (displacementStrategyName) {
             case "FIFO":
                 displacementStrategy = new FIFOStrategy();
                 break;
@@ -33,21 +32,12 @@ public class StrategyFactory {
                 displacementStrategy = new LFUStrategy();
                 break;
             default:
-                logError(join(" ", "Unrecognized displacement startegy:",
-                        displacemenetStrategyName));
+                LOGGER.error(
+                        join(" ", "Unrecognized displacement startegy:", displacementStrategyName));
                 break;
         }
 
         return displacementStrategy;
-    }
-
-    /**
-     * Thread-safe logging for errors.
-     */
-    private static void logError(Object error) {
-        synchronized (LOGGER) {
-            LOGGER.error(error);
-        }
     }
 
 }

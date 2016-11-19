@@ -29,36 +29,13 @@ import weloveclouds.server.store.models.PersistedStorageUnit;
  * 
  * @author Benedek
  */
-public class ControllablePersistentStorage extends KVPersistentStorage {
+public class MovablePersistentStorage extends KVPersistentStorage {
 
-    private volatile boolean writeLockActive;
     private Logger logger;
 
-    public ControllablePersistentStorage(Path rootPath) throws IllegalArgumentException {
+    public MovablePersistentStorage(Path rootPath) throws IllegalArgumentException {
         super(rootPath);
         this.logger = Logger.getLogger(getClass());
-    }
-
-    public void setWriteLockActive(boolean isActive) {
-        this.writeLockActive = isActive;
-    }
-
-    @Override
-    public synchronized PutType putEntry(KVEntry entry) throws StorageException {
-        if (!writeLockActive) {
-            return super.putEntry(entry);
-        } else {
-            throw new StorageException("Persistent storage is not writable.");
-        }
-    }
-
-    @Override
-    public synchronized void removeEntry(String key) throws StorageException {
-        if (!writeLockActive) {
-            super.removeEntry(key);
-        } else {
-            throw new StorageException("Persistent storage is not modifyable.");
-        }
     }
 
     /**
@@ -66,24 +43,20 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
      * 
      * @param fromStorageUnits from where the entries will be copied
      */
-    public void putEntries(MovableStorageUnits fromStorageUnits) {
+    public void putEntries(MovableStorageUnits fromStorageUnits) throws StorageException {
         for (MovableStorageUnit storageUnit : fromStorageUnits.getStorageUnits()) {
-            try {
-                String filename = UUID.randomUUID().toString();
-                Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
-                storageUnit.setPath(path);
-                storageUnit.save();
+            String filename = UUID.randomUUID().toString();
+            Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
+            storageUnit.setPath(path);
+            storageUnit.save();
 
-                for (String key : storageUnit.getKeys()) {
-                    storageUnits.put(key, storageUnit);
-                    notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
-                }
+            for (String key : storageUnit.getKeys()) {
+                storageUnits.put(key, storageUnit);
+                notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
+            }
 
-                if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
-                    unitsWithFreeSpace.add(storageUnit);
-                }
-            } catch (StorageException e) {
-                logger.error(e);
+            if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
+                unitsWithFreeSpace.add(storageUnit);
             }
         }
     }
@@ -133,6 +106,7 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
                 }
             } catch (IOException e) {
                 logger.error(e);
+                throw new StorageException("Storage unit cannot be removed due to an IO Error.");
             }
         }
 

@@ -1,4 +1,4 @@
-package weloveclouds.server.models.requests;
+package weloveclouds.server.models.requests.kvclient;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
@@ -11,22 +11,22 @@ import weloveclouds.server.services.IDataAccessService;
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different requests. It
  * handles several requests (see {@link StatusType} for the possible types) by dispatching the
- * command to its respective handler (see package {@link weloveclouds.server.models.requests}.
+ * command to its respective handler.
  *
  * @author Benoit
  */
-public class RequestFactory {
+public class KVClientRequestFactory {
     private IDataAccessService dataAccessService;
 
     private Logger logger;
 
-    public RequestFactory(IDataAccessService dataAccessService) {
+    public KVClientRequestFactory(IDataAccessService dataAccessService) {
         this.dataAccessService = dataAccessService;
         this.logger = Logger.getLogger(getClass());
     }
 
-    public IRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
-        IRequest request = null;
+    public IKVClientRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
+        IKVClientRequest request = null;
         StatusType status = receivedMessage.getStatus();
 
         // see M2 docs, we delete the key if it is a PUT request with only a key
@@ -47,13 +47,12 @@ public class RequestFactory {
                 break;
             default:
                 String errorMessage = "Unrecognized command for KV message";
-                synchronized (logger) {
-                    logger.error(join(" ", errorMessage, receivedMessage.toString()));
-                }
+                logger.error(join(" ", errorMessage, receivedMessage.toString()));
                 request = new DefaultRequest(receivedMessage.getKey(), errorMessage);
                 break;
         }
 
         return request;
     }
+
 }
