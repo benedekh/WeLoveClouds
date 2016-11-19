@@ -43,7 +43,7 @@ public class KVAdminMessageSerializer
         ServerInitializationContext initializationContext =
                 unserializedMessage.getInitializationContext();
         RingMetadata ringMetadata = unserializedMessage.getRingMetadata();
-        RingMetadataPart targetServerInfo = unserializedMessage.getServerInfo();
+        RingMetadataPart targetServerInfo = unserializedMessage.getTargetServerInfo();
 
         // string representation
         String statusStr = status == null ? null : status.toString();

@@ -41,7 +41,7 @@ public interface IKVAdminMessage {
     /**
      * @return the ip+port+hash range in which the hash values of keys of the entries have to be
      */
-    public RingMetadataPart getServerInfo();
+    public RingMetadataPart getTargetServerInfo();
 
     /**
      * @return if the message is a response then the message text can be obtained here
