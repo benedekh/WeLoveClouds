@@ -43,6 +43,34 @@ public class ArgumentsValidator {
     private static final int STORAGE_PATH_NUMBER_OF_ARGUMENTS = 1;
     private static final int STORAGE_PATH_INDEX = 0;
 
+    private static final int CLI_NUMBER_OF_ARGUMENTS = 2;
+    private static final int CLI_PORT_INDEX = 0;
+    private static final int CLI_LOG_LEVEL_INDEX = 1;
+
+    /**
+     * Validate CLI arguments for the server starting. The arguments are valid, if:<br>
+     * (1) there are exactly {@link #CLI_NUMBER_OF_ARGUMENTS} number of arguments, and <br>
+     * (2) the argument at the position {@link #CLI_PORT_INDEX} is a valid port, and <br>
+     * (3) the argument at the position {@link #CLI_LOG_LEVEL_INDEX} is a valid log level
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
+    public static void validateCLIArgumentsForServerStart(String[] arguments)
+            throws IllegalArgumentException {
+        String command = "cliArguments";
+        if (!isNullOrEmpty(arguments) || arguments.length != CLI_NUMBER_OF_ARGUMENTS) {
+            logWarning(command);
+            throw new IllegalArgumentException("Two arguments are needed: <port> <log level>");
+        } else {
+            validatePort(command, arguments[CLI_PORT_INDEX]);
+            if (!validLogLevels.contains(arguments[CLI_LOG_LEVEL_INDEX])) {
+                logWarning(command);
+                throw new IllegalArgumentException(join(" ",
+                        "Log level is not recognized. It should be capitalized and should be one of the followings:",
+                        join(",", validLogLevels)));
+            }
+        }
+    }
 
     /**
      * A start command is valid, if:<br>
@@ -122,13 +150,16 @@ public class ArgumentsValidator {
             throw new IllegalArgumentException("cacheSize need one argument (<size>) only.");
         } else {
             try {
-                Integer.parseInt(arguments[CACHE_SIZE_INDEX]);
+                int cacheSize = Integer.parseInt(arguments[CACHE_SIZE_INDEX]);
+                if (cacheSize < 0) {
+                    logWarning(command);
+                    throw new IllegalArgumentException("Cache size cannot be negative.");
+                }
             } catch (NumberFormatException ex) {
                 logWarning(command);
                 throw new IllegalArgumentException("Cache size has to be a number.");
             }
         }
-
     }
 
     /**
@@ -159,20 +190,32 @@ public class ArgumentsValidator {
             logWarning(command);
             throw new IllegalArgumentException("Port need one argument (<port>) only.");
         } else {
-            try {
-                int port = Integer.parseInt(arguments[PORT_INDEX]);
+            validatePort(command, arguments[PORT_INDEX]);
+        }
+    }
 
-                if (port < PORT_LOWER_LIMIT || port > PORT_UPPER_LIMIT) {
-                    String message = join("", "Port should be in the range [",
-                            String.valueOf(PORT_LOWER_LIMIT), ",",
-                            String.valueOf(PORT_UPPER_LIMIT) + "].");
-                    logWarning(command);
-                    throw new IllegalArgumentException(message);
-                }
-            } catch (NumberFormatException ex) {
+    /**
+     * A port is valid, if it is a valid port number.
+     *
+     * @param command the name of the command which requires this validation
+     * @param portAsString the port number encoded as a string
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
+    private static void validatePort(String command, String portAsString) {
+        try {
+            int port = Integer.parseInt(portAsString);
+
+            if (port < PORT_LOWER_LIMIT || port > PORT_UPPER_LIMIT) {
+                String message =
+                        join("", "Port should be in the range [", String.valueOf(PORT_LOWER_LIMIT),
+                                ",", String.valueOf(PORT_UPPER_LIMIT) + "].");
                 logWarning(command);
-                throw new IllegalArgumentException("Port has to be a number.");
+                throw new IllegalArgumentException(message);
             }
+        } catch (NumberFormatException ex) {
+            logWarning(command);
+            throw new IllegalArgumentException("Port has to be a number.");
         }
     }
 

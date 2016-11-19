@@ -58,7 +58,7 @@ public class Start extends AbstractServerCommand {
                             .displacementStrategy(startegy).rootFolderPath(storagePath).build();
 
             DataAccessService dataAccessService = dataAccessServiceFactory
-                    .createServiceWithInitializedPersistentStorage(initializationContext);
+                    .createInitializedDataAccessService(initializationContext);
 
             Server<KVMessage, IKVClientRequest> server =
                     new Server.Builder<KVMessage, IKVClientRequest>().port(port)
