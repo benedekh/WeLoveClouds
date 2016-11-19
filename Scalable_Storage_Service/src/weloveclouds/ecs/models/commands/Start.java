@@ -25,10 +25,4 @@ public class Start extends AbstractEcsApiCommand{
         
     }
 
-    @Override
-    public ICommand validate() throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

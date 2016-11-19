@@ -26,12 +26,5 @@ public class RemoveNode extends AbstractEcsApiCommand{
         
     }
 
-    @Override
-    public ICommand validate() throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    
 
 }

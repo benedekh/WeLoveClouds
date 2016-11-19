@@ -11,11 +11,6 @@ public class Loglevel extends AbstractCommand {
     public Loglevel(String[] arguments){
         super(arguments);
     }
-    @Override
-    public ICommand validate() throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public void execute() throws ClientSideException {
