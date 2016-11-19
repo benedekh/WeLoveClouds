@@ -22,37 +22,33 @@ import weloveclouds.server.models.ServerInitializationContext;
 
 public class ServerInitializationContextTest {
 
-    private static final IDeserializer<ServerInitializationContext, String> initializiationContextDeserializer =
+    private static final IDeserializer<ServerInitializationContext, String> contextDeserializer =
             new ServerInitializationContextDeserializer();
-    private static final ISerializer<String, ServerInitializationContext> initializiationContextSerializer =
+    private static final ISerializer<String, ServerInitializationContext> contextSerializer =
             new ServerInitializationContextSerializer();
 
     @Test
     public void testServerInitializationContextSerializationAndDeserialization()
             throws UnknownHostException, DeserializationException {
-        RingMetadata metadata = new RingMetadata(new HashSet<>(Arrays.asList(
+        HashRange managedRange = new HashRange(HashingUtil.getHash("a"), HashingUtil.getHash("b"));
+        RingMetadataPart metadataPart =
                 new RingMetadataPart.RingMetadataPartBuilder()
                         .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
                                 .ipAddress("localhost").port(8080).build())
-                        .range(new HashRange(HashingUtil.getHash("a"), HashingUtil.getHash("b")))
-                        .build(),
+                        .range(managedRange).build();
+        RingMetadata metadata = new RingMetadata(new HashSet<>(Arrays.asList(metadataPart,
                 new RingMetadataPart.RingMetadataPartBuilder()
                         .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
                                 .ipAddress("localhost").port(8082).build())
                         .range(new HashRange(Hash.MIN_VALUE, Hash.MAX_VALUE)).build())));
-        int cacheSize = 10;
-        String displacementStrategyName = "LRU";
+        ServerInitializationContext context =
+                new ServerInitializationContext(metadata, managedRange, 10, "LRU");
 
-        ServerInitializationContext initializationContext =
-                new ServerInitializationContext(metadata, cacheSize, displacementStrategyName);
+        String serializedContext = contextSerializer.serialize(context);
+        ServerInitializationContext deserializedContext =
+                contextDeserializer.deserialize(serializedContext);
 
-        String serializedInitializationContext =
-                initializiationContextSerializer.serialize(initializationContext);
-        ServerInitializationContext deserializedInitializationContext =
-                initializiationContextDeserializer.deserialize(serializedInitializationContext);
-
-        Assert.assertEquals(initializationContext.toString(),
-                deserializedInitializationContext.toString());
-        Assert.assertEquals(initializationContext, deserializedInitializationContext);
+        Assert.assertEquals(context.toString(), deserializedContext.toString());
+        Assert.assertEquals(context, deserializedContext);
     }
 }

@@ -1,6 +1,7 @@
 package weloveclouds.server.models;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 
 /**
@@ -11,18 +12,24 @@ import weloveclouds.hashing.models.RingMetadata;
 public class ServerInitializationContext {
 
     private RingMetadata ringMetadata;
+    private HashRange rangeManagedByServer;
     private int cacheSize;
     private String displacementStrategyName;
 
-    public ServerInitializationContext(RingMetadata ringMetadata, int cacheSize,
-            String displacementStrategyName) {
+    public ServerInitializationContext(RingMetadata ringMetadata, HashRange rangeManagedByServer,
+            int cacheSize, String displacementStrategyName) {
         this.ringMetadata = ringMetadata;
+        this.rangeManagedByServer = rangeManagedByServer;
         this.cacheSize = cacheSize;
         this.displacementStrategyName = displacementStrategyName;
     }
 
     public RingMetadata getRingMetadata() {
         return ringMetadata;
+    }
+
+    public HashRange getRangeManagedByServer() {
+        return rangeManagedByServer;
     }
 
     public int getCacheSize() {
@@ -32,8 +39,15 @@ public class ServerInitializationContext {
     public String getDisplacementStrategyName() {
         return displacementStrategyName;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return CustomStringJoiner.join(" ", "{ Ring metadata:",
+                ringMetadata == null ? null : ringMetadata.toString(), ", Range managed by server:",
+                rangeManagedByServer == null ? null : rangeManagedByServer.toString(),
+                ", Cache size:", String.valueOf(cacheSize), ", Displacement strategy:",
+                displacementStrategyName, "}");
+    }
 
     @Override
     public int hashCode() {
@@ -42,6 +56,8 @@ public class ServerInitializationContext {
         result = prime * result + cacheSize;
         result = prime * result
                 + ((displacementStrategyName == null) ? 0 : displacementStrategyName.hashCode());
+        result = prime * result
+                + ((rangeManagedByServer == null) ? 0 : rangeManagedByServer.hashCode());
         result = prime * result + ((ringMetadata == null) ? 0 : ringMetadata.hashCode());
         return result;
     }
@@ -68,6 +84,13 @@ public class ServerInitializationContext {
         } else if (!displacementStrategyName.equals(other.displacementStrategyName)) {
             return false;
         }
+        if (rangeManagedByServer == null) {
+            if (other.rangeManagedByServer != null) {
+                return false;
+            }
+        } else if (!rangeManagedByServer.equals(other.rangeManagedByServer)) {
+            return false;
+        }
         if (ringMetadata == null) {
             if (other.ringMetadata != null) {
                 return false;
@@ -76,14 +99,6 @@ public class ServerInitializationContext {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return CustomStringJoiner.join(" ", "{ Ring metadata:",
-                ringMetadata == null ? null : ringMetadata.toString(), ", Cache size:",
-                String.valueOf(cacheSize), ", Displacement strategy:", displacementStrategyName,
-                "}");
     }
 
 }

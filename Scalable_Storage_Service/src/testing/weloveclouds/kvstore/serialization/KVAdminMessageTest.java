@@ -33,16 +33,19 @@ public class KVAdminMessageTest {
     @Test
     public void testKVAdminMessageSerializationAndDeserialization()
             throws DeserializationException, UnknownHostException {
-        RingMetadataPart metadataPart = new RingMetadataPart.RingMetadataPartBuilder()
-                .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                        .ipAddress("localhost").port(8080).build())
-                .range(new HashRange(HashingUtil.getHash("a"), HashingUtil.getHash("b"))).build();
+        HashRange managedRange = new HashRange(HashingUtil.getHash("a"), HashingUtil.getHash("b"));
+        RingMetadataPart metadataPart =
+                new RingMetadataPart.RingMetadataPartBuilder()
+                        .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
+                                .ipAddress("localhost").port(8080).build())
+                        .range(managedRange).build();
         RingMetadata metadata = new RingMetadata(new HashSet<>(Arrays.asList(metadataPart,
                 new RingMetadataPart.RingMetadataPartBuilder()
                         .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
                                 .ipAddress("localhost").port(8082).build())
                         .range(new HashRange(Hash.MIN_VALUE, Hash.MAX_VALUE)).build())));
-        ServerInitializationContext context = new ServerInitializationContext(metadata, 10, "LRU");
+        ServerInitializationContext context =
+                new ServerInitializationContext(metadata, managedRange, 10, "LRU");
 
         KVAdminMessage adminMessage = new KVAdminMessage.KVAdminMessageBuilder()
                 .initializationContext(context).status(StatusType.INITKVSERVER).build();
