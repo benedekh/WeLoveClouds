@@ -19,9 +19,9 @@ public class HashRange {
     private Hash start;
     private Hash end;
 
-    public HashRange(Hash start, Hash end) {
-        this.start = start;
-        this.end = end;
+    protected HashRange(Builder builder) {
+        this.start = builder.start;
+        this.end = builder.end;
     }
 
     public boolean contains(Hash target) {
@@ -87,6 +87,25 @@ public class HashRange {
             return false;
         }
         return true;
+    }
+
+    public static class Builder {
+        private Hash start;
+        private Hash end;
+
+        public Builder start(Hash start) {
+            this.start = start;
+            return this;
+        }
+
+        public Builder end(Hash end) {
+            this.end = end;
+            return this;
+        }
+
+        public HashRange build() {
+            return new HashRange(this);
+        }
     }
 
 }

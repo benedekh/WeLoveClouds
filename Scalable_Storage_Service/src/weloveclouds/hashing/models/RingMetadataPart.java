@@ -15,7 +15,7 @@ public class RingMetadataPart {
     private ServerConnectionInfo connectionInfo;
     private HashRange range;
 
-    public RingMetadataPart(RingMetadataPartBuilder builder) {
+    protected RingMetadataPart(Builder builder) {
         this.connectionInfo = builder.connectionInfo;
         this.range = builder.range;
     }
@@ -80,16 +80,16 @@ public class RingMetadataPart {
         return true;
     }
 
-    public static class RingMetadataPartBuilder {
+    public static class Builder {
         private ServerConnectionInfo connectionInfo;
         private HashRange range;
 
-        public RingMetadataPartBuilder connectionInfo(ServerConnectionInfo connectionInfo) {
+        public Builder connectionInfo(ServerConnectionInfo connectionInfo) {
             this.connectionInfo = connectionInfo;
             return this;
         }
 
-        public RingMetadataPartBuilder range(HashRange range) {
+        public Builder range(HashRange range) {
             this.range = range;
             return this;
         }

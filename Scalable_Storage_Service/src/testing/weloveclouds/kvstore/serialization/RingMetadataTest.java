@@ -30,15 +30,18 @@ public class RingMetadataTest {
     public void testMovableStorageUnitSerializationAndDeserialization()
             throws DeserializationException, UnknownHostException {
 
-        RingMetadataPart metadataPart1 = new RingMetadataPart.RingMetadataPartBuilder()
+        RingMetadataPart metadataPart1 = new RingMetadataPart.Builder()
                 .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
                         .ipAddress("localhost").port(8080).build())
-                .range(new HashRange(HashingUtil.getHash("a"), HashingUtil.getHash("b"))).build();
+                .range(new HashRange.Builder().start(HashingUtil.getHash("a"))
+                        .end(HashingUtil.getHash("b")).build())
+                .build();
 
-        RingMetadataPart metadataPart2 = new RingMetadataPart.RingMetadataPartBuilder()
+        RingMetadataPart metadataPart2 = new RingMetadataPart.Builder()
                 .connectionInfo(new ServerConnectionInfo.ServerConnectionInfoBuilder()
                         .ipAddress("localhost").port(8082).build())
-                .range(new HashRange(Hash.MIN_VALUE, Hash.MAX_VALUE)).build();
+                .range(new HashRange.Builder().start(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
+                .build();
 
         RingMetadata metadata =
                 new RingMetadata(new HashSet<>(Arrays.asList(metadataPart1, metadataPart2)));
