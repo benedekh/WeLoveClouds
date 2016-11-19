@@ -5,6 +5,8 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
+import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
@@ -25,15 +27,20 @@ public class KVECSRequestFactory {
     private DataAccessServiceFactory dataAccessServiceFactory;
     private IMovableDataAccessService dataAccessService;
 
+    private ICommunicationApi communicationApi;
+
     private RingMetadata ringMetadata;
     private RingMetadataPart rangeManagedByServer;
 
     public KVECSRequestFactory(DataAccessServiceFactory dataAccessServiceFactory,
-            IMovableDataAccessService dataAccessService, RingMetadata ringMetadata,
+            IMovableDataAccessService dataAccessService,
+            CommunicationApiFactory communicationApiFactory, RingMetadata ringMetadata,
             RingMetadataPart rangeManagedByServer) {
 
         this.dataAccessServiceFactory = dataAccessServiceFactory;
         this.dataAccessService = dataAccessService;
+
+        this.communicationApi = communicationApiFactory.createCommunicationApiV1();
         this.ringMetadata = ringMetadata;
         this.rangeManagedByServer = rangeManagedByServer;
     }
@@ -47,30 +54,33 @@ public class KVECSRequestFactory {
                 request = new InitializeKVServer(dataAccessServiceFactory, dataAccessService,
                         receivedMessage.getInitializationContext());
                 new UpdateRingMetadata(ringMetadata, rangeManagedByServer,
-                        receivedMessage.getRingMetadata(), receivedMessage.getServerInfo())
+                        receivedMessage.getRingMetadata(), receivedMessage.getTargetServerInfo())
                                 .execute();
                 break;
             case START:
-                new StartDataAcessService(dataAccessService);
+                request = new StartDataAcessService(dataAccessService);
                 break;
             case STOP:
-                new StopDataAccessService(dataAccessService);
+                request = new StopDataAccessService(dataAccessService);
                 break;
             case LOCKWRITE:
-                new LockWriteAccess(dataAccessService);
+                request = new LockWriteAccess(dataAccessService);
                 break;
             case UNLOCKWRITE:
-                new UnlockWriteAccess(dataAccessService);
+                request = new UnlockWriteAccess(dataAccessService);
                 break;
             case MOVEDATA:
-                new MoveDataToDestination(dataAccessService, receivedMessage.getServerInfo());
+                new LockWriteAccess(dataAccessService).execute();
+                request = new MoveDataToDestination(dataAccessService,
+                        receivedMessage.getTargetServerInfo(), communicationApi);
+                new UnlockWriteAccess(dataAccessService).execute();
                 break;
             case UPDATE:
-                new UpdateRingMetadata(ringMetadata, rangeManagedByServer,
-                        receivedMessage.getRingMetadata(), receivedMessage.getServerInfo());
+                request = new UpdateRingMetadata(ringMetadata, rangeManagedByServer,
+                        receivedMessage.getRingMetadata(), receivedMessage.getTargetServerInfo());
                 break;
             case SHUTDOWN:
-                new ShutdownServer();
+                request = new ShutdownServer();
                 break;
             default:
                 String errorMessage = "Unrecognized command for transfer message";

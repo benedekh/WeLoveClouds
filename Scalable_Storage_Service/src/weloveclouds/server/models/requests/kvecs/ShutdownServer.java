@@ -6,7 +6,7 @@ public class ShutdownServer implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
-        // TODO Auto-generated method stub
+        System.exit(0);
         return null;
     }
 
