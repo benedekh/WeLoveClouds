@@ -42,7 +42,7 @@ public class KVAdminMessage implements IKVAdminMessage {
     }
 
     @Override
-    public RingMetadataPart getTargetServerInfo() {
+    public RingMetadataPart getServerInfo() {
         return targetServerInfo;
     }
 
