@@ -17,7 +17,7 @@ import weloveclouds.server.store.exceptions.StorageException;
  * 
  * @author Benoit
  */
-public class Get implements IRequest {
+public class Get implements IDataServiceRequest {
     private IDataAccessService dataAccessService;
     private String key;
 

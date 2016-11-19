@@ -20,7 +20,7 @@ import weloveclouds.server.store.exceptions.StorageException;
  * 
  * @author Benoit
  */
-public class Put implements IRequest {
+public class Put implements IDataServiceRequest {
     private IDataAccessService dataAccessService;
     private String key;
     private String value;

@@ -18,7 +18,7 @@ import weloveclouds.server.store.exceptions.StorageException;
  * 
  * @author Benoit
  */
-public class Delete implements IRequest {
+public class Delete implements IDataServiceRequest {
     private IDataAccessService dataAccessService;
     private String key;
 

@@ -15,18 +15,18 @@ import weloveclouds.server.services.IDataAccessService;
  *
  * @author Benoit
  */
-public class RequestFactory {
+public class DataServiceRequestFactory {
     private IDataAccessService dataAccessService;
 
     private Logger logger;
 
-    public RequestFactory(IDataAccessService dataAccessService) {
+    public DataServiceRequestFactory(IDataAccessService dataAccessService) {
         this.dataAccessService = dataAccessService;
         this.logger = Logger.getLogger(getClass());
     }
 
-    public IRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
-        IRequest request = null;
+    public IDataServiceRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
+        IDataServiceRequest request = null;
         StatusType status = receivedMessage.getStatus();
 
         // see M2 docs, we delete the key if it is a PUT request with only a key

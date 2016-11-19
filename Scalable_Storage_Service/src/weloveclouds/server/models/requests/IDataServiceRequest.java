@@ -7,7 +7,7 @@ import weloveclouds.kvstore.models.messages.KVMessage;
  * 
  * @author Benoit
  */
-public interface IRequest {
+public interface IDataServiceRequest {
     /**
      * Executing the request it will result in a reponse {@link KVMessage}.
      */

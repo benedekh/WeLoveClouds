@@ -8,7 +8,7 @@ import weloveclouds.kvstore.models.messages.KVMessage;
  * 
  * @author Benedek
  */
-public class DefaultRequest implements IRequest {
+public class DefaultRequest implements IDataServiceRequest {
 
     private String key;
     private String errorMessage;
