@@ -8,7 +8,7 @@ import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.api.v1.KVCommunicationApiV1;
 import weloveclouds.communication.services.CommunicationService;
 import weloveclouds.communication.services.ConcurrentCommunicationService;
-import weloveclouds.kvstore.serialization.KVMessageDeserializer;
+import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 
 /**

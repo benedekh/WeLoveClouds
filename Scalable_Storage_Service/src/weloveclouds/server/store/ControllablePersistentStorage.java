@@ -17,6 +17,7 @@ import weloveclouds.hashing.models.HashRange;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.store.models.MovableStorageUnits;
 import weloveclouds.server.store.models.PersistedStorageUnit;
 
 /**
@@ -61,13 +62,12 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
     }
 
     /**
-     * Saves the entries which are stored in the parameter storage units into the recent persistent
-     * storage.
+     * Saves the entries from the parameter storage units into this persistent storage.
      * 
-     * @param fromStorageUnits from where the entries will be copied.
+     * @param fromStorageUnits from where the entries will be copied
      */
-    public void putEntries(Set<MovableStorageUnit> fromStorageUnits) {
-        for (MovableStorageUnit storageUnit : fromStorageUnits) {
+    public void putEntries(MovableStorageUnits fromStorageUnits) {
+        for (MovableStorageUnit storageUnit : fromStorageUnits.getStorageUnits()) {
             try {
                 String filename = UUID.randomUUID().toString();
                 Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
@@ -95,7 +95,7 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
      * @return the storage units of those entries whose keys are in the given range
      * @throws StorageException if an error occurs
      */
-    public Set<MovableStorageUnit> filterEntries(HashRange range) {
+    public MovableStorageUnits filterEntries(HashRange range) {
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<MovableStorageUnit> toBeCopied = new HashSet<>();
 
@@ -103,7 +103,7 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
             toBeCopied.add(new MovableStorageUnit(storageUnit).copyEntries(range));
         }
 
-        return toBeCopied;
+        return new MovableStorageUnits(toBeCopied);
     }
 
     /**

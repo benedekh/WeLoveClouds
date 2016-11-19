@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.server.models.ServerConfigurationContext;
+import weloveclouds.server.models.ServerCLIConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.utils.ArgumentsValidator;
@@ -24,14 +24,14 @@ public class StoragePath extends AbstractServerCommand {
     private static final int STORAGE_PATH_INDEX = 0;
     private static final Logger LOGGER = Logger.getLogger(StoragePath.class);
 
-    private ServerConfigurationContext context;
+    private ServerCLIConfigurationContext context;
 
     /**
      * @param arguments the {@link #STORAGE_PATH_INDEX} element of the array shall contain new
      *        storage path
      * @param context contains the server parameter configuration
      */
-    public StoragePath(String[] arguments, ServerConfigurationContext context) {
+    public StoragePath(String[] arguments, ServerCLIConfigurationContext context) {
         super(arguments);
         this.context = context;
     }

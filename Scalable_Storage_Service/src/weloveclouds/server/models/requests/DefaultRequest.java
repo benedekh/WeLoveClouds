@@ -1,7 +1,7 @@
 package weloveclouds.server.models.requests;
 
-import weloveclouds.kvstore.models.IKVMessage.StatusType;
-import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
+import weloveclouds.kvstore.models.messages.KVMessage;
 
 /**
  * An unrecognized request to the data access layer.
@@ -20,8 +20,8 @@ public class DefaultRequest implements IRequest {
 
     @Override
     public KVMessage execute() {
-        return new KVMessage.KVMessageBuilder().status(StatusType.DELETE_ERROR).key(key)
-                .value(errorMessage).build();
+        return new KVMessage.Builder().status(StatusType.DELETE_ERROR).key(key).value(errorMessage)
+                .build();
     }
 
 }

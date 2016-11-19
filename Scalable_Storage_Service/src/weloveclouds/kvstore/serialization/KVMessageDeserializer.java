@@ -4,17 +4,18 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.IKVMessage.StatusType;
-import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
+import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
+import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 /**
  * An exact deserializer which converts a {@link SerializedKVMessage} to a {@link KVMessage}.
  * 
  * @author Benoit
  */
-public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, SerializedKVMessage> {
+public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, SerializedMessage> {
     private static String SEPARATOR = "-\r-";
     private static int NUMBER_OF_MESSAGE_PARTS = 3;
     private static int MESSAGE_STATUS_INDEX = 0;
@@ -24,7 +25,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
     private static final Logger LOGGER = Logger.getLogger(KVMessageDeserializer.class);
 
     @Override
-    public KVMessage deserialize(SerializedKVMessage serializedMessage)
+    public KVMessage deserialize(SerializedMessage serializedMessage)
             throws DeserializationException {
         return deserialize(serializedMessage.getBytes());
     }
@@ -34,7 +35,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
         LOGGER.debug("Deserializing message from byte[].");
 
         String serializedMessageAsString =
-                new String(serializedMessage, SerializedKVMessage.MESSAGE_ENCODING);
+                new String(serializedMessage, SerializedMessage.MESSAGE_ENCODING);
         String[] messageParts = serializedMessageAsString.split(SEPARATOR);
 
         if (messageParts.length > NUMBER_OF_MESSAGE_PARTS) {
@@ -50,7 +51,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
                     : messageParts[MESSAGE_VALUE_INDEX];
 
             KVMessage deserialized =
-                    new KVMessage.KVMessageBuilder().status(status).key(key).value(value).build();
+                    new KVMessage.Builder().status(status).key(key).value(value).build();
             LOGGER.debug(join(" ", "Deserialized message is:", deserialized.toString()));
 
             return deserialized;

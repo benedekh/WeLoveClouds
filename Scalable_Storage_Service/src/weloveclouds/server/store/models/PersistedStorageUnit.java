@@ -42,7 +42,7 @@ public class PersistedStorageUnit implements Serializable {
      * @param initializerMap contains the key-value pairs which shall initialize this storage unit
      * @param filePath where the storage unit shall be persisted.
      */
-    public PersistedStorageUnit(Map<String, String> initializerMap, Path filePath) {
+    protected PersistedStorageUnit(Map<String, String> initializerMap, Path filePath) {
         setPath(filePath);
         this.entries = initializerMap;
     }
@@ -160,6 +160,44 @@ public class PersistedStorageUnit implements Serializable {
      */
     protected Logger getLogger() {
         return Logger.getLogger(getClass());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((entries == null) ? 0 : entries.hashCode());
+        result = prime * result + ((filePath == null) ? 0 : filePath.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof PersistedStorageUnit)) {
+            return false;
+        }
+        PersistedStorageUnit other = (PersistedStorageUnit) obj;
+        if (entries == null) {
+            if (other.entries != null) {
+                return false;
+            }
+        } else if (!entries.equals(other.entries)) {
+            return false;
+        }
+        if (filePath == null) {
+            if (other.filePath != null) {
+                return false;
+            }
+        } else if (!filePath.equals(other.filePath)) {
+            return false;
+        }
+        return true;
     }
 
 }

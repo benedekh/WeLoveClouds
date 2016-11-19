@@ -1,15 +1,15 @@
 package weloveclouds.server.models.requests;
 
-import static weloveclouds.kvstore.models.IKVMessage.StatusType.PUT_ERROR;
-import static weloveclouds.kvstore.models.IKVMessage.StatusType.PUT_SUCCESS;
-import static weloveclouds.kvstore.models.IKVMessage.StatusType.PUT_UPDATE;
+import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.PUT_ERROR;
+import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.PUT_SUCCESS;
+import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.PUT_UPDATE;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.models.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.KVEntry;
-import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
+import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.PutType;
@@ -58,6 +58,6 @@ public class Put implements IRequest {
     }
 
     private KVMessage createResponse(StatusType status, String key, String value) {
-        return new KVMessage.KVMessageBuilder().status(status).key(key).value(value).build();
+        return new KVMessage.Builder().status(status).key(key).value(value).build();
     }
 }
