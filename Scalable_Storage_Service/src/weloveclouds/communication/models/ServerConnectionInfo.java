@@ -15,7 +15,7 @@ public class ServerConnectionInfo {
     private InetAddress ipAddress;
     private int port;
 
-    protected ServerConnectionInfo(ServerConnectionInfoBuilder builder) {
+    protected ServerConnectionInfo(Builder builder) {
         this.ipAddress = builder.ipAddress;
         this.port = builder.port;
     }
@@ -77,11 +77,11 @@ public class ServerConnectionInfo {
      *
      * @author Benedek
      */
-    public static class ServerConnectionInfoBuilder {
+    public static class Builder {
         private InetAddress ipAddress;
         private int port;
 
-        public ServerConnectionInfoBuilder ipAddress(String ipAddress) throws UnknownHostException {
+        public Builder ipAddress(String ipAddress) throws UnknownHostException {
             if (ipAddress == null) {
                 throw new UnknownHostException("No host provided.");
             }
@@ -89,12 +89,12 @@ public class ServerConnectionInfo {
             return this;
         }
 
-        public ServerConnectionInfoBuilder ipAddress(InetAddress address) {
+        public Builder ipAddress(InetAddress address) {
             this.ipAddress = address;
             return this;
         }
 
-        public ServerConnectionInfoBuilder port(int port) {
+        public Builder port(int port) {
             this.port = port;
             return this;
         }

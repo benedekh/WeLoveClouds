@@ -15,15 +15,14 @@ public class KVTransferMessageSerializer
         implements IMessageSerializer<SerializedMessage, KVTransferMessage> {
 
     public static final String SEPARATOR = "-\r\r-";
+    private static final Logger LOGGER = Logger.getLogger(KVTransferMessageSerializer.class);
 
     private ISerializer<String, MovableStorageUnits> storageUnitsSerializer =
             new MovableStorageUnitsSerializer();
 
-    private Logger logger = Logger.getLogger(getClass());
-
     @Override
     public SerializedMessage serialize(KVTransferMessage unserializedMessage) {
-        logger.debug("Serializing transfer message.");
+        LOGGER.debug("Serializing transfer message.");
 
         // original fields
         StatusType status = unserializedMessage.getStatus();
@@ -37,7 +36,7 @@ public class KVTransferMessageSerializer
         // merged string representation
         String serialized = join(SEPARATOR, statusStr, storageUnitsStr, responseMessage);
 
-        logger.debug("Transfer message serialization finished.");
+        LOGGER.debug("Transfer message serialization finished.");
         return new SerializedMessage(serialized);
     }
 

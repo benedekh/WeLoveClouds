@@ -21,8 +21,8 @@ public class KVMessageTest {
 
     @Test
     public void testKVMessageSerializationAndDeserialization() throws DeserializationException {
-        KVMessage kvMessage = new KVMessage.KVMessageBuilder().key("hello").value("world")
-                .status(StatusType.PUT).build();
+        KVMessage kvMessage =
+                new KVMessage.Builder().key("hello").value("world").status(StatusType.PUT).build();
 
         SerializedMessage serializedMessage = messageSerializer.serialize(kvMessage);
         KVMessage deserializedMessage = messageDeserializer.deserialize(serializedMessage);

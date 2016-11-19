@@ -31,8 +31,7 @@ public class KVClient {
             new LogSetup(logFile, Level.OFF);
 
             ServerConnectionInfo bootstrapConnectionInfo =
-                    new ServerConnectionInfo.ServerConnectionInfoBuilder().ipAddress("localhost")
-                            .port(8080).build();
+                    new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
             IKVCommunicationApiV2 serverCommunication = new CommunicationApiFactory()
                     .createKVCommunicationApiV2(bootstrapConnectionInfo);
 

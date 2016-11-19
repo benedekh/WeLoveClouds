@@ -25,10 +25,11 @@ public class RingMetadataPartTest {
     @Test
     public void testRingMetadataPartSerializationAndDeserialization()
             throws DeserializationException, UnknownHostException {
-        ServerConnectionInfo sci = new ServerConnectionInfo.ServerConnectionInfoBuilder()
-                .ipAddress("localhost").port(8080).build();
-        RingMetadataPart metadataPart = new RingMetadataPart.RingMetadataPartBuilder()
-                .connectionInfo(sci).range(new HashRange(Hash.MIN_VALUE, Hash.MAX_VALUE)).build();
+        ServerConnectionInfo sci =
+                new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
+        RingMetadataPart metadataPart = new RingMetadataPart.Builder().connectionInfo(sci)
+                .range(new HashRange.Builder().start(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
+                .build();
 
         String serializedMetadataPart = metadataPartSerializer.serialize(metadataPart);
         RingMetadataPart deserializedMetadataPart =

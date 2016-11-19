@@ -17,9 +17,9 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
     private static final int RANGE_START_INDEX = 0;
     private static final int RANGE_END_INDEX = 1;
 
-    private IDeserializer<Hash, String> hashDeserializer = new HashDeserializer();
+    private static final Logger LOGGER = Logger.getLogger(HashRangeDeserializer.class);
 
-    private Logger logger = Logger.getLogger(getClass());
+    private IDeserializer<Hash, String> hashDeserializer = new HashDeserializer();
 
     @Override
     public HashRange deserialize(String from) throws DeserializationException {
@@ -34,7 +34,7 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
                 String errorMessage =
                         CustomStringJoiner.join("", "Hash range must consist of exactly ",
                                 String.valueOf(NUMBER_OF_HASH_RANGE_PARTS), " parts.");
-                logger.debug(errorMessage);
+                LOGGER.debug(errorMessage);
                 throw new DeserializationException(errorMessage);
             }
 
@@ -47,8 +47,8 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
             Hash endHash = hashDeserializer.deserialize(endHashStr);
 
             // deserialized object
-            deserialized = new HashRange(startHash, endHash);
-            logger.debug(join(" ", "Deserialized hash range is:", deserialized.toString()));
+            deserialized = new HashRange.Builder().start(startHash).end(endHash).build();
+            LOGGER.debug(join(" ", "Deserialized hash range is:", deserialized.toString()));
         }
 
         return deserialized;

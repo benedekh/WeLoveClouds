@@ -1,28 +1,20 @@
 package weloveclouds.server.models;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.RingMetadata;
 
 /**
- * The context information with that the ECS initializes the target KVServer.
+ * The context information with that the ECS initializes the target KVServer's data access service.
  * 
  * @author Benedek
  */
 public class ServerInitializationContext {
 
-    private RingMetadata ringMetadata;
     private int cacheSize;
     private String displacementStrategyName;
 
-    public ServerInitializationContext(RingMetadata ringMetadata, int cacheSize,
-            String displacementStrategyName) {
-        this.ringMetadata = ringMetadata;
-        this.cacheSize = cacheSize;
-        this.displacementStrategyName = displacementStrategyName;
-    }
-
-    public RingMetadata getRingMetadata() {
-        return ringMetadata;
+    protected ServerInitializationContext(Builder builder) {
+        this.cacheSize = builder.cacheSize;
+        this.displacementStrategyName = builder.displacementStrategyName;
     }
 
     public int getCacheSize() {
@@ -32,8 +24,12 @@ public class ServerInitializationContext {
     public String getDisplacementStrategyName() {
         return displacementStrategyName;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return CustomStringJoiner.join(" ", "{ Cache size:", String.valueOf(cacheSize),
+                ", Displacement strategy:", displacementStrategyName, "}");
+    }
 
     @Override
     public int hashCode() {
@@ -42,7 +38,6 @@ public class ServerInitializationContext {
         result = prime * result + cacheSize;
         result = prime * result
                 + ((displacementStrategyName == null) ? 0 : displacementStrategyName.hashCode());
-        result = prime * result + ((ringMetadata == null) ? 0 : ringMetadata.hashCode());
         return result;
     }
 
@@ -68,22 +63,26 @@ public class ServerInitializationContext {
         } else if (!displacementStrategyName.equals(other.displacementStrategyName)) {
             return false;
         }
-        if (ringMetadata == null) {
-            if (other.ringMetadata != null) {
-                return false;
-            }
-        } else if (!ringMetadata.equals(other.ringMetadata)) {
-            return false;
-        }
         return true;
     }
 
-    @Override
-    public String toString() {
-        return CustomStringJoiner.join(" ", "{ Ring metadata:",
-                ringMetadata == null ? null : ringMetadata.toString(), ", Cache size:",
-                String.valueOf(cacheSize), ", Displacement strategy:", displacementStrategyName,
-                "}");
+    public static class Builder {
+        private int cacheSize;
+        private String displacementStrategyName;
+
+        public Builder cacheSize(int cacheSize) {
+            this.cacheSize = cacheSize;
+            return this;
+        }
+
+        public Builder displacementStrategyName(String displacementStrategyName) {
+            this.displacementStrategyName = displacementStrategyName;
+            return this;
+        }
+
+        public ServerInitializationContext build() {
+            return new ServerInitializationContext(this);
+        }
     }
 
 }

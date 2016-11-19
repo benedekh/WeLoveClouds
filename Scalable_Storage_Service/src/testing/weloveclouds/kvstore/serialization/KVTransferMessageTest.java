@@ -43,7 +43,7 @@ public class KVTransferMessageTest {
         MovableStorageUnits storageUnits =
                 new MovableStorageUnits(new HashSet<>(Arrays.asList(unit1, unit2)));
 
-        KVTransferMessage transferMessage = new KVTransferMessage.KVTransferMessageBuilder()
+        KVTransferMessage transferMessage = new KVTransferMessage.Builder()
                 .storageUnits(storageUnits).status(StatusType.TRANSFER).build();
 
         SerializedMessage serializedMessage = transferMessageSerializer.serialize(transferMessage);

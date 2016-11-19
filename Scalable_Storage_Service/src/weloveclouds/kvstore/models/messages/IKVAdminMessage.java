@@ -39,8 +39,7 @@ public interface IKVAdminMessage {
     public RingMetadata getRingMetadata();
 
     /**
-     * @return the ip+port of the server to which data shall be transferred, and the hash range in
-     *         which the hash values of keys of the the transferable entries have to be
+     * @return the ip+port+hash range in which the hash values of keys of the entries have to be
      */
     public RingMetadataPart getTargetServerInfo();
 

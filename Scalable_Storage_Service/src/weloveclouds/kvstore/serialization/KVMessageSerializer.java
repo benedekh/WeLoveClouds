@@ -17,11 +17,11 @@ public class KVMessageSerializer implements IMessageSerializer<SerializedMessage
 
     public static final String SEPARATOR = "-\r-";
 
-    private Logger logger = Logger.getLogger(getClass());
+    private static final Logger LOGGER = Logger.getLogger(KVMessageSerializer.class);
 
     @Override
     public SerializedMessage serialize(KVMessage unserializedMessage) {
-        logger.debug(join(" ", "Serializing message:", unserializedMessage.toString()));
+        LOGGER.debug(join(" ", "Serializing message:", unserializedMessage.toString()));
 
         // original fields
         StatusType status = unserializedMessage.getStatus();
@@ -34,7 +34,7 @@ public class KVMessageSerializer implements IMessageSerializer<SerializedMessage
         // merged string representation
         String serialized = join(SEPARATOR, statusStr, key, value);
 
-        logger.debug(join(" ", "Serialized message:", serialized));
+        LOGGER.debug(join(" ", "Serialized message:", serialized));
         return new SerializedMessage(serialized);
     }
 }
