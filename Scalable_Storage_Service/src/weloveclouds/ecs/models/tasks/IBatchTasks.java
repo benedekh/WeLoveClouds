@@ -11,6 +11,8 @@ public interface IBatchTasks<T> {
 
     void addTasks(List<T> tasks);
 
+    String getId();
+
     List<T> getTasks();
 
     List<T> getFailedTasks();

@@ -34,6 +34,11 @@ public class BatchRetryableTasks implements IBatchTasks<AbstractRetryableTask> {
     }
 
     @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
     public List<AbstractRetryableTask> getTasks() {
         return new ArrayList<>(tasks);
     }

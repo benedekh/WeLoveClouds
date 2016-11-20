@@ -1,10 +1,9 @@
 package weloveclouds.ecs.services;
 
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
 import weloveclouds.ecs.models.tasks.IBatchTasks;
@@ -17,36 +16,42 @@ import static weloveclouds.ecs.workers.WorkerStatus.ERROR;
  */
 public class TaskService implements ITaskService, Observer {
     Map<String, AbstractRetryableTask> runningTasks;
-    Set<AbstractRetryableTask> failedTasks;
-    Set<AbstractRetryableTask> succeededTasks;
+    Map<String, AbstractRetryableTask> failedTasks;
+    Map<String, AbstractRetryableTask> succeededTasks;
+    Map<String, IBatchTasks<AbstractRetryableTask>> batch;
 
     public TaskService() {
-        failedTasks = new LinkedHashSet<>();
-        succeededTasks = new LinkedHashSet<>();
+        failedTasks = new LinkedHashMap<>();
+        succeededTasks = new LinkedHashMap<>();
     }
 
     @Override
     public void launchTask(AbstractRetryableTask task) {
-
+        runningTasks.put(task.getId(), task);
+        TaskWorker taskWorker = new TaskWorker(task);
+        taskWorker.addObserver(this);
+        new Thread(taskWorker).start();
     }
 
     @Override
     public void launchBatchTasks(IBatchTasks<AbstractRetryableTask> batchTasks) {
+        batch.put(batchTasks.getId(), batchTasks);
+
         for (AbstractRetryableTask task : batchTasks.getTasks()) {
-            runningTasks.put(task.getId(), task);
-            TaskWorker taskWorker = new TaskWorker(task);
-            taskWorker.addObserver(this);
-            new Thread(taskWorker).start();
+            launchTask(task);
         }
     }
 
     @Override
-    synchronized public void update(Observable obs, Object arg) {
+    synchronized public void update(Observable obs, Object id) {
         TaskWorker worker = (TaskWorker) obs;
+        String taskId = (String) id;
+        AbstractRetryableTask task = runningTasks.remove(taskId);
+
         if (worker.getStatus() == ERROR) {
-            failedTasks.add(worker.getTask());
+            failedTasks.put(taskId, task);
         } else {
-            succeededTasks.add(worker.getTask());
+            succeededTasks.put(taskId, task);
             //LOG error
         }
     }

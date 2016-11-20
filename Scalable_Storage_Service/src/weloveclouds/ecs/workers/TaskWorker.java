@@ -47,6 +47,6 @@ public class TaskWorker extends Observable implements Runnable {
         }
         status = task.getStatus() == COMPLETED ? FINISHED : ERROR;
         setChanged();
-        notifyObservers();
+        notifyObservers(task.getId());
     }
 }
