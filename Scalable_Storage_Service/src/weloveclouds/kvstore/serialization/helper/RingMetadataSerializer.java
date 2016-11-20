@@ -12,7 +12,7 @@ import weloveclouds.hashing.models.RingMetadataPart;;
  */
 public class RingMetadataSerializer implements ISerializer<String, RingMetadata> {
 
-    public static final String SEPARATOR = "-\r\r-";
+    public static final String SEPARATOR = "-\t\t-";
     private static final Logger LOGGER = Logger.getLogger(RingMetadata.class);
 
     private ISerializer<String, RingMetadataPart> metadataPartSerializer =

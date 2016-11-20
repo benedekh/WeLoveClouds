@@ -24,7 +24,7 @@ import weloveclouds.server.models.ServerInitializationContext;
 public class KVAdminMessageSerializer
         implements IMessageSerializer<SerializedMessage, KVAdminMessage> {
 
-    public static final String SEPARATOR = "-\t\t-";
+    public static final String SEPARATOR = "-\r\r-";
 
     private static final Logger LOGGER = Logger.getLogger(KVAdminMessageSerializer.class);
 
