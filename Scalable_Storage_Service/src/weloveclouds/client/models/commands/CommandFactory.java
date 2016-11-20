@@ -33,6 +33,7 @@ public class CommandFactory {
     public CommandFactory(IKVCommunicationApiV2 communicationApi,
             IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         this.communicationApi = communicationApi;
+        this.ringMetadataDeserializer = ringMetadataDeserializer;
     }
 
     /**
