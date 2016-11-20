@@ -16,23 +16,22 @@ import weloveclouds.communication.exceptions.ClientSideException;
  */
 public class Help extends AbstractCommand {
 
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Help.class);
 
     public Help(String[] arguments) {
         super(arguments);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ClientSideException {
         try {
-            logger.info("Executing help command.");
+            LOGGER.info("Executing help command.");
             userOutputWriter.writeLine(HelpMessageGenerator.generateHelpMessage());
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new ClientSideException(ex.getMessage(), ex);
         } finally {
-            logger.info("Help command execution finished.");
+            LOGGER.info("Help command execution finished.");
         }
     }
 

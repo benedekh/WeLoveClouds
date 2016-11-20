@@ -11,10 +11,11 @@ import weloveclouds.client.utils.CustomStringJoiner;
  * @author Benoit, Benedek
  */
 public class ServerConnectionInfo {
+
     private InetAddress ipAddress;
     private int port;
 
-    protected ServerConnectionInfo(ServerConnectionInfoBuilder builder) {
+    protected ServerConnectionInfo(Builder builder) {
         this.ipAddress = builder.ipAddress;
         this.port = builder.port;
     }
@@ -28,8 +29,47 @@ public class ServerConnectionInfo {
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
+        result = prime * result + port;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof ServerConnectionInfo)) {
+            return false;
+        }
+        ServerConnectionInfo other = (ServerConnectionInfo) obj;
+        if (ipAddress == null) {
+            if (other.ipAddress != null) {
+                return false;
+            }
+        } else if (!ipAddress.equals(other.ipAddress)) {
+            return false;
+        }
+        if (port != other.port) {
+            return false;
+        }
+        return true;
+    }
+
+    public String toStringWithDelimiter(String delimiter) {
+        return CustomStringJoiner.join(delimiter, ipAddress.getHostAddress(), String.valueOf(port));
+    }
+
+    @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", ipAddress.toString(), String.valueOf(port));
+        return CustomStringJoiner.join("", "<", ipAddress.getHostAddress(), " , ",
+                String.valueOf(port), ">");
     }
 
     /**
@@ -37,11 +77,11 @@ public class ServerConnectionInfo {
      *
      * @author Benedek
      */
-    public static class ServerConnectionInfoBuilder {
+    public static class Builder {
         private InetAddress ipAddress;
         private int port;
 
-        public ServerConnectionInfoBuilder ipAddress(String ipAddress) throws UnknownHostException {
+        public Builder ipAddress(String ipAddress) throws UnknownHostException {
             if (ipAddress == null) {
                 throw new UnknownHostException("No host provided.");
             }
@@ -49,12 +89,12 @@ public class ServerConnectionInfo {
             return this;
         }
 
-        public ServerConnectionInfoBuilder ipAddress(InetAddress address) {
+        public Builder ipAddress(InetAddress address) {
             this.ipAddress = address;
             return this;
         }
 
-        public ServerConnectionInfoBuilder port(int port) {
+        public Builder port(int port) {
             this.port = port;
             return this;
         }

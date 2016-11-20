@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.commands.ICommand;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.ssh.AuthInfos;
@@ -11,10 +12,9 @@ import weloveclouds.ecs.models.ssh.AuthInfos;
 /**
  * Created by Benoit on 2016-11-19.
  */
-public abstract class AbstractRemoteCommand implements ICommand {
+public abstract class AbstractRemoteCommand extends AbstractCommand<String> implements ICommand {
     private static final String ARGUMENTS_DELIMITER = " ";
     protected final String COMMAND;
-    protected List<String> arguments;
     protected StorageNode targetedNode;
 
     public AbstractRemoteCommand(String command, List<String> arguments, StorageNode targettedNode) {
@@ -25,6 +25,10 @@ public abstract class AbstractRemoteCommand implements ICommand {
 
     public String getTargettedHostIp() {
         return targetedNode.getIpAddress().replaceAll("/", "");
+    }
+
+    public StorageNode getTargetedNode() {
+        return targetedNode;
     }
 
     public String toString() {

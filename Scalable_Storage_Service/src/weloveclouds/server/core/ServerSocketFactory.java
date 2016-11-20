@@ -14,7 +14,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
  */
 public class ServerSocketFactory {
 
-    private Logger logger = Logger.getLogger(getClass());
+    private static final Logger LOGGER = Logger.getLogger(ServerSocketFactory.class);
 
     /**
      * Creates a new {@link ServerSocket} on the referred port.
@@ -22,7 +22,7 @@ public class ServerSocketFactory {
      * @throws IOException if the socket cannot be created
      */
     public ServerSocket createServerSocketFromPort(int port) throws IOException {
-        logger.info(CustomStringJoiner.join(" ", "Creating server socket on port",
+        LOGGER.info(CustomStringJoiner.join(" ", "Creating server socket on port",
                 String.valueOf(port)));
         return new ServerSocket(port);
     }

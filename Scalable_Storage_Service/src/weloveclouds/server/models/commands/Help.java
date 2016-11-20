@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.server.utils.HelpMessageGenerator;
-import weloveclouds.server.exceptions.ServerSideException;
+import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.utils.ArgumentsValidator;
 
 /**
@@ -15,23 +15,22 @@ import weloveclouds.server.utils.ArgumentsValidator;
  */
 public class Help extends AbstractServerCommand {
 
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(Help.class);
 
     public Help(String[] arguments) {
         super(arguments);
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void execute() throws ServerSideException {
         try {
-            logger.info("Executing help command.");
+            LOGGER.info("Executing help command.");
             userOutputWriter.writeLine(HelpMessageGenerator.generateHelpMessage());
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new ServerSideException(ex.getMessage(), ex);
         } finally {
-            logger.info("Help command execution finished.");
+            LOGGER.info("Help command execution finished.");
         }
     }
 

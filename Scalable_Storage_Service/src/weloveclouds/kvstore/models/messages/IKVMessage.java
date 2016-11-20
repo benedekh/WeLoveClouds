@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.models;
+package weloveclouds.kvstore.models.messages;
 
 /**
  * Represents a Key-Value message.

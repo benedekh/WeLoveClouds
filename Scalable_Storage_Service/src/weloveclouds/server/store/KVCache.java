@@ -22,12 +22,13 @@ import weloveclouds.server.store.exceptions.ValueNotFoundException;
  */
 public class KVCache implements IDataAccessService, Observer {
 
+    private static final Logger LOGGER = Logger.getLogger(KVCache.class);
+    
     private Map<String, String> cache;
     private int currentSize;
     private int capacity;
 
     private DisplacementStrategy displacementStrategy;
-    private Logger logger;
 
     /**
      * @param maxSize how many entries can be stored in the cache
@@ -40,7 +41,6 @@ public class KVCache implements IDataAccessService, Observer {
 
         this.cache = new HashMap<>();
         this.currentSize = 0;
-        this.logger = Logger.getLogger(getClass());
     }
 
     @Override
@@ -64,16 +64,16 @@ public class KVCache implements IDataAccessService, Observer {
                 response = PutType.INSERT;
             }
 
-            logger.debug(CustomStringJoiner.join(" ", entry.toString(), "was added to cache."));
+            LOGGER.debug(CustomStringJoiner.join(" ", entry.toString(), "was added to cache."));
             displacementStrategy.put(key);
 
             return response;
         } catch (NullPointerException ex) {
             String errorMessage = "Key or value is null when adding element to cache.";
-            logger.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         } catch (IllegalArgumentException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
             throw new StorageException(
                     "Some property of the key or value prevents it from being stored in the cache.");
         }
@@ -88,13 +88,13 @@ public class KVCache implements IDataAccessService, Observer {
                 throw new ValueNotFoundException(key);
             } else {
                 displacementStrategy.get(key);
-                logger.debug(CustomStringJoiner.join(" ", value, "was retrieved from cache for key",
+                LOGGER.debug(CustomStringJoiner.join(" ", value, "was retrieved from cache for key",
                         key));
                 return value;
             }
         } catch (NullPointerException ex) {
             String errorMessage = "Key cannot be null to get value from cache.";
-            logger.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         }
     }
@@ -106,11 +106,11 @@ public class KVCache implements IDataAccessService, Observer {
             if (removed != null) {
                 currentSize--;
                 displacementStrategy.remove(key);
-                logger.debug(CustomStringJoiner.join(" ", key, "was removed from cache."));
+                LOGGER.debug(CustomStringJoiner.join(" ", key, "was removed from cache."));
             }
         } catch (NullPointerException ex) {
             String errorMessage = "Key cannot be null to remove from cache.";
-            logger.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         }
     }
@@ -124,7 +124,7 @@ public class KVCache implements IDataAccessService, Observer {
                 removeEntry((String) value);
             }
         } catch (StorageException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
         }
     }
 

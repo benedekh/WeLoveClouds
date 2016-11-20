@@ -1,6 +1,6 @@
 package weloveclouds.server.models.requests;
 
-import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.kvstore.models.messages.KVMessage;
 
 /**
  * An executable request which produces the response {@link KVMessage}.

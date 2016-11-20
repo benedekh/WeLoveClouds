@@ -3,7 +3,7 @@ package weloveclouds.ecs.models.repository;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
 
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.IDLE;
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
 
 /**
  * Created by Benoit on 2016-11-16.
@@ -18,7 +18,7 @@ public class StorageNode {
         this.id = id;
         this.serverConnectionInfo = serverConnectionInfo;
         this.hashRange = hashRange;
-        this.status = IDLE;
+        this.status = HALTED;
     }
 
     public String getId() {
@@ -43,5 +43,9 @@ public class StorageNode {
 
     public StorageNodeStatus getStatus() {
         return status;
+    }
+
+    public void setStatus(StorageNodeStatus status) {
+        this.status = status;
     }
 }

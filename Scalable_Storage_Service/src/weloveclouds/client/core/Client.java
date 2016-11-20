@@ -19,10 +19,10 @@ import weloveclouds.communication.exceptions.ClientSideException;
  */
 public class Client {
 
+    private static final Logger LOGGER = Logger.getLogger(Client.class);
+
     private InputStream inputStream;
     private CommandFactory commandFactory;
-
-    private Logger logger;
 
     /**
      * @param inputStream from which it receives command from the user
@@ -31,7 +31,6 @@ public class Client {
     public Client(InputStream inputStream, CommandFactory commandFactory) {
         this.inputStream = inputStream;
         this.commandFactory = commandFactory;
-        this.logger = Logger.getLogger(getClass());
     }
 
     /**
@@ -41,27 +40,27 @@ public class Client {
     public void run() {
         try (UserInputReader inputReader = new UserInputReader(inputStream);
                 UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
-            logger.info("Client started.");
+            LOGGER.info("Client started.");
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     outputWriter.writePrefix();
                     ParsedUserInput userInput = inputReader.readAndParseUserInput();
                     commandFactory.createCommandFromUserInput(userInput).validate().execute();
-                    logger.info("Command executed.");
+                    LOGGER.info("Command executed.");
                 } catch (IOException ex) {
                     outputWriter.writeLine(ex.getMessage());
-                    logger.error(ex);
+                    LOGGER.error(ex);
                 } catch (ClientSideException | IllegalArgumentException ex) {
                     outputWriter.writeLine(ex.getMessage());
-                    logger.error(ex);
+                    LOGGER.error(ex);
                 }
             }
         } catch (IOException ex) {
-            logger.error(ex);
+            LOGGER.error(ex);
         } catch (Throwable ex) {
-            logger.fatal(ex);
+            LOGGER.fatal(ex);
         } finally {
-            logger.info("Client stopped.");
+            LOGGER.info("Client stopped.");
         }
     }
 }

@@ -1,23 +1,26 @@
 package weloveclouds.ecs.models.commands;
 
-import weloveclouds.cli.utils.UserOutputWriter;
-import weloveclouds.ecs.models.commands.ICommand;
+import java.util.ArrayList;
+import java.util.List;
 
+import weloveclouds.cli.utils.UserOutputWriter;
 
 /**
- * Abstract common class for processing commands. It stores the {@link #arguments} that a specific
- * command may have.
- *
- * @author Benoit, hb added it to the ecs package
+ * Created by Benoit on 2016-11-19.
  */
-public abstract class AbstractCommand implements ICommand {
-    protected String[] arguments;
+public abstract class AbstractCommand<T> implements ICommand {
+    protected List<T> arguments;
     protected UserOutputWriter userOutputWriter = UserOutputWriter.getInstance();
 
-    /**
-     * @param arguments the arguments of the command
-     */
-    public AbstractCommand(String[] arguments) {
-        this.arguments = arguments;
+    public AbstractCommand() {
+        arguments = new ArrayList<T>();
+    }
+
+    public AbstractCommand(List<T> arguments) {
+        this.arguments.addAll(arguments);
+    }
+
+    public void addArguments(T argument) {
+        arguments.add(argument);
     }
 }

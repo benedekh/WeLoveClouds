@@ -20,15 +20,15 @@ public class ServerRepository {
         this.storageNodes = storageNodes;
     }
 
-    public ArrayDeque<StorageNode> getStorageNodes() {
+    synchronized public ArrayDeque<StorageNode> getStorageNodes() {
         return storageNodes;
     }
 
-    public void addStorageNode(StorageNode storageNode) {
+    synchronized public void addStorageNode(StorageNode storageNode) {
         this.storageNodes.add(storageNode);
     }
 
-    public List<StorageNode> getIdledNodes() {
+    synchronized public List<StorageNode> getIdledNodes() {
         List<StorageNode> idledStorageNodes = new ArrayList<>();
 
         for (StorageNode storageNode : getStorageNodes()) {

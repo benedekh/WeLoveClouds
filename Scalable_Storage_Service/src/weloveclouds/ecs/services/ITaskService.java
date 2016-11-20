@@ -9,5 +9,5 @@ import weloveclouds.ecs.models.tasks.IBatchTasks;
 public interface ITaskService {
     void launchTask(AbstractRetryableTask task);
 
-    void launchBatchTasks(IBatchTasks batchTasks);
+    void launchBatchTasks(IBatchTasks<AbstractRetryableTask> batchTasks);
 }
