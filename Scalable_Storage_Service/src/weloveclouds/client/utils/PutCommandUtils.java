@@ -19,7 +19,14 @@ public class PutCommandUtils {
     public static String mergeValuesToOneString(int startIndex, String[] arguments) {
         List<String> argList = Arrays.asList(arguments);
         List<String> valueElements = argList.subList(startIndex, argList.size());
-        return join(" ", valueElements);
+        String mergedValues = join(" ", valueElements);
+
+        // to preserve the really empty entry value
+        if (mergedValues.trim().isEmpty()) {
+            mergedValues = null;
+        }
+
+        return mergedValues;
     }
 
 }
