@@ -9,6 +9,7 @@ import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
 import weloveclouds.ecs.models.commands.EcsCommandFactory;
+import weloveclouds.ecs.models.commands.client.EcsCommand;
 import weloveclouds.ecs.utils.EcsClientUserInputParser;
 
 /**
@@ -25,6 +26,7 @@ public class Client {
         this.ecsCommandFactory = ecsCommandFactory;
     }
 
+    @SuppressWarnings("unchecked")
     public void run() {
         try (UserInputReader inputReader = new UserInputReader(inputStream, new EcsClientUserInputParser());
              UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
@@ -36,9 +38,6 @@ public class Client {
                     ecsCommandFactory.createCommandFromUserInput(userInput).execute();
                     LOGGER.info("Command executed.");
                 } catch (IOException ex) {
-                    outputWriter.writeLine(ex.getMessage());
-                    LOGGER.error(ex);
-                } catch (IllegalArgumentException ex) {
                     outputWriter.writeLine(ex.getMessage());
                     LOGGER.error(ex);
                 }

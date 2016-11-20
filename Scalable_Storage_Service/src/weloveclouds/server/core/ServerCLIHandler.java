@@ -37,6 +37,7 @@ public class ServerCLIHandler {
      * Reads commands with arguments from the user via the {@link #inputStream}. After, it forwards
      * the respective command to the {@link #commandFactory} that will validate and execute it.
      */
+    @SuppressWarnings("unchecked")
     public void run() {
         try (UserInputReader inputReader = new UserInputReader(inputStream, new ServerUserInputParser());
              UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
