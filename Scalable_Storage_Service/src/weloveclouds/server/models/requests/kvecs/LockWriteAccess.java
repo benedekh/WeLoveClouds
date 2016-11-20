@@ -17,7 +17,7 @@ import weloveclouds.server.services.models.DataAccessServiceStatus;
 public class LockWriteAccess implements IKVECSRequest {
 
     private static final Logger LOGGER = Logger.getLogger(LockWriteAccess.class);
-    
+
     private IMovableDataAccessService dataAccessService;
 
     public LockWriteAccess(IMovableDataAccessService dataAccessService) {
@@ -36,6 +36,11 @@ public class LockWriteAccess implements IKVECSRequest {
             return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
                     .responseMessage(ex.getMessage()).build();
         }
+    }
+
+    @Override
+    public IKVECSRequest validate() throws IllegalArgumentException {
+        return this;
     }
 
 }

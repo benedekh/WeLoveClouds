@@ -14,6 +14,8 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.core.requests.IExecutable;
 import weloveclouds.server.core.requests.IRequestFactory;
+import weloveclouds.server.core.requests.IValidatable;
+import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 
 /**
  * A handler for a client connected to the {@link Server}. It receives and interprets different
@@ -25,7 +27,7 @@ import weloveclouds.server.core.requests.IRequestFactory;
  * 
  * @author Benoit
  */
-public class SimpleConnectionHandler<M, R extends IExecutable<M>> extends Thread
+public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<R>> extends Thread
         implements IConnectionHandler {
 
     private static final Logger LOGGER = Logger.getLogger(SimpleConnectionHandler.class);
@@ -49,26 +51,43 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M>> extends Thread
         start();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void run() {
         LOGGER.info("Client is connected to server.");
 
         while (connection.isConnected()) {
+            M response = null;
+
             try {
                 M receivedMessage =
                         messageDeserializer.deserialize(communicationApi.receiveFrom(connection));
                 LOGGER.debug(CustomStringJoiner.join(" ", "Message received:",
                         receivedMessage.toString()));
 
-                M response =
-                        requestFactory.createRequestFromReceivedMessage(receivedMessage).execute();
-                communicationApi.send(messageSerializer.serialize(response).getBytes(), connection);
-
-                LOGGER.debug(CustomStringJoiner.join(" ", "Sent response:", response.toString()));
+                response = requestFactory.createRequestFromReceivedMessage(receivedMessage)
+                        .validate().execute();
+            } catch (IllegalRequestException ex) {
+                try {
+                    response = (M) ex.getResponse();
+                } catch (ClassCastException e) {
+                    LOGGER.error(e);
+                }
             } catch (IOException | DeserializationException e) {
                 LOGGER.error(e);
             } catch (Throwable e) {
                 LOGGER.fatal(e);
+            } finally {
+                if (response != null) {
+                    try {
+                        communicationApi.send(messageSerializer.serialize(response).getBytes(),
+                                connection);
+                        LOGGER.debug(CustomStringJoiner.join(" ", "Sent response:",
+                                response.toString()));
+                    } catch (IOException e) {
+                        LOGGER.error(e);
+                    }
+                }
             }
         }
 
@@ -80,7 +99,7 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M>> extends Thread
      * 
      * @author Benoit
      */
-    public static class Builder<M, R extends IExecutable<M>> {
+    public static class Builder<M, R extends IExecutable<M> & IValidatable<R>> {
         private IConcurrentCommunicationApi communicationApi;
         private IRequestFactory<M, R> requestFactory;
         private Connection connection;

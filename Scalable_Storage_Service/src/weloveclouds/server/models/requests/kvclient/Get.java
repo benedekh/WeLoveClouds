@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
+import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
@@ -54,5 +56,17 @@ public class Get implements IKVClientRequest {
 
     private KVMessage createResponse(StatusType status, String key, String value) {
         return new KVMessage.Builder().status(status).key(key).value(value).build();
+    }
+
+    @Override
+    public IKVClientRequest validate() throws IllegalArgumentException {
+        try {
+            KVServerRequestsValidator.validateValueAsKVKey(key);
+        } catch (IllegalArgumentException ex) {
+            String errorMessage = "Key is invalid.";
+            LOGGER.error(errorMessage);
+            throw new IllegalRequestException(createResponse(GET_ERROR, key, errorMessage));
+        }
+        return this;
     }
 }

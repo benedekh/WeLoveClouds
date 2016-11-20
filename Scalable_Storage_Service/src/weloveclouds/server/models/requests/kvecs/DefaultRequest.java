@@ -22,4 +22,9 @@ public class DefaultRequest implements IKVECSRequest {
                 .responseMessage(errorMessage).build();
     }
 
+    @Override
+    public IKVECSRequest validate() throws IllegalArgumentException {
+        return this;
+    }
+
 }

@@ -37,5 +37,10 @@ public class StartDataAcessService implements IKVECSRequest {
                     .responseMessage(ex.getMessage()).build();
         }
     }
+    
+    @Override
+    public IKVECSRequest validate() throws IllegalArgumentException {
+        return this;
+    }
 
 }

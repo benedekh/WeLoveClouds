@@ -12,6 +12,8 @@ import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -104,6 +106,18 @@ public class MoveDataToDestination implements IKVECSRequest {
         return new KVAdminMessage.Builder()
                 .status(weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR)
                 .responseMessage(errorMessage).build();
+    }
+
+    @Override
+    public IKVECSRequest validate() throws IllegalArgumentException {
+        try {
+            KVServerRequestsValidator.validateRingMetadataPart(targetServerInfo);
+        } catch (IllegalArgumentException ex) {
+            String errorMessage = "Target server information is invalid.";
+            LOGGER.error(errorMessage);
+            throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
+        }
+        return this;
     }
 
 }

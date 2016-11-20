@@ -14,6 +14,7 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.core.requests.IExecutable;
 import weloveclouds.server.core.requests.IRequestFactory;
+import weloveclouds.server.core.requests.IValidatable;
 
 /**
  * A Server instance which accepts messages over the network and can handle multiple clients
@@ -24,7 +25,7 @@ import weloveclouds.server.core.requests.IRequestFactory;
  * 
  * @author Benoit, Benedek
  */
-public class Server<M, R extends IExecutable<M>> extends AbstractServer {
+public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends AbstractServer {
 
     private static final Logger LOGGER = Logger.getLogger(Server.class);
 
@@ -105,7 +106,7 @@ public class Server<M, R extends IExecutable<M>> extends AbstractServer {
      * 
      * @author Benoit
      */
-    public static class Builder<M, R extends IExecutable<M>> {
+    public static class Builder<M, R extends IExecutable<M> & IValidatable<R>> {
         private CommunicationApiFactory communicationApiFactory;
         private ServerSocketFactory serverSocketFactory;
         private IRequestFactory<M, R> requestFactory;

@@ -24,4 +24,9 @@ public class DefaultRequest implements IKVClientRequest {
                 .build();
     }
 
+    @Override
+    public IKVClientRequest validate() throws IllegalArgumentException {
+        return this;
+    }
+
 }

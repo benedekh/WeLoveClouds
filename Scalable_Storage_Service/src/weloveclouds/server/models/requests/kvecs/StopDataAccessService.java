@@ -17,7 +17,7 @@ import weloveclouds.server.services.models.DataAccessServiceStatus;
 public class StopDataAccessService implements IKVECSRequest {
 
     private static final Logger LOGGER = Logger.getLogger(StopDataAccessService.class);
-    
+
     private IMovableDataAccessService dataAccessService;
 
     public StopDataAccessService(IMovableDataAccessService dataAccessService) {
@@ -38,4 +38,8 @@ public class StopDataAccessService implements IKVECSRequest {
         }
     }
 
+    @Override
+    public IKVECSRequest validate() throws IllegalArgumentException {
+        return this;
+    }
 }

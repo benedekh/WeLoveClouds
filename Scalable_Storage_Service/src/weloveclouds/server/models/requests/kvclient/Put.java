@@ -13,6 +13,8 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
+import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
@@ -71,5 +73,25 @@ public class Put implements IKVClientRequest {
 
     private KVMessage createResponse(StatusType status, String key, String value) {
         return new KVMessage.Builder().status(status).key(key).value(value).build();
+    }
+
+    @Override
+    public IKVClientRequest validate() throws IllegalArgumentException {
+        try {
+            KVServerRequestsValidator.validateValueAsKVKey(key);
+        } catch (IllegalArgumentException ex) {
+            String errorMessage = "Key is invalid.";
+            LOGGER.error(errorMessage);
+            throw new IllegalRequestException(createResponse(PUT_ERROR, key, errorMessage));
+        }
+        try {
+            KVServerRequestsValidator.validateValueAsKVValue(key);
+        } catch (IllegalArgumentException ex) {
+            String errorMessage = "Value is invalid.";
+            LOGGER.error(errorMessage);
+            throw new IllegalRequestException(createResponse(PUT_ERROR, value, errorMessage));
+        }
+
+        return this;
     }
 }

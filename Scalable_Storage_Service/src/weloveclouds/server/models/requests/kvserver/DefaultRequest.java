@@ -22,4 +22,9 @@ public class DefaultRequest implements IKVServerRequest {
                 .responseMessage(errorMessage).build();
     }
 
+    @Override
+    public IKVServerRequest validate() throws IllegalArgumentException {
+        return this;
+    }
+
 }

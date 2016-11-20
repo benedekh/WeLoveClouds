@@ -8,7 +8,9 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.models.ServerInitializationContext;
+import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.exceptions.ServiceIsAlreadyInitializedException;
 import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
@@ -75,6 +77,19 @@ public class InitializeKVServer implements IKVECSRequest {
         return new KVAdminMessage.Builder()
                 .status(weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR)
                 .responseMessage(errorMessage).build();
+    }
+
+    @Override
+    public IKVECSRequest validate() throws IllegalArgumentException {
+        try {
+            KVServerRequestsValidator
+                    .validateServerInitializationContext(serverInitializationContext);
+        } catch (IllegalArgumentException ex) {
+            String errorMessage = "Server initialization context is invalid.";
+            LOGGER.error(errorMessage);
+            throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
+        }
+        return this;
     }
 
 }

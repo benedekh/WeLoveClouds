@@ -19,5 +19,10 @@ public class ShutdownServer implements IKVECSRequest {
         System.exit(0);
         return null;
     }
+    
+    @Override
+    public IKVECSRequest validate() throws IllegalArgumentException {
+        return this;
+    }
 
 }

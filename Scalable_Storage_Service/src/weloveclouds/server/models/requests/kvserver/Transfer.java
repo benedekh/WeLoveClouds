@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -39,9 +41,25 @@ public class Transfer implements IKVServerRequest {
             return new KVTransferMessage.Builder().status(StatusType.TRANSFER_SUCCESS).build();
         } catch (StorageException ex) {
             LOGGER.error(ex);
-            return new KVTransferMessage.Builder().status(StatusType.TRANSFER_ERROR)
-                    .responseMessage(ex.getMessage()).build();
+            return createErrorKVTransferMessage(ex.getMessage());
         }
+    }
+
+    private KVTransferMessage createErrorKVTransferMessage(String responseMessage) {
+        return new KVTransferMessage.Builder().status(StatusType.TRANSFER_ERROR)
+                .responseMessage(responseMessage).build();
+    }
+
+    @Override
+    public IKVServerRequest validate() throws IllegalArgumentException {
+        try {
+            KVServerRequestsValidator.validateMovableStorageUnits(storageUnits);
+        } catch (IllegalArgumentException ex) {
+            String errorMessage = "Storage units that shall be copied are invalid.";
+            LOGGER.error(errorMessage);
+            throw new IllegalRequestException(createErrorKVTransferMessage(errorMessage));
+        }
+        return this;
     }
 
 }
