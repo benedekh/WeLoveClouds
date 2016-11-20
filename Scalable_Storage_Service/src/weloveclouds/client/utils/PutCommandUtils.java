@@ -22,7 +22,7 @@ public class PutCommandUtils {
         String mergedValues = join(" ", valueElements);
 
         // to preserve the really empty entry value
-        if (mergedValues.trim().isEmpty()) {
+        if (mergedValues != null && mergedValues.trim().isEmpty()) {
             mergedValues = null;
         }
 
