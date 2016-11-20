@@ -1,5 +1,6 @@
 package weloveclouds.ecs.models.repository;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
 
@@ -47,5 +48,9 @@ public class StorageNode {
 
     public void setStatus(StorageNodeStatus status) {
         this.status = status;
+    }
+
+    public String toString() {
+        return CustomStringJoiner.join(" ", "Node:" + getIpAddress() + "Status:" + status.name());
     }
 }

@@ -17,13 +17,13 @@ import weloveclouds.server.api.IKVCommunicationApi;
  * @author Benoit
  */
 public class CommandFactory {
-    
+
     private static final Logger LOGGER = Logger.getLogger(CommandFactory.class);
     private IKVCommunicationApi communicationApi;
 
     /**
      * @param communicationApi an instance for the communication module for those commands which
-     *        need to communicate via the network
+     *                         need to communicate via the network
      */
     public CommandFactory(IKVCommunicationApi communicationApi) {
         this.communicationApi = communicationApi;
@@ -37,7 +37,7 @@ public class CommandFactory {
      * @return the type of the recognized command
      * @throws UnknownHostException see {@link Connect}
      */
-    public ICommand createCommandFromUserInput(ParsedUserInput userInput)
+    public ICommand createCommandFromUserInput(ParsedUserInput<Command> userInput)
             throws UnknownHostException {
         ICommand recognizedCommand = null;
         Command userCommand = userInput.getCommand();

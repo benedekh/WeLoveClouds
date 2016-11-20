@@ -4,17 +4,20 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.Arrays;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
+
 import weloveclouds.cli.models.ParsedUserInput;
-import weloveclouds.cli.utils.UserInputParser;
+import weloveclouds.cli.utils.AbstractUserInputParser;
 import weloveclouds.client.models.commands.Command;
+import weloveclouds.client.utils.ClientUserInputParser;
 import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
- * Unit tests to validate the {@link UserInputParser}'s correct behavior.
- * 
+ * Unit tests to validate the {@link AbstractUserInputParser}'s correct behavior.
+ *
  * @author Benoit, Benedek, Hunton
  */
 public class UserInputParserTest extends TestCase {
@@ -30,6 +33,12 @@ public class UserInputParserTest extends TestCase {
     private static final String MULTIPLE_ARGUMENTS = "args1 args2 args3";
     private static final String ARGUMENTS_DELIMITER = " ";
     private final int SINGLE_ARGUMENT = 1;
+    private AbstractUserInputParser<Command> userInputParser;
+
+    @Before
+    public void setUp() {
+        userInputParser = new ClientUserInputParser();
+    }
 
     @Test
     public void testShouldParseValidCommandsWithoutArguments() {
@@ -108,23 +117,23 @@ public class UserInputParserTest extends TestCase {
     }
 
     private void verifyValidCommandParsingWithoutArguments(String userInput,
-            Command expectedCommand) {
-        ParsedUserInput parsedUserInput = UserInputParser.parse(userInput);
+                                                           Command expectedCommand) {
+        ParsedUserInput parsedUserInput = userInputParser.parse(userInput);
         assertThat(parsedUserInput.getCommand()).isEqualTo(expectedCommand);
         assertThat(parsedUserInput.getArguments()).isNullOrEmpty();
     }
 
     private void verifyValidCommandParsingWithSingleArgument(String userInput,
-            Command expectedCommand, String argument) {
-        ParsedUserInput parsedUserInput = UserInputParser.parse(userInput);
+                                                             Command expectedCommand, String argument) {
+        ParsedUserInput parsedUserInput = userInputParser.parse(userInput);
         assertThat(parsedUserInput.getCommand()).isEqualTo(expectedCommand);
         assertThat(parsedUserInput.getArguments().length).isEqualTo(SINGLE_ARGUMENT);
         assertThat(parsedUserInput.getArguments()).contains(argument);
     }
 
     private void verifyValidCommandParsingWithMultipleArguments(String userInput,
-            Command expectedCommand, String arguments) {
-        ParsedUserInput parsedUserInput = UserInputParser.parse(userInput);
+                                                                Command expectedCommand, String arguments) {
+        ParsedUserInput parsedUserInput = userInputParser.parse(userInput);
         assertThat(parsedUserInput.getCommand()).isEqualTo(expectedCommand);
         assertThat(parsedUserInput.getArguments().length).isGreaterThan(SINGLE_ARGUMENT);
         assertThat(parsedUserInput.getArguments())

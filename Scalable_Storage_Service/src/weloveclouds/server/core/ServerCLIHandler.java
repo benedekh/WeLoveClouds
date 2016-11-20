@@ -10,11 +10,12 @@ import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
 import weloveclouds.server.models.commands.ServerCommandFactory;
 import weloveclouds.server.models.exceptions.ServerSideException;
+import weloveclouds.server.utils.ServerUserInputParser;
 
 /**
  * CommandLineInterface handler for the Server so it can be run as a standalone application. Handles
  * different commands which come from the {@link #inputStream}.
- * 
+ *
  * @author Benedek
  */
 public class ServerCLIHandler {
@@ -24,7 +25,7 @@ public class ServerCLIHandler {
     private ServerCommandFactory commandFactory;
 
     /**
-     * @param inputStream from which it receives command from the user
+     * @param inputStream    from which it receives command from the user
      * @param commandFactory that processes (validate and execute) the various commands
      */
     public ServerCLIHandler(InputStream inputStream, ServerCommandFactory commandFactory) {
@@ -37,8 +38,8 @@ public class ServerCLIHandler {
      * the respective command to the {@link #commandFactory} that will validate and execute it.
      */
     public void run() {
-        try (UserInputReader inputReader = new UserInputReader(inputStream);
-                UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
+        try (UserInputReader inputReader = new UserInputReader(inputStream, new ServerUserInputParser());
+             UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
             UserOutputWriter.setPrefix("Server> ");
             LOGGER.info("Server started.");
             while (!Thread.currentThread().isInterrupted()) {
