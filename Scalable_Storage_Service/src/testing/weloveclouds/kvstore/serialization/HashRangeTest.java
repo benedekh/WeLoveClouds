@@ -31,7 +31,7 @@ public class HashRangeTest {
             throws DeserializationException, UnknownHostException {
         Hash start = HashingUtil.getHash("a");
         Hash end = HashingUtil.getHash("z");
-        HashRange range = new HashRange.Builder().start(start).end(end).build();
+        HashRange range = new HashRange.Builder().begin(start).end(end).build();
 
         String serializedRange = hashRangeSerializer.serialize(range);
         HashRange deserializedRange = hashRangeDeserializer.deserialize(serializedRange);
