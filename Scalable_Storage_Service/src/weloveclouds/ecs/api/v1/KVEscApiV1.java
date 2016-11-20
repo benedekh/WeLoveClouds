@@ -20,7 +20,7 @@ public class KVEscApiV1 implements IKVEscApi {
 
     @Override
     public void start() {
-
+        externalConfigurationService.start();
     }
 
     @Override

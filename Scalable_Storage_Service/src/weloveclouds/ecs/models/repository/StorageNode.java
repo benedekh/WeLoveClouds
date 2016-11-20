@@ -18,7 +18,7 @@ public class StorageNode {
         this.id = id;
         this.serverConnectionInfo = serverConnectionInfo;
         this.hashRange = hashRange;
-        this.status = HALTED;
+        this.status = IDLE;
     }
 
     public String getId() {

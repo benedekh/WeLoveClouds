@@ -28,14 +28,25 @@ public class ServerRepository {
         this.storageNodes.add(storageNode);
     }
 
-    synchronized public List<StorageNode> getIdledNodes() {
-        List<StorageNode> idledStorageNodes = new ArrayList<>();
+    synchronized public List<StorageNode> getNodesWithStatus(StorageNodeStatus status) {
+        List<StorageNode> nodes = new ArrayList<>();
 
         for (StorageNode storageNode : getStorageNodes()) {
-            if (storageNode.getStatus() == IDLE) {
-                idledStorageNodes.add(storageNode);
+            if (storageNode.getStatus() == status) {
+                nodes.add(storageNode);
             }
         }
-        return idledStorageNodes;
+        return nodes;
     }
+
+    synchronized public List<StorageNode> getNodeWithStatus(List<StorageNodeStatus> status) {
+        List<StorageNode> nodes = new ArrayList<>();
+
+        for (StorageNodeStatus nodeStatus : status) {
+            nodes.addAll(getNodesWithStatus(nodeStatus));
+        }
+
+        return nodes;
+    }
+
 }

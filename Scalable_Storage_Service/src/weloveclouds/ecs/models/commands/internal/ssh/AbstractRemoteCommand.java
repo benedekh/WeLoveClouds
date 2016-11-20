@@ -1,4 +1,4 @@
-package weloveclouds.ecs.models.commands.ssh;
+package weloveclouds.ecs.models.commands.internal.ssh;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,6 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.commands.ICommand;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.ecs.models.ssh.AuthInfos;
 
 /**
  * Created by Benoit on 2016-11-19.

@@ -3,21 +3,23 @@ package weloveclouds.ecs.models.tasks;
 import weloveclouds.ecs.client.Client;
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.exceptions.task.RetryableException;
+import weloveclouds.ecs.models.commands.AbstractCommand;
 
 import static weloveclouds.ecs.models.tasks.Status.WAITING;
 
 /**
  * Created by Benoit on 2016-11-18.
  */
-public abstract class AbstractRetryableTask<T1, T2, T3> {
+public abstract class AbstractRetryableTask {
     protected Status status;
-    protected T1 command;
-    protected T2 successCommand;
-    protected T3 failCommand;
+    protected AbstractCommand command;
+    protected AbstractCommand successCommand;
+    protected AbstractCommand failCommand;
     protected int numberOfAttempt;
     protected int maxNumberOfRetries;
 
-    public AbstractRetryableTask(int maxNumberOfRetries, T1 command, T2 successCommand, T3 failCommand) {
+    public AbstractRetryableTask(int maxNumberOfRetries, AbstractCommand command, AbstractCommand
+            successCommand, AbstractCommand failCommand) {
         this.status = WAITING;
         this.command = command;
         this.successCommand = successCommand;
@@ -38,15 +40,15 @@ public abstract class AbstractRetryableTask<T1, T2, T3> {
         this.status = status;
     }
 
-    public T1 getCommand() {
+    public AbstractCommand getCommand() {
         return command;
     }
 
-    public T2 getSuccessCommand() {
+    public AbstractCommand getSuccessCommand() {
         return successCommand;
     }
 
-    public T3 getFailCommand() {
+    public AbstractCommand getFailCommand() {
         return failCommand;
     }
 
@@ -60,7 +62,7 @@ public abstract class AbstractRetryableTask<T1, T2, T3> {
         try {
             runCommand();
             runSuccessCommand();
-        } catch (ClientSideException e) {
+        } catch (Exception e) {
             if (numberOfAttempt < maxNumberOfRetries) {
                 numberOfAttempt++;
                 throw new RetryableException("Retry attempt: " + numberOfAttempt + " on: " +
