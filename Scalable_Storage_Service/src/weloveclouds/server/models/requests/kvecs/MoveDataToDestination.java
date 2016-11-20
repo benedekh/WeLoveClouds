@@ -1,9 +1,15 @@
 package weloveclouds.server.models.requests.kvecs;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.communication.api.ICommunicationApi;
+import weloveclouds.communication.exceptions.ConnectionClosedException;
+import weloveclouds.communication.exceptions.UnableToConnectException;
+import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
@@ -11,11 +17,13 @@ import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
+import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
-import weloveclouds.server.services.exceptions.UninitializedServiceException;
+import weloveclouds.server.store.exceptions.StorageException;
+import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
 /**
@@ -27,6 +35,9 @@ import weloveclouds.server.store.models.MovableStorageUnits;
 public class MoveDataToDestination implements IKVECSRequest {
 
     private static final Logger LOGGER = Logger.getLogger(MoveDataToDestination.class);
+
+    // 1 entry (max.): 20 byte key, 120 kbyte value -> 140 kbyte + some java object metadata
+    private static final int NUMBER_OF_STORAGE_UNITS_TO_BE_TRANSFERRED_AT_ONCE = 100;
 
     private IMovableDataAccessService dataAccessService;
     private RingMetadataPart targetServerInfo;
@@ -59,32 +70,22 @@ public class MoveDataToDestination implements IKVECSRequest {
 
             if (!filteredEntries.getStorageUnits().isEmpty()) {
                 try {
-                    KVTransferMessage transferMessage = new KVTransferMessage.Builder()
-                            .status(StatusType.TRANSFER).storageUnits(filteredEntries).build();
-
-                    disconnect();
                     communicationApi.connectTo(targetServerInfo.getConnectionInfo());
-                    SerializedMessage serializedMessage =
-                            transferMessageSerializer.serialize(transferMessage);
-                    communicationApi.send(serializedMessage.getBytes());
-                    KVTransferMessage response =
-                            transferMessageDeserializer.deserialize(communicationApi.receive());
-
-                    if (response.getStatus() == StatusType.TRANSFER_ERROR) {
-                        return createErrorKVAdminMessage(response.getResponseMessage());
-                    } else {
-                        dataAccessService.removeEntries(hashRange);
-                        dataAccessService.defragment();
-                        LOGGER.debug("Move data request finished successfully.");
-                    }
-                } catch (Exception ex) {
+                    transferStorageUnitsToTargetServer(filteredEntries.getStorageUnits());
+                    removeStorageUnitsInRangeFromDataStore(hashRange);
+                    LOGGER.debug("Move data request finished successfully.");
+                } catch (UnableToConnectException ex) {
                     LOGGER.error(ex);
                     return createErrorKVAdminMessage(ex.getMessage());
                 } finally {
-                    disconnect();
+                    try {
+                        communicationApi.disconnect();
+                    } catch (Exception ex) {
+                        LOGGER.error(ex);
+                    }
                 }
             }
-        } catch (UninitializedServiceException ex) {
+        } catch (Exception ex) {
             LOGGER.error(ex);
             return createErrorKVAdminMessage(ex.getMessage());
         }
@@ -94,12 +95,65 @@ public class MoveDataToDestination implements IKVECSRequest {
                 .build();
     }
 
-    private void disconnect() {
-        try {
-            communicationApi.disconnect();
-        } catch (Exception ex) {
-            LOGGER.error(ex);
+    /**
+     * Transfers the respective MovableStorageUnit instances to the target server. Creates bunches
+     * from those units that will be transferred together.
+     * 
+     * @param storageUnitsToTransferred
+     * @throws UnableToSendContentToServerException
+     * @throws ConnectionClosedException
+     * @throws DeserializationException
+     */
+    private void transferStorageUnitsToTargetServer(
+            Set<MovableStorageUnit> storageUnitsToTransferred)
+            throws UnableToSendContentToServerException, ConnectionClosedException,
+            DeserializationException {
+
+        Set<MovableStorageUnit> toBeTransferred = new HashSet<>();
+        for (MovableStorageUnit strageUnitToBeMoved : storageUnitsToTransferred) {
+            toBeTransferred.add(strageUnitToBeMoved);
+
+            if (toBeTransferred.size() == NUMBER_OF_STORAGE_UNITS_TO_BE_TRANSFERRED_AT_ONCE) {
+                transferBunchOverTheNetwork(new MovableStorageUnits(toBeTransferred));
+                toBeTransferred.clear();
+            }
         }
+
+        transferBunchOverTheNetwork(new MovableStorageUnits(toBeTransferred));
+    }
+
+    /**
+     * Transfers a bunch of storage units over the network to the target server.
+     * 
+     * @throws UnableToSendContentToServerException
+     * @throws ConnectionClosedException
+     * @throws DeserializationException
+     */
+    private void transferBunchOverTheNetwork(MovableStorageUnits storageUnits)
+            throws UnableToSendContentToServerException, ConnectionClosedException,
+            DeserializationException {
+        KVTransferMessage transferMessage = new KVTransferMessage.Builder()
+                .status(StatusType.TRANSFER).storageUnits(storageUnits).build();
+        SerializedMessage serializedMessage = transferMessageSerializer.serialize(transferMessage);
+
+        communicationApi.send(serializedMessage.getBytes());
+
+        KVTransferMessage response =
+                transferMessageDeserializer.deserialize(communicationApi.receive());
+        if (response.getStatus() == StatusType.TRANSFER_ERROR) {
+            throw new UnableToSendContentToServerException(response.getResponseMessage());
+        }
+    }
+
+    /**
+     * Removes those storage units from the {@link IMovableDataAccessService} whose keys are in the
+     * respective range.
+     * 
+     * @throws StorageException
+     */
+    private void removeStorageUnitsInRangeFromDataStore(HashRange range) throws StorageException {
+        dataAccessService.removeEntries(range);
+        dataAccessService.defragment();
     }
 
     private KVAdminMessage createErrorKVAdminMessage(String errorMessage) {
