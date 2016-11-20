@@ -58,7 +58,7 @@ public class ArgumentsValidator {
     public static void validateCLIArgumentsForServerStart(String[] arguments)
             throws IllegalArgumentException {
         String command = "cliArguments";
-        if (!isNullOrEmpty(arguments) || arguments.length != CLI_NUMBER_OF_ARGUMENTS) {
+        if (isNullOrEmpty(arguments) || arguments.length != CLI_NUMBER_OF_ARGUMENTS) {
             logWarning(command);
             throw new IllegalArgumentException("Two arguments are needed: <port> <log level>");
         } else {
