@@ -69,7 +69,8 @@ public class ExternalConfigurationService {
         IBatchTasks<AbstractRetryableTask> nodeStartBatch = new BatchRetryableTasks();
 
         for (StorageNode node : repository.getNodesWithStatus(INITIALIZED)) {
-            StartNode taskCommand = new StartNode();
+            StartNode taskCommand = new StartNode(communicationApiFactory
+                    .createConcurrentCommunicationApiV1(), node);
 
             nodeStartBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_START_RETRIES, taskCommand));
         }
@@ -81,7 +82,8 @@ public class ExternalConfigurationService {
         IBatchTasks<AbstractRetryableTask> nodeStopBatch = new BatchRetryableTasks();
 
         for (StorageNode node : repository.getNodesWithStatus(RUNNING)) {
-            StopNode taskCommand = new StopNode();
+            StopNode taskCommand = new StopNode(communicationApiFactory
+                    .createConcurrentCommunicationApiV1(), node);
 
             nodeStopBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_STOP_RETRIES, taskCommand));
         }
@@ -94,7 +96,8 @@ public class ExternalConfigurationService {
         List<StorageNodeStatus> activeNodeStatus = Arrays.asList(INITIALIZED, RUNNING);
 
         for (StorageNode node : repository.getNodeWithStatus(activeNodeStatus)) {
-            ShutdownNode taskCommand = new ShutdownNode();
+            ShutdownNode taskCommand = new ShutdownNode(communicationApiFactory
+                    .createConcurrentCommunicationApiV1(), node);
 
             nodeShutdownBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES, taskCommand));
         }

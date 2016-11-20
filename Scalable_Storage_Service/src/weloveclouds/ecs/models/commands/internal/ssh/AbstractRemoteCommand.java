@@ -11,7 +11,8 @@ import weloveclouds.ecs.models.repository.StorageNode;
 /**
  * Created by Benoit on 2016-11-19.
  */
-public abstract class AbstractRemoteCommand extends AbstractCommand<String> implements ICommand {
+public abstract class AbstractRemoteCommand extends AbstractCommand<String>
+        implements ICommand {
     private static final String ARGUMENTS_DELIMITER = " ";
     protected final String COMMAND;
     protected StorageNode targetedNode;
