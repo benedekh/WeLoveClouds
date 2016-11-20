@@ -1,12 +1,13 @@
 
-package weloveclouds.ecs.models.commands.ssh;
+package weloveclouds.ecs.models.commands.internal.ssh;
 
 import java.util.List;
 
 import weloveclouds.ecs.exceptions.ssh.SecureShellServiceException;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.ecs.models.ssh.AuthInfos;
 import weloveclouds.ecs.services.ISecureShellService;
+
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
 
 /**
  * Created by Benoit on 2016-11-16.
@@ -25,6 +26,7 @@ public class LaunchJar extends AbstractRemoteCommand {
     @Override
     public void execute() throws SecureShellServiceException {
         secureShellService.runCommand(this);
+        targetedNode.setStatus(INITIALIZED);
     }
 
     public static class Builder {

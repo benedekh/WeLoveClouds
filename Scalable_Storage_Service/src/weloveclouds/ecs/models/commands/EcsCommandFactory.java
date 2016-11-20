@@ -2,6 +2,8 @@ package weloveclouds.ecs.models.commands;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
+import java.util.Arrays;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.ecs.api.IKVEcsApi;
@@ -28,27 +30,27 @@ public class EcsCommandFactory {
         
         switch(userCommand){
             case INIT:
-                recognizedCommand = new Init(input.getArguments(), ecsCommunicationApi);
+                recognizedCommand = new Init(Arrays.asList(input.getArguments()), ecsCommunicationApi);
             case ADD_NODE:
-                recognizedCommand = new AddNode(input.getArguments(), ecsCommunicationApi);
+                recognizedCommand = new AddNode(Arrays.asList(input.getArguments()), ecsCommunicationApi);
                 break;
             case START:
-                recognizedCommand = new Start(input.getArguments(), ecsCommunicationApi);
+                recognizedCommand = new Start(Arrays.asList(input.getArguments()), ecsCommunicationApi);
                 break;
             case STOP:
-                recognizedCommand = new Stop(input.getArguments(), ecsCommunicationApi);
+                recognizedCommand = new Stop(Arrays.asList(input.getArguments()), ecsCommunicationApi);
                 break;
             case SHUTDOWN:
-                recognizedCommand = new Shutdown(input.getArguments(), ecsCommunicationApi);
+                recognizedCommand = new Shutdown(Arrays.asList(input.getArguments()), ecsCommunicationApi);
                 break;
             case REMOVE_NODE:
-                recognizedCommand = new RemoveNode(input.getArguments(), ecsCommunicationApi);
+                recognizedCommand = new RemoveNode(Arrays.asList(input.getArguments()), ecsCommunicationApi);
                 break;
             case QUIT:
-                recognizedCommand = new Quit(input.getArguments(), ecsCommunicationApi);
+                recognizedCommand = new Quit(Arrays.asList(input.getArguments()), ecsCommunicationApi);
                 break;
             case LOGLEVEL:
-                recognizedCommand = new Loglevel(input.getArguments());
+                recognizedCommand = new Loglevel(Arrays.asList(input.getArguments()));
                 break;
             default:
                 LOGGER.info(join(" ", "Unrecognized command:", userCommand.toString()));

@@ -1,7 +1,7 @@
 package weloveclouds.ecs.services;
 
 import weloveclouds.ecs.exceptions.ssh.SecureShellServiceException;
-import weloveclouds.ecs.models.commands.ssh.AbstractRemoteCommand;
+import weloveclouds.ecs.models.commands.internal.ssh.AbstractRemoteCommand;
 
 /**
  * Created by Benoit on 2016-11-18.

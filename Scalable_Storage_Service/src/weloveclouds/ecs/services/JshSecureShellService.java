@@ -8,7 +8,7 @@ import com.jcraft.jsch.Session;
 import java.util.Properties;
 
 import weloveclouds.ecs.exceptions.ssh.SecureShellServiceException;
-import weloveclouds.ecs.models.commands.ssh.AbstractRemoteCommand;
+import weloveclouds.ecs.models.commands.internal.ssh.AbstractRemoteCommand;
 import weloveclouds.ecs.models.ssh.AuthInfos;
 
 import static weloveclouds.ecs.models.ssh.AuthenticationMethod.*;

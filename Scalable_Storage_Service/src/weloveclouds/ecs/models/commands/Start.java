@@ -1,5 +1,7 @@
 package weloveclouds.ecs.models.commands;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.ecs.api.IKVEcsApi;
@@ -11,11 +13,11 @@ import weloveclouds.ecs.exceptions.ClientSideException;
  *
  */
 
-public class Start extends AbstractEcsApiCommand{
+public class Start<T> extends AbstractEcsApiCommand{
     
     private static final Logger LOGGER = Logger.getLogger(Start.class);
     
-    public Start(String[] arguments, IKVEcsApi ecsCommunicationApi) {
+    public Start(List<T> arguments, IKVEcsApi ecsCommunicationApi) {
         super(arguments, ecsCommunicationApi);
     }
 

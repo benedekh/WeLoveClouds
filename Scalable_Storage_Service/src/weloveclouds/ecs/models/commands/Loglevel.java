@@ -1,14 +1,16 @@
 package weloveclouds.ecs.models.commands;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.ecs.exceptions.ClientSideException;
 
-public class Loglevel extends AbstractCommand {
+public class Loglevel<T> extends AbstractCommand {
 
     private static final Logger LOGGER = Logger.getLogger(Loglevel.class);
     
-    public Loglevel(String[] arguments){
+    public Loglevel(List<T> arguments){
         super(arguments);
     }
 

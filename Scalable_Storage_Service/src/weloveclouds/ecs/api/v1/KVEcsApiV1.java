@@ -20,7 +20,7 @@ public class KVEcsApiV1 implements IKVEcsApi {
 
     @Override
     public void start() {
-
+        externalConfigurationService.start();
     }
 
     @Override

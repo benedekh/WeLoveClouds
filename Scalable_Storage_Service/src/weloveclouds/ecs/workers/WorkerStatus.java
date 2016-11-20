@@ -1,4 +1,4 @@
-package weloveclouds.ecs.models.tasks;
+package weloveclouds.ecs.workers;
 
 /**
  * Created by Benoit on 2016-11-19.

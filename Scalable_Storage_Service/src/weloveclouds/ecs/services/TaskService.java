@@ -9,7 +9,7 @@ import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
 import weloveclouds.ecs.models.tasks.IBatchTasks;
 import weloveclouds.ecs.workers.TaskWorker;
 
-import static weloveclouds.ecs.models.tasks.WorkerStatus.ERROR;
+import static weloveclouds.ecs.workers.WorkerStatus.ERROR;
 
 /**
  * Created by Benoit on 2016-11-19.
