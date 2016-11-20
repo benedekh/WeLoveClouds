@@ -66,37 +66,37 @@ public class ExternalConfigurationService {
 
     @SuppressWarnings("unchecked")
     public void start() {
-        IBatchTasks<AbstractRetryableTask> nodeStartBatchTasks = new BatchRetryableTasks();
+        IBatchTasks<AbstractRetryableTask> nodeStartBatch = new BatchRetryableTasks();
 
         for (StorageNode node : repository.getNodesWithStatus(INITIALIZED)) {
             StartNode taskCommand = new StartNode();
 
-            nodeStartBatchTasks.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_START_RETRIES, taskCommand));
+            nodeStartBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_START_RETRIES, taskCommand));
         }
 
-        taskService.launchBatchTasks(nodeStartBatchTasks);
+        taskService.launchBatchTasks(nodeStartBatch);
     }
 
     public void stop() {
-        IBatchTasks<AbstractRetryableTask> nodeStopBatchTasks = new BatchRetryableTasks();
+        IBatchTasks<AbstractRetryableTask> nodeStopBatch = new BatchRetryableTasks();
 
         for (StorageNode node : repository.getNodesWithStatus(RUNNING)) {
             StopNode taskCommand = new StopNode();
 
-            nodeStopBatchTasks.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_STOP_RETRIES, taskCommand));
+            nodeStopBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_STOP_RETRIES, taskCommand));
         }
 
-        taskService.launchBatchTasks(nodeStopBatchTasks);
+        taskService.launchBatchTasks(nodeStopBatch);
     }
 
     public void shutDown() {
-        IBatchTasks<AbstractRetryableTask> nodeShutdownBatchTasks = new BatchRetryableTasks();
+        IBatchTasks<AbstractRetryableTask> nodeShutdownBatch = new BatchRetryableTasks();
         List<StorageNodeStatus> activeNodeStatus = Arrays.asList(INITIALIZED, RUNNING);
 
         for (StorageNode node : repository.getNodeWithStatus(activeNodeStatus)) {
             ShutdownNode taskCommand = new ShutdownNode();
 
-            nodeShutdownBatchTasks.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES, taskCommand));
+            nodeShutdownBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES, taskCommand));
         }
     }
 
