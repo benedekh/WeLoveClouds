@@ -15,9 +15,24 @@ public class EcsCommandFactory {
     }
 
     public ICommand createCommandFromUserInput(ParsedUserInput<EcsCommand> userInput) {
-        switch (userInput.getCommand()) {
+        ICommand recognizedCommand = null;
 
+        switch (userInput.getCommand()) {
+            case INIT_SERVICE:
+                break;
+            case START:
+                break;
+            case STOP:
+                break;
+            case SHUTDOWN:
+                break;
+            case ADD_NODE:
+                break;
+            case REMOVE_NODE:
+                break;
+            default:
+                break;
         }
-        return null;
+        return recognizedCommand;
     }
 }
