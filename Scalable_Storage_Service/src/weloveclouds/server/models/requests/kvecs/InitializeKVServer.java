@@ -25,7 +25,7 @@ import weloveclouds.server.store.cache.strategy.StrategyFactory;
  */
 public class InitializeKVServer implements IKVECSRequest {
 
-    private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("/");
+    private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
     private static final Logger LOGGER = Logger.getLogger(InitializeKVServer.class);
 
     private IMovableDataAccessService dataAccessService;
