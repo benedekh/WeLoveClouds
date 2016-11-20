@@ -1,6 +1,7 @@
 package weloveclouds.ecs.services;
 
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -15,6 +16,7 @@ import static weloveclouds.ecs.workers.WorkerStatus.ERROR;
  * Created by Benoit on 2016-11-19.
  */
 public class TaskService implements ITaskService, Observer {
+    Map<String, AbstractRetryableTask> runningTasks;
     Set<AbstractRetryableTask> failedTasks;
     Set<AbstractRetryableTask> succeededTasks;
 
@@ -31,6 +33,7 @@ public class TaskService implements ITaskService, Observer {
     @Override
     public void launchBatchTasks(IBatchTasks<AbstractRetryableTask> batchTasks) {
         for (AbstractRetryableTask task : batchTasks.getTasks()) {
+            runningTasks.put(task.getId(), task);
             TaskWorker taskWorker = new TaskWorker(task);
             taskWorker.addObserver(this);
             new Thread(taskWorker).start();

@@ -1,6 +1,9 @@
 package weloveclouds.ecs.models.tasks;
 
-import weloveclouds.ecs.client.Client;
+import java.util.Arrays;
+import java.util.UUID;
+
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.exceptions.task.RetryableException;
 import weloveclouds.ecs.models.commands.AbstractCommand;
@@ -11,6 +14,8 @@ import static weloveclouds.ecs.models.tasks.Status.WAITING;
  * Created by Benoit on 2016-11-18.
  */
 public abstract class AbstractRetryableTask {
+    protected String batchId;
+    protected String id;
     protected Status status;
     protected AbstractCommand command;
     protected AbstractCommand successCommand;
@@ -20,12 +25,25 @@ public abstract class AbstractRetryableTask {
 
     public AbstractRetryableTask(int maxNumberOfRetries, AbstractCommand command, AbstractCommand
             successCommand, AbstractCommand failCommand) {
+        this.id = UUID.randomUUID().toString();
         this.status = WAITING;
         this.command = command;
         this.successCommand = successCommand;
         this.failCommand = failCommand;
         this.numberOfAttempt = 0;
         this.maxNumberOfRetries = maxNumberOfRetries;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getBatchId() {
+        return this.batchId;
+    }
+
+    public void setBatchId(String batchId) {
+        this.batchId = batchId;
     }
 
     public int getMaximumNumberOfRetries() {
@@ -73,6 +91,11 @@ public abstract class AbstractRetryableTask {
                         "retry", e);
             }
         }
+    }
+
+    public String toString() {
+        return CustomStringJoiner.join(" ", Arrays.asList("Task id:", id, "Command:", command
+                .toString(), "Status:", status.name()));
     }
 }
 

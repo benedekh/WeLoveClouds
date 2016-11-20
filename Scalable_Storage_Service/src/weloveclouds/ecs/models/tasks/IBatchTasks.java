@@ -11,9 +11,9 @@ public interface IBatchTasks<T> {
 
     void addTasks(List<T> tasks);
 
-    Set<T> getTasks();
+    List<T> getTasks();
 
-    Set<T> getFailedTasks();
+    List<T> getFailedTasks();
 
-    Set<T> getSucceededTasks();
+    List<T> getSucceededTasks();
 }

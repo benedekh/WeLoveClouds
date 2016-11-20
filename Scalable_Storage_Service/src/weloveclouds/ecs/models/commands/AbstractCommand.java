@@ -23,4 +23,6 @@ public abstract class AbstractCommand<T> implements ICommand {
     public void addArgument(T argument) {
         arguments.add(argument);
     }
+
+    public abstract String toString();
 }
