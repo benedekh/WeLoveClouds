@@ -16,21 +16,21 @@ import weloveclouds.kvstore.serialization.helper.ISerializer;
  */
 public class HashRange {
 
-    private Hash start;
+    private Hash begin;
     private Hash end;
 
     protected HashRange(Builder builder) {
-        this.start = builder.start;
+        this.begin = builder.begin;
         this.end = builder.end;
     }
 
     public boolean contains(Hash target) {
-        if (end.compareTo(start) > 0) {
+        if (end.compareTo(begin) >= 0) {
             // if the range does not wrap over
-            return (target.compareTo(start) >= 0) && (target.compareTo(end) <= 0);
+            return (target.compareTo(begin) >= 0) && (target.compareTo(end) <= 0);
         } else {
             // if the range wraps over
-            if (target.compareTo(Hash.MAX_VALUE) <= 0 && target.compareTo(start) >= 0) {
+            if (target.compareTo(Hash.MAX_VALUE) <= 0 && target.compareTo(begin) >= 0) {
                 return true;
             } else if (target.compareTo(Hash.MIN_VALUE) >= 0 && target.compareTo(end) <= 0) {
                 return true;
@@ -42,13 +42,13 @@ public class HashRange {
 
     public String toStringWithDelimiter(String betweenHashes,
             ISerializer<String, Hash> hashSerializer) {
-        return CustomStringJoiner.join(betweenHashes, hashSerializer.serialize(start),
+        return CustomStringJoiner.join(betweenHashes, hashSerializer.serialize(begin),
                 hashSerializer.serialize(end));
     }
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join("", "(", start.toString(), ",", end.toString(), ")");
+        return CustomStringJoiner.join("", "(", begin.toString(), ",", end.toString(), ")");
     }
 
     @Override
@@ -56,7 +56,7 @@ public class HashRange {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((end == null) ? 0 : end.hashCode());
-        result = prime * result + ((start == null) ? 0 : start.hashCode());
+        result = prime * result + ((begin == null) ? 0 : begin.hashCode());
         return result;
     }
 
@@ -79,22 +79,22 @@ public class HashRange {
         } else if (!end.equals(other.end)) {
             return false;
         }
-        if (start == null) {
-            if (other.start != null) {
+        if (begin == null) {
+            if (other.begin != null) {
                 return false;
             }
-        } else if (!start.equals(other.start)) {
+        } else if (!begin.equals(other.begin)) {
             return false;
         }
         return true;
     }
 
     public static class Builder {
-        private Hash start;
+        private Hash begin;
         private Hash end;
 
-        public Builder start(Hash start) {
-            this.start = start;
+        public Builder begin(Hash begin) {
+            this.begin = begin;
             return this;
         }
 

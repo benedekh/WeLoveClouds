@@ -47,7 +47,7 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
             Hash endHash = hashDeserializer.deserialize(endHashStr);
 
             // deserialized object
-            deserialized = new HashRange.Builder().start(startHash).end(endHash).build();
+            deserialized = new HashRange.Builder().begin(startHash).end(endHash).build();
             LOGGER.debug(join(" ", "Deserialized hash range is:", deserialized.toString()));
         }
 
