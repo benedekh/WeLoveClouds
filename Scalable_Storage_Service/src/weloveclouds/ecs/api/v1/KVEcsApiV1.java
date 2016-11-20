@@ -1,15 +1,15 @@
 package weloveclouds.ecs.api.v1;
 
-import weloveclouds.ecs.api.IKVEscApi;
+import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.core.ExternalConfigurationService;
 
 /**
  * Created by Benoit on 2016-11-15.
  */
-public class KVEscApiV1 implements IKVEscApi {
+public class KVEcsApiV1 implements IKVEcsApi {
     private ExternalConfigurationService externalConfigurationService;
 
-    public KVEscApiV1(ExternalConfigurationService externalConfigurationService) {
+    public KVEcsApiV1(ExternalConfigurationService externalConfigurationService) {
         this.externalConfigurationService = externalConfigurationService;
     }
 

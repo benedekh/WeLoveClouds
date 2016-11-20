@@ -20,7 +20,7 @@ public abstract class AbstractCommand<T> implements ICommand {
         this.arguments.addAll(arguments);
     }
 
-    public void addArguments(T argument) {
+    public void addArgument(T argument) {
         arguments.add(argument);
     }
 }
