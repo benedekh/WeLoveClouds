@@ -27,7 +27,6 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
     private IKVCommunicationApiV2 communicationApiV2;
-    private Logger logger;
 
     /**
      * @param arguments contains the key in the {@link #KEY_INDEX} position and the value is merged
@@ -81,7 +80,7 @@ public class Put extends AbstractKVCommunicationApiCommand {
                         communicationApiV2.setRingMetadata(ringMetadata);
                         execute();
                     } catch (DeserializationException e) {
-                        logger.error(e);
+                        LOGGER.error(e);
                         userOutputWriter.writeLine(
                                 "Error during key PUT. The respective server cannot handle the key.");
                     }
