@@ -9,7 +9,6 @@ import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
 import weloveclouds.ecs.models.commands.EcsCommandFactory;
-import weloveclouds.ecs.models.commands.client.EcsCommand;
 import weloveclouds.ecs.utils.EcsClientUserInputParser;
 
 /**
