@@ -6,6 +6,9 @@ import weloveclouds.communication.api.v1.CommunicationApiV1;
 import weloveclouds.communication.api.v1.ConcurrentCommunicationApiV1;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.api.v1.KVCommunicationApiV1;
+import weloveclouds.communication.api.v2.IKVCommunicationApiV2;
+import weloveclouds.communication.api.v2.KVCommunicationApiV2;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
 import weloveclouds.communication.services.ConcurrentCommunicationService;
 import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
@@ -23,6 +26,7 @@ public class CommunicationApiFactory {
         return new CommunicationApiV1(new CommunicationService(new SocketFactory()));
     }
 
+
     public IConcurrentCommunicationApi createConcurrentCommunicationApiV1() {
         return new ConcurrentCommunicationApiV1(new ConcurrentCommunicationService());
     }
@@ -30,5 +34,10 @@ public class CommunicationApiFactory {
     public IKVCommunicationApi createKVCommunicationApiV1() {
         return new KVCommunicationApiV1(createCommunicationApiV1(), new KVMessageSerializer(),
                 new KVMessageDeserializer());
+    }
+
+    public IKVCommunicationApiV2 createKVCommunicationApiV2(
+            ServerConnectionInfo bootstrapConnectionInfo) {
+        return new KVCommunicationApiV2(bootstrapConnectionInfo);
     }
 }

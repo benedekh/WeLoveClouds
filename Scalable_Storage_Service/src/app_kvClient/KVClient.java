@@ -3,12 +3,15 @@ package app_kvClient;
 import java.io.IOException;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import weloveclouds.client.core.Client;
 import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.api.v1.IKVCommunicationApi;
+import weloveclouds.communication.api.v2.IKVCommunicationApiV2;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.server.utils.LogSetup;
 
 /**
@@ -18,6 +21,8 @@ import weloveclouds.server.utils.LogSetup;
  * @author Benoit, Benedek, Hunton
  */
 public class KVClient {
+    private static final Logger LOGGER = Logger.getLogger(KVClient.class);
+
     /**
      * The entry point of the application.
      * 
@@ -28,9 +33,21 @@ public class KVClient {
         try {
             new LogSetup(logFile, Level.OFF);
 
-            IKVCommunicationApi serverCommunication =
-                    new CommunicationApiFactory().createKVCommunicationApiV1();
-            CommandFactory commandFactory = new CommandFactory(serverCommunication);
+            ServerConnectionInfo bootstrapConnectionInfo =
+                    new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
+            IKVCommunicationApiV2 serverCommunication = new CommunicationApiFactory()
+                    .createKVCommunicationApiV2(bootstrapConnectionInfo);
+
+            try {
+                serverCommunication.connect();
+            } catch (Exception ex) {
+                LOGGER.error("Unable to connect to the default, bootstrap server.");
+            }
+
+            RingMetadataDeserializer ringMetadataDeserializer = new RingMetadataDeserializer();
+            CommandFactory commandFactory =
+                    new CommandFactory(serverCommunication, ringMetadataDeserializer);
+
             Client client = new Client(System.in, commandFactory);
             client.run();
         } catch (IOException ex) {
