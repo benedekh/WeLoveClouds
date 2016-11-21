@@ -31,6 +31,7 @@ public class UpdateRingMetadata implements IKVECSRequest {
      */
     public UpdateRingMetadata(IMovableDataAccessService dataAccessService,
             RingMetadata ringMetadata, HashRange rangeManagedByServer) {
+        this.dataAccessService = dataAccessService;
         this.ringMetadata = ringMetadata;
         this.rangeManagedByServer = rangeManagedByServer;
     }
