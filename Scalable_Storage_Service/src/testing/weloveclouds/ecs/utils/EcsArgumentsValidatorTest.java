@@ -170,7 +170,8 @@ public class EcsArgumentsValidatorTest extends TestCase {
         }
     }    
     /**
-     * testing valid input. No exceptions should be thrown
+     * testing valid input. No exceptions should be thrown tests are considered to succeed if they
+     * fall through.
      */
     public void testShouldNotThrowIfValidatingCorrectInitArguments(){
         List<String> testArgument = Arrays.asList(VALID_NUM_OF_NODES,
@@ -178,5 +179,20 @@ public class EcsArgumentsValidatorTest extends TestCase {
                                                   VALID_DISPLACEMENT_STRAT);
 
         ArgumentsValidator.validateInitServiceArguments(testArgument);
+    }
+    
+    public void testShouldNotThrowIfValidatingValidAddNodeArguments(){
+        List<String> testArgument = Arrays.asList(VALID_CACHE_SIZE, VALID_DISPLACEMENT_STRAT);
+        ArgumentsValidator.validateAddNodeArguments(testArgument);
+    }  
+    
+    /**
+     * contains calls to validation functions that do not require arguments
+     */
+    public void testShouldNotThrowIfNoArguments(){
+        ArgumentsValidator.validateRemoveNodeArguments(EMPTY_LIST);
+        ArgumentsValidator.validateShutdownArguments(EMPTY_LIST);
+        ArgumentsValidator.validateStartArguments(EMPTY_LIST);
+        ArgumentsValidator.validateStopArguments(EMPTY_LIST);
     }
 }
