@@ -1,5 +1,7 @@
 package weloveclouds.ecs.services;
 
+import org.apache.log4j.Logger;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -15,14 +17,17 @@ import static weloveclouds.ecs.workers.WorkerStatus.ERROR;
  * Created by Benoit on 2016-11-19.
  */
 public class TaskService implements ITaskService, Observer {
+    private static final Logger LOGGER = Logger.getLogger(TaskService.class);
     Map<String, AbstractRetryableTask> runningTasks;
     Map<String, AbstractRetryableTask> failedTasks;
     Map<String, AbstractRetryableTask> succeededTasks;
     Map<String, IBatchTasks<AbstractRetryableTask>> batch;
 
     public TaskService() {
+        runningTasks = new LinkedHashMap<>();
         failedTasks = new LinkedHashMap<>();
         succeededTasks = new LinkedHashMap<>();
+        batch = new LinkedHashMap<>();
     }
 
     @Override
@@ -50,9 +55,10 @@ public class TaskService implements ITaskService, Observer {
 
         if (worker.getStatus() == ERROR) {
             failedTasks.put(taskId, task);
+            LOGGER.warn(task.toString());
         } else {
             succeededTasks.put(taskId, task);
-            //LOG error
+            LOGGER.info(task.toString());
         }
     }
 }

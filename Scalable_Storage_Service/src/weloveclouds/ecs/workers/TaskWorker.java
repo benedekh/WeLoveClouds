@@ -1,5 +1,7 @@
 package weloveclouds.ecs.workers;
 
+import org.apache.log4j.Logger;
+
 import java.util.Observable;
 
 import weloveclouds.ecs.exceptions.task.RetryableException;
@@ -16,8 +18,10 @@ import static weloveclouds.ecs.workers.WorkerStatus.WAITING;
 public class TaskWorker extends Observable implements Runnable {
     private AbstractRetryableTask task;
     private WorkerStatus status;
+    private final Logger logger;
 
     public TaskWorker(AbstractRetryableTask task) {
+        this.logger = Logger.getLogger(getClass());
         this.task = task;
         status = WAITING;
     }
@@ -40,7 +44,7 @@ public class TaskWorker extends Observable implements Runnable {
             try {
                 task.run();
             } catch (RetryableException e) {
-                //LOG e.getMessage(); + cause
+                logger.info(e.getMessage());
             } catch (Exception e) {
                 task.setStatus(FAILED);
             }

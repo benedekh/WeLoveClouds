@@ -1,26 +1,19 @@
 package weloveclouds.ecs.models.repository;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
 
 /**
  * Created by Benoit on 2016-11-16.
  */
-public class ServerRepository {
-    ArrayDeque<StorageNode> storageNodes;
+public class EcsRepository {
+    List<StorageNode> storageNodes;
 
-    public ServerRepository() {
-        this.storageNodes = new ArrayDeque<>();
+    public EcsRepository(List<StorageNode> storageNodes) {
+        this.storageNodes = new ArrayList<>(storageNodes);
     }
 
-    public ServerRepository(ArrayDeque<StorageNode> storageNodes) {
-        this.storageNodes = storageNodes;
-    }
-
-    synchronized public ArrayDeque<StorageNode> getStorageNodes() {
+    synchronized public List<StorageNode> getStorageNodes() {
         return storageNodes;
     }
 

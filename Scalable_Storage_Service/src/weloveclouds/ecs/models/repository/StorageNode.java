@@ -15,10 +15,9 @@ public class StorageNode {
     private ServerConnectionInfo serverConnectionInfo;
     private HashRange hashRange;
 
-    public StorageNode(String id, ServerConnectionInfo serverConnectionInfo, HashRange hashRange) {
+    public StorageNode(String id, ServerConnectionInfo serverConnectionInfo) {
         this.id = id;
         this.serverConnectionInfo = serverConnectionInfo;
-        this.hashRange = hashRange;
         this.status = IDLE;
     }
 

@@ -83,8 +83,8 @@ public abstract class AbstractRetryableTask {
         } catch (Exception e) {
             if (numberOfAttempt < maxNumberOfRetries) {
                 numberOfAttempt++;
-                throw new RetryableException("Retry attempt: " + numberOfAttempt + " on: " +
-                        maxNumberOfRetries, e);
+                throw new RetryableException("Task id: " + id + " Retry attempt: " + numberOfAttempt +
+                        " on: " + maxNumberOfRetries + " will retry with cause: " + e.getMessage(), e);
             } else {
                 runFailCommand();
                 throw new ClientSideException("Maximum number of attempt reached, will not " +

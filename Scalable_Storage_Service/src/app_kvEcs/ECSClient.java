@@ -10,10 +10,13 @@ import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.api.v1.KVEcsApiV1;
 import weloveclouds.ecs.client.Client;
 import weloveclouds.ecs.core.ExternalConfigurationService;
+import weloveclouds.ecs.exceptions.ServiceBootstrapException;
 import weloveclouds.ecs.exceptions.authentication.InvalidAuthenticationInfosException;
 import weloveclouds.ecs.models.commands.EcsCommandFactory;
+import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.services.JshSecureShellService;
 import weloveclouds.ecs.services.TaskService;
+import weloveclouds.ecs.utils.ConfigurationFileParser;
 import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.server.utils.LogSetup;
@@ -24,13 +27,15 @@ public class ECSClient {
     public static void main(String[] args) {
         String logFile = "logs/ecs.log";
         try {
-            new LogSetup(logFile, Level.OFF);
+            new LogSetup(logFile, Level.ALL);
             ExternalConfigurationService ecs = new ExternalConfigurationService.Builder()
                     .taskService(new TaskService())
                     .CommunicationApiFactory(new CommunicationApiFactory())
                     .messageSerializer(new KVAdminMessageSerializer())
                     .messageDeserializer(new KVAdminMessageDeserializer())
                     .secureShellService(new JshSecureShellService())
+                    .configurationFilePath(args[0])
+                    .ecsRepositoryFactory(new EcsRepositoryFactory(new ConfigurationFileParser()))
                     .build();
 
             IKVEcsApi externalConfigurationServiceApi = new KVEcsApiV1(ecs);
@@ -42,6 +47,10 @@ public class ECSClient {
         } catch (InvalidAuthenticationInfosException ex) {
             LOGGER.error("A bad authentication configuration file prevent the system from " +
                     "starting. A username and a password or privatekey should be provided.");
+        } catch (ServiceBootstrapException ex) {
+            LOGGER.fatal(ex.getMessage());
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            LOGGER.fatal("No ecs configuration file path provided.");
         }
     }
 }

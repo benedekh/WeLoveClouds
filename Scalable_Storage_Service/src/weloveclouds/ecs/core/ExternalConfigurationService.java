@@ -1,14 +1,19 @@
 package weloveclouds.ecs.core;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.ecs.exceptions.InvalidConfigurationException;
+import weloveclouds.ecs.exceptions.ServiceBootstrapException;
 import weloveclouds.ecs.models.commands.internal.ShutdownNode;
 import weloveclouds.ecs.models.commands.internal.StartNode;
 import weloveclouds.ecs.models.commands.internal.StopNode;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
-import weloveclouds.ecs.models.repository.ServerRepository;
+import weloveclouds.ecs.models.repository.EcsRepository;
+import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.repository.StorageNodeStatus;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
@@ -33,7 +38,9 @@ import static weloveclouds.ecs.models.repository.StorageNodeStatus.RUNNING;
  */
 public class ExternalConfigurationService {
     private static final String JAR_FILE_PATH = "";
-    private ServerRepository repository;
+    private String configurationFilePath;
+    private EcsRepository repository;
+    private EcsRepositoryFactory ecsRepositoryFactory;
     private ITaskService taskService;
     private CommunicationApiFactory communicationApiFactory;
     private ISecureShellService secureShellService;
@@ -41,12 +48,15 @@ public class ExternalConfigurationService {
     private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
 
 
-    public ExternalConfigurationService(Builder externalConfigurationServiceBuilder) {
+    public ExternalConfigurationService(Builder externalConfigurationServiceBuilder) throws ServiceBootstrapException {
         this.taskService = externalConfigurationServiceBuilder.taskService;
         this.communicationApiFactory = externalConfigurationServiceBuilder.communicationApiFactory;
         this.secureShellService = externalConfigurationServiceBuilder.secureShellService;
         this.messageDeserializer = externalConfigurationServiceBuilder.messageDeserializer;
         this.messageSerializer = externalConfigurationServiceBuilder.messageSerializer;
+        this.ecsRepositoryFactory = externalConfigurationServiceBuilder.ecsRepositoryFactory;
+        this.configurationFilePath = externalConfigurationServiceBuilder.configurationFilePath;
+        bootstrap();
     }
 
     @SuppressWarnings("unchecked")
@@ -117,7 +127,18 @@ public class ExternalConfigurationService {
 
     }
 
+    private void bootstrap() throws ServiceBootstrapException {
+        try {
+            repository = ecsRepositoryFactory.createEcsRepositoryFrom(new File(configurationFilePath));
+        } catch (InvalidConfigurationException ex) {
+            throw new ServiceBootstrapException("Bootstrap failed. Unable to start the service : "
+                    + ex.getMessage(), ex);
+        }
+    }
+
     public static class Builder {
+        private String configurationFilePath;
+        private EcsRepositoryFactory ecsRepositoryFactory;
         private ITaskService taskService;
         private CommunicationApiFactory communicationApiFactory;
         private ISecureShellService secureShellService;
@@ -151,7 +172,17 @@ public class ExternalConfigurationService {
             return this;
         }
 
-        public ExternalConfigurationService build() {
+        public Builder ecsRepositoryFactory(EcsRepositoryFactory ecsRepositoryFactory) {
+            this.ecsRepositoryFactory = ecsRepositoryFactory;
+            return this;
+        }
+
+        public Builder configurationFilePath(String configurationFilePath) {
+            this.configurationFilePath = configurationFilePath;
+            return this;
+        }
+
+        public ExternalConfigurationService build() throws ServiceBootstrapException {
             return new ExternalConfigurationService(this);
         }
     }
