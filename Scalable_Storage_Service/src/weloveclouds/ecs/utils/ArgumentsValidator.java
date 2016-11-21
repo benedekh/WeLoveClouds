@@ -3,6 +3,9 @@ package weloveclouds.ecs.utils;
 import java.util.Arrays;
 import java.util.List;
 
+import weloveclouds.ecs.models.commands.client.AddNode;
+import weloveclouds.ecs.models.commands.client.InitService;
+
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 
@@ -11,12 +14,7 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
  */
 public class ArgumentsValidator {
     private static final int INIT_SERVICE_NUMBER_OF_ARGUMENTS = 3;
-    private static final int INIT_SERVICE_NUMBER_OF_NODE_ARG_INDEX = 0;
-    private static final int INIT_SERVICE_CACHE_SIZE_ARG_INDEX = 1;
-    private static final int INIT_SERVICE_DISPLACEMENT_STRATEGY_ARG_INDEX = 2;
     private static final int ADD_NODE_NUMBER_OF_ARGUMENTS = 2;
-    private static final int ADD_NODE_CACHE_SIZE_ARG_INDEX = 0;
-    private static final int ADD_NODE_DISPLACEMENT_STRATEGY__ARG_INDEX = 1;
     private static List<String> validStrategyNames = Arrays.asList("FIFO", "LFU", "LRU");
 
     public static void validateStartArguments(List<String> arguments) throws
@@ -41,9 +39,9 @@ public class ArgumentsValidator {
                     "cache size (integer) and displacement stragegy" + validStrategyNames + "). " +
                     arguments.size() + " arguments provided");
         }
-        validateNumberOfNode(arguments.get(INIT_SERVICE_NUMBER_OF_NODE_ARG_INDEX));
-        validateCacheSize(arguments.get(INIT_SERVICE_CACHE_SIZE_ARG_INDEX));
-        validateDisplacementStrategy(arguments.get(INIT_SERVICE_DISPLACEMENT_STRATEGY_ARG_INDEX));
+        validateNumberOfNode(arguments.get(InitService.NUMBER_OF_NODES_ARG_INDEX));
+        validateCacheSize(arguments.get(InitService.CACHE_SIZE_ARG_INDEX));
+        validateDisplacementStrategy(arguments.get(InitService.DISPLACEMENT_STRATEGY_ARG_INDEX));
     }
 
     public static void validateRemoveNodeArguments(List<String> arguments) throws
@@ -67,8 +65,8 @@ public class ArgumentsValidator {
                     ADD_NODE_NUMBER_OF_ARGUMENTS + "arguments. " + arguments.size() + " " +
                     "arguments provided");
         }
-        validateCacheSize(arguments.get(ADD_NODE_CACHE_SIZE_ARG_INDEX));
-        validateDisplacementStrategy(arguments.get(ADD_NODE_DISPLACEMENT_STRATEGY__ARG_INDEX));
+        validateCacheSize(arguments.get(AddNode.CACHE_SIZE_ARG_INDEX));
+        validateDisplacementStrategy(arguments.get(AddNode.DISPlACEMENT_STRATEGY_ARG_INDEX));
     }
 
     private static void validateNumberOfNode(String argument) throws IllegalArgumentException {

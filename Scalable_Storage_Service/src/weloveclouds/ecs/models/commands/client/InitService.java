@@ -1,6 +1,5 @@
 package weloveclouds.ecs.models.commands.client;
 
-import testing.InteractionTest;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.commands.ICommand;
