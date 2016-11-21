@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.ecs.models.commands.internal.ShutdownNode;
 import weloveclouds.ecs.models.commands.internal.StartNode;
 import weloveclouds.ecs.models.commands.internal.StopNode;
@@ -20,7 +19,9 @@ import weloveclouds.ecs.services.ISecureShellService;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.ListUtils;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
+import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.*;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.IDLE;
@@ -36,11 +37,16 @@ public class ExternalConfigurationService {
     private ITaskService taskService;
     private CommunicationApiFactory communicationApiFactory;
     private ISecureShellService secureShellService;
-    private IMessageSerializer messageSerializer;
-    private IMessageDeserializer messageDeserializer;
+    private IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
+    private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
 
 
     public ExternalConfigurationService(Builder externalConfigurationServiceBuilder) {
+        this.taskService = externalConfigurationServiceBuilder.taskService;
+        this.communicationApiFactory = externalConfigurationServiceBuilder.communicationApiFactory;
+        this.secureShellService = externalConfigurationServiceBuilder.secureShellService;
+        this.messageDeserializer = externalConfigurationServiceBuilder.messageDeserializer;
+        this.messageSerializer = externalConfigurationServiceBuilder.messageSerializer;
     }
 
     @SuppressWarnings("unchecked")
@@ -112,33 +118,40 @@ public class ExternalConfigurationService {
     }
 
     public static class Builder {
-        private IConcurrentCommunicationApi concurrentCommunicationApi;
+        private ITaskService taskService;
+        private CommunicationApiFactory communicationApiFactory;
         private ISecureShellService secureShellService;
-        private IMessageSerializer messageSerializer;
-        private IMessageDeserializer messageDeserializer;
+        private IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
+        private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
 
-        Builder concurrentCommunicationApi
-                (IConcurrentCommunicationApi concurrentCommunicationApi) {
-            this.concurrentCommunicationApi = concurrentCommunicationApi;
+        public Builder CommunicationApiFactory(CommunicationApiFactory communicationApiFactory) {
+            this.communicationApiFactory = communicationApiFactory;
             return this;
         }
 
-        Builder secureShellService(ISecureShellService secureShellService) {
+        public Builder secureShellService(ISecureShellService secureShellService) {
             this.secureShellService = secureShellService;
             return this;
         }
 
-        Builder messageSerializer(IMessageSerializer messageSerializer) {
+        public Builder messageSerializer(IMessageSerializer<SerializedMessage, KVAdminMessage>
+                                                 messageSerializer) {
             this.messageSerializer = messageSerializer;
             return this;
         }
 
-        Builder messageDeserializer(IMessageDeserializer messageDeserializer) {
+        public Builder messageDeserializer(IMessageDeserializer<KVAdminMessage, SerializedMessage>
+                                                   messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return this;
         }
 
-        ExternalConfigurationService build() {
+        public Builder taskService(ITaskService taskService) {
+            this.taskService = taskService;
+            return this;
+        }
+
+        public ExternalConfigurationService build() {
             return new ExternalConfigurationService(this);
         }
     }

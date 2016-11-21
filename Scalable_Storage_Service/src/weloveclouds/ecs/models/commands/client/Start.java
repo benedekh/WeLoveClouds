@@ -13,7 +13,8 @@ public class Start extends AbstractEcsClientCommand {
 
     @Override
     public void execute() throws ClientSideException {
-        externalCommunicationServiceApi.start();
+        System.out.println("START");
+        // externalCommunicationServiceApi.start();
     }
 
     @Override

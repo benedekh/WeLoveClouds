@@ -55,11 +55,15 @@ public class AuthInfos {
         }
 
         public AuthInfos build() throws InvalidAuthenticationInfosException {
-            if (username != null && (password != null || privateKey != null)) {
+            if (!isNullOrEmpty(username) && (!isNullOrEmpty(password) || !isNullOrEmpty(privateKey))) {
                 return new AuthInfos(this);
             } else {
                 throw new InvalidAuthenticationInfosException();
             }
+        }
+
+        private boolean isNullOrEmpty(String value) {
+            return value == null || value.isEmpty();
         }
     }
 }

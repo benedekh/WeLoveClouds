@@ -5,11 +5,13 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import java.io.IOException;
 import java.util.Properties;
 
+import weloveclouds.ecs.configuration.providers.AuthConfigurationProvider;
+import weloveclouds.ecs.exceptions.authentication.InvalidAuthenticationInfosException;
 import weloveclouds.ecs.exceptions.ssh.SecureShellServiceException;
 import weloveclouds.ecs.models.commands.internal.ssh.AbstractRemoteCommand;
-import weloveclouds.ecs.models.ssh.AuthInfos;
 
 import static weloveclouds.ecs.models.ssh.AuthenticationMethod.*;
 
@@ -19,11 +21,11 @@ import static weloveclouds.ecs.models.ssh.AuthenticationMethod.*;
 public class JshSecureShellService implements ISecureShellService {
     private static final int SECURE_SHELL_PORT = 22;
     private static final String EXEC_CHANNEL = "exec";
-    private AuthInfos authenticationInfos;
+    private AuthConfigurationProvider authConfigurationProvider;
     private JSch secureShell;
 
-    public JshSecureShellService(AuthInfos authenticationInfos) {
-        this.authenticationInfos = authenticationInfos;
+    public JshSecureShellService() throws IOException, InvalidAuthenticationInfosException {
+        this.authConfigurationProvider = AuthConfigurationProvider.getInstance();
         this.secureShell = new JSch();
     }
 
@@ -38,14 +40,14 @@ public class JshSecureShellService implements ISecureShellService {
             Properties config = new Properties();
             config.put("StrictHostKeyChecking", "no");
 
-            if (authenticationInfos.getAuthenticationMethod() == PRIVATE_KEY) {
-                secureShell.addIdentity(authenticationInfos.getPrivateKey());
-                secureShellSession = secureShell.getSession(authenticationInfos.getUsername(), targettedHostIp,
+            if (authConfigurationProvider.getAuthenticactionMethod() == PRIVATE_KEY) {
+                secureShell.addIdentity(authConfigurationProvider.getAuthPrivateKeyFilePath());
+                secureShellSession = secureShell.getSession(authConfigurationProvider.getUsername(), targettedHostIp,
                         SECURE_SHELL_PORT);
             } else {
-                secureShellSession = secureShell.getSession(authenticationInfos.getUsername(), targettedHostIp,
+                secureShellSession = secureShell.getSession(authConfigurationProvider.getUsername(), targettedHostIp,
                         SECURE_SHELL_PORT);
-                secureShellSession.setPassword(authenticationInfos.getPassword());
+                secureShellSession.setPassword(authConfigurationProvider.getPassword());
             }
 
             secureShellSession.setConfig(config);

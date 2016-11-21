@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import weloveclouds.ecs.exceptions.authentication.InvalidAuthenticationInfosException;
 import weloveclouds.ecs.models.ssh.AuthInfos;
+import weloveclouds.ecs.models.ssh.AuthenticationMethod;
 
 /**
  * Created by Benoit on 2016-11-16.
@@ -36,11 +37,15 @@ public class AuthConfigurationProvider {
         return authenticationInfos.getPrivateKey();
     }
 
-    public void reloadConfiguration() throws IOException, InvalidAuthenticationInfosException{
+    public AuthenticationMethod getAuthenticactionMethod() {
+        return this.authenticationInfos.getAuthenticationMethod();
+    }
+
+    public void reloadConfiguration() throws IOException, InvalidAuthenticationInfosException {
         loadConfiguration();
     }
 
-    private void loadConfiguration() throws IOException, InvalidAuthenticationInfosException{
+    private void loadConfiguration() throws IOException, InvalidAuthenticationInfosException {
         try (FileInputStream authPropertiesFile = new FileInputStream(AUTH_PROPERTIES_FILE_PATH)) {
             properties = new Properties();
             properties.load(authPropertiesFile);
