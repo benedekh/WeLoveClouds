@@ -11,6 +11,7 @@ import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
 import weloveclouds.ecs.models.tasks.IBatchTasks;
 import weloveclouds.ecs.workers.TaskWorker;
 
+import static weloveclouds.ecs.models.tasks.Status.RUNNING;
 import static weloveclouds.ecs.workers.WorkerStatus.ERROR;
 
 /**
@@ -44,6 +45,7 @@ public class TaskService implements ITaskService, Observer {
 
         for (AbstractRetryableTask task : batchTasks.getTasks()) {
             launchTask(task);
+            task.setStatus(RUNNING);
         }
     }
 

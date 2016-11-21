@@ -8,6 +8,7 @@ import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.exceptions.task.RetryableException;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 
+import static weloveclouds.ecs.models.tasks.Status.COMPLETED;
 import static weloveclouds.ecs.models.tasks.Status.WAITING;
 
 /**
@@ -80,9 +81,10 @@ public abstract class AbstractRetryableTask {
         try {
             runCommand();
             runSuccessCommand();
+            status = COMPLETED;
         } catch (Exception e) {
+            numberOfAttempt++;
             if (numberOfAttempt < maxNumberOfRetries) {
-                numberOfAttempt++;
                 throw new RetryableException("Task id: " + id + " Retry attempt: " + numberOfAttempt +
                         " on: " + maxNumberOfRetries + " will retry with cause: " + e.getMessage(), e);
             } else {

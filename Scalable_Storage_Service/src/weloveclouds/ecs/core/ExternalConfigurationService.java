@@ -1,7 +1,6 @@
 package weloveclouds.ecs.core;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class ExternalConfigurationService {
                     .jarFilePath(JAR_FILE_PATH)
                     .arguments(Arrays.asList(Integer.toString(cacheSize), displacementStrategy))
                     .secureShellService(secureShellService)
-                    .targettedNode(storageNode)
+                    .targetedNode(storageNode)
                     .build();
 
             nodeInitialisationBatch.addTask(

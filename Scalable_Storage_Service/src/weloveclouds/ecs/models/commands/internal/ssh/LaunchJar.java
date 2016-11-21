@@ -18,7 +18,7 @@ public class LaunchJar extends AbstractRemoteCommand {
     private ISecureShellService secureShellService;
 
     public LaunchJar(Builder commandBuilder) {
-        super(COMMAND, commandBuilder.arguments, commandBuilder.targettedNode);
+        super(COMMAND, commandBuilder.arguments, commandBuilder.targetedNode);
         this.secureShellService = commandBuilder.secureShellService;
         this.jarFilePath = commandBuilder.jarFilePath;
     }
@@ -32,7 +32,7 @@ public class LaunchJar extends AbstractRemoteCommand {
     public static class Builder {
         private String jarFilePath;
         private List<String> arguments;
-        private StorageNode targettedNode;
+        private StorageNode targetedNode;
         private ISecureShellService secureShellService;
 
         public Builder jarFilePath(String jarFilePath) {
@@ -45,8 +45,8 @@ public class LaunchJar extends AbstractRemoteCommand {
             return this;
         }
 
-        public Builder targettedNode(StorageNode targettedNode) {
-            this.targettedNode = targettedNode;
+        public Builder targetedNode(StorageNode targetedNode) {
+            this.targetedNode = targetedNode;
             return this;
         }
 

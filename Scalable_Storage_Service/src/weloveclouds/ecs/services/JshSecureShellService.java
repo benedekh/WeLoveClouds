@@ -32,7 +32,7 @@ public class JshSecureShellService implements ISecureShellService {
 
     @Override
     public void runCommand(AbstractRemoteCommand command) throws SecureShellServiceException {
-        String targettedHostIp = command.getTargettedHostIp();
+        String targetedHostIp = command.getTargetedHostIp();
 
         try {
             Session secureShellSession;
@@ -42,10 +42,10 @@ public class JshSecureShellService implements ISecureShellService {
 
             if (authConfigurationProvider.getAuthenticactionMethod() == PRIVATE_KEY) {
                 secureShell.addIdentity(authConfigurationProvider.getAuthPrivateKeyFilePath());
-                secureShellSession = secureShell.getSession(authConfigurationProvider.getUsername(), targettedHostIp,
+                secureShellSession = secureShell.getSession(authConfigurationProvider.getUsername(), targetedHostIp,
                         SECURE_SHELL_PORT);
             } else {
-                secureShellSession = secureShell.getSession(authConfigurationProvider.getUsername(), targettedHostIp,
+                secureShellSession = secureShell.getSession(authConfigurationProvider.getUsername(), targetedHostIp,
                         SECURE_SHELL_PORT);
                 secureShellSession.setPassword(authConfigurationProvider.getPassword());
             }
@@ -61,7 +61,7 @@ public class JshSecureShellService implements ISecureShellService {
             secureShellSession.disconnect();
         } catch (JSchException e) {
             throw new SecureShellServiceException("Unable to execute command: " + command + " on " +
-                    "targetted host: " + targettedHostIp, e);
+                    "targeted host: " + targetedHostIp, e);
         }
     }
 }

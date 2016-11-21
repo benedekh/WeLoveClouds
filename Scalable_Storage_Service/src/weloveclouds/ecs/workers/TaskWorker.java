@@ -11,6 +11,7 @@ import weloveclouds.ecs.models.tasks.Status;
 import static weloveclouds.ecs.models.tasks.Status.*;
 import static weloveclouds.ecs.workers.WorkerStatus.*;
 import static weloveclouds.ecs.workers.WorkerStatus.WAITING;
+import static weloveclouds.ecs.workers.WorkerStatus.RUNNING;
 
 /**
  * Created by Benoit on 2016-11-18.
@@ -46,6 +47,7 @@ public class TaskWorker extends Observable implements Runnable {
             } catch (RetryableException e) {
                 logger.info(e.getMessage());
             } catch (Exception e) {
+                logger.info(e.getMessage());
                 task.setStatus(FAILED);
             }
         }

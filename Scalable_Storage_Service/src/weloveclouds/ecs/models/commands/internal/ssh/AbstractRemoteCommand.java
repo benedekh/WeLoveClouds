@@ -23,7 +23,7 @@ public abstract class AbstractRemoteCommand extends AbstractCommand<String>
         this.targetedNode = targettedNode;
     }
 
-    public String getTargettedHostIp() {
+    public String getTargetedHostIp() {
         return targetedNode.getIpAddress().replaceAll("/", "");
     }
 
