@@ -83,7 +83,8 @@ public class ServerFactory {
         LOGGER.debug("Creating Server for KVECS requests.");
         return new Server.Builder<KVAdminMessage, IKVECSRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
-                .requestFactory(new KVECSRequestFactory(dataAccessService, communicationApiFactory))
+                .requestFactory(new KVECSRequestFactory(dataAccessService, communicationApiFactory,
+                        new KVTransferMessageSerializer(), new KVTransferMessageDeserializer()))
                 .communicationApiFactory(communicationApiFactory)
                 .messageSerializer(new KVAdminMessageSerializer())
                 .messageDeserializer(new KVAdminMessageDeserializer()).build();

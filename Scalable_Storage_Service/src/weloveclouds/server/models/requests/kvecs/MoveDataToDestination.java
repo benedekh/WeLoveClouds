@@ -54,10 +54,14 @@ public class MoveDataToDestination implements IKVECSRequest {
      * @param communicationApi to communicate with the target server
      */
     public MoveDataToDestination(IMovableDataAccessService dataAccessService,
-            RingMetadataPart targetServerInfo, ICommunicationApi communicationApi) {
+            RingMetadataPart targetServerInfo, ICommunicationApi communicationApi,
+            IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
+            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
         this.dataAccessService = dataAccessService;
         this.targetServerInfo = targetServerInfo;
         this.communicationApi = communicationApi;
+        this.transferMessageSerializer = transferMessageSerializer;
+        this.transferMessageDeserializer = transferMessageDeserializer;
     }
 
     @Override
