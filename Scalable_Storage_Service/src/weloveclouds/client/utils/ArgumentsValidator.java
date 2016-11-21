@@ -85,7 +85,9 @@ public class ArgumentsValidator {
             validateSize(arguments[KEY_INDEX], KEY_SIZE_LIMIT_IN_BYTES, command, "key");
 
             String value = PutCommandUtils.mergeValuesToOneString(VALUE_INDEX, arguments);
-            validateSize(value, VALUE_SIZE_LIMIT_IN_BYTES, command, "value");
+            if (value != null) {
+                validateSize(value, VALUE_SIZE_LIMIT_IN_BYTES, command, "value");
+            }
         }
     }
 

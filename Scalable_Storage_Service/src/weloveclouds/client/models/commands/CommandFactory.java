@@ -7,7 +7,9 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.cli.models.ParsedUserInput;
-import weloveclouds.communication.api.v1.IKVCommunicationApi;
+import weloveclouds.communication.api.v2.IKVCommunicationApiV2;
+import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
@@ -17,16 +19,21 @@ import weloveclouds.communication.api.v1.IKVCommunicationApi;
  * @author Benoit
  */
 public class CommandFactory {
-    
     private static final Logger LOGGER = Logger.getLogger(CommandFactory.class);
-    private IKVCommunicationApi communicationApi;
+
+    private IKVCommunicationApiV2 communicationApi;
+    private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
 
     /**
      * @param communicationApi an instance for the communication module for those commands which
      *        need to communicate via the network
+     * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object to
+     *        its original representation from String
      */
-    public CommandFactory(IKVCommunicationApi communicationApi) {
+    public CommandFactory(IKVCommunicationApiV2 communicationApi,
+            IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         this.communicationApi = communicationApi;
+        this.ringMetadataDeserializer = ringMetadataDeserializer;
     }
 
     /**
@@ -50,10 +57,12 @@ public class CommandFactory {
                 recognizedCommand = new Disconnect(userInput.getArguments(), communicationApi);
                 break;
             case PUT:
-                recognizedCommand = new Put(userInput.getArguments(), communicationApi);
+                recognizedCommand = new Put(userInput.getArguments(), communicationApi,
+                        ringMetadataDeserializer);
                 break;
             case GET:
-                recognizedCommand = new Get(userInput.getArguments(), communicationApi);
+                recognizedCommand = new Get(userInput.getArguments(), communicationApi,
+                        ringMetadataDeserializer);
                 break;
             case HELP:
                 recognizedCommand = new Help(userInput.getArguments());
