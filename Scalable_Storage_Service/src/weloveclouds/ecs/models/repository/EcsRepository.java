@@ -21,6 +21,14 @@ public class EcsRepository {
         this.storageNodes.add(storageNode);
     }
 
+    synchronized public int getNumberOfNodes() {
+        return storageNodes.size();
+    }
+
+    synchronized public int getNumberOfNodesWithStatus(StorageNodeStatus status) {
+        return getNodesWithStatus(status).size();
+    }
+
     synchronized public List<StorageNode> getNodesWithStatus(StorageNodeStatus status) {
         List<StorageNode> nodes = new ArrayList<>();
 

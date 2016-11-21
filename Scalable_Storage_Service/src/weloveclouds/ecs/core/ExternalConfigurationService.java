@@ -22,6 +22,11 @@ import weloveclouds.ecs.models.tasks.SimpleRetryableTask;
 import weloveclouds.ecs.services.ISecureShellService;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.ListUtils;
+import weloveclouds.ecs.utils.RingMetadataHelper;
+import weloveclouds.hashing.models.Hash;
+import weloveclouds.hashing.models.HashRange;
+import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
@@ -37,6 +42,8 @@ import static weloveclouds.ecs.models.repository.StorageNodeStatus.RUNNING;
  */
 public class ExternalConfigurationService {
     private static final String JAR_FILE_PATH = "";
+    private final HashRange INITIAL_HASHRANGE;
+    private RingMetadata ringMetadata;
     private String configurationFilePath;
     private EcsRepository repository;
     private EcsRepositoryFactory ecsRepositoryFactory;
@@ -55,7 +62,11 @@ public class ExternalConfigurationService {
         this.messageSerializer = externalConfigurationServiceBuilder.messageSerializer;
         this.ecsRepositoryFactory = externalConfigurationServiceBuilder.ecsRepositoryFactory;
         this.configurationFilePath = externalConfigurationServiceBuilder.configurationFilePath;
-        bootstrap();
+        this.ringMetadata = new RingMetadata();
+        INITIAL_HASHRANGE = new HashRange.Builder().start(Hash.MIN_VALUE).end(Hash.MAX_VALUE)
+                .build();
+        bootstrapConfiguration();
+        initializeRingMetadata();
     }
 
     @SuppressWarnings("unchecked")
@@ -126,12 +137,32 @@ public class ExternalConfigurationService {
 
     }
 
-    private void bootstrap() throws ServiceBootstrapException {
+    private void bootstrapConfiguration() throws ServiceBootstrapException {
         try {
             repository = ecsRepositoryFactory.createEcsRepositoryFrom(new File(configurationFilePath));
         } catch (InvalidConfigurationException ex) {
             throw new ServiceBootstrapException("Bootstrap failed. Unable to start the service : "
                     + ex.getMessage(), ex);
+        }
+    }
+
+    private void initializeRingMetadata() {
+        List<StorageNode> ringOrderedNodes = RingMetadataHelper.computeRingOrder(repository
+                .getNodesWithStatus(IDLE));
+        HashRange previousRange = null;
+
+        for (StorageNode node : ringOrderedNodes) {
+            HashRange hashRange;
+            int ringPosition = ringOrderedNodes.indexOf(node);
+
+            hashRange = RingMetadataHelper.computeHashRangeForNodeBasedOnRingPosition(ringPosition,
+                    ringOrderedNodes.size(), node.getHashKey(), previousRange);
+            node.setHashRange(hashRange);
+
+            ringMetadata.addRangeInfo(new RingMetadataPart.Builder().connectionInfo(node
+                    .getServerConnectionInfo()).range(hashRange).build());
+
+            previousRange = hashRange;
         }
     }
 

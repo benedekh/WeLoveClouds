@@ -1,5 +1,7 @@
 package weloveclouds.hashing.models;
 
+import java.math.BigInteger;
+
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 
@@ -9,9 +11,9 @@ import weloveclouds.kvstore.serialization.helper.ISerializer;
  * (2) end <= {@link Hash#MAX_VALUE} && start >= {@link Hash#MIN_VALUE}, UNLESS <br>
  * (3) start >= end, because they wrap over. But in this case (2) should hold with slight changes:
  * start <= {@link Hash#MAX_VALUE} && end >= {@link Hash#MIN_VALUE}.
- * 
+ *
  * The ends of the range are inclusive.
- * 
+ *
  * @author Benedek
  */
 public class HashRange {
@@ -22,6 +24,22 @@ public class HashRange {
     protected HashRange(Builder builder) {
         this.start = builder.start;
         this.end = builder.end;
+    }
+
+    public Hash getStart() {
+        return start;
+    }
+
+    public Hash getEnd() {
+        return end;
+    }
+
+    public BigInteger getStartValue() {
+        return new BigInteger(start.getBytes());
+    }
+
+    public BigInteger getEndValue() {
+        return new BigInteger(end.getBytes());
     }
 
     public boolean contains(Hash target) {
@@ -41,7 +59,7 @@ public class HashRange {
     }
 
     public String toStringWithDelimiter(String betweenHashes,
-            ISerializer<String, Hash> hashSerializer) {
+                                        ISerializer<String, Hash> hashSerializer) {
         return CustomStringJoiner.join(betweenHashes, hashSerializer.serialize(start),
                 hashSerializer.serialize(end));
     }

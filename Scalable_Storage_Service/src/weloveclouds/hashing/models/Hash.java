@@ -29,6 +29,10 @@ public class Hash implements Comparable<Hash> {
         this.hash = hash;
     }
 
+    public byte[] getBytes() {
+        return this.hash;
+    }
+
     /**
      * Creates a new Hash, whose value is incremented by one.
      */
