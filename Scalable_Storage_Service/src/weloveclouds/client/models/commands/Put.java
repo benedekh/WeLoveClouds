@@ -27,6 +27,8 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
     private IKVCommunicationApiV2 communicationApiV2;
+    
+    private boolean commandWasAlreadyExecuted;
 
     /**
      * @param arguments contains the key in the {@link #KEY_INDEX} position and the value is merged
@@ -41,6 +43,7 @@ public class Put extends AbstractKVCommunicationApiCommand {
         super(arguments, communicationApi);
         this.ringMetadataDeserializer = ringMetadataDeserializer;
         this.communicationApiV2 = communicationApi;
+        this.commandWasAlreadyExecuted = false;
     }
 
     @Override
@@ -75,10 +78,20 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     try {
                         LOGGER.error(join(" ", "Server is not responsible for the key:", key,
                                 ". Updating ring metadata information."));
+                        
                         RingMetadata ringMetadata =
                                 ringMetadataDeserializer.deserialize(response.getValue());
                         communicationApiV2.setRingMetadata(ringMetadata);
-                        execute();
+                        
+                        if (!commandWasAlreadyExecuted) {
+                            commandWasAlreadyExecuted = true;
+                            execute();
+                        } else {
+                            String errorMessage =
+                                    "Put command execution failed, because responsible server was not found.";
+                            LOGGER.error(errorMessage);
+                            throw new ClientSideException(errorMessage);
+                        }
                     } catch (DeserializationException e) {
                         LOGGER.error(e);
                         userOutputWriter.writeLine(
