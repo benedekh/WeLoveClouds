@@ -60,7 +60,7 @@ public class EcsArgumentsValidatorTest extends TestCase {
                                                   VALID_DISPLACEMENT_STRAT);
         Exception exception = null;
         try{
-            ArgumentsValidator.validateStartArguments(testArgument);
+            ArgumentsValidator.validateInitServiceArguments(testArgument);
         } catch(IllegalArgumentException e){
             exception = e;
         }finally{
@@ -74,7 +74,7 @@ public class EcsArgumentsValidatorTest extends TestCase {
                                                   VALID_DISPLACEMENT_STRAT);
         Exception exception = null;
         try{
-            ArgumentsValidator.validateStartArguments(testArgument);
+            ArgumentsValidator.validateInitServiceArguments(testArgument);
         } catch(IllegalArgumentException e){
             exception = e;
         }finally{
@@ -88,7 +88,7 @@ public class EcsArgumentsValidatorTest extends TestCase {
                                                   VALID_DISPLACEMENT_STRAT);
         Exception exception = null;
         try{
-            ArgumentsValidator.validateStartArguments(testArgument);
+            ArgumentsValidator.validateInitServiceArguments(testArgument);
         } catch(IllegalArgumentException e){
             exception = e;
         }finally{
@@ -102,7 +102,7 @@ public class EcsArgumentsValidatorTest extends TestCase {
                                                   DUMMY_STR_ARG);
         Exception exception = null;
         try{
-            ArgumentsValidator.validateStartArguments(testArgument);
+            ArgumentsValidator.validateInitServiceArguments(testArgument);
         } catch(IllegalArgumentException e){
             exception = e;
         }finally{
