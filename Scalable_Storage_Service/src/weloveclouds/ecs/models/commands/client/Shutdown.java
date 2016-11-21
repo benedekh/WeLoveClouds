@@ -8,14 +8,15 @@ import weloveclouds.ecs.utils.ArgumentsValidator;
 /**
  * Created by Benoit on 2016-11-20.
  */
-public class Stop extends AbstractEcsClientCommand {
-    public Stop(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {
+public class Shutdown extends AbstractEcsClientCommand {
+    public Shutdown(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {
         super(externalCommunicationServiceApi, arguments);
     }
 
     @Override
     public void execute() throws ClientSideException {
-        externalCommunicationServiceApi.stop();
+        externalCommunicationServiceApi.shutDown();
+
     }
 
     @Override
@@ -25,7 +26,7 @@ public class Stop extends AbstractEcsClientCommand {
 
     @Override
     public ICommand validate() throws IllegalArgumentException {
-        ArgumentsValidator.validateStopArguments(arguments);
+        ArgumentsValidator.validateShutdownArguments(arguments);
         return this;
     }
 }

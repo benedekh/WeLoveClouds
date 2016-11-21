@@ -1,6 +1,7 @@
 package weloveclouds.ecs.models.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import weloveclouds.cli.utils.UserOutputWriter;
@@ -26,6 +27,10 @@ public abstract class AbstractCommand<T> implements ICommand {
 
     public void addArguments(List<T> arguments) {
         this.arguments.addAll(arguments);
+    }
+
+    public void addArguments(T[] arguments) {
+        this.arguments.addAll(Arrays.asList(arguments));
     }
 
     public abstract String toString();

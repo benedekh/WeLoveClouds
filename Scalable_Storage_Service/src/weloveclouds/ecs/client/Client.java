@@ -34,7 +34,7 @@ public class Client {
                 try {
                     outputWriter.writePrefix();
                     ParsedUserInput userInput = inputReader.readAndParseUserInput();
-                    ecsCommandFactory.createCommandFromUserInput(userInput).execute();
+                    ecsCommandFactory.createCommandFromUserInput(userInput).validate();
                     LOGGER.info("Command executed.");
                 } catch (IOException ex) {
                     outputWriter.writeLine(ex.getMessage());
