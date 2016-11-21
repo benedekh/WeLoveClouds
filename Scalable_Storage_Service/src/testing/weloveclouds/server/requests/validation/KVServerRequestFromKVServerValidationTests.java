@@ -27,7 +27,7 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 public class KVServerRequestFromKVServerValidationTests {
 
     private static final String SERVER_IP_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 50001;
+    private static final int SERVER_KVSERVER_REQUEST_ACCEPTING_PORT = 50001;
 
     IKVCommunicationApiV2 serverCommunication;
     IMessageDeserializer<KVTransferMessage, SerializedMessage> kvTransferMessageDeserializer;
@@ -36,7 +36,7 @@ public class KVServerRequestFromKVServerValidationTests {
     @Before
     public void init() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()
-                .ipAddress(SERVER_IP_ADDRESS).port(SERVER_PORT).build();
+                .ipAddress(SERVER_IP_ADDRESS).port(SERVER_KVSERVER_REQUEST_ACCEPTING_PORT).build();
         serverCommunication =
                 new CommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
         serverCommunication.connect();
