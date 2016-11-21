@@ -8,6 +8,7 @@ import java.io.InputStream;
 import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
+import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.commands.EcsCommandFactory;
 import weloveclouds.ecs.utils.EcsClientUserInputParser;
 
@@ -34,9 +35,9 @@ public class Client {
                 try {
                     outputWriter.writePrefix();
                     ParsedUserInput userInput = inputReader.readAndParseUserInput();
-                    ecsCommandFactory.createCommandFromUserInput(userInput).validate();
+                    ecsCommandFactory.createCommandFromUserInput(userInput).validate().execute();
                     LOGGER.info("Command executed.");
-                } catch (IOException ex) {
+                } catch (ClientSideException | IllegalArgumentException | IOException ex) {
                     outputWriter.writeLine(ex.getMessage());
                     LOGGER.error(ex);
                 }

@@ -37,12 +37,13 @@ public class ArgumentsValidator {
             IllegalArgumentException {
         if (arguments.size() != INIT_SERVICE_NUMBER_OF_ARGUMENTS) {
             throw new IllegalArgumentException("InitService command takes " +
-                    INIT_SERVICE_NUMBER_OF_ARGUMENTS + "arguments. " + arguments.size() + " " +
-                    "arguments provided");
+                    INIT_SERVICE_NUMBER_OF_ARGUMENTS + " arguments (Mumber of nodes(integer), " +
+                    "cache size (integer) and displacement stragegy" + validStrategyNames + "). " +
+                    arguments.size() + " arguments provided");
         }
         validateNumberOfNode(arguments.get(INIT_SERVICE_NUMBER_OF_NODE_ARG_INDEX));
-        validateDisplacementStrategy(arguments.get(INIT_SERVICE_DISPLACEMENT_STRATEGY_ARG_INDEX));
         validateCacheSize(arguments.get(INIT_SERVICE_CACHE_SIZE_ARG_INDEX));
+        validateDisplacementStrategy(arguments.get(INIT_SERVICE_DISPLACEMENT_STRATEGY_ARG_INDEX));
     }
 
     public static void validateRemoveNodeArguments(List<String> arguments) throws
