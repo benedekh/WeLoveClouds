@@ -9,7 +9,7 @@ public class ValueCleanerUtility {
     private static final int VALUE_SIZE_LIMIT = 120 * 1000;
 
     public static String removeIllegalCharactersFromValue(String value) {
-        return value.replace("\n", "").replace("\t", "").replace("\r", "");
+        return value.replace("\n", "").replace("\t", "").replace("\r", "").replace("\\", "");
     }
 
     public static Map<String, String> cutValueIntoChunks(final String value) {
