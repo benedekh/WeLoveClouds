@@ -1,10 +1,18 @@
 package testing.weloveclouds.kvstore.serialization;
 
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import org.junit.Test;
 
 import junit.framework.Assert;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.hashing.models.Hash;
+import weloveclouds.hashing.models.HashRange;
+import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
@@ -13,8 +21,12 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.models.ServerInitializationContext;
 
+/**
+ * Tests for the {@link KVAdminMessage} to verify its serialization and deserialization processes.
+ * 
+ * @author Benedek
+ */
 public class KVAdminMessageTest {
 
     private static IMessageDeserializer<KVAdminMessage, SerializedMessage> adminMessageDeserializer =
@@ -25,11 +37,25 @@ public class KVAdminMessageTest {
     @Test
     public void testKVAdminMessageSerializationAndDeserialization()
             throws DeserializationException, UnknownHostException {
-        ServerInitializationContext context = new ServerInitializationContext.Builder()
-                .cacheSize(10).displacementStrategyName("LRU").build();
 
-        KVAdminMessage adminMessage = new KVAdminMessage.Builder().initializationContext(context)
-                .status(StatusType.INITKVSERVER).build();
+        RingMetadataPart metadataPart1 = new RingMetadataPart.Builder()
+                .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080)
+                        .build())
+                .range(new HashRange.Builder().begin(HashingUtil.getHash("a"))
+                        .end(HashingUtil.getHash("b")).build())
+                .build();
+
+        RingMetadataPart metadataPart2 = new RingMetadataPart.Builder()
+                .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost").port(8082)
+                        .build())
+                .range(new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
+                .build();
+
+        RingMetadata metadata =
+                new RingMetadata(new HashSet<>(Arrays.asList(metadataPart1, metadataPart2)));
+
+        KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.INITKVSERVER)
+                .ringMetadata(metadata).targetServerInfo(metadataPart1).build();
 
         SerializedMessage serializedMessage = adminMessageSerializer.serialize(adminMessage);
         KVAdminMessage deserializedAdminMessage =

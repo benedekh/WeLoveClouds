@@ -18,6 +18,12 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
 import weloveclouds.server.utils.FileUtility;
 
+/**
+ * Tests for the {@link MovableStorageUnits} to verify its serialization and deserialization
+ * processes.
+ * 
+ * @author Benedek
+ */
 public class MovableStorageUnitsTest {
 
     private static final IDeserializer<MovableStorageUnits, String> storageUnitsDeserializer =

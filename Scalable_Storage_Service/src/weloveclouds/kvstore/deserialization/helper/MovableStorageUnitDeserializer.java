@@ -13,6 +13,11 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.utils.FileUtility;
 
+/**
+ * A deserializer which converts a {@link MovableStorageUnit} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class MovableStorageUnitDeserializer implements IDeserializer<MovableStorageUnit, String> {
 
     private static final int NUMBER_OF_ENTRY_PARTS = 2;
@@ -27,6 +32,7 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
         MovableStorageUnit deserialized = null;
 
         if (from != null && !"null".equals(from)) {
+            LOGGER.debug("Deserializing a MovableStorageUnit from String.");
             // raw message split
             String[] entries = from.split(SEPARATOR_BETWEEN_ENTRIES);
 
@@ -54,6 +60,7 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
             // deserialized object
             deserialized =
                     new MovableStorageUnit(deserializedEntries, FileUtility.createDummyPath());
+            LOGGER.debug("Deserializing a MovableStorageUnit from String finished.");
         }
 
         return deserialized;

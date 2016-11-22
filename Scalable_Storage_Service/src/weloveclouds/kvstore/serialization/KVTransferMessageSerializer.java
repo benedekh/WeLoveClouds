@@ -11,6 +11,11 @@ import weloveclouds.kvstore.serialization.helper.MovableStorageUnitsSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
+/**
+ * A serializer which converts a {@link KVTransferMessage} to a {@link SerializedMessage}.
+ * 
+ * @author Benedek
+ */
 public class KVTransferMessageSerializer
         implements IMessageSerializer<SerializedMessage, KVTransferMessage> {
 

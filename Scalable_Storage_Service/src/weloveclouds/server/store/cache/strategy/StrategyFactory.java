@@ -1,11 +1,11 @@
 package weloveclouds.server.store.cache.strategy;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
+
 /**
- * To ccreate a displacement startegy based on its name.
+ * To create a displacement strategy based on its name.
  * 
  * @author Benedek
  */
@@ -18,11 +18,10 @@ public class StrategyFactory {
      * 
      * @return the strategy or null if its name wasn't matched
      */
-    public static DisplacementStrategy createDisplacementStrategy(
-            String displacemenetStrategyName) {
+    public static DisplacementStrategy createDisplacementStrategy(String displacementStrategyName) {
         DisplacementStrategy displacementStrategy = null;
 
-        switch (displacemenetStrategyName) {
+        switch (displacementStrategyName) {
             case "FIFO":
                 displacementStrategy = new FIFOStrategy();
                 break;
@@ -33,8 +32,8 @@ public class StrategyFactory {
                 displacementStrategy = new LFUStrategy();
                 break;
             default:
-                LOGGER.error(join(" ", "Unrecognized displacement startegy:",
-                        displacemenetStrategyName));
+                LOGGER.error(CustomStringJoiner.join(" ", "Unrecognized displacement startegy:",
+                        displacementStrategyName));
                 break;
         }
 

@@ -7,7 +7,7 @@ import weloveclouds.communication.models.Connection;
 /**
  * Interface for the concurrent communication API.
  * 
- * Benoit
+ * @author Benoit
  */
 public interface IConcurrentCommunicationApi {
 
@@ -16,7 +16,7 @@ public interface IConcurrentCommunicationApi {
      *
      * @throws IOException if any error occurs during the send
      */
-   void send(byte[] message, Connection connection) throws IOException;
+    void send(byte[] message, Connection connection) throws IOException;
 
 
     /**

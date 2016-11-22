@@ -7,16 +7,17 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
+import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerSocketFactory;
 import weloveclouds.server.models.ServerCLIConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
-import weloveclouds.server.models.requests.RequestFactory;
+import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
+import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.services.DataAccessService;
-import weloveclouds.server.store.ControllablePersistentStorage;
-import weloveclouds.server.store.KVCache;
-import weloveclouds.server.store.KVPersistentStorage;
+import weloveclouds.server.services.DataAccessServiceFactory;
+import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.utils.ArgumentsValidator;
 
@@ -28,14 +29,17 @@ import weloveclouds.server.utils.ArgumentsValidator;
 public class Start extends AbstractServerCommand {
 
     private static final Logger LOGGER = Logger.getLogger(Start.class);
-    
+
+    private DataAccessServiceFactory dataAccessServiceFactory;
     private ServerCLIConfigurationContext context;
 
     /**
      * @param context contains the server parameter configuration
      */
-    public Start(String[] arguments, ServerCLIConfigurationContext context) {
+    public Start(String[] arguments, DataAccessServiceFactory dataAccessServiceFactory,
+            ServerCLIConfigurationContext context) {
         super(arguments);
+        this.dataAccessServiceFactory = dataAccessServiceFactory;
         this.context = context;
     }
 
@@ -49,16 +53,20 @@ public class Start extends AbstractServerCommand {
             DisplacementStrategy startegy = context.getDisplacementStrategy();
             Path storagePath = context.getStoragePath();
 
-            KVCache cache = new KVCache(cacheSize, startegy);
-            KVPersistentStorage persistentStorage = new ControllablePersistentStorage(storagePath);
-            DataAccessService dataAccessService = new DataAccessService(cache, persistentStorage);
+            DataAccessServiceInitializationContext initializationContext =
+                    new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
+                            .displacementStrategy(startegy).rootFolderPath(storagePath).build();
 
-            Server server = new Server.ServerBuilder().port(port)
-                    .serverSocketFactory(new ServerSocketFactory())
-                    .requestFactory(new RequestFactory(dataAccessService))
-                    .communicationApiFactory(new CommunicationApiFactory())
-                    .messageSerializer(new KVMessageSerializer())
-                    .messageDeserializer(new KVMessageDeserializer()).build();
+            DataAccessService dataAccessService = dataAccessServiceFactory
+                    .createInitializedDataAccessService(initializationContext);
+
+            Server<KVMessage, IKVClientRequest> server =
+                    new Server.Builder<KVMessage, IKVClientRequest>().port(port)
+                            .serverSocketFactory(new ServerSocketFactory())
+                            .requestFactory(new KVClientRequestFactory(dataAccessService))
+                            .communicationApiFactory(new CommunicationApiFactory())
+                            .messageSerializer(new KVMessageSerializer())
+                            .messageDeserializer(new KVMessageDeserializer()).build();
             server.start();
 
             context.setStarted(true);

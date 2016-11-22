@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.store.exceptions.StorageException;
@@ -24,41 +25,14 @@ import weloveclouds.server.store.models.PersistedStorageUnit;
  * Represents a {@link KVPersistentStorage}, whose entries and storage units can be filtered,
  * removed, or new storage units can be added to that.
  * 
- * Besides, the {@link #putEntry(KVEntry)} and {@link #removeEntry(String)} method's accessibility
- * can be limited by applying a {@link #writeLockActive} flag.
- * 
  * @author Benedek
  */
-public class ControllablePersistentStorage extends KVPersistentStorage {
+public class MovablePersistentStorage extends KVPersistentStorage {
 
-    private static final Logger LOGGER = Logger.getLogger(ControllablePersistentStorage.class);
-    
-    private volatile boolean writeLockActive;
+    private static final Logger LOGGER = Logger.getLogger(MovablePersistentStorage.class);
 
-    public ControllablePersistentStorage(Path rootPath) throws IllegalArgumentException {
+    public MovablePersistentStorage(Path rootPath) throws IllegalArgumentException {
         super(rootPath);
-    }
-
-    public void setWriteLockActive(boolean isActive) {
-        this.writeLockActive = isActive;
-    }
-
-    @Override
-    public synchronized PutType putEntry(KVEntry entry) throws StorageException {
-        if (!writeLockActive) {
-            return super.putEntry(entry);
-        } else {
-            throw new StorageException("Persistent storage is not writable.");
-        }
-    }
-
-    @Override
-    public synchronized void removeEntry(String key) throws StorageException {
-        if (!writeLockActive) {
-            super.removeEntry(key);
-        } else {
-            throw new StorageException("Persistent storage is not modifyable.");
-        }
     }
 
     /**
@@ -66,26 +40,26 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
      * 
      * @param fromStorageUnits from where the entries will be copied
      */
-    public void putEntries(MovableStorageUnits fromStorageUnits) {
+    public void putEntries(MovableStorageUnits fromStorageUnits) throws StorageException {
+        LOGGER.debug("Putting storage units from parameter data structure started.");
+
         for (MovableStorageUnit storageUnit : fromStorageUnits.getStorageUnits()) {
-            try {
-                String filename = UUID.randomUUID().toString();
-                Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
-                storageUnit.setPath(path);
-                storageUnit.save();
+            String filename = UUID.randomUUID().toString();
+            Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
+            storageUnit.setPath(path);
+            storageUnit.save();
 
-                for (String key : storageUnit.getKeys()) {
-                    storageUnits.put(key, storageUnit);
-                    notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
-                }
+            for (String key : storageUnit.getKeys()) {
+                storageUnits.put(key, storageUnit);
+                notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
+            }
 
-                if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
-                    unitsWithFreeSpace.add(storageUnit);
-                }
-            } catch (StorageException e) {
-                LOGGER.error(e);
+            if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
+                unitsWithFreeSpace.add(storageUnit);
             }
         }
+
+        LOGGER.debug("Putting storage units from parameter data structure finished.");
     }
 
     /**
@@ -96,6 +70,10 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
      * @throws StorageException if an error occurs
      */
     public MovableStorageUnits filterEntries(HashRange range) {
+        LOGGER.debug(
+                CustomStringJoiner.join(" ", "Filtering storage units according to range filter (",
+                        range.toString(), ") started."));
+
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<MovableStorageUnit> toBeCopied = new HashSet<>();
 
@@ -103,6 +81,8 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
             toBeCopied.add(new MovableStorageUnit(storageUnit).copyEntries(range));
         }
 
+        LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(toBeCopied.size()),
+                " storage units are filtered."));
         return new MovableStorageUnits(toBeCopied);
     }
 
@@ -113,6 +93,11 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
      * @throws StorageException if an error occurs
      */
     public void removeEntries(HashRange range) throws StorageException {
+        LOGGER.debug(
+                CustomStringJoiner.join(" ", "Removing storage units according to range filter (",
+                        range.toString(), ") started."));
+
+
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<String> keysToBeRemoved = new HashSet<>();
 
@@ -133,12 +118,16 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
                 }
             } catch (IOException e) {
                 LOGGER.error(e);
+                throw new StorageException("Storage unit cannot be removed due to an IO Error.");
             }
         }
 
         for (String key : keysToBeRemoved) {
             removeKeyFromStore(key);
         }
+
+        LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(keysToBeRemoved.size()),
+                "storage units were removed from the persistent storage according to the range filter."));
     }
 
     /**
@@ -146,6 +135,8 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
      * accordingly after the operation is finished.
      */
     public void defragment() {
+        LOGGER.debug("Defragmentation started.");
+
         Iterator<PersistedStorageUnit> storageUnitIterator =
                 collectNotFullStorageUnits().iterator();
 
@@ -198,12 +189,17 @@ public class ControllablePersistentStorage extends KVPersistentStorage {
         } finally {
             unitsWithFreeSpace.clear();
 
+            LOGGER.debug("Refreshing the data structure which stores the free stroage units.");
             for (PersistedStorageUnit hasFreeSpace : collectNotFullStorageUnits()) {
                 if (!unitsWithFreeSpace.contains(hasFreeSpace)) {
                     unitsWithFreeSpace.add(hasFreeSpace);
                 }
             }
+            LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(unitsWithFreeSpace.size()),
+                    " storage units have free space after defragmentation."));
         }
+
+        LOGGER.debug("Defragmentation finished.");
     }
 
     /**

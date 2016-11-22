@@ -24,9 +24,11 @@ public class DataAccessService implements IDataAccessService {
     private KVPersistentStorage persistentStorage;
 
     public DataAccessService(KVCache cache, KVPersistentStorage persistentStorage) {
+        LOGGER.debug("DataAccessService initialization started.");
         this.cache = cache;
         this.persistentStorage = persistentStorage;
         this.persistentStorage.addObserver(cache);
+        LOGGER.debug("DataAccessService initialization finished.");
     }
 
     @Override

@@ -40,6 +40,13 @@ public class HashRange {
         }
     }
 
+    /**
+     * Converts the object to String.
+     * 
+     * @param betweenHashes separator character between the {@link #start} and the {@link #end} hash
+     *        values
+     * @param hashSerializer to convert the {@link Hash} into a String representation
+     */
     public String toStringWithDelimiter(String betweenHashes,
             ISerializer<String, Hash> hashSerializer) {
         return CustomStringJoiner.join(betweenHashes, hashSerializer.serialize(begin),
@@ -89,6 +96,11 @@ public class HashRange {
         return true;
     }
 
+    /**
+     * Builder pattern for creating a {@link HashRange} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private Hash begin;
         private Hash end;

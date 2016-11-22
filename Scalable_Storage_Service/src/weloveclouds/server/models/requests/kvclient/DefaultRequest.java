@@ -1,4 +1,4 @@
-package weloveclouds.server.models.requests;
+package weloveclouds.server.models.requests.kvclient;
 
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
@@ -8,7 +8,7 @@ import weloveclouds.kvstore.models.messages.KVMessage;
  * 
  * @author Benedek
  */
-public class DefaultRequest implements IRequest {
+public class DefaultRequest implements IKVClientRequest {
 
     private String key;
     private String errorMessage;
@@ -22,6 +22,11 @@ public class DefaultRequest implements IRequest {
     public KVMessage execute() {
         return new KVMessage.Builder().status(StatusType.DELETE_ERROR).key(key).value(errorMessage)
                 .build();
+    }
+
+    @Override
+    public IKVClientRequest validate() throws IllegalArgumentException {
+        return this;
     }
 
 }

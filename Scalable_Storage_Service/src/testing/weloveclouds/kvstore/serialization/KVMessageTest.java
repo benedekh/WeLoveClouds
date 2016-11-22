@@ -12,6 +12,11 @@ import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
+/**
+ * Tests for the {@link KVMessage} to verify its serialization and deserialization processes.
+ * 
+ * @author Benedek
+ */
 public class KVMessageTest {
 
     private static IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer =

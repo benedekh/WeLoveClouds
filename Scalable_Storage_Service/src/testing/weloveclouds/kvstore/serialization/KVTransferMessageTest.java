@@ -21,6 +21,12 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
 import weloveclouds.server.utils.FileUtility;
 
+/**
+ * Tests for the {@link KVTransferMessage} to verify its serialization and deserialization
+ * processes.
+ * 
+ * @author Benedek
+ */
 public class KVTransferMessageTest {
 
     private static IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer =

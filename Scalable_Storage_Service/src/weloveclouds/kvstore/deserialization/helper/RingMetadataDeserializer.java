@@ -7,11 +7,16 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;;
 
+/**
+ * A deserializer which converts a {@link RingMetadata} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class RingMetadataDeserializer implements IDeserializer<RingMetadata, String> {
 
     private static final Logger LOGGER = Logger.getLogger(RingMetadataDeserializer.class);
@@ -23,6 +28,7 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
         RingMetadata deserialized = null;
 
         if (from != null && !"null".equals(from)) {
+            LOGGER.debug("Deserializing a RingMetadata from String.");
             // raw message split
             String[] parts = from.split(RingMetadataSerializer.SEPARATOR);
 

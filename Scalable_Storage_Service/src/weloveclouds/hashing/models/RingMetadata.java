@@ -46,6 +46,13 @@ public class RingMetadata {
         return null;
     }
 
+    /**
+     * Converts the object to String.
+     * 
+     * @param delimiter separator character among the fields
+     * @param metadataPartSerializer to convert the {@link RingMetadataPart} into a String
+     *        representation
+     */
     public String toStringWithDelimiter(String delimiter,
             ISerializer<String, RingMetadataPart> metadataPartSerializer) {
         StringBuilder sb = new StringBuilder();

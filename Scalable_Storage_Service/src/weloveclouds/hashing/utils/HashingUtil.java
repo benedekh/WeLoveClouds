@@ -5,8 +5,17 @@ import java.security.NoSuchAlgorithmException;
 
 import weloveclouds.hashing.models.Hash;
 
+/**
+ * Utility class for the {@link Hash}.
+ * 
+ * @author Benedek
+ */
 public class HashingUtil {
 
+    /**
+     * @return MD5 hash representation of the parameter String or null if the algorithm is not
+     *         available
+     */
     public static Hash getHash(String input) {
         Hash hash = null;
 

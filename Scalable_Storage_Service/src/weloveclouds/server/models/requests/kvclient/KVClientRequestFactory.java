@@ -1,4 +1,4 @@
-package weloveclouds.server.models.requests;
+package weloveclouds.server.models.requests.kvclient;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
@@ -6,27 +6,28 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
+import weloveclouds.server.core.requests.IRequestFactory;
 import weloveclouds.server.services.IDataAccessService;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different requests. It
  * handles several requests (see {@link StatusType} for the possible types) by dispatching the
- * command to its respective handler (see package {@link weloveclouds.server.models.requests}.
+ * command to its respective handler.
  *
  * @author Benoit
  */
-public class RequestFactory {
-
+public class KVClientRequestFactory implements IRequestFactory<KVMessage, IKVClientRequest> {
     private static final Logger LOGGER = Logger.getLogger(Put.class);
 
     private IDataAccessService dataAccessService;
 
-    public RequestFactory(IDataAccessService dataAccessService) {
+    public KVClientRequestFactory(IDataAccessService dataAccessService) {
         this.dataAccessService = dataAccessService;
     }
 
-    public IRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
-        IRequest request = null;
+    @Override
+    public IKVClientRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
+        IKVClientRequest request = null;
         StatusType status = receivedMessage.getStatus();
 
         // see M2 docs, we delete the key if it is a PUT request with only a key
@@ -54,4 +55,5 @@ public class RequestFactory {
 
         return request;
     }
+
 }

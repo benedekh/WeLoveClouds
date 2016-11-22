@@ -21,7 +21,7 @@ public class Connection {
     }
 
     public boolean isConnected() {
-        return socket != null && socket.isConnected() && !socket.isClosed();
+        return socket != null && !socket.isClosed();
     }
 
     public ServerConnectionInfo getRemoteServer() {
@@ -53,6 +53,8 @@ public class Connection {
      */
     public void kill() throws IOException {
         if (isConnected()) {
+            socket.shutdownOutput();
+            socket.shutdownInput();
             socket.close();
         }
     }

@@ -9,13 +9,13 @@ import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 /**
- * An exact serializer which converts a {@link KVMessage} to a {@link SerializedMessage}.
+ * A serializer which converts a {@link KVMessage} to a {@link SerializedMessage}.
  * 
  * @author Benoit
  */
 public class KVMessageSerializer implements IMessageSerializer<SerializedMessage, KVMessage> {
 
-    public static final String SEPARATOR = "-\r-";
+    public static final String SEPARATOR = "-\r\r-";
 
     private static final Logger LOGGER = Logger.getLogger(KVMessageSerializer.class);
 
