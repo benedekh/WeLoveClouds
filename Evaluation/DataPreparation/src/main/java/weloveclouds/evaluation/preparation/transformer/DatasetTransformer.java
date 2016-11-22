@@ -1,7 +1,6 @@
 package weloveclouds.evaluation.preparation.transformer;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
-import static weloveclouds.evaluation.preparation.util.KeyCreatorUtility.createBaseKeyNameForTargetFilePath;
 import static weloveclouds.evaluation.preparation.util.StringJoinerUtility.join;
 import static weloveclouds.evaluation.preparation.util.ValueCleanerUtility.cutValueIntoChunks;
 import static weloveclouds.evaluation.preparation.util.ValueCleanerUtility.removeIllegalCharactersFromValue;
@@ -44,18 +43,15 @@ public class DatasetTransformer extends SimpleFileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
+    public FileVisitResult visitFile(final Path file, final BasicFileAttributes attr) {
         if (attr.isRegularFile()) {
             LOGGER.info(join(": ", "Reading file content started", file.toString()));
             try {
-                String startKey = createBaseKeyNameForTargetFilePath(rootPath, file);
-
                 List<String> fileContent = Files.readAllLines(file);
                 String fileContentStr =
                         join("\n", fileContent.toArray(new String[fileContent.size()]));
 
-                Map<String, String> fileContentInKVPairs =
-                        cutValueIntoChunks(startKey, fileContentStr);
+                Map<String, String> fileContentInKVPairs = cutValueIntoChunks(fileContentStr);
                 for (Entry<String, String> kvPair : fileContentInKVPairs.entrySet()) {
                     String key = kvPair.getKey();
                     String value = removeIllegalCharactersFromValue(kvPair.getValue());
@@ -76,7 +72,7 @@ public class DatasetTransformer extends SimpleFileVisitor<Path> {
      * Print each directory visited.
      */
     @Override
-    public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+    public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) {
         LOGGER.info(join(": ", "Visiting directory finished", dir.toString()));
         return CONTINUE;
     }
@@ -86,7 +82,7 @@ public class DatasetTransformer extends SimpleFileVisitor<Path> {
      * method and an error occurs, an IOException is thrown.
      **/
     @Override
-    public FileVisitResult visitFileFailed(Path file, IOException exc) {
+    public FileVisitResult visitFileFailed(final Path file, final IOException exc) {
         LOGGER.info(join(": ", "Visiting file failed", file.toString()));
         return CONTINUE;
     }

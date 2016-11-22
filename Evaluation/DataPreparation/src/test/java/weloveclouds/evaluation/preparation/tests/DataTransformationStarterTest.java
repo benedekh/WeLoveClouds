@@ -1,3 +1,5 @@
+package weloveclouds.evaluation.preparation.tests;
+
 import org.junit.Test;
 
 import weloveclouds.evaluation.preparation.application.DataPreparationApplication;

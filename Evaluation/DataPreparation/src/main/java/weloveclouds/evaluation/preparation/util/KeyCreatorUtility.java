@@ -1,24 +1,12 @@
 package weloveclouds.evaluation.preparation.util;
 
 import java.nio.ByteBuffer;
-import java.nio.file.Path;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 
 public class KeyCreatorUtility {
-
-    public static String createBaseKeyNameForTargetFilePath(Path prefixPath, Path targetFilePath) {
-        String prefix = prefixPath.toFile().getAbsolutePath();
-        String pathWhosePrefixIsToBeRemoved = targetFilePath.toFile().getAbsolutePath().toString();
-        StringBuffer sb = new StringBuffer(pathWhosePrefixIsToBeRemoved);
-
-        int end = pathWhosePrefixIsToBeRemoved.lastIndexOf(prefix) + prefix.length();
-        sb.replace(pathWhosePrefixIsToBeRemoved.lastIndexOf(prefix), end, "");
-
-        return sb.toString();
-    }
 
     public static String generate20BytesKey() {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);

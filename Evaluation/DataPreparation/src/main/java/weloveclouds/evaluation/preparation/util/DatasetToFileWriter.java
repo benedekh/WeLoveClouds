@@ -29,8 +29,8 @@ public class DatasetToFileWriter {
                 Entry<String, String> entry = iterator.next();
                 writer.writeNext(new String[] {entry.getKey(), entry.getValue()});
             }
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
+        } catch (IOException ex) {
+            LOGGER.error(ex);
         } finally {
             LOGGER.info("Writing transformed dataset to output CSV finished.");
         }
