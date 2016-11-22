@@ -34,8 +34,6 @@ public class ECSClient {
             ExternalConfigurationService ecs = new ExternalConfigurationService.Builder()
                     .taskService(new TaskService())
                     .CommunicationApiFactory(new CommunicationApiFactory())
-                    .messageSerializer(new KVAdminMessageSerializer())
-                    .messageDeserializer(new KVAdminMessageDeserializer())
                     .secureShellService(new JshSecureShellService())
                     .configurationFilePath(args[0])
                     .ecsRepositoryFactory(new EcsRepositoryFactory(new ConfigurationFileParser()))

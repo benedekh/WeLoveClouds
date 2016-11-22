@@ -71,16 +71,12 @@ public class ExternalConfigurationService implements Observer {
     private ITaskService taskService;
     private CommunicationApiFactory communicationApiFactory;
     private ISecureShellService secureShellService;
-    private IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
-    private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
 
 
     public ExternalConfigurationService(Builder externalConfigurationServiceBuilder) throws ServiceBootstrapException {
         this.taskService = externalConfigurationServiceBuilder.taskService;
         this.communicationApiFactory = externalConfigurationServiceBuilder.communicationApiFactory;
         this.secureShellService = externalConfigurationServiceBuilder.secureShellService;
-        this.messageDeserializer = externalConfigurationServiceBuilder.messageDeserializer;
-        this.messageSerializer = externalConfigurationServiceBuilder.messageSerializer;
         this.ecsRepositoryFactory = externalConfigurationServiceBuilder.ecsRepositoryFactory;
         this.configurationFilePath = externalConfigurationServiceBuilder.configurationFilePath;
         this.ringMetadata = new RingMetadata();
@@ -305,8 +301,6 @@ public class ExternalConfigurationService implements Observer {
         private ITaskService taskService;
         private CommunicationApiFactory communicationApiFactory;
         private ISecureShellService secureShellService;
-        private IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
-        private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
 
         public Builder CommunicationApiFactory(CommunicationApiFactory communicationApiFactory) {
             this.communicationApiFactory = communicationApiFactory;
@@ -315,18 +309,6 @@ public class ExternalConfigurationService implements Observer {
 
         public Builder secureShellService(ISecureShellService secureShellService) {
             this.secureShellService = secureShellService;
-            return this;
-        }
-
-        public Builder messageSerializer(IMessageSerializer<SerializedMessage, KVAdminMessage>
-                                                 messageSerializer) {
-            this.messageSerializer = messageSerializer;
-            return this;
-        }
-
-        public Builder messageDeserializer(IMessageDeserializer<KVAdminMessage, SerializedMessage>
-                                                   messageDeserializer) {
-            this.messageDeserializer = messageDeserializer;
             return this;
         }
 
