@@ -23,7 +23,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public class CommunicationService implements ICommunicationService {
 
-    private static final int MAX_PACKET_SIZE_IN_BYTES = 50 * 1024 * 1024; // 50 MB
+    private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
 
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
 

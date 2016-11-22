@@ -17,7 +17,7 @@ import weloveclouds.communication.models.Connection;
  */
 public class ConcurrentCommunicationService implements IConcurrentCommunicationService {
 
-    private static final int MAX_PACKET_SIZE_IN_BYTES = 50 * 1024 * 1024; // 50 MB
+    private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
     private static final Logger LOGGER = Logger.getLogger(ConcurrentCommunicationService.class);
 
     @Override
