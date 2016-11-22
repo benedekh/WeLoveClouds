@@ -3,6 +3,8 @@ package weloveclouds.ecs.core;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;
@@ -17,7 +19,7 @@ import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.repository.StorageNodeStatus;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
 import weloveclouds.ecs.models.tasks.BatchRetryableTasks;
-import weloveclouds.ecs.models.tasks.IBatchTasks;
+import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
 import weloveclouds.ecs.models.tasks.SimpleRetryableTask;
 import weloveclouds.ecs.services.ISecureShellService;
 import weloveclouds.ecs.services.ITaskService;
@@ -36,11 +38,15 @@ import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.*;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.RUNNING;
+import static weloveclouds.ecs.models.tasks.BatchPurpose.SERVICE_INITIALISATION;
+import static weloveclouds.ecs.models.tasks.BatchPurpose.SHUTDOWN;
+import static weloveclouds.ecs.models.tasks.BatchPurpose.START_NODE;
+import static weloveclouds.ecs.models.tasks.BatchPurpose.STOP_NODE;
 
 /**
  * Created by Benoit on 2016-11-16.
  */
-public class ExternalConfigurationService {
+public class ExternalConfigurationService implements Observer {
     private static final String JAR_FILE_PATH = "";
     private final HashRange INITIAL_HASHRANGE;
     private RingMetadata ringMetadata;
@@ -66,12 +72,12 @@ public class ExternalConfigurationService {
         INITIAL_HASHRANGE = new HashRange.Builder().start(Hash.MIN_VALUE).end(Hash.MAX_VALUE)
                 .build();
         bootstrapConfiguration();
-        initializeRingMetadata();
     }
 
     @SuppressWarnings("unchecked")
     public void initService(int numberOfNodes, int cacheSize, String displacementStrategy) {
-        IBatchTasks<AbstractRetryableTask> nodeInitialisationBatch = new BatchRetryableTasks();
+        AbstractBatchTasks<AbstractRetryableTask> nodeInitialisationBatch = new
+                BatchRetryableTasks(SERVICE_INITIALISATION);
         List<StorageNode> storageNodesToInitialize = (List<StorageNode>) ListUtils
                 .getPreciseNumberOfRandomObjectsFrom(repository.getNodesWithStatus(IDLE), numberOfNodes);
 
@@ -85,6 +91,7 @@ public class ExternalConfigurationService {
 
             nodeInitialisationBatch.addTask(
                     new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
+            nodeInitialisationBatch.addObserver(this);
         }
 
         taskService.launchBatchTasks(nodeInitialisationBatch);
@@ -92,7 +99,7 @@ public class ExternalConfigurationService {
 
     @SuppressWarnings("unchecked")
     public void start() {
-        IBatchTasks<AbstractRetryableTask> nodeStartBatch = new BatchRetryableTasks();
+        AbstractBatchTasks<AbstractRetryableTask> nodeStartBatch = new BatchRetryableTasks(START_NODE);
 
         for (StorageNode node : repository.getNodesWithStatus(INITIALIZED)) {
             StartNode taskCommand = new StartNode(communicationApiFactory
@@ -105,7 +112,7 @@ public class ExternalConfigurationService {
     }
 
     public void stop() {
-        IBatchTasks<AbstractRetryableTask> nodeStopBatch = new BatchRetryableTasks();
+        AbstractBatchTasks<AbstractRetryableTask> nodeStopBatch = new BatchRetryableTasks(STOP_NODE);
 
         for (StorageNode node : repository.getNodesWithStatus(RUNNING)) {
             StopNode taskCommand = new StopNode(communicationApiFactory
@@ -118,7 +125,7 @@ public class ExternalConfigurationService {
     }
 
     public void shutDown() {
-        IBatchTasks<AbstractRetryableTask> nodeShutdownBatch = new BatchRetryableTasks();
+        AbstractBatchTasks<AbstractRetryableTask> nodeShutdownBatch = new BatchRetryableTasks(SHUTDOWN);
         List<StorageNodeStatus> activeNodeStatus = Arrays.asList(INITIALIZED, RUNNING);
 
         for (StorageNode node : repository.getNodeWithStatus(activeNodeStatus)) {
@@ -148,7 +155,7 @@ public class ExternalConfigurationService {
 
     private void initializeRingMetadata() {
         List<StorageNode> ringOrderedNodes = RingMetadataHelper.computeRingOrder(repository
-                .getNodesWithStatus(IDLE));
+                .getNodesWithStatus(INITIALIZED));
         HashRange previousRange = null;
 
         for (StorageNode node : ringOrderedNodes) {
@@ -163,6 +170,18 @@ public class ExternalConfigurationService {
                     .getServerConnectionInfo()).range(hashRange).build());
 
             previousRange = hashRange;
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void update(Observable obs, Object obj) {
+        AbstractBatchTasks<AbstractRetryableTask> batch = (AbstractBatchTasks<AbstractRetryableTask>) obs;
+
+        switch (batch.getPurpose()) {
+            case SERVICE_INITIALISATION:
+                initializeRingMetadata();
+                break;
         }
     }
 

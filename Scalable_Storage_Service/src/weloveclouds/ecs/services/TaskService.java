@@ -8,7 +8,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
-import weloveclouds.ecs.models.tasks.IBatchTasks;
+import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
 import weloveclouds.ecs.workers.TaskWorker;
 
 import static weloveclouds.ecs.models.tasks.Status.RUNNING;
@@ -22,7 +22,7 @@ public class TaskService implements ITaskService, Observer {
     Map<String, AbstractRetryableTask> runningTasks;
     Map<String, AbstractRetryableTask> failedTasks;
     Map<String, AbstractRetryableTask> succeededTasks;
-    Map<String, IBatchTasks<AbstractRetryableTask>> batch;
+    Map<String, AbstractBatchTasks<AbstractRetryableTask>> batch;
 
     public TaskService() {
         runningTasks = new LinkedHashMap<>();
@@ -40,7 +40,7 @@ public class TaskService implements ITaskService, Observer {
     }
 
     @Override
-    public void launchBatchTasks(IBatchTasks<AbstractRetryableTask> batchTasks) {
+    public void launchBatchTasks(AbstractBatchTasks<AbstractRetryableTask> batchTasks) {
         batch.put(batchTasks.getId(), batchTasks);
 
         for (AbstractRetryableTask task : batchTasks.getTasks()) {
@@ -62,5 +62,7 @@ public class TaskService implements ITaskService, Observer {
             succeededTasks.put(taskId, task);
             LOGGER.info(task.toString());
         }
+
+        batch.get(task.getBatchId()).taskExecutionFinishedCallback();
     }
 }

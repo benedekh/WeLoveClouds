@@ -3,6 +3,7 @@ package weloveclouds.ecs.models.tasks;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Observable;
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,36 +12,16 @@ import static weloveclouds.ecs.models.tasks.Status.*;
 /**
  * Created by Benoit on 2016-11-19.
  */
-public class BatchRetryableTasks implements IBatchTasks<AbstractRetryableTask> {
-    private String id;
-    private Set<AbstractRetryableTask> tasks;
+public class BatchRetryableTasks extends AbstractBatchTasks<AbstractRetryableTask> {
 
-    public BatchRetryableTasks() {
-        this.id = UUID.randomUUID().toString();
-        this.tasks = new LinkedHashSet<>();
+    public BatchRetryableTasks(BatchPurpose batchPurpose) {
+        super(batchPurpose);
     }
 
     @Override
     public void addTask(AbstractRetryableTask task) {
-        tasks.add(task);
+        this.tasks.add(task);
         task.setBatchId(id);
-    }
-
-    @Override
-    public void addTasks(List<AbstractRetryableTask> tasks) {
-        for (AbstractRetryableTask task : tasks) {
-            addTask(task);
-        }
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public List<AbstractRetryableTask> getTasks() {
-        return new ArrayList<>(tasks);
     }
 
     @Override
@@ -51,6 +32,18 @@ public class BatchRetryableTasks implements IBatchTasks<AbstractRetryableTask> {
     @Override
     public List<AbstractRetryableTask> getSucceededTasks() {
         return getTasksWithStatus(COMPLETED);
+    }
+
+    @Override
+    synchronized public void taskExecutionFinishedCallback() {
+        if (isBatchExecutionComplete()) {
+            setChanged();
+            notifyObservers(getFailedTasks());
+        }
+    }
+
+    private boolean isBatchExecutionComplete() {
+        return getTasksWithStatus(WAITING).isEmpty() && getTasksWithStatus(RUNNING).isEmpty();
     }
 
     private List<AbstractRetryableTask> getTasksWithStatus(Status status) {
