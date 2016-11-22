@@ -49,9 +49,12 @@ public class CSVFolderTraverser {
                 String value = parts[VALUE_INDEX];
 
                 client.put(key, value, false);
+                Thread.sleep(20);
             }
         } catch (IOException ex) {
             LOGGER.error(ex);
+        } catch (InterruptedException e) {
+            LOGGER.error(e);
         } finally {
             LOGGER.info(join(": ", "Reading file content finished", file.toString()));
         }
