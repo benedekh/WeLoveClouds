@@ -18,6 +18,8 @@ public class BatchRetryableTasks extends AbstractBatchTasks<AbstractRetryableTas
         super(batchPurpose);
     }
 
+    private int completedTask = 0;
+
     @Override
     public void addTask(AbstractRetryableTask task) {
         this.tasks.add(task);
@@ -43,7 +45,7 @@ public class BatchRetryableTasks extends AbstractBatchTasks<AbstractRetryableTas
     }
 
     private boolean isBatchExecutionComplete() {
-        return getTasksWithStatus(WAITING).isEmpty() && getTasksWithStatus(RUNNING).isEmpty();
+        return ++completedTask == tasks.size();
     }
 
     private List<AbstractRetryableTask> getTasksWithStatus(Status status) {

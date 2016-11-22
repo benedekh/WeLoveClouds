@@ -30,7 +30,7 @@ public class ECSClient {
     public static void main(String[] args) {
         String logFile = "logs/ecs.log";
         try {
-            new LogSetup(logFile, Level.ALL);
+            new LogSetup(logFile, Level.OFF);
             ExternalConfigurationService ecs = new ExternalConfigurationService.Builder()
                     .taskService(new TaskService())
                     .CommunicationApiFactory(new CommunicationApiFactory())
