@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
-import weloveclouds.evalution.dataloading.csvtraverser.CSVTraverser;
+import weloveclouds.evalution.dataloading.csvtraverser.CSVFolderTraverser;
 
 public class DataLoadingApplication {
 
@@ -33,7 +33,7 @@ public class DataLoadingApplication {
                 if (!isInputCSVFolderPathValid(csvFolderPath)) {
                     System.exit(0);
                 } else {
-                    new CSVTraverser().traverseFolder(csvFolderPath);
+                    new CSVFolderTraverser().traverseFolder(csvFolderPath);
                 }
             } catch (InvalidPathException ex) {
                 LOGGER.error("A valid folder path is required: <input_csv_folder_path>");
