@@ -87,11 +87,24 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
             }
         } catch (IOException | DeserializationException e) {
             LOGGER.error(e);
+            closeConnection(connection);
         } catch (Throwable e) {
             LOGGER.fatal(e);
+            closeConnection(connection);
         }
 
         LOGGER.info("Client is disconnected.");
+    }
+
+    /**
+     * Closes the respective connection.
+     */
+    private void closeConnection(Connection connection) {
+        try {
+            connection.kill();
+        } catch (IOException ex) {
+            LOGGER.error(ex);
+        }
     }
 
     /**

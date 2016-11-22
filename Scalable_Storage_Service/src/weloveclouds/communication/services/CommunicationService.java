@@ -1,5 +1,6 @@
 package weloveclouds.communication.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +15,7 @@ import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.communication.validator.SerializedMessageValidator;
 
 /**
  * The communication module implementation which executes the network operations (connect,
@@ -119,15 +121,29 @@ public class CommunicationService implements ICommunicationService {
 
             byte[] buffer = new byte[MAX_PACKET_SIZE_IN_BYTES];
             int readBytes = 0;
-            if ((readBytes = socketDataReader.read(buffer)) > 0) {
+            ByteArrayOutputStream baosBuffer = new ByteArrayOutputStream();
+            while ((readBytes = socketDataReader.read(buffer)) > 0) {
                 if (readBytes < buffer.length) {
                     byte[] smaller = new byte[readBytes];
                     System.arraycopy(buffer, 0, smaller, 0, readBytes);
                     buffer = smaller;
+
                 }
+
                 LOGGER.debug(CustomStringJoiner.join(" ", "Received", String.valueOf(readBytes),
                         "bytes from the connection."));
-                return buffer;
+                baosBuffer.write(buffer);
+
+                byte[] contentReceivedSoFar = baosBuffer.toByteArray();
+                boolean isValid = SerializedMessageValidator
+                        .byteArrayRepresentsDeserializableMessage(contentReceivedSoFar);
+
+                if (isValid) {
+                    return contentReceivedSoFar;
+                } else {
+                    baosBuffer.reset();
+                    baosBuffer.write(contentReceivedSoFar);
+                }
             }
 
             if (readBytes == -1) {
