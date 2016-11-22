@@ -16,6 +16,6 @@ public class FieldSizeValidator {
     }
 
     private static boolean isStringOverLimit(final String string, final int limit) {
-        return string.getBytes(StandardCharsets.UTF_8).length > limit;
+        return string.getBytes(StandardCharsets.US_ASCII).length > limit;
     }
 }

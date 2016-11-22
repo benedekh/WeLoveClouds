@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -15,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import weloveclouds.evaluation.dataloading.connection.ClientConnection;
-import weloveclouds.evaluation.dataloading.util.FieldSizeValidator;
 
 public class CSVFolderTraverser {
     private static final Logger LOGGER = LogManager.getLogger(CSVFolderTraverser.class);
@@ -49,14 +47,11 @@ public class CSVFolderTraverser {
                 String[] parts = line.split(FIELD_SEPARATOR);
                 String key = parts[KEY_INDEX];
                 String value = parts[VALUE_INDEX];
-                
+
                 client.put(key, value, false);
-                Thread.sleep(100);
             }
         } catch (IOException ex) {
             LOGGER.error(ex);
-        } catch (InterruptedException e) {
-            LOGGER.error(e);
         } finally {
             LOGGER.info(join(": ", "Reading file content finished", file.toString()));
         }
