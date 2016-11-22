@@ -1,29 +1,87 @@
 package weloveclouds.ecs.models.commands.internal;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.api.IConcurrentCommunicationApi;
+import weloveclouds.communication.api.ICommunicationApi;
+import weloveclouds.communication.exceptions.ConnectionClosedException;
+import weloveclouds.communication.exceptions.UnableToConnectException;
+import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.exceptions.ClientSideException;
-import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.kvstore.serialization.IMessageSerializer;
+import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
+import weloveclouds.kvstore.serialization.models.SerializedMessage;
+
+import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
+import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.START;
 
 /**
  * Created by Benoit on 2016-11-20.
  */
-public class StartNode extends AbstractCommand<StorageNode> {
-    private IConcurrentCommunicationApi concurrentCommunicationApi;
+public class StartNode extends AbstractEcsNetworkCommand {
 
-    public StartNode(IConcurrentCommunicationApi concurrentCommunicationApi, StorageNode node) {
-        this.concurrentCommunicationApi = concurrentCommunicationApi;
-        this.addArgument(node);
+    public StartNode(Builder startNodeBuilder) {
+        this.communicationApi = startNodeBuilder.communicationApi;
+        this.targetedNode = startNodeBuilder.targetedNode;
+        this.messageSerializer = startNodeBuilder.messageSerializer;
+        this.messageDeserializer = startNodeBuilder.messageDeserializer;
+        this.errorMessage = CustomStringJoiner.join(" ", "Unable to start node:",
+                targetedNode.toString());
     }
 
     @Override
     public void execute() throws ClientSideException {
+        try {
+            communicationApi.connectTo(targetedNode.getServerConnectionInfo());
+            KVAdminMessage message = new KVAdminMessage.Builder()
+                    .status(START)
+                    .build();
+            communicationApi.send(messageSerializer.serialize(message).getBytes());
+            KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
 
+            if (response.getStatus() != RESPONSE_SUCCESS) {
+                throw new ClientSideException(errorMessage);
+            }
+        } catch (UnableToConnectException | UnableToSendContentToServerException |
+                ConnectionClosedException | DeserializationException ex) {
+            throw new ClientSideException(errorMessage, ex);
+        }
     }
 
     @Override
     public String toString() {
         return CustomStringJoiner.join(" ", "StartNode");
+    }
+
+    public static class Builder {
+        private ICommunicationApi communicationApi;
+        private StorageNode targetedNode;
+        private IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
+        private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
+
+        public Builder communicationApi(ICommunicationApi communicationApi) {
+            this.communicationApi = communicationApi;
+            return this;
+        }
+
+        public Builder targetedNode(StorageNode targetedNode) {
+            this.targetedNode = targetedNode;
+            return this;
+        }
+
+        public Builder messageSerializer(IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer) {
+            this.messageSerializer = messageSerializer;
+            return this;
+        }
+
+        public Builder messageDeserializer(IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer) {
+            this.messageDeserializer = messageDeserializer;
+            return this;
+        }
+
+        public StartNode build() {
+            return new StartNode(this);
+        }
     }
 }

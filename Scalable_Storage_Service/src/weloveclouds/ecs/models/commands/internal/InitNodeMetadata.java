@@ -7,26 +7,29 @@ import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
+import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.INITKVSERVER;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
-import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.SHUTDOWN;
 
 /**
- * Created by Benoit on 2016-11-20.
+ * Created by Benoit on 2016-11-22.
  */
-public class ShutdownNode extends AbstractEcsNetworkCommand {
+public class InitNodeMetadata extends AbstractEcsNetworkCommand {
+    private RingMetadata ringMetadata;
 
-    public ShutdownNode(Builder shutDownBuilder) {
-        this.communicationApi = shutDownBuilder.communicationApi;
-        this.targetedNode = shutDownBuilder.targetedNode;
-        this.messageSerializer = shutDownBuilder.messageSerializer;
-        this.messageDeserializer = shutDownBuilder.messageDeserializer;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to shutdown node:",
+    protected InitNodeMetadata(Builder initNodeMetadataBuilder) {
+        this.communicationApi = initNodeMetadataBuilder.communicationApi;
+        this.ringMetadata = initNodeMetadataBuilder.ringMetadata;
+        this.targetedNode = initNodeMetadataBuilder.targetedNode;
+        this.messageSerializer = initNodeMetadataBuilder.messageSerializer;
+        this.messageDeserializer = initNodeMetadataBuilder.messageDeserializer;
+        this.errorMessage = CustomStringJoiner.join(" ", "Unable to initialize metadata on node:",
                 targetedNode.toString());
     }
 
@@ -35,7 +38,9 @@ public class ShutdownNode extends AbstractEcsNetworkCommand {
         try {
             communicationApi.connectTo(targetedNode.getServerConnectionInfo());
             KVAdminMessage message = new KVAdminMessage.Builder()
-                    .status(SHUTDOWN)
+                    .status(INITKVSERVER)
+                    .ringMetadata(ringMetadata)
+                    .targetServerInfo(ringMetadata.findServerInfoByHash(targetedNode.getHashKey()))
                     .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
@@ -43,6 +48,7 @@ public class ShutdownNode extends AbstractEcsNetworkCommand {
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             }
+
         } catch (UnableToConnectException | UnableToSendContentToServerException |
                 ConnectionClosedException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);
@@ -51,18 +57,24 @@ public class ShutdownNode extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Command: Shutdown", "Targeted node:", targetedNode
-                .toString());
+        return CustomStringJoiner.join(" ", "Command: InitNodeMetadata", "Targeted node:",
+                targetedNode.toString());
     }
 
     public static class Builder {
         private ICommunicationApi communicationApi;
+        private RingMetadata ringMetadata;
         private StorageNode targetedNode;
         private IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
         private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
 
         public Builder communicationApi(ICommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
+            return this;
+        }
+
+        public Builder ringMetadata(RingMetadata ringMetadata) {
+            this.ringMetadata = ringMetadata;
             return this;
         }
 
@@ -81,8 +93,8 @@ public class ShutdownNode extends AbstractEcsNetworkCommand {
             return this;
         }
 
-        public ShutdownNode build() {
-            return new ShutdownNode(this);
+        public InitNodeMetadata build() {
+            return new InitNodeMetadata(this);
         }
     }
 }

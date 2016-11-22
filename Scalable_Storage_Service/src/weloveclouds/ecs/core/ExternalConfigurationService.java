@@ -13,6 +13,7 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;
 import weloveclouds.ecs.exceptions.ServiceBootstrapException;
+import weloveclouds.ecs.models.commands.internal.InitNodeMetadata;
 import weloveclouds.ecs.models.commands.internal.ShutdownNode;
 import weloveclouds.ecs.models.commands.internal.StartNode;
 import weloveclouds.ecs.models.commands.internal.StopNode;
@@ -34,8 +35,10 @@ import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
+import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;
@@ -112,8 +115,8 @@ public class ExternalConfigurationService implements Observer {
             taskService.launchBatchTasks(nodeInitialisationBatch);
             status = INITIALIZING_SERVICE;
         } else {
-            throw new ExternalConfigurationServiceException("Operation initService not permitted." +
-                    " The external configuration service (ECS) is : " + status.name());
+            throw new ExternalConfigurationServiceException("Operation <initService> is not " +
+                    "permitted. The external configuration service (ECS) is : " + status.name());
         }
     }
 
@@ -122,9 +125,11 @@ public class ExternalConfigurationService implements Observer {
         if (status == EcsStatus.INITIALIZED) {
             AbstractBatchTasks<AbstractRetryableTask> nodeStartBatch = new BatchRetryableTasks(START_NODE);
 
-            for (StorageNode node : repository.getNodesWithStatus(INITIALIZED)) {
-                StartNode taskCommand = new StartNode(communicationApiFactory
-                        .createConcurrentCommunicationApiV1(), node);
+            for (StorageNode storageNode : repository.getNodesWithStatus(INITIALIZED)) {
+                StartNode taskCommand = new StartNode.Builder()
+                        .targetedNode(storageNode)
+                        .communicationApi(communicationApiFactory.createCommunicationApiV1())
+                        .build();
 
                 nodeStartBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_START_RETRIES, taskCommand));
             }
@@ -132,7 +137,7 @@ public class ExternalConfigurationService implements Observer {
             taskService.launchBatchTasks(nodeStartBatch);
             status = STARTING_NODE;
         } else {
-            throw new ExternalConfigurationServiceException("Operation initService not permitted." +
+            throw new ExternalConfigurationServiceException("Operation <start> is not permitted." +
                     " The external configuration service (ECS) is : " + status.name());
         }
     }
@@ -142,9 +147,11 @@ public class ExternalConfigurationService implements Observer {
 
             AbstractBatchTasks<AbstractRetryableTask> nodeStopBatch = new BatchRetryableTasks(STOP_NODE);
 
-            for (StorageNode node : repository.getNodesWithStatus(RUNNING)) {
-                StopNode taskCommand = new StopNode(communicationApiFactory
-                        .createConcurrentCommunicationApiV1(), node);
+            for (StorageNode storageNode : repository.getNodesWithStatus(RUNNING)) {
+                StopNode taskCommand = new StopNode.Builder()
+                        .targetedNode(storageNode)
+                        .communicationApi(communicationApiFactory.createCommunicationApiV1())
+                        .build();
 
                 nodeStopBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_STOP_RETRIES, taskCommand));
             }
@@ -152,7 +159,7 @@ public class ExternalConfigurationService implements Observer {
             taskService.launchBatchTasks(nodeStopBatch);
             status = STOPPING_NODE;
         } else {
-            throw new ExternalConfigurationServiceException("Operation initService not permitted." +
+            throw new ExternalConfigurationServiceException("Operation <stop> is not permitted." +
                     " The external configuration service (ECS) is : " + status.name());
         }
     }
@@ -162,16 +169,19 @@ public class ExternalConfigurationService implements Observer {
             AbstractBatchTasks<AbstractRetryableTask> nodeShutdownBatch = new BatchRetryableTasks(SHUTDOWN);
             List<StorageNodeStatus> activeNodeStatus = Arrays.asList(INITIALIZED, RUNNING);
 
-            for (StorageNode node : repository.getNodeWithStatus(activeNodeStatus)) {
-                ShutdownNode taskCommand = new ShutdownNode(communicationApiFactory
-                        .createConcurrentCommunicationApiV1(), node);
+            for (StorageNode storageNode : repository.getNodeWithStatus(activeNodeStatus)) {
+                ShutdownNode taskCommand = new ShutdownNode.Builder()
+                        .targetedNode(storageNode)
+                        .communicationApi(communicationApiFactory.createCommunicationApiV1())
+                        .build();
 
                 nodeShutdownBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES, taskCommand));
             }
+            taskService.launchBatchTasks(nodeShutdownBatch);
             status = SHUTDOWNING_NODE;
         } else {
-            throw new ExternalConfigurationServiceException("Operation initService not permitted." +
-                    " The external configuration service (ECS) is : " + status.name());
+            throw new ExternalConfigurationServiceException("Operation <shutdown> is not " +
+                    "permitted." + " The external configuration service (ECS) is : " + status.name());
         }
     }
 
@@ -179,8 +189,8 @@ public class ExternalConfigurationService implements Observer {
         if (status == EcsStatus.INITIALIZED) {
             status = ADDING_NODE;
         } else {
-            throw new ExternalConfigurationServiceException("Operation initService not permitted." +
-                    " The external configuration service (ECS) is : " + status.name());
+            throw new ExternalConfigurationServiceException("Operation <addNode> is not " +
+                    "permitted. The external configuration service (ECS) is : " + status.name());
         }
     }
 
@@ -188,12 +198,32 @@ public class ExternalConfigurationService implements Observer {
         if (status == EcsStatus.INITIALIZED) {
             status = REMOVING_NODE;
         } else {
-            throw new ExternalConfigurationServiceException("Operation initService not permitted." +
-                    " The external configuration service (ECS) is : " + status.name());
+            throw new ExternalConfigurationServiceException("Operation <removeNode> is not " +
+                    "permitted. The external configuration service (ECS) is : " + status.name());
         }
     }
 
-    public void 
+    private void initializeNodesWithMetadata() {
+        AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch = new
+                BatchRetryableTasks(SERVICE_INITIALISATION);
+
+        for (StorageNode storageNode : repository.getNodesWithStatus(INITIALIZED)) {
+            InitNodeMetadata taskCommand = new InitNodeMetadata.Builder()
+                    .communicationApi(communicationApiFactory.createCommunicationApiV1())
+                    .messageSerializer(new KVAdminMessageSerializer())
+                    .messageDeserializer(new KVAdminMessageDeserializer())
+                    .ringMetadata(ringMetadata)
+                    .targetedNode(storageNode)
+                    .build();
+
+            nodeMetadataInitialisationBatch.addTask(
+                    new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
+            nodeMetadataInitialisationBatch.addObserver(this);
+        }
+
+        taskService.launchBatchTasks(nodeMetadataInitialisationBatch);
+        status = INITIALIZING_SERVICE;
+    }
 
     private void bootstrapConfiguration() throws ServiceBootstrapException {
         try {
@@ -234,12 +264,13 @@ public class ExternalConfigurationService implements Observer {
             displayToUser(CustomStringJoiner.join(" ", batch.toString(), "Ended successfully."));
         } else {
             displayToUser(CustomStringJoiner.join(" ", batch.toString(), "Ended with",
-                    String.valueOf(failedTasks.size()), "errors"));
+                    String.valueOf(failedTasks.size()), "failed tasks."));
         }
 
         switch (batch.getPurpose()) {
             case SERVICE_INITIALISATION:
                 initializeRingMetadata();
+                initializeNodesWithMetadata();
                 status = EcsStatus.INITIALIZED;
                 break;
             case START_NODE:
