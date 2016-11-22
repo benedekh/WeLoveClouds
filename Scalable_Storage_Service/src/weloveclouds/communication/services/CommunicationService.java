@@ -1,5 +1,6 @@
 package weloveclouds.communication.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +15,7 @@ import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.communication.validator.SerializedMessageValidator;
 
 /**
  * The communication module implementation which executes the network operations (connect,
@@ -22,6 +24,8 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * @author Benoit, Benedek
  */
 public class CommunicationService implements ICommunicationService {
+
+    private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
 
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
 
@@ -110,24 +114,47 @@ public class CommunicationService implements ICommunicationService {
 
     @Override
     public byte[] receive() throws IOException, ClientNotConnectedException {
-        if (connectionToEndpoint.isConnected()) {
-            byte[] receivedData = null;
+        String errorMessage = "Client is not connected, so message cannot be received.";
 
+        if (connectionToEndpoint.isConnected()) {
             InputStream socketDataReader = connectionToEndpoint.getInputStream();
 
-            while (receivedData == null) {
-                int availableBytes = socketDataReader.available();
-                if (availableBytes != 0) {
-                    LOGGER.debug(CustomStringJoiner.join(" ", "Receiving",
-                            String.valueOf(availableBytes), "from the connection."));
-                    receivedData = new byte[availableBytes];
-                    socketDataReader.read(receivedData);
-                    LOGGER.debug("Data received from the network.");
+            byte[] buffer = new byte[MAX_PACKET_SIZE_IN_BYTES];
+            int readBytes = 0;
+            ByteArrayOutputStream baosBuffer = new ByteArrayOutputStream();
+            while ((readBytes = socketDataReader.read(buffer)) > 0) {
+                if (readBytes < buffer.length) {
+                    byte[] smaller = new byte[readBytes];
+                    System.arraycopy(buffer, 0, smaller, 0, readBytes);
+                    buffer = smaller;
+
+                }
+
+                LOGGER.debug(CustomStringJoiner.join(" ", "Received", String.valueOf(readBytes),
+                        "bytes from the connection."));
+                baosBuffer.write(buffer);
+
+                byte[] contentReceivedSoFar = baosBuffer.toByteArray();
+                boolean isValid = SerializedMessageValidator
+                        .byteArrayRepresentsDeserializableMessage(contentReceivedSoFar);
+
+                if (isValid) {
+                    return contentReceivedSoFar;
+                } else {
+                    baosBuffer.reset();
+                    baosBuffer.write(contentReceivedSoFar);
                 }
             }
-            return receivedData;
+
+            if (readBytes == -1) {
+                // connection was closed
+                LOGGER.debug(errorMessage);
+                throw new ClientNotConnectedException();
+            } else {
+                return new byte[0];
+            }
         } else {
-            LOGGER.debug("Client is not connected, so message cannot be received.");
+            LOGGER.debug(errorMessage);
             throw new ClientNotConnectedException();
         }
     }

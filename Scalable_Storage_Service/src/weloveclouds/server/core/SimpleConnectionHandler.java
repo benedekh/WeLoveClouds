@@ -55,43 +55,56 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
     @Override
     public void run() {
         LOGGER.info("Client is connected to server.");
-
-        while (connection.isConnected()) {
-            M response = null;
-
-            try {
-                M receivedMessage =
-                        messageDeserializer.deserialize(communicationApi.receiveFrom(connection));
-                LOGGER.debug(CustomStringJoiner.join(" ", "Message received:",
-                        receivedMessage.toString()));
-
-                response = requestFactory.createRequestFromReceivedMessage(receivedMessage)
-                        .validate().execute();
-            } catch (IllegalRequestException ex) {
+        try {
+            while (connection.isConnected()) {
+                M response = null;
                 try {
-                    response = (M) ex.getResponse();
-                } catch (ClassCastException e) {
-                    LOGGER.error(e);
-                }
-            } catch (IOException | DeserializationException e) {
-                LOGGER.error(e);
-            } catch (Throwable e) {
-                LOGGER.fatal(e);
-            } finally {
-                if (response != null) {
+                    M receivedMessage = messageDeserializer
+                            .deserialize(communicationApi.receiveFrom(connection));
+                    LOGGER.debug(CustomStringJoiner.join(" ", "Message received:",
+                            receivedMessage.toString()));
+
+                    response = requestFactory.createRequestFromReceivedMessage(receivedMessage)
+                            .validate().execute();
+                } catch (IllegalRequestException ex) {
                     try {
-                        communicationApi.send(messageSerializer.serialize(response).getBytes(),
-                                connection);
-                        LOGGER.debug(CustomStringJoiner.join(" ", "Sent response:",
-                                response.toString()));
-                    } catch (IOException e) {
+                        response = (M) ex.getResponse();
+                    } catch (ClassCastException e) {
                         LOGGER.error(e);
+                    }
+                } finally {
+                    if (response != null) {
+                        try {
+                            communicationApi.send(messageSerializer.serialize(response).getBytes(),
+                                    connection);
+                            LOGGER.debug(CustomStringJoiner.join(" ", "Sent response:",
+                                    response.toString()));
+                        } catch (IOException e) {
+                            LOGGER.error(e);
+                        }
                     }
                 }
             }
+        } catch (IOException | DeserializationException e) {
+            LOGGER.error(e);
+            closeConnection(connection);
+        } catch (Throwable e) {
+            LOGGER.fatal(e);
+            closeConnection(connection);
         }
 
         LOGGER.info("Client is disconnected.");
+    }
+
+    /**
+     * Closes the respective connection.
+     */
+    private void closeConnection(Connection connection) {
+        try {
+            connection.kill();
+        } catch (IOException ex) {
+            LOGGER.error(ex);
+        }
     }
 
     /**

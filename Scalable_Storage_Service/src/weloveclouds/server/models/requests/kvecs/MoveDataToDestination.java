@@ -25,6 +25,7 @@ import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
+import weloveclouds.server.store.models.PersistedStorageUnit;
 
 /**
  * A data move request to the {@link IMovableDataAccessService}, which moves a range of the data
@@ -36,8 +37,12 @@ public class MoveDataToDestination implements IKVECSRequest {
 
     private static final Logger LOGGER = Logger.getLogger(MoveDataToDestination.class);
 
-    // 1 entry (max.): 20 byte key, 120 kbyte value -> 140 kbyte + some java object metadata
-    private static final int NUMBER_OF_STORAGE_UNITS_TO_BE_TRANSFERRED_AT_ONCE = 100;
+    /**
+     * 1 entry (max.): 20 byte key, 120 kbyte value -> 140 kbyte + some java object metadata <br>
+     * there are at most 100 ({@link PersistedStorageUnit#MAX_NUMBER_OF_ENTRIES}) entries in a
+     * storage unit
+     */
+    private static final int NUMBER_OF_STORAGE_UNITS_TO_BE_TRANSFERRED_AT_ONCE = 30;
 
     private IMovableDataAccessService dataAccessService;
     private RingMetadataPart targetServerInfo;
