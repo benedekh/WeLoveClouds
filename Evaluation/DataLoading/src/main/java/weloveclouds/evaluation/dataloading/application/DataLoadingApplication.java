@@ -1,4 +1,4 @@
-package weloveclouds.evalution.dataloading.application;
+package weloveclouds.evaluation.dataloading.application;
 
 import java.io.File;
 import java.net.URI;
@@ -13,7 +13,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 
 import weloveclouds.evaluation.dataloading.connection.ClientConnection;
 import weloveclouds.evaluation.dataloading.connection.ClientConnectionFactory;
-import weloveclouds.evalution.dataloading.csvtraverser.CSVFolderTraverser;
+import weloveclouds.evaluation.dataloading.csvtraverser.CSVFolderTraverser;
 
 public class DataLoadingApplication {
 

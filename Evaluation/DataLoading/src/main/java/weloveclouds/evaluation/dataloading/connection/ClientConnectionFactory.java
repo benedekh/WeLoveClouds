@@ -13,7 +13,7 @@ import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 public class ClientConnectionFactory {
 
     private static final String DEFAULT_IP_ADDRESS = "localhost";
-    private static final int DEFAULT_PORT = 8080;
+    private static final int DEFAULT_PORT = 50000;
 
     private static final Logger LOGGER = LogManager.getLogger(ClientConnectionFactory.class);
 

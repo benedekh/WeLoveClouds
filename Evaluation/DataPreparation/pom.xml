@@ -54,7 +54,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>hu.bme.mit.inf.piclient.Application</mainClass>
+							<mainClass>weloveclouds.evaluation.preparation.application.DataPreparationApplication</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

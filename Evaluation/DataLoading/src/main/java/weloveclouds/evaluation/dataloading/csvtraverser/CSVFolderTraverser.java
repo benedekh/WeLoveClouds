@@ -1,4 +1,4 @@
-package weloveclouds.evalution.dataloading.csvtraverser;
+package weloveclouds.evaluation.dataloading.csvtraverser;
 
 import static weloveclouds.evaluation.dataloading.util.StringJoinerUtility.join;
 
@@ -26,6 +26,7 @@ public class CSVFolderTraverser {
 
     public CSVFolderTraverser(ClientConnection client) {
         this.client = client;
+        this.client.connect();
     }
 
     public void traverseFolder(Path csvFolderPath) {

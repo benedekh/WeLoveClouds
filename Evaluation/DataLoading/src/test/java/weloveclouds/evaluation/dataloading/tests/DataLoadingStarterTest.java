@@ -2,7 +2,7 @@ package weloveclouds.evaluation.dataloading.tests;
 
 import org.junit.Test;
 
-import weloveclouds.evalution.dataloading.application.DataLoadingApplication;
+import weloveclouds.evaluation.dataloading.application.DataLoadingApplication;
 
 public class DataLoadingStarterTest {
 
