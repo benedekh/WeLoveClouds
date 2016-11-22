@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -14,16 +13,20 @@ import java.util.stream.Stream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import weloveclouds.evaluation.dataloading.util.FieldSizeValidator;
-import weloveclouds.evaluation.dataloading.util.StringJoinerUtility;
+import weloveclouds.evaluation.dataloading.connection.ClientConnection;
 
 public class CSVFolderTraverser {
+    private static final Logger LOGGER = LogManager.getLogger(CSVFolderTraverser.class);
 
     private static final String FIELD_SEPARATOR = "-Ł-";
-    private static final Logger LOGGER = LogManager.getLogger(CSVFolderTraverser.class);
-    
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
+
+    private ClientConnection client;
+
+    public CSVFolderTraverser(ClientConnection client) {
+        this.client = client;
+    }
 
     public void traverseFolder(Path csvFolderPath) {
         File[] filesToBeVisited = csvFolderPath.toAbsolutePath().toFile().listFiles();
@@ -37,33 +40,19 @@ public class CSVFolderTraverser {
 
     private void readCSVFile(File file) {
         LOGGER.info(join(": ", "Reading file content started", file.toString()));
-        int i = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                i++;
                 String[] parts = line.split(FIELD_SEPARATOR);
                 String key = parts[KEY_INDEX];
                 String value = parts[VALUE_INDEX];
 
-                if (FieldSizeValidator.isKeySizeOverLimit(key)) {
-                    LOGGER.error(StringJoinerUtility.join(": ",
-                            "Key is oversized by " + key.getBytes(StandardCharsets.US_ASCII).length,
-                            key));
-                }
-                if (FieldSizeValidator.isValueSizeOverLimit(value)) {
-                    LOGGER.error(
-                            StringJoinerUtility.join(": ",
-                                    "Value is oversized by "
-                                            + value.getBytes(StandardCharsets.US_ASCII).length,
-                                    value));
-                }
+                client.put(key, value, false);
             }
         } catch (IOException ex) {
             LOGGER.error(ex);
         } finally {
             LOGGER.info(join(": ", "Reading file content finished", file.toString()));
-            LOGGER.info(join(": ", "Number of lines read", String.valueOf(i)));
         }
     }
 
