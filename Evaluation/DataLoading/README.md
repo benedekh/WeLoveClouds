@@ -1,0 +1,1 @@
+Place the jar containing the Scalable Storage Service's classes into the src/main/resources, and call it service.jar.
