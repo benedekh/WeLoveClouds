@@ -8,12 +8,9 @@ import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.models.ServerInitializationContext;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
-import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
-import weloveclouds.server.store.cache.strategy.StrategyFactory;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
@@ -110,31 +107,6 @@ public class KVServerRequestsValidator {
 
         int port = ringMetadataPart.getConnectionInfo().getPort();
         if (port < NETWORK_PORT_LOWER_LIMIT || port > NETWORK_PORT_UPPER_LIMIT) {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    /**
-     * A {@link ServerInitializationContext} is valid, if:<br>
-     * (1) it is not null,<br>
-     * (2) neither the underlying cache size is invalid (smaller than zero),<br>
-     * (3) neither the underlying displacement strategy name is invalid (neither FIFO, LRU, LFU).
-     * 
-     * @throws IllegalArgumentException if a validation error occurs
-     */
-    public static void validateServerInitializationContext(
-            ServerInitializationContext initializationContext) throws IllegalArgumentException {
-        if (initializationContext == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (initializationContext.getCacheSize() < 0) {
-            throw new IllegalArgumentException();
-        }
-
-        DisplacementStrategy displacementStrategy = StrategyFactory
-                .createDisplacementStrategy(initializationContext.getDisplacementStrategyName());
-        if (displacementStrategy == null) {
             throw new IllegalArgumentException();
         }
     }

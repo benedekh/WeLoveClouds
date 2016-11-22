@@ -49,10 +49,9 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
 
         switch (status) {
             case INITKVSERVER:
-                request = new InitializeKVServer(dataAccessService,
-                        receivedMessage.getInitializationContext());
-                new UpdateRingMetadata(dataAccessService, receivedMessage.getRingMetadata(),
-                        receivedMessage.getTargetServerInfo().getRange()).execute();
+                request =
+                        new InitializeKVServer(dataAccessService, receivedMessage.getRingMetadata(),
+                                receivedMessage.getTargetServerInfo().getRange());
                 break;
             case START:
                 request = new StartDataAcessService(dataAccessService);

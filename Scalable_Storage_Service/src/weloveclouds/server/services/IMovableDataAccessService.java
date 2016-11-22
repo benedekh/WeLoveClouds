@@ -2,9 +2,7 @@ package weloveclouds.server.services;
 
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.server.services.exceptions.ServiceIsAlreadyInitializedException;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
-import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -72,11 +70,5 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * @return true if the data access service is initialized, false otherwise
      */
     public boolean isServiceInitialized();
-
-    /**
-     * Initializes the data access service with the referred parameters.
-     */
-    public void initializeService(DataAccessServiceInitializationContext initializationInfo)
-            throws ServiceIsAlreadyInitializedException;
 
 }

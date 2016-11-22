@@ -24,17 +24,6 @@ public class DataAccessService implements IDataAccessService {
     private KVPersistentStorage persistentStorage;
 
     public DataAccessService(KVCache cache, KVPersistentStorage persistentStorage) {
-        initialize(cache, persistentStorage);
-    }
-
-    protected DataAccessService() {
-
-    }
-
-    /**
-     * Initializes the data access service with the parameter cache and persistent storage.
-     */
-    protected void initialize(KVCache cache, KVPersistentStorage persistentStorage) {
         LOGGER.debug("DataAccessService initialization started.");
         this.cache = cache;
         this.persistentStorage = persistentStorage;

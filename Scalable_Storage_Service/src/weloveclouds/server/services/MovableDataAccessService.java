@@ -2,8 +2,6 @@ package weloveclouds.server.services;
 
 import static weloveclouds.server.services.models.DataAccessServiceStatus.STOPPED;
 
-import java.nio.file.Path;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -14,16 +12,13 @@ import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
-import weloveclouds.server.services.exceptions.ServiceIsAlreadyInitializedException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.exceptions.WriteLockIsActiveException;
-import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.PutType;
-import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -48,10 +43,6 @@ public class MovableDataAccessService extends DataAccessService
     private volatile HashRange rangeManagedByServer;
 
     private ISerializer<String, RingMetadata> ringMetadatSerializer = new RingMetadataSerializer();
-
-    public MovableDataAccessService() {
-
-    }
 
     public MovableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage) {
         super(cache, persistentStorage);
@@ -216,31 +207,7 @@ public class MovableDataAccessService extends DataAccessService
 
     @Override
     public boolean isServiceInitialized() {
-        return movablePersistentStorage != null;
-    }
-
-    @Override
-    public void initializeService(DataAccessServiceInitializationContext initializationInfo)
-            throws ServiceIsAlreadyInitializedException {
-        if (isServiceInitialized()) {
-            LOGGER.error("Initializing the data access service when it was already initialized.");
-            throw new ServiceIsAlreadyInitializedException();
-        }
-
-        LOGGER.debug("Initializing MovableDataAccessService.");
-        int cacheSize = initializationInfo.getCacheSize();
-        DisplacementStrategy displacementStrategy = initializationInfo.getDisplacementStrategy();
-        Path storageRootFolderPath = initializationInfo.getStorageRootFolderPath();
-
-        KVCache cache = new KVCache(cacheSize, displacementStrategy);
-        MovablePersistentStorage persistentStroage =
-                new MovablePersistentStorage(storageRootFolderPath);
-
-        super.initialize(cache, persistentStroage);
-        this.servicePreviousStatus = STOPPED;
-        this.serviceRecentStatus = STOPPED;
-        this.movablePersistentStorage = persistentStroage;
-        LOGGER.debug("Initialization finished.");
+        return ringMetadata != null && rangeManagedByServer != null;
     }
 
     private void checkIfKeyIsManagedByServer(String key) throws KeyIsNotManagedByServiceException {

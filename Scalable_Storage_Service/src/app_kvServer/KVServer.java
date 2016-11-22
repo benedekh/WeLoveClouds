@@ -39,11 +39,15 @@ public class KVServer {
 
     private static final String DEFAULT_LOG_PATH = "logs/server.log";
 
+    private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
+
     private static final int KVSERVER_REQUESTS_PORT = 50001;
     private static final int ECS_REQUESTS_PORT = 50002;
 
     private static final int CLI_PORT_INDEX = 0;
-    private static final int CLI_LOG_LEVEL_INDEX = 1;
+    private static final int CLI_CACHE_SIZE_INDEX = 1;
+    private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 2;
+    private static final int CLI_LOG_LEVEL_INDEX = 3;
 
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
@@ -69,12 +73,19 @@ public class KVServer {
 
             initializeLoggerWithLevel(cliArguments[CLI_LOG_LEVEL_INDEX]);
             int port = Integer.valueOf(cliArguments[CLI_PORT_INDEX]);
+            int cacheSize = Integer.valueOf(cliArguments[CLI_CACHE_SIZE_INDEX]);
+            DisplacementStrategy displacementStrategy = StrategyFactory
+                    .createDisplacementStrategy(cliArguments[CLI_DISPLACEMENT_STRATEGY_INDEX]);
 
-            ServerFactory serverFactory = new ServerFactory();
-            IMovableDataAccessService dataAccessService =
-                    new DataAccessServiceFactory().createUninitializedMovableDataAccessService();
+            DataAccessServiceInitializationContext initializationContext =
+                    new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
+                            .displacementStrategy(displacementStrategy)
+                            .rootFolderPath(PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER).build();
+            IMovableDataAccessService dataAccessService = new DataAccessServiceFactory()
+                    .createInitializedMovableDataAccessService(initializationContext);
 
             LOGGER.debug("Creating the servers for the different requests.");
+            ServerFactory serverFactory = new ServerFactory();
             Server<KVAdminMessage, IKVECSRequest> serverForECSRequests = serverFactory
                     .createServerForKVECSRequests(ECS_REQUESTS_PORT, dataAccessService);
             Server<KVTransferMessage, IKVServerRequest> serverForKVServerRequests = serverFactory

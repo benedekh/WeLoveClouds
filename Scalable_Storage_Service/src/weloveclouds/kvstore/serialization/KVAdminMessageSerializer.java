@@ -12,9 +12,7 @@ import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
-import weloveclouds.kvstore.serialization.helper.ServerInitializationContextSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.models.ServerInitializationContext;
 
 /**
  * A serializer which converts a {@link KVAdminMessage} to a {@link SerializedMessage}.
@@ -28,8 +26,6 @@ public class KVAdminMessageSerializer
 
     private static final Logger LOGGER = Logger.getLogger(KVAdminMessageSerializer.class);
 
-    private ISerializer<String, ServerInitializationContext> initializationContextSerializer =
-            new ServerInitializationContextSerializer();
     private ISerializer<String, RingMetadata> metadataSerializer = new RingMetadataSerializer();
     private ISerializer<String, RingMetadataPart> metadataPartSerializer =
             new RingMetadataPartSerializer();
@@ -40,23 +36,18 @@ public class KVAdminMessageSerializer
 
         // original fields
         StatusType status = unserializedMessage.getStatus();
-        ServerInitializationContext initializationContext =
-                unserializedMessage.getInitializationContext();
         RingMetadata ringMetadata = unserializedMessage.getRingMetadata();
         RingMetadataPart targetServerInfo = unserializedMessage.getTargetServerInfo();
 
         // string representation
         String statusStr = status == null ? null : status.toString();
-
-        String initializationContextStr =
-                initializationContextSerializer.serialize(initializationContext);
         String ringMetadataStr = metadataSerializer.serialize(ringMetadata);
         String targetServerStr = metadataPartSerializer.serialize(targetServerInfo);
         String responseMessage = unserializedMessage.getResponseMessage();
 
         // merged string representation
-        String serialized = CustomStringJoiner.join(SEPARATOR, statusStr, initializationContextStr,
-                ringMetadataStr, targetServerStr, responseMessage);
+        String serialized = CustomStringJoiner.join(SEPARATOR, statusStr, ringMetadataStr,
+                targetServerStr, responseMessage);
 
         LOGGER.debug(join(" ", "Serialized message:", serialized));
         return new SerializedMessage(serialized);

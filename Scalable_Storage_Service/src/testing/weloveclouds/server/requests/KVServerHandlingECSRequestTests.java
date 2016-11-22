@@ -27,7 +27,6 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.models.ServerInitializationContext;
 
 public class KVServerHandlingECSRequestTests {
 
@@ -129,12 +128,8 @@ public class KVServerHandlingECSRequestTests {
 
         RingMetadata ringMetadata = new RingMetadata(new HashSet<>(Arrays.asList(part1, part2)));
 
-        ServerInitializationContext initializationContext =
-                new ServerInitializationContext.Builder().cacheSize(10)
-                        .displacementStrategyName("LRU").build();
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.INITKVSERVER)
-                .initializationContext(initializationContext).ringMetadata(ringMetadata)
-                .targetServerInfo(part1).build();
+                .ringMetadata(ringMetadata).targetServerInfo(part1).build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
         KVAdminMessage response =

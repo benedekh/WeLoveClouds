@@ -3,7 +3,6 @@ package weloveclouds.kvstore.models.messages;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.server.models.ServerInitializationContext;
 
 /**
  * Represents an administrative message between the ECS and the KVServer.
@@ -13,7 +12,6 @@ import weloveclouds.server.models.ServerInitializationContext;
 public class KVAdminMessage implements IKVAdminMessage {
 
     private StatusType status;
-    private ServerInitializationContext initializationContext;
     private RingMetadata ringMetadata;
     private RingMetadataPart targetServerInfo;
     private String responseMessage;
@@ -21,7 +19,6 @@ public class KVAdminMessage implements IKVAdminMessage {
     protected KVAdminMessage(Builder builder) {
         this.status = builder.status;
         this.ringMetadata = builder.ringMetadata;
-        this.initializationContext = builder.initializationContext;
         this.targetServerInfo = builder.targetServerInfo;
         this.responseMessage = builder.responseMessage;
     }
@@ -29,11 +26,6 @@ public class KVAdminMessage implements IKVAdminMessage {
     @Override
     public StatusType getStatus() {
         return status;
-    }
-
-    @Override
-    public ServerInitializationContext getInitializationContext() {
-        return initializationContext;
     }
 
     @Override
@@ -54,10 +46,8 @@ public class KVAdminMessage implements IKVAdminMessage {
     @Override
     public String toString() {
         return CustomStringJoiner.join(" ", "Message status:",
-                status == null ? null : status.toString(), ", Initialization context:",
-                initializationContext == null ? null : initializationContext.toString(),
-                ", Ring metadata:", ringMetadata == null ? null : ringMetadata.toString(),
-                ", Target server info:",
+                status == null ? null : status.toString(), ", Ring metadata:",
+                ringMetadata == null ? null : ringMetadata.toString(), ", Target server info:",
                 targetServerInfo == null ? null : targetServerInfo.toString(),
                 ", Response message: ",
                 responseMessage == null ? null : responseMessage.toString());
@@ -67,8 +57,6 @@ public class KVAdminMessage implements IKVAdminMessage {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((initializationContext == null) ? 0 : initializationContext.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((ringMetadata == null) ? 0 : ringMetadata.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
@@ -88,13 +76,6 @@ public class KVAdminMessage implements IKVAdminMessage {
             return false;
         }
         KVAdminMessage other = (KVAdminMessage) obj;
-        if (initializationContext == null) {
-            if (other.initializationContext != null) {
-                return false;
-            }
-        } else if (!initializationContext.equals(other.initializationContext)) {
-            return false;
-        }
         if (responseMessage == null) {
             if (other.responseMessage != null) {
                 return false;
@@ -129,18 +110,12 @@ public class KVAdminMessage implements IKVAdminMessage {
      */
     public static class Builder {
         private StatusType status;
-        private ServerInitializationContext initializationContext;
         private RingMetadata ringMetadata;
         private RingMetadataPart targetServerInfo;
         private String responseMessage;
 
         public Builder status(StatusType status) {
             this.status = status;
-            return this;
-        }
-
-        public Builder initializationContext(ServerInitializationContext initializationContext) {
-            this.initializationContext = initializationContext;
             return this;
         }
 

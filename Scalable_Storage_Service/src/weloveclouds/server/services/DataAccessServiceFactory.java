@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.KVPersistentStorage;
+import weloveclouds.server.store.MovablePersistentStorage;
 
 /**
  * A factory which produces different types of {@link IDataAccessService} instances.
@@ -29,11 +30,16 @@ public class DataAccessServiceFactory {
     }
 
     /**
-     * @return a {@link MovableDataAccessService} which has to be initialized before it can be used
+     * @param initializationContext the parameters for the initialization
+     * @return a {@link MovableDataAccessService} which is already initialized by the parameters
      */
-    public MovableDataAccessService createUninitializedMovableDataAccessService() {
-        LOGGER.debug("Creating an uninitialized MovableDataAccessService.");
-        return new MovableDataAccessService();
+    public MovableDataAccessService createInitializedMovableDataAccessService(
+            DataAccessServiceInitializationContext initializationContext) {
+        LOGGER.debug("Creating an initialized DataAccessService.");
+        return new MovableDataAccessService(
+                new KVCache(initializationContext.getCacheSize(),
+                        initializationContext.getDisplacementStrategy()),
+                new MovablePersistentStorage(initializationContext.getStorageRootFolderPath()));
     }
 
 }
