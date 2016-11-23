@@ -9,6 +9,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.deserialization.KVTransferMessageDeserializer;
 import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
@@ -27,7 +28,7 @@ import weloveclouds.server.utils.FileUtility;
  * 
  * @author Benedek
  */
-public class KVTransferMessageTest {
+public class KVTransferMessageTest extends TestCase  {
 
     private static IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer =
             new KVTransferMessageDeserializer();

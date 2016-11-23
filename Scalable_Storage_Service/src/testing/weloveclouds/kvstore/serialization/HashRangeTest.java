@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -19,7 +20,7 @@ import weloveclouds.kvstore.serialization.helper.ISerializer;
  * 
  * @author Benedek
  */
-public class HashRangeTest {
+public class HashRangeTest extends TestCase {
 
     private static final IDeserializer<HashRange, String> hashRangeDeserializer =
             new HashRangeDeserializer();

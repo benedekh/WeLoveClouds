@@ -3,6 +3,7 @@ package testing.weloveclouds.kvstore.serialization;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
@@ -17,7 +18,7 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
  * 
  * @author Benedek
  */
-public class KVMessageTest {
+public class KVMessageTest extends TestCase  {
 
     private static IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer =
             new KVMessageDeserializer();

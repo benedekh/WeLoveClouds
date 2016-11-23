@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.deserialization.helper.ServerConnectionInfoDeserializer;
@@ -18,7 +19,7 @@ import weloveclouds.kvstore.serialization.helper.ServerConnectionInfoSerializer;
  * 
  * @author Benedek
  */
-public class ServerConnectionInfoTest {
+public class ServerConnectionInfoTest extends TestCase {
 
     private static final IDeserializer<ServerConnectionInfo, String> connectionInfoDeserializer =
             new ServerConnectionInfoDeserializer();
