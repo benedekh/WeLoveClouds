@@ -22,7 +22,9 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 public class KVAdminMessageSerializer
         implements IMessageSerializer<SerializedMessage, KVAdminMessage> {
 
+    public static final String PREFIX = "<KVADMIN>";
     public static final String SEPARATOR = "-\r\r-";
+    public static final String POSTFIX = "</KVADMIN>";
 
     private static final Logger LOGGER = Logger.getLogger(KVAdminMessageSerializer.class);
 
@@ -48,9 +50,11 @@ public class KVAdminMessageSerializer
         // merged string representation
         String serialized = CustomStringJoiner.join(SEPARATOR, statusStr, ringMetadataStr,
                 targetServerStr, responseMessage);
+        String prefixed = CustomStringJoiner.join("", PREFIX, serialized);
+        String postfixed = CustomStringJoiner.join("", prefixed, POSTFIX);
 
-        LOGGER.debug(join(" ", "Serialized message:", serialized));
-        return new SerializedMessage(serialized);
+        LOGGER.debug(join(" ", "Serialized message:", postfixed));
+        return new SerializedMessage(postfixed);
     }
 
 }
