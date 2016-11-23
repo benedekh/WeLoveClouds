@@ -9,6 +9,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import testing.weloveclouds.client.utils.ArgumentsValidatorTest;
 import testing.weloveclouds.client.utils.UserInputParserTest;
+import testing.weloveclouds.ecs.utils.configFileParserTest;
 import weloveclouds.server.utils.LogSetup;
 
 
@@ -31,6 +32,7 @@ public class AllTests {
         clientSuite.addTestSuite(ArgumentsValidatorTest.class);
         clientSuite.addTestSuite(UserInputParserTest.class);
         clientSuite.addTestSuite(AdditionalTest.class);
+        clientSuite.addTestSuite(configFileParserTest.class);
         return clientSuite;
     }
 

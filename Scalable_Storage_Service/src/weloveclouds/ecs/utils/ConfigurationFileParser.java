@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
+import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;
 import weloveclouds.ecs.models.repository.StorageNode;
@@ -21,6 +24,9 @@ import weloveclouds.ecs.models.repository.StorageNode;
  * Created by Benoit on 2016-11-21.
  */
 public class ConfigurationFileParser implements IParser<List<StorageNode>, File> {
+    
+    private static final Logger LOGGER = Logger.getLogger(ConfigurationFileParser.class);
+    
     @Override
     public List<StorageNode> parse(File configFile) {
         List<StorageNode> storageNodes = new ArrayList<>();
@@ -33,7 +39,7 @@ public class ConfigurationFileParser implements IParser<List<StorageNode>, File>
                 storageNodes.add(parseLine(line));
             }
         } catch (InvalidConfigurationException | IOException ex) {
-            //LOG ex.getMessage
+            LOGGER.error(ex.getMessage());
         }
         return storageNodes;
     }
