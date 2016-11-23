@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;

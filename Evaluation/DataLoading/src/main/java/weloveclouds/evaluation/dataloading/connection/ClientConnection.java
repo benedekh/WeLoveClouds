@@ -5,7 +5,7 @@ import static weloveclouds.evaluation.dataloading.util.StringJoinerUtility.join;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import weloveclouds.communication.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.models.messages.IKVMessage;

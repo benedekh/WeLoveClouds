@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
@@ -29,13 +29,13 @@ public class Get extends AbstractKVCommunicationApiCommand {
     private boolean commandWasAlreadyExecuted;
 
     /**
-     * @param arguments contains the key in the {@link #KEY_INDEX} position
-     * @param communicationApi which is used for querying the value from the server
+     * @param arguments                contains the key in the {@link #KEY_INDEX} position
+     * @param communicationApi         which is used for querying the value from the server
      * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object to
-     *        its original representation from String
+     *                                 its original representation from String
      */
     public Get(String[] arguments, IKVCommunicationApiV2 communicationApi,
-            IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
+               IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         super(arguments, communicationApi);
         this.ringMetadataDeserializer = ringMetadataDeserializer;
         this.communicationApiV2 = communicationApi;

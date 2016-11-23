@@ -4,15 +4,15 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
 import weloveclouds.communication.api.v1.ConcurrentCommunicationApiV1;
-import weloveclouds.communication.api.v1.IKVCommunicationApi;
-import weloveclouds.communication.api.v1.KVCommunicationApiV1;
-import weloveclouds.communication.api.v2.IKVCommunicationApiV2;
-import weloveclouds.communication.api.v2.KVCommunicationApiV2;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.api.v2.KVCommunicationApiV2;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
 import weloveclouds.communication.services.ConcurrentCommunicationService;
 import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.server.api.IKVCommunicationApi;
+import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
 /**
  * Factory for creating {@link ICommunicationApiV1}, {@link IConcurrentCommunicationApi} and

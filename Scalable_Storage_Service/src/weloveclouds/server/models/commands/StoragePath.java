@@ -8,15 +8,15 @@ import java.nio.file.Paths;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.server.models.ServerCLIConfigurationContext;
 import weloveclouds.server.models.exceptions.ServerSideException;
+import weloveclouds.server.models.ServerCLIConfigurationContext;
 import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.utils.ArgumentsValidator;
 
 
 /**
  * The path for the {@link KVPersistentStorage}} where it can persist the records.
- * 
+ *
  * @author Benedek
  */
 public class StoragePath extends AbstractServerCommand {
@@ -28,8 +28,8 @@ public class StoragePath extends AbstractServerCommand {
 
     /**
      * @param arguments the {@link #STORAGE_PATH_INDEX} element of the array shall contain new
-     *        storage path
-     * @param context contains the server parameter configuration
+     *                  storage path
+     * @param context   contains the server parameter configuration
      */
     public StoragePath(String[] arguments, ServerCLIConfigurationContext context) {
         super(arguments);

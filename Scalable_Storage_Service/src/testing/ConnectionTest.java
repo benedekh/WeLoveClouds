@@ -5,8 +5,8 @@ import java.net.UnknownHostException;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-import weloveclouds.communication.api.v1.IKVServerApi;
-import weloveclouds.communication.api.v1.KVCommunicationApiV1;
+import weloveclouds.server.api.IKVServerApi;
+import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
 
 public class ConnectionTest extends TestCase {

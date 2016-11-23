@@ -19,7 +19,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  *
  * @author Benoit
  */
-public class UserInputParser {
+public abstract class AbstractUserInputParser<T> {
     private static final int IP_ADDRESS_INDEX = 0;
     private static final int PORT_INDEX = 1;
     private static final String ARGUMENTS_SEPARATOR = " ";
@@ -27,7 +27,7 @@ public class UserInputParser {
     private static final Pattern INPUT_REGEX =
             Pattern.compile("(?<command>\\w+) ?" + "(?<arguments>.+)?");
 
-    private static final Logger LOGGER = Logger.getLogger(UserInputParser.class);
+    private static final Logger LOGGER = Logger.getLogger(AbstractUserInputParser.class);
 
     /**
      * Extracts the <command> and its <arguments> from the user input.
@@ -35,7 +35,7 @@ public class UserInputParser {
      * @param userInput the raw content of the user input (raw line from the user input stream)
      * @return the extracted command and its arguments stored in one object
      */
-    public static ParsedUserInput parse(String userInput) {
+    public ParsedUserInput parse(String userInput) {
         String command = "";
         String[] arguments = {};
         Matcher matcher = INPUT_REGEX.matcher(userInput);
@@ -53,7 +53,7 @@ public class UserInputParser {
                 LOGGER.debug(CustomStringJoiner.join(" ", debugMessages));
             }
         }
-        return new ParsedUserInput.Builder().command(command).arguments(arguments).build();
+        return new ParsedUserInput<>(getCommandFromEnum(command)).withArguments(arguments);
     }
 
     /**
@@ -62,8 +62,7 @@ public class UserInputParser {
      * The port shall be the 1. element of the array.
      *
      * @return the IP address and port stored in one server connection information object
-     * @throws UnknownHostException see
-     *         {@link ServerConnectionInfo.Builder#ipAddress(java.net.InetAddress)}
+     * @throws UnknownHostException see {@link ServerConnectionInfo.Builder#ipAddress(java.net.InetAddress)}
      */
     public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments)
             throws UnknownHostException {
@@ -82,4 +81,6 @@ public class UserInputParser {
                     "Unable to extract server connection parameters from command arguments.");
         }
     }
+
+    public abstract T getCommandFromEnum(String commandAsString);
 }
