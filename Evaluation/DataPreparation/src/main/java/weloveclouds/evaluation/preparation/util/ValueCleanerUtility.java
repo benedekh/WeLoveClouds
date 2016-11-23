@@ -13,7 +13,7 @@ public class ValueCleanerUtility {
     }
 
     public static Map<String, String> cutValueIntoChunks(final String value) {
-        byte[] valueBytes = value.getBytes(StandardCharsets.US_ASCII);
+        byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
         Map<String, String> result = new HashMap<>();
 
         if (isValueSizeOverLimit(valueBytes)) {
@@ -26,10 +26,10 @@ public class ValueCleanerUtility {
                 valueBytes = remainingValueBytes;
 
                 String key = KeyCreatorUtility.generate20BytesKey();
-                result.put(key, new String(chunk, StandardCharsets.US_ASCII));
+                result.put(key, new String(chunk, StandardCharsets.UTF_8));
             }
             String key = KeyCreatorUtility.generate20BytesKey();
-            result.put(key, new String(valueBytes, StandardCharsets.US_ASCII));
+            result.put(key, new String(valueBytes, StandardCharsets.UTF_8));
 
         } else {
             String key = KeyCreatorUtility.generate20BytesKey();
