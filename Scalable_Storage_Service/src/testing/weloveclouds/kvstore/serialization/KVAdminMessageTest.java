@@ -7,6 +7,7 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
@@ -27,7 +28,7 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
  * 
  * @author Benedek
  */
-public class KVAdminMessageTest {
+public class KVAdminMessageTest extends TestCase {
 
     private static IMessageDeserializer<KVAdminMessage, SerializedMessage> adminMessageDeserializer =
             new KVAdminMessageDeserializer();

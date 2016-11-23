@@ -9,6 +9,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.deserialization.helper.MovableStorageUnitsDeserializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
@@ -24,7 +25,7 @@ import weloveclouds.server.utils.FileUtility;
  * 
  * @author Benedek
  */
-public class MovableStorageUnitsTest {
+public class MovableStorageUnitsTest extends TestCase {
 
     private static final IDeserializer<MovableStorageUnits, String> storageUnitsDeserializer =
             new MovableStorageUnitsDeserializer();

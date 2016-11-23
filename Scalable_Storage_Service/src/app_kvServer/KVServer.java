@@ -20,7 +20,6 @@ import weloveclouds.server.models.commands.ServerCommandFactory;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
-import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.DataAccessServiceFactory;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.services.IMovableDataAccessService;
@@ -84,26 +83,38 @@ public class KVServer {
             IMovableDataAccessService dataAccessService = new DataAccessServiceFactory()
                     .createInitializedMovableDataAccessService(initializationContext);
 
-            LOGGER.debug("Creating the servers for the different requests.");
-            ServerFactory serverFactory = new ServerFactory();
-            Server<KVAdminMessage, IKVECSRequest> serverForECSRequests = serverFactory
-                    .createServerForKVECSRequests(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT,
-                            dataAccessService);
-            Server<KVTransferMessage, IKVServerRequest> serverForKVServerRequests = serverFactory
-                    .createServerForKVServerRequests(KVSERVER_REQUESTS_PORT, dataAccessService);
-            Server<KVMessage, IKVClientRequest> serverForKVClientRequests =
-                    serverFactory.createServerForKVClientRequests(port, dataAccessService);
-            LOGGER.debug("Creating the servers for the different requests finished.");
-
-            LOGGER.debug("Starting the servers for the different requests.");
-            serverForECSRequests.start();
-            serverForKVServerRequests.start();
-            serverForKVClientRequests.start();
+            createAndStartServers(port, dataAccessService);
         } catch (IllegalArgumentException ex) {
             LOGGER.error(ex);
         } catch (IOException ex) {
             LOGGER.error(ex);
         }
+    }
+
+    /**
+     * Creates and start all three servers for the different requests.
+     * 
+     * @param kvClientRequestsPort port on which we server the requests from the KVClient
+     * @param dataAccessService the data access service
+     * @throws IOException if an error occurs
+     */
+    private static void createAndStartServers(int kvClientRequestsPort,
+            IMovableDataAccessService dataAccessService) throws IOException {
+        LOGGER.debug("Creating the servers for the different requests.");
+        ServerFactory serverFactory = new ServerFactory();
+        Server<KVAdminMessage, IKVECSRequest> serverForECSRequests =
+                serverFactory.createServerForKVECSRequests(
+                        ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT, dataAccessService);
+        Server<KVTransferMessage, IKVServerRequest> serverForKVServerRequests = serverFactory
+                .createServerForKVServerRequests(KVSERVER_REQUESTS_PORT, dataAccessService);
+        Server<KVMessage, IKVClientRequest> serverForKVClientRequests = serverFactory
+                .createServerForKVClientRequests(kvClientRequestsPort, dataAccessService);
+        LOGGER.debug("Creating the servers for the different requests finished.");
+
+        LOGGER.debug("Starting the servers for the different requests.");
+        serverForECSRequests.start();
+        serverForKVServerRequests.start();
+        serverForKVClientRequests.start();
     }
 
     /**
@@ -138,11 +149,11 @@ public class KVServer {
     /**
      * Start KV Server at given port. ONLY FOR TESTING PURPOSES!!!
      *
-     * @param port      given port for storage server to operate
+     * @param port given port for storage server to operate
      * @param cacheSize specifies how many key-value pairs the server is allowed to keep in-memory
-     * @param strategy  specifies the cache replacement strategy in case the cache is full and there
-     *                  is a GET- or PUT-request on a key that is currently not contained in the
-     *                  cache. Options are "FIFO", "LRU", and "LFU".
+     * @param strategy specifies the cache replacement strategy in case the cache is full and there
+     *        is a GET- or PUT-request on a key that is currently not contained in the cache.
+     *        Options are "FIFO", "LRU", and "LFU".
      */
     public KVServer(int port, int cacheSize, String strategy) {
         Path defaultStoragePath = Paths.get("logs/testing/");
@@ -158,20 +169,17 @@ public class KVServer {
                     "Invalid strategy. Valid values are: FIFO, LRU, LFU");
         }
 
-        ArgumentsValidator.validatePortArguments(new String[]{String.valueOf(port)});
+        ArgumentsValidator.validatePortArguments(new String[] {String.valueOf(port)});
 
         DataAccessServiceInitializationContext initializationContext =
                 new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
                         .displacementStrategy(displacementStrategy)
                         .rootFolderPath(defaultStoragePath).build();
 
-        DataAccessService dataAccessService = new DataAccessServiceFactory()
-                .createInitializedDataAccessService(initializationContext);
-
+        IMovableDataAccessService dataAccessService = new DataAccessServiceFactory()
+                .createInitializedMovableDataAccessService(initializationContext);
         try {
-            Server<KVMessage, IKVClientRequest> server =
-                    new ServerFactory().createServerForKVClientRequests(port, dataAccessService);
-            server.start();
+            createAndStartServers(port, dataAccessService);
         } catch (IOException e) {
             LOGGER.error(e);
         }

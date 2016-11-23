@@ -77,7 +77,7 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
                 baosBuffer.write(buffer);
 
                 byte[] contentReceivedSoFar = baosBuffer.toByteArray();
-                contentReceivedSoFar = messageDetector.fillMessageStore(contentReceivedSoFar);
+                contentReceivedSoFar = messageDetector.fillMessageQueue(contentReceivedSoFar);
 
                 if (messageDetector.containsMessage()) {
                     baosBuffer.reset();

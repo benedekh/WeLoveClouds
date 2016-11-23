@@ -117,14 +117,14 @@ public class UserInputParserTest extends TestCase {
     }
 
     private void verifyValidCommandParsingWithoutArguments(String userInput,
-                                                           Command expectedCommand) {
+            Command expectedCommand) {
         ParsedUserInput parsedUserInput = userInputParser.parse(userInput);
         assertThat(parsedUserInput.getCommand()).isEqualTo(expectedCommand);
         assertThat(parsedUserInput.getArguments()).isNullOrEmpty();
     }
 
     private void verifyValidCommandParsingWithSingleArgument(String userInput,
-                                                             Command expectedCommand, String argument) {
+            Command expectedCommand, String argument) {
         ParsedUserInput parsedUserInput = userInputParser.parse(userInput);
         assertThat(parsedUserInput.getCommand()).isEqualTo(expectedCommand);
         assertThat(parsedUserInput.getArguments().length).isEqualTo(SINGLE_ARGUMENT);
@@ -132,7 +132,7 @@ public class UserInputParserTest extends TestCase {
     }
 
     private void verifyValidCommandParsingWithMultipleArguments(String userInput,
-                                                                Command expectedCommand, String arguments) {
+            Command expectedCommand, String arguments) {
         ParsedUserInput parsedUserInput = userInputParser.parse(userInput);
         assertThat(parsedUserInput.getCommand()).isEqualTo(expectedCommand);
         assertThat(parsedUserInput.getArguments().length).isGreaterThan(SINGLE_ARGUMENT);

@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
@@ -16,12 +17,11 @@ import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
 
 /**
- * Tests for the {@link RingMetadataPart} to verify its serialization and deserialization
- * processes.
+ * Tests for the {@link RingMetadataPart} to verify its serialization and deserialization processes.
  * 
  * @author Benedek
  */
-public class RingMetadataPartTest {
+public class RingMetadataPartTest extends TestCase {
 
     private static final IDeserializer<RingMetadataPart, String> metadataPartDeserializer =
             new RingMetadataPartDeserializer();
