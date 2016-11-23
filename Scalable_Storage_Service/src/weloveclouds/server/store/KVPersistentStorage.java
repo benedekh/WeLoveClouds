@@ -80,7 +80,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 storageUnit.putEntry(entry);
 
                 storageUnits.put(key, storageUnit);
-                unitsWithFreeSpace.add(storageUnit);
+                putStorageUnitIntoFreeSpaceCache(storageUnit);
             }
         }
 
@@ -115,9 +115,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 if (storageUnit.isEmpty()) {
                     removeStorageUnit(storageUnit);
                 } else {
-                    if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
-                        unitsWithFreeSpace.add(storageUnit);
-                    }
+                    putStorageUnitIntoFreeSpaceCache(storageUnit);
                 }
             }
         } catch (NullPointerException ex) {
@@ -139,15 +137,41 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         removeKeyFromStore(key);
     }
 
+    /**
+     * Puts the respective storage unit into the cache for free storage units.
+     */
+    protected void putStorageUnitIntoFreeSpaceCache(PersistedStorageUnit storageUnit) {
+        if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
+            unitsWithFreeSpace.add(storageUnit);
+            storageUnit.enableSavingIntoMemory();
+        }
+    }
+
+    /**
+     * Removes the respective storage unit from the cache for free storage units.
+     */
+    protected void removeStorageUnitFromFreeSpaceCache(PersistedStorageUnit storageUnit) {
+        boolean removeWasSuccessful = unitsWithFreeSpace.remove(storageUnit);
+        if (removeWasSuccessful) {
+            storageUnit.disableSavingIntoMemory();
+        }
+    }
+
+    /**
+     * Removes the respective key from the store.
+     */
     protected void removeKeyFromStore(String key) {
         storageUnits.remove(key);
         notifyObservers(key);
     }
 
+    /**
+     * Removes the respective storage unit from the store completely.
+     * 
+     * @throws IOException if an error occurred
+     */
     protected void removeStorageUnit(PersistedStorageUnit storageUnit) throws IOException {
-        if (unitsWithFreeSpace.contains(storageUnit)) {
-            unitsWithFreeSpace.remove(storageUnit);
-        }
+        removeStorageUnitFromFreeSpaceCache(storageUnit);
         storageUnit.deleteFile();
     }
 
@@ -176,9 +200,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                     LOGGER.debug(CustomStringJoiner.join(" ", "Key", key,
                             "is put in the persistent store metastore from path", path.toString()));
                 }
-                if (!storageUnit.isFull()) {
-                    unitsWithFreeSpace.add(storageUnit);
-                }
+                putStorageUnitIntoFreeSpaceCache(storageUnit);
             } catch (StorageException ex) {
                 LOGGER.error(join(" ", file.toString(), ex.getMessage()));
             }
@@ -228,8 +250,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             throws StorageException {
         storageUnit.putEntry(entry);
 
-        if (storageUnit.isFull() && unitsWithFreeSpace.contains(storageUnit)) {
-            unitsWithFreeSpace.remove(storageUnit);
+        if (storageUnit.isFull()) {
+            removeStorageUnitFromFreeSpaceCache(storageUnit);
         }
     }
 

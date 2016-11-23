@@ -161,7 +161,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
 
                 if (storageUnit.isFull()) {
                     // handle if the storage unit to which the data was moved is full
-                    unitsWithFreeSpace.remove(storageUnit);
+                    removeStorageUnitFromFreeSpaceCache(storageUnit);
                 } else {
                     // if it is not full, then move data from the forthcoming storage units
                     afterThatWillBeCompacted =
@@ -175,7 +175,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                     } catch (IOException ex) {
                         LOGGER.error(ex);
                     }
-                    unitsWithFreeSpace.remove(otherUnit);
+                    removeStorageUnitFromFreeSpaceCache(storageUnit);
                 }
 
                 willBeCompacted = afterThatWillBeCompacted;
@@ -187,9 +187,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
 
             LOGGER.debug("Refreshing the data structure which stores the free stroage units.");
             for (PersistedStorageUnit hasFreeSpace : collectNotFullStorageUnits()) {
-                if (!unitsWithFreeSpace.contains(hasFreeSpace)) {
-                    unitsWithFreeSpace.add(hasFreeSpace);
-                }
+                putStorageUnitIntoFreeSpaceCache(hasFreeSpace);
             }
             LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(unitsWithFreeSpace.size()),
                     " storage units have free space after defragmentation."));
@@ -229,7 +227,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
 
         // handle if the storage unit to which the data was moved is full
         if (current.isFull()) {
-            unitsWithFreeSpace.remove(current);
+            removeStorageUnitFromFreeSpaceCache(current);
         } else {
             next = defragmentFromCurrent(current, iterator);
         }
@@ -241,7 +239,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             } catch (IOException ex) {
                 LOGGER.error(ex);
             }
-            unitsWithFreeSpace.remove(nextUnit);
+            removeStorageUnitFromFreeSpaceCache(nextUnit);
         }
 
         return next;

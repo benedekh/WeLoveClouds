@@ -23,10 +23,11 @@ import weloveclouds.server.utils.FileUtility;
  */
 public class PersistedStorageUnit {
 
-    protected static final int MAX_NUMBER_OF_ENTRIES = 100;
+    protected static final int MAX_NUMBER_OF_ENTRIES = 1000;
     private static final Logger LOGGER = Logger.getLogger(PersistedStorageUnit.class);
 
     protected HashMap<String, String> entries;
+    protected boolean canBeSavedInMemory;
     protected Path filePath;
 
     protected ReentrantLock accessLock;
@@ -38,6 +39,7 @@ public class PersistedStorageUnit {
         this.filePath = filePath;
         this.entries = new HashMap<>();
         this.accessLock = new ReentrantLock();
+        this.canBeSavedInMemory = false;
     }
 
     /**
@@ -48,11 +50,24 @@ public class PersistedStorageUnit {
         this.filePath = filePath;
         this.entries = initializerMap;
         this.accessLock = new ReentrantLock();
-        try {
-            save();
-        } catch (StorageException ex) {
-            LOGGER.error(ex);
-        }
+        this.canBeSavedInMemory = false;
+        saveSilent();
+    }
+
+    /**
+     * Enable saving the persisted storage into memory (besides disk).
+     */
+    public void enableSavingIntoMemory() {
+        load();
+        canBeSavedInMemory = true;
+    }
+
+    /**
+     * Disable saving the persisted storage into memory (besides disk).
+     */
+    public void disableSavingIntoMemory() {
+        canBeSavedInMemory = false;
+        saveSilent();
     }
 
     /**
@@ -168,7 +183,9 @@ public class PersistedStorageUnit {
     public void save() throws StorageException {
         try {
             FileUtility.saveToFile(filePath, entries);
-            entries = null;
+            if (!canBeSavedInMemory) {
+                entries = null;
+            }
         } catch (FileNotFoundException e) {
             LOGGER.error(e);
             throw new StorageException("File was not found.");
@@ -184,7 +201,9 @@ public class PersistedStorageUnit {
      */
     private void load() {
         try {
-            entries = FileUtility.<HashMap<String, String>>loadFromFile(filePath);
+            if (!(canBeSavedInMemory && entries != null)) {
+                entries = FileUtility.<HashMap<String, String>>loadFromFile(filePath);
+            }
         } catch (ClassNotFoundException | IOException e) {
             LOGGER.error(e);
             entries = new HashMap<>();
@@ -227,10 +246,17 @@ public class PersistedStorageUnit {
      */
     protected void releaseAndSaveSilent() {
         releaseLock();
+        saveSilent();
+    }
+
+    /**
+     * Saves the entry map silent to the disk.
+     */
+    private void saveSilent() {
         try {
             save();
         } catch (StorageException ex) {
-
+            LOGGER.error(ex);
         }
     }
 
