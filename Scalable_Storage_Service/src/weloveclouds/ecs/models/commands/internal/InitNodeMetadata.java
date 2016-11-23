@@ -42,6 +42,7 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand {
             KVAdminMessage message = new KVAdminMessage.Builder()
                     .status(INITKVSERVER)
                     .ringMetadata(ringMetadata)
+                    .targetServerInfo(ringMetadata.findServerInfoByHash(targetedNode.getHashKey()))
                     .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
@@ -54,10 +55,10 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand {
         } catch (UnableToConnectException | UnableToSendContentToServerException |
                 ConnectionClosedException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);
-        }finally {
+        } finally {
             try {
                 communicationApi.disconnect();
-            }catch(UnableToDisconnectException ex){
+            } catch (UnableToDisconnectException ex) {
                 //LOG
             }
         }

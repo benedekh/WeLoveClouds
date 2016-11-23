@@ -28,7 +28,7 @@ public class ECSClient {
     public static void main(String[] args) throws Exception {
         String logFile = "logs/ecs.log";
         try {
-            new LogSetup(logFile, Level.ALL);
+            new LogSetup(logFile, Level.OFF);
             EcsInternalCommandFactory ecsInternalCommandFactory = new EcsInternalCommandFactory
                     (new CommunicationApiFactory(), new SecureShellServiceFactory());
 
