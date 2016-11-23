@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.communication.validator.SerializedMessageValidator;
+import weloveclouds.communication.util.SerializedMessageValidator;
 
 /**
  * A communication service that can handle multiple connections concurrently.
