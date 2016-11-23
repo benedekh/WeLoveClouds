@@ -16,7 +16,6 @@ import weloveclouds.ecs.exceptions.ServiceBootstrapException;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.commands.internal.EcsInternalCommandFactory;
 import weloveclouds.ecs.models.commands.internal.InitNodeMetadata;
-import weloveclouds.ecs.models.commands.internal.ReleaseWriteLock;
 import weloveclouds.ecs.models.commands.internal.SetWriteLock;
 import weloveclouds.ecs.models.commands.internal.ShutdownNode;
 import weloveclouds.ecs.models.commands.internal.StartNode;
@@ -28,7 +27,6 @@ import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.repository.StorageNodeStatus;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
-import weloveclouds.ecs.models.tasks.BatchPurpose;
 import weloveclouds.ecs.models.tasks.BatchRetryableTasks;
 import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
 import weloveclouds.ecs.models.tasks.SimpleRetryableTask;
@@ -67,7 +65,6 @@ import static weloveclouds.ecs.models.tasks.BatchPurpose.UPDATING_METADATA;
  * Created by Benoit on 2016-11-16.
  */
 public class ExternalConfigurationService implements Observer {
-    private static final String JAR_FILE_PATH = "";
     private EcsStatus status;
     private final HashRange INITIAL_HASHRANGE;
     private RingMetadata ringMetadata;
@@ -103,13 +100,13 @@ public class ExternalConfigurationService implements Observer {
 
             for (StorageNode storageNode : storageNodesToInitialize) {
                 LaunchJar taskCommand = ecsInternalCommandFactory.createLaunchJarCommandWith
-                        (storageNode, JAR_FILE_PATH, cacheSize, displacementStrategy);
+                        (storageNode, ExternalConfigurationServiceConstants.KV_SERVER_JAR_PATH, cacheSize,
+                                displacementStrategy);
 
                 nodeInitialisationBatch.addTask(
                         new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
-                nodeInitialisationBatch.addObserver(this);
             }
-
+            nodeInitialisationBatch.addObserver(this);
             taskService.launchBatchTasks(nodeInitialisationBatch);
             status = INITIALIZING_SERVICE;
         } else {
@@ -127,7 +124,7 @@ public class ExternalConfigurationService implements Observer {
                 StartNode taskCommand = ecsInternalCommandFactory.createStartNodeCommandFor(storageNode);
                 nodeStartBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_START_RETRIES, taskCommand));
             }
-
+            nodeStartBatch.addObserver(this);
             taskService.launchBatchTasks(nodeStartBatch);
             status = STARTING_NODE;
         } else {
@@ -141,11 +138,11 @@ public class ExternalConfigurationService implements Observer {
 
             AbstractBatchTasks<AbstractRetryableTask> nodeStopBatch = new BatchRetryableTasks(STOP_NODE);
 
-            for (StorageNode storageNode : repository.getNodesWithStatus(RUNNING)) {
+            for (StorageNode storageNode : repository.getNodesWithStatus(INITIALIZED)) {
                 StopNode taskCommand = ecsInternalCommandFactory.createStopNodeCommandFor(storageNode);
                 nodeStopBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_STOP_RETRIES, taskCommand));
             }
-
+            nodeStopBatch.addObserver(this);
             taskService.launchBatchTasks(nodeStopBatch);
             status = STOPPING_NODE;
         } else {
@@ -163,6 +160,7 @@ public class ExternalConfigurationService implements Observer {
                 ShutdownNode taskCommand = ecsInternalCommandFactory.createShutDownNodeCommandFor(storageNode);
                 nodeShutdownBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES, taskCommand));
             }
+            nodeShutdownBatch.addObserver(this);
             taskService.launchBatchTasks(nodeShutdownBatch);
             status = SHUTDOWNING_NODE;
         } else {
@@ -185,7 +183,9 @@ public class ExternalConfigurationService implements Observer {
             updateRingMetadataFrom(ringTopology.updateTopologyWith(newTopology));
 
             LaunchJar taskCommand = ecsInternalCommandFactory
-                    .createLaunchJarCommandWith(newStorageNode, JAR_FILE_PATH, cacheSize, displacementStrategy);
+                    .createLaunchJarCommandWith(newStorageNode,
+                            ExternalConfigurationServiceConstants.KV_SERVER_JAR_PATH, cacheSize,
+                            displacementStrategy);
 
             List<AbstractCommand> successCommands = new ArrayList<>();
             successCommands.add(ecsInternalCommandFactory.createInitNodeMetadataCommandWith
@@ -240,7 +240,7 @@ public class ExternalConfigurationService implements Observer {
 
     private void initializeNodesWithMetadata() {
         AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch = new
-                BatchRetryableTasks(SERVICE_INITIALISATION);
+                BatchRetryableTasks(UPDATING_METADATA);
 
         for (StorageNode storageNode : repository.getNodesWithStatus(INITIALIZED)) {
             InitNodeMetadata taskCommand = ecsInternalCommandFactory
@@ -252,7 +252,7 @@ public class ExternalConfigurationService implements Observer {
         }
 
         taskService.launchBatchTasks(nodeMetadataInitialisationBatch);
-        status = INITIALIZING_SERVICE;
+        status = EcsStatus.UPDATING_METADATA;
     }
 
     private void updateNodesWithMetadata() {
@@ -328,9 +328,10 @@ public class ExternalConfigurationService implements Observer {
 
         switch (batch.getPurpose()) {
             case SERVICE_INITIALISATION:
-                initializeRingMetadata();
-                initializeNodesWithMetadata();
-                status = EcsStatus.INITIALIZED;
+                if (!failedTasks.containsAll(batch.getTasks())) {
+                    initializeRingMetadata();
+                    initializeNodesWithMetadata();
+                }
                 break;
             case START_NODE:
                 status = EcsStatus.INITIALIZED;

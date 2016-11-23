@@ -41,16 +41,20 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
                     .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
-            communicationApi.disconnect();
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             } else {
                 targetedNode.setStatus(StorageNodeStatus.INITIALIZED);
             }
         } catch (UnableToConnectException | UnableToSendContentToServerException |
-                ConnectionClosedException | DeserializationException |
-                UnableToDisconnectException ex) {
+                ConnectionClosedException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);
+        }finally {
+            try {
+                communicationApi.disconnect();
+            }catch(UnableToDisconnectException ex){
+                //LOG
+            }
         }
     }
 

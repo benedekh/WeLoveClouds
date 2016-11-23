@@ -11,7 +11,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
  * Created by Benoit on 2016-11-20.
  */
 public enum EcsCommand {
-    START("start"), STOP("stop"), INIT_SERVICE("initService"), SHUTDOWN("get"),
+    START("start"), STOP("stop"), INIT_SERVICE("initService"), SHUTDOWN("shutDown"),
     ADD_NODE("addNode"), REMOVE_NODE("removeNode"), DEFAULT("default");
 
     private static final Logger LOGGER = Logger.getLogger(EcsCommand.class);
