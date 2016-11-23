@@ -81,6 +81,17 @@ public class EcsInternalCommandFactory {
                 .build();
     }
 
+    public UpdateMetadata createUpdateMetadataCommandWith(StorageNode storageNode, RingMetadata
+            ringMetadata) {
+        return new UpdateMetadata.Builder()
+                .communicationApi(communicationApiFactory.createCommunicationApiV1())
+                .messageSerializer(new KVAdminMessageSerializer())
+                .messageDeserializer(new KVAdminMessageDeserializer())
+                .ringMetadata(ringMetadata)
+                .targetedNode(storageNode)
+                .build();
+    }
+
     public ReleaseWriteLock createReleaseWriteLockCommandFor(StorageNode storageNode) {
         return new ReleaseWriteLock.Builder()
                 .targetedNode(storageNode)

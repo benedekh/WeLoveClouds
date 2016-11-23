@@ -8,27 +8,30 @@ import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.ecs.models.repository.StorageNodeStatus;
+import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.SYNCHRONIZED;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
+import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 
 /**
  * Created by Benoit on 2016-11-23.
  */
-public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
+public class UpdateMetadata extends AbstractEcsNetworkCommand {
+    private RingMetadata ringMetadata;
 
-    protected ReleaseWriteLock(Builder releaseWriteLockBuilder) {
-        this.communicationApi = releaseWriteLockBuilder.communicationApi;
-        this.targetedNode = releaseWriteLockBuilder.targetedNode;
-        this.messageSerializer = releaseWriteLockBuilder.messageSerializer;
-        this.messageDeserializer = releaseWriteLockBuilder.messageDeserializer;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to release write lock on node:",
+    public UpdateMetadata(Builder updateMetadataBuider) {
+        this.communicationApi = updateMetadataBuider.communicationApi;
+        this.ringMetadata = updateMetadataBuider.ringMetadata;
+        this.targetedNode = updateMetadataBuider.targetedNode;
+        this.messageSerializer = updateMetadataBuider.messageSerializer;
+        this.messageDeserializer = updateMetadataBuider.messageDeserializer;
+        this.errorMessage = CustomStringJoiner.join(" ", "Unable to update metadata on node:",
                 targetedNode.toString());
     }
 
@@ -37,7 +40,8 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
         try {
             communicationApi.connectTo(targetedNode.getServerConnectionInfo());
             KVAdminMessage message = new KVAdminMessage.Builder()
-                    .status(IKVAdminMessage.StatusType.UNLOCKWRITE)
+                    .status(StatusType.UPDATE)
+                    .ringMetadata(ringMetadata)
                     .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
@@ -45,8 +49,9 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             } else {
-                targetedNode.setStatus(StorageNodeStatus.INITIALIZED);
+                targetedNode.setMetadataStatus(SYNCHRONIZED);
             }
+
         } catch (UnableToConnectException | UnableToSendContentToServerException |
                 ConnectionClosedException | DeserializationException |
                 UnableToDisconnectException ex) {
@@ -56,18 +61,24 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Command: ReleaseWriteLock", "Targeted node:",
+        return CustomStringJoiner.join(" ", "Command: UpdateMetadata", "Targeted node:",
                 targetedNode.toString());
     }
 
     public static class Builder {
         private ICommunicationApi communicationApi;
+        private RingMetadata ringMetadata;
         private StorageNode targetedNode;
         private IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
         private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
 
         public Builder communicationApi(ICommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
+            return this;
+        }
+
+        public Builder ringMetadata(RingMetadata ringMetadata) {
+            this.ringMetadata = ringMetadata;
             return this;
         }
 
@@ -86,8 +97,8 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
             return this;
         }
 
-        public ReleaseWriteLock build() {
-            return new ReleaseWriteLock(this);
+        public UpdateMetadata build() {
+            return new UpdateMetadata(this);
         }
     }
 }

@@ -8,12 +8,14 @@ import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.models.repository.StorageNodeStatus;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.WRITELOCKED;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 
@@ -43,6 +45,8 @@ public class SetWriteLock extends AbstractEcsNetworkCommand {
             communicationApi.disconnect();
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
+            } else {
+                targetedNode.setStatus(WRITELOCKED);
             }
         } catch (UnableToConnectException | UnableToSendContentToServerException |
                 ConnectionClosedException | DeserializationException |

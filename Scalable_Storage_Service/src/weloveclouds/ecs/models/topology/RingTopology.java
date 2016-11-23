@@ -18,6 +18,10 @@ public class RingTopology<T> {
         this.nodes = new ArrayList<T>(nodes);
     }
 
+    public RingTopology(RingTopology<T> ringTopology) {
+        this.nodes = new ArrayList<>(ringTopology.getNodes());
+    }
+
     public int getNumberOfNodes() {
         return nodes.size();
     }
@@ -44,6 +48,11 @@ public class RingTopology<T> {
 
     public int getRingPositionOf(T node) {
         return nodes.indexOf(node);
+    }
+
+    public RingTopology removeNodes(T node) {
+        this.nodes.remove(node);
+        return this;
     }
 
     public RingTopology<T> updateTopologyWith(List<T> nodes) {

@@ -40,16 +40,24 @@ public class RingMetadataHelper {
     }
 
     public static StorageNode getSuccessorFrom(RingTopology<StorageNode> oldTopology,
-                                               RingTopology<StorageNode> newTopology, StorageNode newNode) {
+                                               RingTopology<StorageNode> newTopology, StorageNode node) {
         StorageNode successor = null;
-        int newNodePosition = newTopology.getRingPositionOf(newNode);
+        if (newTopology.getNumberOfNodes() > oldTopology.getNumberOfNodes()) {
+            int newNodePosition = newTopology.getRingPositionOf(node);
 
-        if (newNodePosition > oldTopology.getLastPosition()) {
-            successor = oldTopology.getLastNode();
+            if (newNodePosition > oldTopology.getLastPosition()) {
+                successor = oldTopology.getLastNode();
+            } else {
+                successor = oldTopology.getNodeAtPosition(newNodePosition);
+            }
         } else {
-            successor = oldTopology.getNodeAtPosition(newNodePosition);
+            int oldNodePosition = oldTopology.getRingPositionOf(node);
+            if (oldNodePosition == oldTopology.getLastPosition()) {
+                successor = oldTopology.getNodeAtPosition(oldNodePosition - 1);
+            } else {
+                successor = oldTopology.getNodeAtPosition(oldNodePosition + 1);
+            }
         }
-
         return successor;
     }
 }

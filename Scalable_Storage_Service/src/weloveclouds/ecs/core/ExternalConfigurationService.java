@@ -16,15 +16,19 @@ import weloveclouds.ecs.exceptions.ServiceBootstrapException;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.commands.internal.EcsInternalCommandFactory;
 import weloveclouds.ecs.models.commands.internal.InitNodeMetadata;
+import weloveclouds.ecs.models.commands.internal.ReleaseWriteLock;
+import weloveclouds.ecs.models.commands.internal.SetWriteLock;
 import weloveclouds.ecs.models.commands.internal.ShutdownNode;
 import weloveclouds.ecs.models.commands.internal.StartNode;
 import weloveclouds.ecs.models.commands.internal.StopNode;
+import weloveclouds.ecs.models.commands.internal.UpdateMetadata;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.EcsRepository;
 import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.repository.StorageNodeStatus;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
+import weloveclouds.ecs.models.tasks.BatchPurpose;
 import weloveclouds.ecs.models.tasks.BatchRetryableTasks;
 import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
 import weloveclouds.ecs.models.tasks.SimpleRetryableTask;
@@ -48,12 +52,16 @@ import static weloveclouds.ecs.core.EcsStatus.UNINITIALIZED;
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.*;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.REMOVED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.RUNNING;
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.WRITELOCKED;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.ADD_NODE;
+import static weloveclouds.ecs.models.tasks.BatchPurpose.REMOVE_NODE;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.SERVICE_INITIALISATION;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.SHUTDOWN;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.START_NODE;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.STOP_NODE;
+import static weloveclouds.ecs.models.tasks.BatchPurpose.UPDATING_METADATA;
 
 /**
  * Created by Benoit on 2016-11-16.
@@ -179,13 +187,18 @@ public class ExternalConfigurationService implements Observer {
             LaunchJar taskCommand = ecsInternalCommandFactory
                     .createLaunchJarCommandWith(newStorageNode, JAR_FILE_PATH, cacheSize, displacementStrategy);
 
-            List<AbstractCommand> successCommand = new ArrayList<>();
-            successCommand.add(ecsInternalCommandFactory.createInitNodeMetadataCommandWith
+            List<AbstractCommand> successCommands = new ArrayList<>();
+            successCommands.add(ecsInternalCommandFactory.createInitNodeMetadataCommandWith
                     (newStorageNode, ringMetadata));
-            successCommand.add(ecsInternalCommandFactory.createSetWriteLockCommandFor(successorNode));
-            successCommand.add()
+            successCommands.add(ecsInternalCommandFactory.createSetWriteLockCommandFor
+                    (successorNode));
+            successCommands.add(ecsInternalCommandFactory.createInvokeDataTransferCommandWith
+                    (successorNode, newStorageNode, ringMetadata));
 
-
+            addNodeBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES,
+                    taskCommand, successCommands));
+            addNodeBatch.addObserver(this);
+            taskService.launchBatchTasks(addNodeBatch);
             status = ADDING_NODE;
         } else {
             throw new ExternalConfigurationServiceException("Operation <addNode> is not " +
@@ -195,6 +208,29 @@ public class ExternalConfigurationService implements Observer {
 
     public void removeNode() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
+            AbstractBatchTasks<AbstractRetryableTask> removeBatch = new BatchRetryableTasks(REMOVE_NODE);
+            StorageNode nodeToRemove = (StorageNode) ListUtils.getRandomObjectFrom(ringTopology.getNodes());
+            nodeToRemove.setStatus(REMOVED);
+            RingTopology<StorageNode> newTopology = new RingTopology<>(ringTopology);
+            newTopology.removeNodes(nodeToRemove);
+
+            StorageNode successorNode = RingMetadataHelper.getSuccessorFrom(ringTopology,
+                    newTopology, nodeToRemove);
+            updateRingMetadataFrom(ringTopology.updateTopologyWith(newTopology));
+
+            SetWriteLock taskCommand = ecsInternalCommandFactory.createSetWriteLockCommandFor
+                    (nodeToRemove);
+
+            List<AbstractCommand> successCommands = new ArrayList<>();
+            successCommands.add(ecsInternalCommandFactory.createUpdateMetadataCommandWith
+                    (successorNode, ringMetadata));
+            successCommands.add(ecsInternalCommandFactory.createInvokeDataTransferCommandWith
+                    (nodeToRemove, successorNode, ringMetadata));
+
+            removeBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES,
+                    taskCommand, successCommands));
+            removeBatch.addObserver(this);
+            taskService.launchBatchTasks(removeBatch);
             status = REMOVING_NODE;
         } else {
             throw new ExternalConfigurationServiceException("Operation <removeNode> is not " +
@@ -217,6 +253,30 @@ public class ExternalConfigurationService implements Observer {
 
         taskService.launchBatchTasks(nodeMetadataInitialisationBatch);
         status = INITIALIZING_SERVICE;
+    }
+
+    private void updateNodesWithMetadata() {
+        AbstractBatchTasks<AbstractRetryableTask> nodeMetadataUpdateBatch = new
+                BatchRetryableTasks(UPDATING_METADATA);
+
+        for (StorageNode storageNode : ringTopology.getNodes()) {
+            List<AbstractCommand> successCommands = new ArrayList<>();
+            UpdateMetadata taskCommand = ecsInternalCommandFactory
+                    .createUpdateMetadataCommandWith(storageNode, ringMetadata);
+            if (storageNode.getStatus() == WRITELOCKED && status == ADDING_NODE) {
+                successCommands.add(ecsInternalCommandFactory.createReleaseWriteLockCommandFor
+                        (storageNode));
+            } else if (storageNode.getStatus() == WRITELOCKED && status == REMOVING_NODE) {
+                successCommands.add(ecsInternalCommandFactory.createShutDownNodeCommandFor(storageNode));
+            }
+            nodeMetadataUpdateBatch.addTask(
+                    new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES,
+                            taskCommand, successCommands));
+        }
+
+        nodeMetadataUpdateBatch.addObserver(this);
+        taskService.launchBatchTasks(nodeMetadataUpdateBatch);
+        status = EcsStatus.UPDATING_METADATA;
     }
 
     private void bootstrapConfiguration() throws ServiceBootstrapException {
@@ -279,12 +339,15 @@ public class ExternalConfigurationService implements Observer {
                 status = EcsStatus.INITIALIZED;
                 break;
             case REMOVE_NODE:
-                status = EcsStatus.INITIALIZED;
+                updateNodesWithMetadata();
                 break;
             case ADD_NODE:
-                status = EcsStatus.INITIALIZED;
+                updateNodesWithMetadata();
                 break;
             case SHUTDOWN:
+                status = EcsStatus.INITIALIZED;
+                break;
+            case UPDATING_METADATA:
                 status = EcsStatus.INITIALIZED;
                 break;
         }
