@@ -21,7 +21,7 @@ public class KVTransferMessageSerializer
         implements IMessageSerializer<SerializedMessage, KVTransferMessage> {
 
     public static final String PREFIX = "<KVTRANSFERMESSAGE>";
-    public static final String SEPARATOR = "-\r\r-";
+    public static final String SEPARATOR = "-ŁŁ-";
     public static final String POSTFIX = "</KVTRANSFERMESSAGE>";
 
     private static final Logger LOGGER = Logger.getLogger(KVTransferMessageSerializer.class);

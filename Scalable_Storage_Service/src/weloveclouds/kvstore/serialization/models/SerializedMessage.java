@@ -12,7 +12,7 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
  */
 public class SerializedMessage {
 
-    public static Charset MESSAGE_ENCODING = StandardCharsets.US_ASCII;
+    public static Charset MESSAGE_ENCODING = StandardCharsets.UTF_8;
 
     private byte[] bytes;
 
