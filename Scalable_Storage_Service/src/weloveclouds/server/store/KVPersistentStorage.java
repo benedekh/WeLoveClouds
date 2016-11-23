@@ -7,12 +7,11 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayDeque;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -74,8 +73,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 putEntryIntoStorageUnit(storageUnit, entry);
                 storageUnits.put(key, storageUnit);
             } else {
-                String filename = UUID.randomUUID().toString();
-                Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
+                Path path = FileUtility.generateUniqueFilePath(rootPath, FILE_EXTENSION);
 
                 // if there is no, then create a new storage unit
                 storageUnit = new PersistedStorageUnit(path);
@@ -160,20 +158,13 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     }
 
     /**
-     * Clears the internal meta-data cache structures of the persistent storage.
-     */
-    public void clear() {
-        storageUnits.clear();
-        unitsWithFreeSpace.clear();
-    }
-
-    /**
      * Scans through the hard storage and notes which keys were already stored in the hard storage
      * on what paths.
      */
     public void loadStorageUnits() {
         LOGGER.debug("Initializing persistent store with already stored keys.");
-        clear();
+        storageUnits.clear();
+        unitsWithFreeSpace.clear();
 
         for (File file : filterFilesInRootPath()) {
             try {
@@ -214,7 +205,9 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      */
     protected PersistedStorageUnit loadStorageUnitFromPath(Path path) throws StorageException {
         try {
-            return FileUtility.<PersistedStorageUnit>loadFromFile(path);
+            // if it does not fail, then it contains the storage unit
+            FileUtility.<HashMap<String, String>>loadFromFile(path);
+            return new PersistedStorageUnit(path);
         } catch (IOException ex) {
             LOGGER.error(ex);
             throw new StorageException(

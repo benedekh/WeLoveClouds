@@ -2,13 +2,12 @@ package weloveclouds.server.store.models;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 
@@ -22,50 +21,75 @@ import weloveclouds.server.utils.FileUtility;
  * 
  * @author Benedek
  */
-public class PersistedStorageUnit implements Serializable {
+public class PersistedStorageUnit {
 
-    private static final long serialVersionUID = 1582338246635272891L;
     protected static final int MAX_NUMBER_OF_ENTRIES = 100;
+    private static final Logger LOGGER = Logger.getLogger(PersistedStorageUnit.class);
 
-    protected Map<String, String> entries;
-    protected String filePath;
+    protected HashMap<String, String> entries;
+    protected Path filePath;
+
+    protected ReentrantLock accessLock;
 
     /**
      * @param maxSize at most how many entries can be stored in the storage unit
      */
     public PersistedStorageUnit(Path filePath) {
-        setPath(filePath);
-        this.entries = new ConcurrentHashMap<>();
+        this.filePath = filePath;
+        this.entries = new HashMap<>();
+        this.accessLock = new ReentrantLock();
     }
 
     /**
      * @param initializerMap contains the key-value pairs which shall initialize this storage unit
      * @param filePath where the storage unit shall be persisted.
      */
-    protected PersistedStorageUnit(Map<String, String> initializerMap, Path filePath) {
-        setPath(filePath);
+    protected PersistedStorageUnit(HashMap<String, String> initializerMap, Path filePath) {
+        this.filePath = filePath;
         this.entries = initializerMap;
+        this.accessLock = new ReentrantLock();
+        try {
+            save();
+        } catch (StorageException ex) {
+            LOGGER.error(ex);
+        }
     }
 
     /**
      * @return true if the storage unit is empty, false otherwise
      */
     public boolean isEmpty() {
-        return entries.isEmpty();
+        try {
+            acquireAndLoad();
+            return entries.isEmpty();
+        } finally {
+            releaseAndSaveSilent();
+        }
     }
+
 
     /**
      * @return true if the storage unit is full, false otherwise
      */
     public boolean isFull() {
-        return !(entries.size() < MAX_NUMBER_OF_ENTRIES);
+        try {
+            acquireAndLoad();
+            return !(entries.size() < MAX_NUMBER_OF_ENTRIES);
+        } finally {
+            releaseAndSaveSilent();
+        }
     }
 
     /**
      * @return keys stored in the storage unit as an unmodifiable set
      */
     public Set<String> getKeys() {
-        return Collections.unmodifiableSet(entries.keySet());
+        try {
+            acquireAndLoad();
+            return Collections.unmodifiableSet(new HashSet<>(entries.keySet()));
+        } finally {
+            releaseAndSaveSilent();
+        }
     }
 
     /**
@@ -77,40 +101,54 @@ public class PersistedStorageUnit implements Serializable {
      *         store the entry
      */
     public PutType putEntry(KVEntry entry) throws UnsupportedOperationException, StorageException {
-        String key = entry.getKey();
-        String value = entry.getValue();
+        try {
+            acquireAndLoad();
 
-        PutType responseType = null;
+            String key = entry.getKey();
+            String value = entry.getValue();
 
-        if (!entries.containsKey(key)) {
-            if (entries.size() + 1 > MAX_NUMBER_OF_ENTRIES) {
-                throw new UnsupportedOperationException("Storage is full, cannot add new entry.");
+            PutType responseType = null;
+
+            if (!entries.containsKey(key)) {
+                if (entries.size() + 1 > MAX_NUMBER_OF_ENTRIES) {
+                    throw new UnsupportedOperationException(
+                            "Storage is full, cannot add new entry.");
+                } else {
+                    responseType = PutType.INSERT;
+                }
             } else {
-                responseType = PutType.INSERT;
+                responseType = PutType.UPDATE;
             }
-        } else {
-            responseType = PutType.UPDATE;
+
+            entries.put(key, value);
+            return responseType;
+        } finally {
+            releaseAndSave();
         }
-
-        entries.put(key, value);
-        save();
-
-        return responseType;
     }
 
     /**
      * @return the value which belong to the respective key
      */
     public String getValue(String key) {
-        return entries.get(key);
+        try {
+            acquireAndLoad();
+            return entries.get(key);
+        } finally {
+            releaseAndSaveSilent();
+        }
     }
 
     /**
      * Removes the key together with the value belonging to it, from the storage unit.
      */
     public void removeEntry(String key) throws StorageException {
-        entries.remove(key);
-        save();
+        try {
+            acquireAndLoad();
+            entries.remove(key);
+        } finally {
+            releaseAndSaveSilent();
+        }
     }
 
     /**
@@ -119,25 +157,37 @@ public class PersistedStorageUnit implements Serializable {
      * @throws IOException if any error occurs
      */
     public void deleteFile() throws IOException {
-        FileUtility.deleteFile(getPath());
+        FileUtility.deleteFile(filePath);
     }
 
     /**
-     * Saves this storage unit into the file denoted by its path.
+     * Saves the content of the storage unit into the file denoted by its path.
      * 
      * @throws StorageException if any error occurs
      */
     public void save() throws StorageException {
         try {
-            FileUtility.saveToFile(getPath(), this);
+            FileUtility.saveToFile(filePath, entries);
+            entries = null;
         } catch (FileNotFoundException e) {
-            getLogger().error(e);
+            LOGGER.error(e);
             throw new StorageException("File was not found.");
         } catch (IOException e) {
-            getLogger().error(e);
-            e.printStackTrace();
+            LOGGER.error(e);
             throw new StorageException(
                     "Storage unit was not saved to the persistent storage due to IO error.");
+        }
+    }
+
+    /**
+     * Loads the entry map from the file where it is stored.
+     */
+    private void load() {
+        try {
+            entries = FileUtility.<HashMap<String, String>>loadFromFile(filePath);
+        } catch (ClassNotFoundException | IOException e) {
+            LOGGER.error(e);
+            entries = new HashMap<>();
         }
     }
 
@@ -145,21 +195,51 @@ public class PersistedStorageUnit implements Serializable {
      * Set the path where this storage unit is persisted.
      */
     public void setPath(Path path) {
-        this.filePath = path.toAbsolutePath().toString();
+        this.filePath = path;
     }
 
     /**
-     * Gets the path from the string representation.
+     * Locks this instance to prevent others from using it.
      */
-    protected Path getPath() {
-        return Paths.get(filePath);
+    protected void acquireLock() {
+        accessLock.lock();
     }
 
     /**
-     * Because logger is not serializable, we have to get it every time.
+     * Releases the lock so others can use this instance.
      */
-    protected Logger getLogger() {
-        return Logger.getLogger(getClass());
+    protected void releaseLock() {
+        accessLock.unlock();
+    }
+
+    /**
+     * Releases the lock and saves the entry map.
+     * 
+     * @throws StorageException if an error occurs
+     */
+    protected void releaseAndSave() throws StorageException {
+        releaseLock();
+        save();
+    }
+
+    /**
+     * Releases the lock and saves the entry map. Discards exceptions.
+     */
+    protected void releaseAndSaveSilent() {
+        releaseLock();
+        try {
+            save();
+        } catch (StorageException ex) {
+
+        }
+    }
+
+    /**
+     * Acquires the lock and loads the entry map.
+     */
+    protected void acquireAndLoad() {
+        acquireLock();
+        load();
     }
 
     @Override
@@ -167,7 +247,6 @@ public class PersistedStorageUnit implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((entries == null) ? 0 : entries.hashCode());
-        result = prime * result + ((filePath == null) ? 0 : filePath.hashCode());
         return result;
     }
 
@@ -188,13 +267,6 @@ public class PersistedStorageUnit implements Serializable {
                 return false;
             }
         } else if (!entries.equals(other.entries)) {
-            return false;
-        }
-        if (filePath == null) {
-            if (other.filePath != null) {
-                return false;
-            }
-        } else if (!filePath.equals(other.filePath)) {
             return false;
         }
         return true;

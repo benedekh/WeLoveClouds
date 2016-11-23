@@ -1,10 +1,9 @@
 package testing.weloveclouds.kvstore.serialization;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -36,13 +35,13 @@ public class KVTransferMessageTest {
 
     @Test
     public void testKVTransferMessageSerializationAndDeserialization()
-            throws DeserializationException, UnknownHostException {
-        Map<String, String> keyval1 = new HashMap<>();
+            throws DeserializationException, IOException {
+        HashMap<String, String> keyval1 = new HashMap<>();
         keyval1.put("hello", "world");
         keyval1.put("apple", "juice");
         MovableStorageUnit unit1 = new MovableStorageUnit(keyval1, FileUtility.createDummyPath());
 
-        Map<String, String> keyval2 = new HashMap<>(keyval1);
+        HashMap<String, String> keyval2 = new HashMap<>(keyval1);
         keyval2.put("orange", "banana");
         MovableStorageUnit unit2 = new MovableStorageUnit(keyval2, FileUtility.createDummyPath());
 
