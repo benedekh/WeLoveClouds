@@ -15,6 +15,7 @@ import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
  * Created by Benoit on 2016-11-23.
  */
 public class EcsInternalCommandFactory {
+    private static final String LOG_LEVEL_ALL = "ALL";
     private CommunicationApiFactory communicationApiFactory;
     private SecureShellServiceFactory secureShellServiceFactory;
 
@@ -28,7 +29,8 @@ public class EcsInternalCommandFactory {
             cacheSize, String displacementStrategy) {
         return new LaunchJar.Builder()
                 .jarFilePath(jarFilePath)
-                .arguments(Arrays.asList(Integer.toString(cacheSize), displacementStrategy))
+                .arguments(Arrays.asList(Integer.toString(storageNode.getPort()), Integer.toString(cacheSize),
+                        displacementStrategy, LOG_LEVEL_ALL))
                 .secureShellService(secureShellServiceFactory.createJshSecureShellService())
                 .targetedNode(storageNode)
                 .build();

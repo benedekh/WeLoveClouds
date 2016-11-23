@@ -16,7 +16,6 @@ import weloveclouds.ecs.exceptions.ServiceBootstrapException;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.commands.internal.EcsInternalCommandFactory;
 import weloveclouds.ecs.models.commands.internal.InitNodeMetadata;
-import weloveclouds.ecs.models.commands.internal.ReleaseWriteLock;
 import weloveclouds.ecs.models.commands.internal.SetWriteLock;
 import weloveclouds.ecs.models.commands.internal.ShutdownNode;
 import weloveclouds.ecs.models.commands.internal.StartNode;
@@ -28,7 +27,6 @@ import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.repository.StorageNodeStatus;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
-import weloveclouds.ecs.models.tasks.BatchPurpose;
 import weloveclouds.ecs.models.tasks.BatchRetryableTasks;
 import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
 import weloveclouds.ecs.models.tasks.SimpleRetryableTask;
@@ -67,7 +65,6 @@ import static weloveclouds.ecs.models.tasks.BatchPurpose.UPDATING_METADATA;
  * Created by Benoit on 2016-11-16.
  */
 public class ExternalConfigurationService implements Observer {
-    private static final String JAR_FILE_PATH = "";
     private EcsStatus status;
     private final HashRange INITIAL_HASHRANGE;
     private RingMetadata ringMetadata;
@@ -103,7 +100,8 @@ public class ExternalConfigurationService implements Observer {
 
             for (StorageNode storageNode : storageNodesToInitialize) {
                 LaunchJar taskCommand = ecsInternalCommandFactory.createLaunchJarCommandWith
-                        (storageNode, JAR_FILE_PATH, cacheSize, displacementStrategy);
+                        (storageNode, ExternalConfigurationServiceConstants.KV_SERVER_JAR_PATH, cacheSize,
+                                displacementStrategy);
 
                 nodeInitialisationBatch.addTask(
                         new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
@@ -185,7 +183,9 @@ public class ExternalConfigurationService implements Observer {
             updateRingMetadataFrom(ringTopology.updateTopologyWith(newTopology));
 
             LaunchJar taskCommand = ecsInternalCommandFactory
-                    .createLaunchJarCommandWith(newStorageNode, JAR_FILE_PATH, cacheSize, displacementStrategy);
+                    .createLaunchJarCommandWith(newStorageNode,
+                            ExternalConfigurationServiceConstants.KV_SERVER_JAR_PATH, cacheSize,
+                            displacementStrategy);
 
             List<AbstractCommand> successCommands = new ArrayList<>();
             successCommands.add(ecsInternalCommandFactory.createInitNodeMetadataCommandWith

@@ -16,7 +16,6 @@ import weloveclouds.ecs.models.commands.client.EcsClientCommandFactory;
 import weloveclouds.ecs.models.commands.internal.EcsInternalCommandFactory;
 import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.ssh.SecureShellServiceFactory;
-import weloveclouds.ecs.services.JshSecureShellService;
 import weloveclouds.ecs.services.TaskService;
 import weloveclouds.ecs.utils.ConfigurationFileParser;
 import weloveclouds.server.utils.LogSetup;
@@ -24,11 +23,12 @@ import weloveclouds.server.utils.LogSetup;
 public class ECSClient {
     private static Logger LOGGER = Logger.getLogger(ECSClient.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String logFile = "logs/ecs.log";
         try {
             new LogSetup(logFile, Level.OFF);
-
+            System.out.println(ECSClient.class.getProtectionDomain().getCodeSource().getLocation()
+                    .toURI().getPath());
             EcsInternalCommandFactory ecsInternalCommandFactory = new EcsInternalCommandFactory
                     (new CommunicationApiFactory(), new SecureShellServiceFactory());
 
