@@ -11,7 +11,7 @@ import weloveclouds.hashing.models.Hash;
  */
 public class HashSerializer implements ISerializer<String, Hash> {
 
-    public static final String SEPARATOR_INSIDE_HASH = "-\t-";
+    public static final String SEPARATOR_INSIDE_HASH = "-ł-";
     private static final Logger LOGGER = Logger.getLogger(HashSerializer.class);
     
     @Override

@@ -12,7 +12,7 @@ import weloveclouds.server.store.models.MovableStorageUnits;
  */
 public class MovableStorageUnitsSerializer implements ISerializer<String, MovableStorageUnits> {
 
-    public static final String SEPARATOR_BETWEEN_STORAGE_UNITS = "-\r-";
+    public static final String SEPARATOR_BETWEEN_STORAGE_UNITS = "-Ł-";
     private static final Logger LOGGER = Logger.getLogger(MovableStorageUnitsSerializer.class);
     
     private ISerializer<String, MovableStorageUnit> storageUnitSerializer =

@@ -11,7 +11,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public class ServerConnectionInfoSerializer implements ISerializer<String, ServerConnectionInfo> {
 
-    public static final String SEPARATOR = "-\t-";
+    public static final String SEPARATOR = "-ł-";
     private static final Logger LOGGER = Logger.getLogger(ServerConnectionInfo.class);
 
     @Override

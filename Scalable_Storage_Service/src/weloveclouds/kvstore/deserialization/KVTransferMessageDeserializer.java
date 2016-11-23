@@ -43,8 +43,13 @@ public class KVTransferMessageDeserializer
     public KVTransferMessage deserialize(byte[] serializedMessage) throws DeserializationException {
         LOGGER.debug("Deserializing KVTransferMessage from byte[].");
 
-        // raw message split
+        // remove prefix and postfix
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
+        serializedMessageStr = serializedMessageStr.replace(KVTransferMessageSerializer.PREFIX, "");
+        serializedMessageStr =
+                serializedMessageStr.replace(KVTransferMessageSerializer.POSTFIX, "");
+
+        // raw message split
         String[] messageParts = serializedMessageStr.split(KVTransferMessageSerializer.SEPARATOR);
 
         // length check
@@ -68,8 +73,8 @@ public class KVTransferMessageDeserializer
             String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;;
 
             // deserialized object
-            KVTransferMessage deserialized =
-                    new KVTransferMessage.Builder().status(status).storageUnits(storageUnits).responseMessage(responseMessage).build();
+            KVTransferMessage deserialized = new KVTransferMessage.Builder().status(status)
+                    .storageUnits(storageUnits).responseMessage(responseMessage).build();
 
             LOGGER.debug("KVTransferMessage deserialization finished.");
             return deserialized;

@@ -5,6 +5,7 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
@@ -15,7 +16,9 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
  */
 public class KVMessageSerializer implements IMessageSerializer<SerializedMessage, KVMessage> {
 
-    public static final String SEPARATOR = "-\r\r-";
+    public static final String PREFIX = "<KVMESSAGE>";
+    public static final String SEPARATOR = "-ŁŁ-";
+    public static final String POSTFIX = "</KVMESSAGE>";
 
     private static final Logger LOGGER = Logger.getLogger(KVMessageSerializer.class);
 
@@ -33,8 +36,10 @@ public class KVMessageSerializer implements IMessageSerializer<SerializedMessage
 
         // merged string representation
         String serialized = join(SEPARATOR, statusStr, key, value);
+        String prefixed = CustomStringJoiner.join("", PREFIX, serialized);
+        String postfixed = CustomStringJoiner.join("", prefixed, POSTFIX);
 
-        LOGGER.debug(join(" ", "Serialized message:", serialized));
-        return new SerializedMessage(serialized);
+        LOGGER.debug(join(" ", "Serialized message:", postfixed));
+        return new SerializedMessage(postfixed);
     }
 }

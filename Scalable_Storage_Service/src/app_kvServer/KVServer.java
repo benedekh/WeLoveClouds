@@ -100,7 +100,7 @@ public class KVServer {
             serverForKVServerRequests.start();
             serverForKVClientRequests.start();
         } catch (IllegalArgumentException ex) {
-            System.err.println(ex.getMessage());
+            LOGGER.error(ex);
         } catch (IOException ex) {
             LOGGER.error(ex);
         }

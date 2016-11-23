@@ -5,12 +5,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.communication.validator.SerializedMessageValidator;
+import weloveclouds.communication.util.MessageFramesDetector;
 
 /**
  * A communication service that can handle multiple connections concurrently.
@@ -21,6 +23,12 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
 
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
     private static final Logger LOGGER = Logger.getLogger(ConcurrentCommunicationService.class);
+
+    private Map<Connection, MessageFramesDetector> messageFrameDetectorMap;
+
+    public ConcurrentCommunicationService() {
+        messageFrameDetectorMap = new ConcurrentHashMap<>();
+    }
 
     @Override
     public void send(byte[] message, Connection connection) throws IOException {
@@ -42,6 +50,15 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
     public byte[] receiveFrom(Connection connection) throws IOException {
         String errorMessage = "Client is not connected, so message cannot be received.";
 
+        if (!messageFrameDetectorMap.containsKey(connection)) {
+            messageFrameDetectorMap.put(connection, new MessageFramesDetector());
+        }
+
+        MessageFramesDetector messageDetector = messageFrameDetectorMap.get(connection);
+        if (messageDetector.containsMessage()) {
+            return messageDetector.getMessage();
+        }
+
         if (connection.isConnected()) {
             InputStream socketDataReader = connection.getInputStream();
 
@@ -53,7 +70,6 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
                     byte[] smaller = new byte[readBytes];
                     System.arraycopy(buffer, 0, smaller, 0, readBytes);
                     buffer = smaller;
-
                 }
 
                 LOGGER.debug(CustomStringJoiner.join(" ", "Received", String.valueOf(readBytes),
@@ -61,11 +77,13 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
                 baosBuffer.write(buffer);
 
                 byte[] contentReceivedSoFar = baosBuffer.toByteArray();
-                boolean isValid = SerializedMessageValidator
-                        .byteArrayRepresentsDeserializableMessage(contentReceivedSoFar);
+                contentReceivedSoFar = messageDetector.fillMessageStore(contentReceivedSoFar);
 
-                if (isValid) {
-                    return contentReceivedSoFar;
+                if (messageDetector.containsMessage()) {
+                    baosBuffer.reset();
+                    baosBuffer.write(contentReceivedSoFar);
+
+                    return messageDetector.getMessage();
                 } else {
                     baosBuffer.reset();
                     baosBuffer.write(contentReceivedSoFar);
@@ -77,7 +95,11 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
                 LOGGER.debug(errorMessage);
                 throw new IOException(errorMessage);
             } else {
-                return new byte[0];
+                if (messageDetector.containsMessage()) {
+                    return messageDetector.getMessage();
+                } else {
+                    return new byte[0];
+                }
             }
         } else {
             LOGGER.debug(errorMessage);

@@ -15,7 +15,7 @@ import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.communication.validator.SerializedMessageValidator;
+import weloveclouds.communication.util.MessageFramesDetector;
 
 /**
  * The communication module implementation which executes the network operations (connect,
@@ -33,12 +33,15 @@ public class CommunicationService implements ICommunicationService {
     private Connection connectionToEndpoint;
     private Thread connectionShutdownHook;
 
+    private MessageFramesDetector messageDetector;
+
     /**
      * @param socketFactory a factory to create a socket for connection
      */
     public CommunicationService(SocketFactory socketFactory) {
         this.connectionToEndpoint = new Connection.Builder().build();
         this.socketFactory = socketFactory;
+        this.messageDetector = new MessageFramesDetector();
     }
 
     @Override
@@ -116,6 +119,10 @@ public class CommunicationService implements ICommunicationService {
     public byte[] receive() throws IOException, ClientNotConnectedException {
         String errorMessage = "Client is not connected, so message cannot be received.";
 
+        if (messageDetector.containsMessage()) {
+            return messageDetector.getMessage();
+        }
+
         if (connectionToEndpoint.isConnected()) {
             InputStream socketDataReader = connectionToEndpoint.getInputStream();
 
@@ -127,7 +134,6 @@ public class CommunicationService implements ICommunicationService {
                     byte[] smaller = new byte[readBytes];
                     System.arraycopy(buffer, 0, smaller, 0, readBytes);
                     buffer = smaller;
-
                 }
 
                 LOGGER.debug(CustomStringJoiner.join(" ", "Received", String.valueOf(readBytes),
@@ -135,11 +141,13 @@ public class CommunicationService implements ICommunicationService {
                 baosBuffer.write(buffer);
 
                 byte[] contentReceivedSoFar = baosBuffer.toByteArray();
-                boolean isValid = SerializedMessageValidator
-                        .byteArrayRepresentsDeserializableMessage(contentReceivedSoFar);
+                contentReceivedSoFar = messageDetector.fillMessageStore(contentReceivedSoFar);
 
-                if (isValid) {
-                    return contentReceivedSoFar;
+                if (messageDetector.containsMessage()) {
+                    baosBuffer.reset();
+                    baosBuffer.write(contentReceivedSoFar);
+
+                    return messageDetector.getMessage();
                 } else {
                     baosBuffer.reset();
                     baosBuffer.write(contentReceivedSoFar);
@@ -151,7 +159,11 @@ public class CommunicationService implements ICommunicationService {
                 LOGGER.debug(errorMessage);
                 throw new ClientNotConnectedException();
             } else {
-                return new byte[0];
+                if (messageDetector.containsMessage()) {
+                    return messageDetector.getMessage();
+                } else {
+                    return new byte[0];
+                }
             }
         } else {
             LOGGER.debug(errorMessage);
