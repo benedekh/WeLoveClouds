@@ -1,10 +1,8 @@
-package weloveclouds.communication.api.v2;
+package weloveclouds.server.api.v2;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.api.v1.IKVCommunicationApi;
-import weloveclouds.communication.api.v1.KVCommunicationApiV1;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
@@ -15,10 +13,11 @@ import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.models.messages.IKVMessage;
+import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
 /**
  * The implementation of the 2nd generation {@link IKVCommunicationApi}.
- * 
+ *
  * @author Benedek
  */
 public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
@@ -32,7 +31,8 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
 
     /**
      * @param bootstrapConnectionInfo the initial connection information, which is used for deciding
-     *        which server to connect to first (before having any {@link RingMetadata}
+     *                                which server to connect to first (before having any {@link
+     *                                RingMetadata}
      */
     public KVCommunicationApiV2(ServerConnectionInfo bootstrapConnectionInfo) {
         this.communicationApi =
@@ -106,9 +106,9 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
     /**
      * Looks for and connects to the server which is responsible for the respective key's hash
      * value.
-     * 
+     *
      * @param key of an entry (<key, value> pair) whose hash has to be calculated to decide which
-     *        server to connect to
+     *            server to connect to
      */
     private void connectToTheRightServerBasedOnHashFor(String key) {
         Hash keyHash = HashingUtil.getHash(key);

@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.cli.utils.UserInputParser;
+import weloveclouds.cli.utils.AbstractUserInputParser;
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
@@ -17,20 +17,20 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * @author Benoit, Benedek, Hunton
  */
 public class Connect extends AbstractCommunicationApiCommand {
-    
+
     private static final Logger LOGGER = Logger.getLogger(Connect.class);
     private ServerConnectionInfo remoteServer;
 
     /**
-     * @param arguments contains the IP address (0. element of the array), and the port (1st element
-     *        of the array)
+     * @param arguments        contains the IP address (0. element of the array), and the port (1st
+     *                         element of the array)
      * @param communicationApi a reference to the communication module
-     * @throws UnknownHostException see {@link UserInputParser#extractConnectionInfoFrom(String[])}
+     * @throws UnknownHostException see {@link AbstractUserInputParser#extractConnectionInfoFrom(String[])}
      */
     public Connect(String[] arguments, ICommunicationApi communicationApi)
             throws UnknownHostException {
         super(arguments, communicationApi);
-        this.remoteServer = UserInputParser.extractConnectionInfoFrom(arguments);
+        this.remoteServer = AbstractUserInputParser.extractConnectionInfoFrom(arguments);
     }
 
     @Override

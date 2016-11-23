@@ -22,13 +22,14 @@ import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.utils.ArgumentsValidator;
 
 /**
- * Start command which starts the {@link Server}} based on the configuration in {@link #context}.
- * 
+ * StartNode command which starts the {@link Server}} based on the configuration in {@link #context}.
+ *
  * @author Benedek
  */
 public class Start extends AbstractServerCommand {
 
     private static final Logger LOGGER = Logger.getLogger(Start.class);
+
 
     private DataAccessServiceFactory dataAccessServiceFactory;
     private ServerCLIConfigurationContext context;

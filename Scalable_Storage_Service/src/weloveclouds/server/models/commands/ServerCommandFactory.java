@@ -38,9 +38,9 @@ public class ServerCommandFactory {
      * @return the type of the recognized command
      * @throws UnknownHostException see {@link Connect}
      */
-    public ICommand createCommandFromUserInput(ParsedUserInput userInput)
+    public ICommand createCommandFromUserInput(ParsedUserInput<ServerCommand> userInput)
             throws UnknownHostException {
-        ServerCommand userCommand = userInput.getServerCommand();
+        ServerCommand userCommand = userInput.getCommand();
         String[] arguments = userInput.getArguments();
         ICommand recognizedCommand = null;
 

@@ -9,15 +9,14 @@ import weloveclouds.client.core.Client;
 import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.server.utils.LogSetup;
 
 /**
- * 
  * Client application. See {@link Client} for more details.
- * 
+ *
  * @author Benoit, Benedek, Hunton
  */
 public class KVClient {
@@ -25,7 +24,7 @@ public class KVClient {
 
     /**
      * The entry point of the application.
-     * 
+     *
      * @param args is discarded so far
      */
     public static void main(String[] args) {

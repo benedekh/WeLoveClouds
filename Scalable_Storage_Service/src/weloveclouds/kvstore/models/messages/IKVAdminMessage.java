@@ -10,7 +10,7 @@ public interface IKVAdminMessage {
 
     public enum StatusType {
         INITKVSERVER, /* Initialize the server with the context - request */
-        START, /* Start the server for the client - request */
+        START, /* StartNode the server for the client - request */
         STOP, /* Stop the server, but keep it alive - request */
         SHUTDOWN, /* Shut down the server - request */
         LOCKWRITE, /* Lock the write operation on the server - request */

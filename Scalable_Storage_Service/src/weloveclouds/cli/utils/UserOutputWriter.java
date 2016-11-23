@@ -53,6 +53,13 @@ public class UserOutputWriter implements AutoCloseable {
         outputWriter.flush();
     }
 
+    public void appendToLine(String message) throws IOException {
+        outputWriter.write(message);
+        outputWriter.newLine();
+        writePrefix();
+        outputWriter.flush();
+    }
+
     /**
      * Writes a single line prefix to the output stream.
      *

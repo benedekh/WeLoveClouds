@@ -1,14 +1,14 @@
-package weloveclouds.communication.api.v2;
+package weloveclouds.server.api.v2;
 
-import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.server.api.IKVCommunicationApi;
 
 /**
  * Second-generation {@link IKVCommunicationApi} which is capable of retrieving the connection
  * information to the most recent connection, and it can decide which server to send the request to
  * based on the {@link RingMetadata} information.
- * 
+ *
  * @author Benedek
  */
 public interface IKVCommunicationApiV2 extends IKVCommunicationApi {

@@ -9,6 +9,7 @@ import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
 import weloveclouds.client.models.commands.CommandFactory;
+import weloveclouds.client.utils.ClientUserInputParser;
 import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
@@ -25,7 +26,7 @@ public class Client {
     private CommandFactory commandFactory;
 
     /**
-     * @param inputStream from which it receives command from the user
+     * @param inputStream    from which it receives command from the user
      * @param commandFactory that processes (validate and execute) the various commands
      */
     public Client(InputStream inputStream, CommandFactory commandFactory) {
@@ -37,9 +38,10 @@ public class Client {
      * Reads commands with arguments from the user via the {@link #inputStream}. After, it forwards
      * the respective command to the {@link #commandFactory} that will validate and execute it.
      */
+    @SuppressWarnings("unchecked")
     public void run() {
-        try (UserInputReader inputReader = new UserInputReader(inputStream);
-                UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
+        try (UserInputReader inputReader = new UserInputReader(inputStream, new ClientUserInputParser());
+             UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
             LOGGER.info("Client started.");
             while (!Thread.currentThread().isInterrupted()) {
                 try {

@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.client.utils.PutCommandUtils;
-import weloveclouds.communication.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
@@ -27,19 +27,19 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
     private IKVCommunicationApiV2 communicationApiV2;
-    
+
     private boolean commandWasAlreadyExecuted;
 
     /**
-     * @param arguments contains the key in the {@link #KEY_INDEX} position and the value is merged
-     *        into one value starting from the index {@link #VALUE_INDEX} and going until the end of
-     *        the array
-     * @param communicationApi which is used for querying the value from the server
+     * @param arguments                contains the key in the {@link #KEY_INDEX} position and the
+     *                                 value is merged into one value starting from the index {@link
+     *                                 #VALUE_INDEX} and going until the end of the array
+     * @param communicationApi         which is used for querying the value from the server
      * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object to
-     *        its original representation from String
+     *                                 its original representation from String
      */
     public Put(String[] arguments, IKVCommunicationApiV2 communicationApi,
-            IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
+               IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         super(arguments, communicationApi);
         this.ringMetadataDeserializer = ringMetadataDeserializer;
         this.communicationApiV2 = communicationApi;
@@ -78,11 +78,11 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     try {
                         LOGGER.error(join(" ", "Server is not responsible for the key:", key,
                                 ". Updating ring metadata information."));
-                        
+
                         RingMetadata ringMetadata =
                                 ringMetadataDeserializer.deserialize(response.getValue());
                         communicationApiV2.setRingMetadata(ringMetadata);
-                        
+
                         if (!commandWasAlreadyExecuted) {
                             commandWasAlreadyExecuted = true;
                             execute();
