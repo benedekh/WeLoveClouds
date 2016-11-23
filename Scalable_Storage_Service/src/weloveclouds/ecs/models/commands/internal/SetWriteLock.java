@@ -36,7 +36,7 @@ public class SetWriteLock extends AbstractEcsNetworkCommand {
     @Override
     public void execute() throws ClientSideException {
         try {
-            communicationApi.connectTo(targetedNode.getServerConnectionInfo());
+            communicationApi.connectTo(targetedNode.getEcsChannelConnectionInfo());
             KVAdminMessage message = new KVAdminMessage.Builder()
                     .status(StatusType.LOCKWRITE)
                     .build();

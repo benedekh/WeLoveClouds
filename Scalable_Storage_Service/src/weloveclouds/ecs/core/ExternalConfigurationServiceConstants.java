@@ -8,4 +8,5 @@ public class ExternalConfigurationServiceConstants {
     public static int MAX_NUMBER_OF_NODE_START_RETRIES = 3;
     public static int MAX_NUMBER_OF_NODE_STOP_RETRIES = 3;
     public static int MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES = 3;
+    public static final int ECS_REQUESTS_PORT = 30000;
 }

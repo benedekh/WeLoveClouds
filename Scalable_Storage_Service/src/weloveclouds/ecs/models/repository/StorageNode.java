@@ -2,6 +2,7 @@ package weloveclouds.ecs.models.repository;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -16,6 +17,7 @@ public class StorageNode {
     private StorageNodeStatus metadataStatus;
     private StorageNodeStatus status;
     private ServerConnectionInfo serverConnectionInfo;
+    private ServerConnectionInfo ecsChannelConnectionInfo;
     private Hash hashKey;
     private HashRange previousHashRange;
     private HashRange hashRange;
@@ -26,10 +28,14 @@ public class StorageNode {
         this.status = IDLE;
         this.metadataStatus = UNSYNCHRONIZED;
         this.hashKey = HashingUtil.getHash(serverConnectionInfo.toString());
+        this.ecsChannelConnectionInfo = new ServerConnectionInfo.Builder()
+                .ipAddress(serverConnectionInfo.getIpAddress())
+                .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT)
+                .build();
     }
 
-    public HashRange getPreviousHashRange() {
-        return previousHashRange;
+    public ServerConnectionInfo getEcsChannelConnectionInfo() {
+        return ecsChannelConnectionInfo;
     }
 
     public Hash getHashKey() {

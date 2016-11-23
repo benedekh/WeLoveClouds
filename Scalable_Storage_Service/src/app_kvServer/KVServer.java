@@ -9,6 +9,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
@@ -32,7 +33,7 @@ import weloveclouds.server.utils.LogSetup;
 /**
  * KVServer application which starts a {@link ServerSocket} to accept connections and to transform
  * them into requests to the {@link IDataAccessService}.
- * 
+ *
  * @author Benoit, Benedek, Hunton
  */
 public class KVServer {
@@ -42,7 +43,6 @@ public class KVServer {
     private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
 
     private static final int KVSERVER_REQUESTS_PORT = 50001;
-    private static final int ECS_REQUESTS_PORT = 50002;
 
     private static final int CLI_PORT_INDEX = 0;
     private static final int CLI_CACHE_SIZE_INDEX = 1;
@@ -64,7 +64,7 @@ public class KVServer {
 
     /**
      * Start the service with a non-interactive mode, directly from the command-line.
-     * 
+     *
      * @param cliArguments array of the command line arguments
      */
     private static void startNonInteractiveMode(String[] cliArguments) {
@@ -87,7 +87,8 @@ public class KVServer {
             LOGGER.debug("Creating the servers for the different requests.");
             ServerFactory serverFactory = new ServerFactory();
             Server<KVAdminMessage, IKVECSRequest> serverForECSRequests = serverFactory
-                    .createServerForKVECSRequests(ECS_REQUESTS_PORT, dataAccessService);
+                    .createServerForKVECSRequests(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT,
+                            dataAccessService);
             Server<KVTransferMessage, IKVServerRequest> serverForKVServerRequests = serverFactory
                     .createServerForKVServerRequests(KVSERVER_REQUESTS_PORT, dataAccessService);
             Server<KVMessage, IKVClientRequest> serverForKVClientRequests =
@@ -137,11 +138,11 @@ public class KVServer {
     /**
      * Start KV Server at given port. ONLY FOR TESTING PURPOSES!!!
      *
-     * @param port given port for storage server to operate
+     * @param port      given port for storage server to operate
      * @param cacheSize specifies how many key-value pairs the server is allowed to keep in-memory
-     * @param strategy specifies the cache replacement strategy in case the cache is full and there
-     *        is a GET- or PUT-request on a key that is currently not contained in the cache.
-     *        Options are "FIFO", "LRU", and "LFU".
+     * @param strategy  specifies the cache replacement strategy in case the cache is full and there
+     *                  is a GET- or PUT-request on a key that is currently not contained in the
+     *                  cache. Options are "FIFO", "LRU", and "LFU".
      */
     public KVServer(int port, int cacheSize, String strategy) {
         Path defaultStoragePath = Paths.get("logs/testing/");
@@ -157,7 +158,7 @@ public class KVServer {
                     "Invalid strategy. Valid values are: FIFO, LRU, LFU");
         }
 
-        ArgumentsValidator.validatePortArguments(new String[] {String.valueOf(port)});
+        ArgumentsValidator.validatePortArguments(new String[]{String.valueOf(port)});
 
         DataAccessServiceInitializationContext initializationContext =
                 new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
