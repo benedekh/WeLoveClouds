@@ -105,9 +105,8 @@ public class ExternalConfigurationService implements Observer {
 
                 nodeInitialisationBatch.addTask(
                         new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
-                nodeInitialisationBatch.addObserver(this);
             }
-
+            nodeInitialisationBatch.addObserver(this);
             taskService.launchBatchTasks(nodeInitialisationBatch);
             status = INITIALIZING_SERVICE;
         } else {
@@ -125,7 +124,7 @@ public class ExternalConfigurationService implements Observer {
                 StartNode taskCommand = ecsInternalCommandFactory.createStartNodeCommandFor(storageNode);
                 nodeStartBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_START_RETRIES, taskCommand));
             }
-
+            nodeStartBatch.addObserver(this);
             taskService.launchBatchTasks(nodeStartBatch);
             status = STARTING_NODE;
         } else {
@@ -143,7 +142,7 @@ public class ExternalConfigurationService implements Observer {
                 StopNode taskCommand = ecsInternalCommandFactory.createStopNodeCommandFor(storageNode);
                 nodeStopBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_STOP_RETRIES, taskCommand));
             }
-
+            nodeStopBatch.addObserver(this);
             taskService.launchBatchTasks(nodeStopBatch);
             status = STOPPING_NODE;
         } else {
@@ -161,6 +160,7 @@ public class ExternalConfigurationService implements Observer {
                 ShutdownNode taskCommand = ecsInternalCommandFactory.createShutDownNodeCommandFor(storageNode);
                 nodeShutdownBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES, taskCommand));
             }
+            nodeShutdownBatch.addObserver(this);
             taskService.launchBatchTasks(nodeShutdownBatch);
             status = SHUTDOWNING_NODE;
         } else {
