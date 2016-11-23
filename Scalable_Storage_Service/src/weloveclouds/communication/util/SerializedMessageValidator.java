@@ -1,4 +1,4 @@
-package weloveclouds.communication.validator;
+package weloveclouds.communication.util;
 
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
@@ -46,5 +46,4 @@ public class SerializedMessageValidator {
             return true;
         }
     }
-
 }

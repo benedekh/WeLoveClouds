@@ -12,7 +12,7 @@ import weloveclouds.hashing.models.HashRange;
  */
 public class HashRangeSerializer implements ISerializer<String, HashRange> {
 
-    public static final String SEPARATOR = "-\r-";
+    public static final String SEPARATOR = "-Ł-";
     private static final Logger LOGGER = Logger.getLogger(HashRangeSerializer.class);
     
     private ISerializer<String, Hash> hashSerializer = new HashSerializer();

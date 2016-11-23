@@ -37,8 +37,12 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
     public KVMessage deserialize(byte[] serializedMessage) throws DeserializationException {
         LOGGER.debug("Deserializing KVMessage from byte[].");
 
-        // raw message split
+        // remove prefix and postfix
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
+        serializedMessageStr = serializedMessageStr.replace(KVMessageSerializer.PREFIX, "");
+        serializedMessageStr = serializedMessageStr.replace(KVMessageSerializer.POSTFIX, "");
+
+        // raw message split
         String[] messageParts = serializedMessageStr.split(KVMessageSerializer.SEPARATOR);
 
         // length check

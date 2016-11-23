@@ -49,8 +49,12 @@ public class KVAdminMessageDeserializer
     public KVAdminMessage deserialize(byte[] serializedMessage) throws DeserializationException {
         LOGGER.debug("Deserializing KVAdminMessage from byte[].");
 
-        // raw message split
+        // remove prefix and postfix
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
+        serializedMessageStr = serializedMessageStr.replace(KVAdminMessageSerializer.PREFIX, "");
+        serializedMessageStr = serializedMessageStr.replace(KVAdminMessageSerializer.POSTFIX, "");
+
+        // raw message split
         String[] messageParts = serializedMessageStr.split(KVAdminMessageSerializer.SEPARATOR);
 
         // length check

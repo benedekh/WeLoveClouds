@@ -59,6 +59,46 @@ public class Connection {
         }
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((remoteServer == null) ? 0 : remoteServer.hashCode());
+        result = prime * result + ((socket == null) ? 0 : socket.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Connection)) {
+            return false;
+        }
+        Connection other = (Connection) obj;
+        if (remoteServer == null) {
+            if (other.remoteServer != null) {
+                return false;
+            }
+        } else if (!remoteServer.equals(other.remoteServer)) {
+            return false;
+        }
+        if (socket == null) {
+            if (other.socket != null) {
+                return false;
+            }
+        } else if (!socket.equals(other.socket)) {
+            return false;
+        }
+        return true;
+    }
+
+
+
     /**
      * Builder pattern for creating a {@link Connection} instance.
      *
