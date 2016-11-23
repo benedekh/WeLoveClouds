@@ -9,7 +9,7 @@ import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
 import weloveclouds.ecs.exceptions.ClientSideException;
-import weloveclouds.ecs.models.commands.EcsCommandFactory;
+import weloveclouds.ecs.models.commands.client.EcsClientCommandFactory;
 import weloveclouds.ecs.utils.EcsClientUserInputParser;
 
 /**
@@ -18,10 +18,10 @@ import weloveclouds.ecs.utils.EcsClientUserInputParser;
 public class Client {
     private static final Logger LOGGER = Logger.getLogger(Client.class);
 
-    private EcsCommandFactory ecsCommandFactory;
+    private EcsClientCommandFactory ecsCommandFactory;
     private InputStream inputStream;
 
-    public Client(InputStream inputStream, EcsCommandFactory ecsCommandFactory) {
+    public Client(InputStream inputStream, EcsClientCommandFactory ecsCommandFactory) {
         this.inputStream = inputStream;
         this.ecsCommandFactory = ecsCommandFactory;
     }

@@ -1,7 +1,5 @@
 package weloveclouds.ecs.models.repository;
 
-import java.math.BigInteger;
-
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.Hash;
@@ -15,16 +13,23 @@ import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
  */
 public class StorageNode {
     private String id;
+    private StorageNodeStatus metadataStatus;
     private StorageNodeStatus status;
     private ServerConnectionInfo serverConnectionInfo;
     private Hash hashKey;
+    private HashRange previousHashRange;
     private HashRange hashRange;
 
     public StorageNode(String id, ServerConnectionInfo serverConnectionInfo) {
         this.id = id;
         this.serverConnectionInfo = serverConnectionInfo;
         this.status = IDLE;
+        this.metadataStatus = UNSYNCHRONIZED;
         this.hashKey = HashingUtil.getHash(serverConnectionInfo.toString());
+    }
+
+    public HashRange getPreviousHashRange() {
+        return previousHashRange;
     }
 
     public Hash getHashKey() {
@@ -48,7 +53,17 @@ public class StorageNode {
     }
 
     public void setHashRange(HashRange hashRange) {
+        this.previousHashRange = hashRange;
         this.hashRange = hashRange;
+        this.metadataStatus = SYNCHRONIZED;
+    }
+
+    public StorageNodeStatus getMetadataStatus() {
+        return metadataStatus;
+    }
+
+    public void setMetadataStatus(StorageNodeStatus metadataStatus) {
+        this.metadataStatus = metadataStatus;
     }
 
     public StorageNodeStatus getStatus() {

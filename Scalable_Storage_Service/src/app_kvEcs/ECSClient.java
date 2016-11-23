@@ -4,7 +4,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.math.BigInteger;
 
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.api.IKVEcsApi;
@@ -13,15 +12,13 @@ import weloveclouds.ecs.client.Client;
 import weloveclouds.ecs.core.ExternalConfigurationService;
 import weloveclouds.ecs.exceptions.ServiceBootstrapException;
 import weloveclouds.ecs.exceptions.authentication.InvalidAuthenticationInfosException;
-import weloveclouds.ecs.models.commands.EcsCommandFactory;
+import weloveclouds.ecs.models.commands.client.EcsClientCommandFactory;
+import weloveclouds.ecs.models.commands.internal.EcsInternalCommandFactory;
 import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
+import weloveclouds.ecs.models.ssh.SecureShellServiceFactory;
 import weloveclouds.ecs.services.JshSecureShellService;
 import weloveclouds.ecs.services.TaskService;
 import weloveclouds.ecs.utils.ConfigurationFileParser;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.utils.HashingUtil;
-import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
-import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.server.utils.LogSetup;
 
 public class ECSClient {
@@ -31,18 +28,22 @@ public class ECSClient {
         String logFile = "logs/ecs.log";
         try {
             new LogSetup(logFile, Level.OFF);
+
+            EcsInternalCommandFactory ecsInternalCommandFactory = new EcsInternalCommandFactory
+                    (new CommunicationApiFactory(), new SecureShellServiceFactory());
+
             ExternalConfigurationService ecs = new ExternalConfigurationService.Builder()
                     .taskService(new TaskService())
-                    .CommunicationApiFactory(new CommunicationApiFactory())
-                    .secureShellService(new JshSecureShellService())
+                    .ecsInternalCommandFactory(ecsInternalCommandFactory)
                     .configurationFilePath(args[0])
                     .ecsRepositoryFactory(new EcsRepositoryFactory(new ConfigurationFileParser()))
                     .build();
 
             IKVEcsApi externalConfigurationServiceApi = new KVEcsApiV1(ecs);
-            EcsCommandFactory ecsCommandFactory = new EcsCommandFactory(externalConfigurationServiceApi);
+            EcsClientCommandFactory ecsCommandFactory = new EcsClientCommandFactory(externalConfigurationServiceApi);
             Client ecsClient = new Client(System.in, ecsCommandFactory);
             ecsClient.run();
+
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage());
         } catch (InvalidAuthenticationInfosException ex) {

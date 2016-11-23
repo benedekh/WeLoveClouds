@@ -14,20 +14,20 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
-import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
+import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 
 /**
- * Created by Benoit on 2016-11-20.
+ * Created by Benoit on 2016-11-22.
  */
-public class StopNode extends AbstractEcsNetworkCommand {
+public class SetWriteLock extends AbstractEcsNetworkCommand {
 
-    public StopNode(Builder stopNodeBuilder) {
-        this.communicationApi = stopNodeBuilder.communicationApi;
-        this.targetedNode = stopNodeBuilder.targetedNode;
-        this.messageSerializer = stopNodeBuilder.messageSerializer;
-        this.messageDeserializer = stopNodeBuilder.messageDeserializer;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to stop node:",
+    public SetWriteLock(Builder setWriteLockBuilder) {
+        this.communicationApi = setWriteLockBuilder.communicationApi;
+        this.targetedNode = setWriteLockBuilder.targetedNode;
+        this.messageSerializer = setWriteLockBuilder.messageSerializer;
+        this.messageDeserializer = setWriteLockBuilder.messageDeserializer;
+        this.errorMessage = CustomStringJoiner.join(" ", "Unable to start node:",
                 targetedNode.toString());
     }
 
@@ -36,7 +36,7 @@ public class StopNode extends AbstractEcsNetworkCommand {
         try {
             communicationApi.connectTo(targetedNode.getServerConnectionInfo());
             KVAdminMessage message = new KVAdminMessage.Builder()
-                    .status(StatusType.STOP)
+                    .status(StatusType.LOCKWRITE)
                     .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
@@ -53,7 +53,7 @@ public class StopNode extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Command: StopNode", "Targeted node:", targetedNode
+        return CustomStringJoiner.join(" ", "Command: SetWriteLock", "Targeted node:", targetedNode
                 .toString());
     }
 
@@ -83,8 +83,8 @@ public class StopNode extends AbstractEcsNetworkCommand {
             return this;
         }
 
-        public StopNode build() {
-            return new StopNode(this);
+        public SetWriteLock build() {
+            return new SetWriteLock(this);
         }
     }
 }

@@ -4,6 +4,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
+import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.repository.StorageNode;
@@ -14,6 +15,7 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.SYNCHRONIZED;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.INITKVSERVER;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 
@@ -44,13 +46,16 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand {
                     .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
-
+            communicationApi.disconnect();
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
+            } else {
+                targetedNode.setMetadataStatus(SYNCHRONIZED);
             }
 
         } catch (UnableToConnectException | UnableToSendContentToServerException |
-                ConnectionClosedException | DeserializationException ex) {
+                ConnectionClosedException | DeserializationException |
+                UnableToDisconnectException ex) {
             throw new ClientSideException(errorMessage, ex);
         }
     }

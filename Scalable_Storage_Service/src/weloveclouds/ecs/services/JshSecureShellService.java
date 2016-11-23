@@ -22,16 +22,15 @@ public class JshSecureShellService implements ISecureShellService {
     private static final int SECURE_SHELL_PORT = 22;
     private static final String EXEC_CHANNEL = "exec";
     private AuthConfigurationProvider authConfigurationProvider;
-    private JSch secureShell;
 
-    public JshSecureShellService() throws IOException, InvalidAuthenticationInfosException {
-        this.authConfigurationProvider = AuthConfigurationProvider.getInstance();
-        this.secureShell = new JSch();
+    public JshSecureShellService(AuthConfigurationProvider authConfigurationProvider) {
+        this.authConfigurationProvider = authConfigurationProvider;
     }
 
 
     @Override
-    public void runCommand(AbstractRemoteCommand command) throws SecureShellServiceException {
+    synchronized public void runCommand(AbstractRemoteCommand command) throws SecureShellServiceException {
+        JSch secureShell = new JSch();
         String targetedHostIp = command.getTargetedHostIp();
 
         try {

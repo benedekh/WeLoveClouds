@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import weloveclouds.ecs.models.commands.client.Stop;
 import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -35,5 +37,19 @@ public class RingMetadataHelper {
         rangeEnd = ringPosition == --numberOfNodeInTheRing ? Hash.MAX_VALUE : nodeHashKey;
 
         return new HashRange.Builder().start(rangeStart).end(rangeEnd).build();
+    }
+
+    public static StorageNode getSuccessorFrom(RingTopology<StorageNode> oldTopology,
+                                               RingTopology<StorageNode> newTopology, StorageNode newNode) {
+        StorageNode successor = null;
+        int newNodePosition = newTopology.getRingPositionOf(newNode);
+
+        if (newNodePosition > oldTopology.getLastPosition()) {
+            successor = oldTopology.getLastNode();
+        } else {
+            successor = oldTopology.getNodeAtPosition(newNodePosition);
+        }
+
+        return successor;
     }
 }

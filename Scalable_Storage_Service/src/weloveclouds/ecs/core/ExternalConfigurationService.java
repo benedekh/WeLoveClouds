@@ -2,6 +2,7 @@ package weloveclouds.ecs.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
@@ -9,10 +10,11 @@ import java.util.Observer;
 
 import weloveclouds.cli.utils.UserOutputWriter;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;
 import weloveclouds.ecs.exceptions.ServiceBootstrapException;
+import weloveclouds.ecs.models.commands.AbstractCommand;
+import weloveclouds.ecs.models.commands.internal.EcsInternalCommandFactory;
 import weloveclouds.ecs.models.commands.internal.InitNodeMetadata;
 import weloveclouds.ecs.models.commands.internal.ShutdownNode;
 import weloveclouds.ecs.models.commands.internal.StartNode;
@@ -26,7 +28,7 @@ import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
 import weloveclouds.ecs.models.tasks.BatchRetryableTasks;
 import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
 import weloveclouds.ecs.models.tasks.SimpleRetryableTask;
-import weloveclouds.ecs.services.ISecureShellService;
+import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.ListUtils;
 import weloveclouds.ecs.utils.RingMetadataHelper;
@@ -34,12 +36,7 @@ import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+
 
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.INITIALIZING_SERVICE;
@@ -52,6 +49,7 @@ import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.*;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.RUNNING;
+import static weloveclouds.ecs.models.tasks.BatchPurpose.ADD_NODE;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.SERVICE_INITIALISATION;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.SHUTDOWN;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.START_NODE;
@@ -69,14 +67,13 @@ public class ExternalConfigurationService implements Observer {
     private EcsRepository repository;
     private EcsRepositoryFactory ecsRepositoryFactory;
     private ITaskService taskService;
-    private CommunicationApiFactory communicationApiFactory;
-    private ISecureShellService secureShellService;
+    private EcsInternalCommandFactory ecsInternalCommandFactory;
+    private RingTopology<StorageNode> ringTopology;
 
 
     public ExternalConfigurationService(Builder externalConfigurationServiceBuilder) throws ServiceBootstrapException {
         this.taskService = externalConfigurationServiceBuilder.taskService;
-        this.communicationApiFactory = externalConfigurationServiceBuilder.communicationApiFactory;
-        this.secureShellService = externalConfigurationServiceBuilder.secureShellService;
+        this.ecsInternalCommandFactory = externalConfigurationServiceBuilder.ecsInternalCommandFactory;
         this.ecsRepositoryFactory = externalConfigurationServiceBuilder.ecsRepositoryFactory;
         this.configurationFilePath = externalConfigurationServiceBuilder.configurationFilePath;
         this.ringMetadata = new RingMetadata();
@@ -84,6 +81,7 @@ public class ExternalConfigurationService implements Observer {
                 .build();
         bootstrapConfiguration();
         this.status = UNINITIALIZED;
+        this.ringTopology = new RingTopology<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -96,12 +94,8 @@ public class ExternalConfigurationService implements Observer {
                     .getPreciseNumberOfRandomObjectsFrom(repository.getNodesWithStatus(IDLE), numberOfNodes);
 
             for (StorageNode storageNode : storageNodesToInitialize) {
-                LaunchJar taskCommand = new LaunchJar.Builder()
-                        .jarFilePath(JAR_FILE_PATH)
-                        .arguments(Arrays.asList(Integer.toString(cacheSize), displacementStrategy))
-                        .secureShellService(secureShellService)
-                        .targetedNode(storageNode)
-                        .build();
+                LaunchJar taskCommand = ecsInternalCommandFactory.createLaunchJarCommandWith
+                        (storageNode, JAR_FILE_PATH, cacheSize, displacementStrategy);
 
                 nodeInitialisationBatch.addTask(
                         new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
@@ -122,11 +116,7 @@ public class ExternalConfigurationService implements Observer {
             AbstractBatchTasks<AbstractRetryableTask> nodeStartBatch = new BatchRetryableTasks(START_NODE);
 
             for (StorageNode storageNode : repository.getNodesWithStatus(INITIALIZED)) {
-                StartNode taskCommand = new StartNode.Builder()
-                        .targetedNode(storageNode)
-                        .communicationApi(communicationApiFactory.createCommunicationApiV1())
-                        .build();
-
+                StartNode taskCommand = ecsInternalCommandFactory.createStartNodeCommandFor(storageNode);
                 nodeStartBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_START_RETRIES, taskCommand));
             }
 
@@ -144,11 +134,7 @@ public class ExternalConfigurationService implements Observer {
             AbstractBatchTasks<AbstractRetryableTask> nodeStopBatch = new BatchRetryableTasks(STOP_NODE);
 
             for (StorageNode storageNode : repository.getNodesWithStatus(RUNNING)) {
-                StopNode taskCommand = new StopNode.Builder()
-                        .targetedNode(storageNode)
-                        .communicationApi(communicationApiFactory.createCommunicationApiV1())
-                        .build();
-
+                StopNode taskCommand = ecsInternalCommandFactory.createStopNodeCommandFor(storageNode);
                 nodeStopBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_STOP_RETRIES, taskCommand));
             }
 
@@ -166,11 +152,7 @@ public class ExternalConfigurationService implements Observer {
             List<StorageNodeStatus> activeNodeStatus = Arrays.asList(INITIALIZED, RUNNING);
 
             for (StorageNode storageNode : repository.getNodeWithStatus(activeNodeStatus)) {
-                ShutdownNode taskCommand = new ShutdownNode.Builder()
-                        .targetedNode(storageNode)
-                        .communicationApi(communicationApiFactory.createCommunicationApiV1())
-                        .build();
-
+                ShutdownNode taskCommand = ecsInternalCommandFactory.createShutDownNodeCommandFor(storageNode);
                 nodeShutdownBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES, taskCommand));
             }
             taskService.launchBatchTasks(nodeShutdownBatch);
@@ -183,6 +165,26 @@ public class ExternalConfigurationService implements Observer {
 
     public void addNode(int cacheSize, String displacementStrategy) throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
+            AbstractBatchTasks<AbstractRetryableTask> addNodeBatch = new BatchRetryableTasks(ADD_NODE);
+            StorageNode newStorageNode = (StorageNode) ListUtils.getRandomObjectFrom(repository
+                    .getNodesWithStatus(IDLE));
+            List<StorageNode> nodes = ringTopology.getNodes();
+            nodes.add(newStorageNode);
+            RingTopology<StorageNode> newTopology = new RingTopology<>(RingMetadataHelper.computeRingOrder
+                    (nodes));
+            StorageNode successorNode = RingMetadataHelper.getSuccessorFrom(ringTopology,
+                    newTopology, newStorageNode);
+            updateRingMetadataFrom(ringTopology.updateTopologyWith(newTopology));
+
+            LaunchJar taskCommand = ecsInternalCommandFactory
+                    .createLaunchJarCommandWith(newStorageNode, JAR_FILE_PATH, cacheSize, displacementStrategy);
+
+            List<AbstractCommand> successCommand = new ArrayList<>();
+            successCommand.add(ecsInternalCommandFactory.createInitNodeMetadataCommandWith
+                    (newStorageNode, ringMetadata));
+            successCommand.add(ecsInternalCommandFactory.createSetWriteLockCommandFor(successorNode));
+
+
             status = ADDING_NODE;
         } else {
             throw new ExternalConfigurationServiceException("Operation <addNode> is not " +
@@ -204,13 +206,8 @@ public class ExternalConfigurationService implements Observer {
                 BatchRetryableTasks(SERVICE_INITIALISATION);
 
         for (StorageNode storageNode : repository.getNodesWithStatus(INITIALIZED)) {
-            InitNodeMetadata taskCommand = new InitNodeMetadata.Builder()
-                    .communicationApi(communicationApiFactory.createCommunicationApiV1())
-                    .messageSerializer(new KVAdminMessageSerializer())
-                    .messageDeserializer(new KVAdminMessageDeserializer())
-                    .ringMetadata(ringMetadata)
-                    .targetedNode(storageNode)
-                    .build();
+            InitNodeMetadata taskCommand = ecsInternalCommandFactory
+                    .createInitNodeMetadataCommandWith(storageNode, ringMetadata);
 
             nodeMetadataInitialisationBatch.addTask(
                     new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
@@ -233,14 +230,19 @@ public class ExternalConfigurationService implements Observer {
     private void initializeRingMetadata() {
         List<StorageNode> ringOrderedNodes = RingMetadataHelper.computeRingOrder(repository
                 .getNodesWithStatus(INITIALIZED));
+        ringTopology.updateTopologyWith(ringOrderedNodes);
+        updateRingMetadataFrom(ringTopology);
+    }
+
+    private void updateRingMetadataFrom(RingTopology<StorageNode> ringTopology) {
         HashRange previousRange = null;
 
-        for (StorageNode node : ringOrderedNodes) {
+        for (StorageNode node : ringTopology.getNodes()) {
             HashRange hashRange;
-            int ringPosition = ringOrderedNodes.indexOf(node);
+            int ringPosition = ringTopology.getRingPositionOf(node);
 
             hashRange = RingMetadataHelper.computeHashRangeForNodeBasedOnRingPosition(ringPosition,
-                    ringOrderedNodes.size(), node.getHashKey(), previousRange);
+                    ringTopology.getNumberOfNodes(), node.getHashKey(), previousRange);
             node.setHashRange(hashRange);
 
             ringMetadata.addRangeInfo(new RingMetadataPart.Builder().connectionInfo(node
@@ -299,16 +301,10 @@ public class ExternalConfigurationService implements Observer {
         private String configurationFilePath;
         private EcsRepositoryFactory ecsRepositoryFactory;
         private ITaskService taskService;
-        private CommunicationApiFactory communicationApiFactory;
-        private ISecureShellService secureShellService;
+        private EcsInternalCommandFactory ecsInternalCommandFactory;
 
-        public Builder CommunicationApiFactory(CommunicationApiFactory communicationApiFactory) {
-            this.communicationApiFactory = communicationApiFactory;
-            return this;
-        }
-
-        public Builder secureShellService(ISecureShellService secureShellService) {
-            this.secureShellService = secureShellService;
+        public Builder ecsInternalCommandFactory(EcsInternalCommandFactory ecsInternalCommandFactory) {
+            this.ecsInternalCommandFactory = ecsInternalCommandFactory;
             return this;
         }
 

@@ -1,5 +1,7 @@
 package weloveclouds.ecs.models.tasks;
 
+import java.util.List;
+
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 
@@ -7,11 +9,13 @@ import weloveclouds.ecs.models.commands.AbstractCommand;
  * Created by Benoit on 2016-11-20.
  */
 public class SimpleRetryableTask extends AbstractRetryableTask {
-    public SimpleRetryableTask(int maxNumberOfRetries, AbstractCommand command, AbstractCommand successCommand, AbstractCommand failCommand) {
+    public SimpleRetryableTask(int maxNumberOfRetries, AbstractCommand command,
+                               List<AbstractCommand> successCommand, List<AbstractCommand> failCommand) {
         super(maxNumberOfRetries, command, successCommand, failCommand);
     }
 
-    public SimpleRetryableTask(int maxNumberOfRetries, AbstractCommand command, AbstractCommand successCommand) {
+    public SimpleRetryableTask(int maxNumberOfRetries, AbstractCommand command,
+                               List<AbstractCommand> successCommand) {
         super(maxNumberOfRetries, command, successCommand, null);
     }
 
@@ -28,15 +32,19 @@ public class SimpleRetryableTask extends AbstractRetryableTask {
 
     @Override
     public void runSuccessCommand() throws ClientSideException {
-        if (successCommand != null) {
-            successCommand.execute();
+        if (successCommands != null) {
+            for (AbstractCommand command : successCommands) {
+                command.execute();
+            }
         }
     }
 
     @Override
     public void runFailCommand() throws ClientSideException {
-        if (failCommand != null) {
-            failCommand.execute();
+        if (failCommands != null) {
+            for (AbstractCommand command : failCommands) {
+                command.execute();
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
+import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.repository.StorageNode;
@@ -14,7 +15,7 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
-import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.START;
+import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 
 /**
  * Created by Benoit on 2016-11-20.
@@ -35,23 +36,25 @@ public class StartNode extends AbstractEcsNetworkCommand {
         try {
             communicationApi.connectTo(targetedNode.getServerConnectionInfo());
             KVAdminMessage message = new KVAdminMessage.Builder()
-                    .status(START)
+                    .status(StatusType.START)
                     .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
-
+            communicationApi.disconnect();
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             }
         } catch (UnableToConnectException | UnableToSendContentToServerException |
-                ConnectionClosedException | DeserializationException ex) {
+                ConnectionClosedException | DeserializationException |
+                UnableToDisconnectException ex) {
             throw new ClientSideException(errorMessage, ex);
         }
     }
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "StartNode");
+        return CustomStringJoiner.join(" ", "Command: StartNode", "Targeted node:", targetedNode
+                .toString());
     }
 
     public static class Builder {

@@ -1,6 +1,7 @@
 package weloveclouds.ecs.models.tasks;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -19,18 +20,18 @@ public abstract class AbstractRetryableTask {
     protected String id;
     protected Status status;
     protected AbstractCommand command;
-    protected AbstractCommand successCommand;
-    protected AbstractCommand failCommand;
+    protected List<AbstractCommand> successCommands;
+    protected List<AbstractCommand> failCommands;
     protected int numberOfAttempt;
     protected int maxNumberOfRetries;
 
-    public AbstractRetryableTask(int maxNumberOfRetries, AbstractCommand command, AbstractCommand
-            successCommand, AbstractCommand failCommand) {
+    public AbstractRetryableTask(int maxNumberOfRetries, AbstractCommand command,
+                                 List<AbstractCommand> successCommand, List<AbstractCommand> failCommand) {
         this.id = UUID.randomUUID().toString();
         this.status = WAITING;
         this.command = command;
-        this.successCommand = successCommand;
-        this.failCommand = failCommand;
+        this.successCommands = successCommand;
+        this.failCommands = failCommand;
         this.numberOfAttempt = 0;
         this.maxNumberOfRetries = maxNumberOfRetries;
     }
@@ -63,12 +64,12 @@ public abstract class AbstractRetryableTask {
         return command;
     }
 
-    public AbstractCommand getSuccessCommand() {
-        return successCommand;
+    public List<AbstractCommand> getSuccessCommands() {
+        return successCommands;
     }
 
-    public AbstractCommand getFailCommand() {
-        return failCommand;
+    public List<AbstractCommand> getFailCommands() {
+        return failCommands;
     }
 
     public abstract void runCommand() throws ClientSideException;

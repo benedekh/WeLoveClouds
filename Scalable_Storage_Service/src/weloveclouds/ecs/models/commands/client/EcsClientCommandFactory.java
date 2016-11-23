@@ -1,4 +1,4 @@
-package weloveclouds.ecs.models.commands;
+package weloveclouds.ecs.models.commands.client;
 
 import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.ecs.api.IKVEcsApi;
@@ -15,10 +15,10 @@ import weloveclouds.ecs.models.commands.client.Stop;
 /**
  * Created by Benoit on 2016-11-16.
  */
-public class EcsCommandFactory {
+public class EcsClientCommandFactory {
     IKVEcsApi externalConfigurationServiceApi;
 
-    public EcsCommandFactory(IKVEcsApi externalConfigurationServiceApi) {
+    public EcsClientCommandFactory(IKVEcsApi externalConfigurationServiceApi) {
         this.externalConfigurationServiceApi = externalConfigurationServiceApi;
     }
 

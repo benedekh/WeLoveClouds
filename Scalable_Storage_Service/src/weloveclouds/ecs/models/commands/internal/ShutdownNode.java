@@ -4,17 +4,19 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
+import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
-import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.SHUTDOWN;
+import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 
 /**
  * Created by Benoit on 2016-11-20.
@@ -35,16 +37,17 @@ public class ShutdownNode extends AbstractEcsNetworkCommand {
         try {
             communicationApi.connectTo(targetedNode.getServerConnectionInfo());
             KVAdminMessage message = new KVAdminMessage.Builder()
-                    .status(SHUTDOWN)
+                    .status(StatusType.SHUTDOWN)
                     .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
-
+            communicationApi.disconnect();
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             }
         } catch (UnableToConnectException | UnableToSendContentToServerException |
-                ConnectionClosedException | DeserializationException ex) {
+                ConnectionClosedException | DeserializationException |
+                UnableToDisconnectException ex) {
             throw new ClientSideException(errorMessage, ex);
         }
     }
