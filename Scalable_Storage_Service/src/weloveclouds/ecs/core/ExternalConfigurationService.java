@@ -183,6 +183,7 @@ public class ExternalConfigurationService implements Observer {
             successCommand.add(ecsInternalCommandFactory.createInitNodeMetadataCommandWith
                     (newStorageNode, ringMetadata));
             successCommand.add(ecsInternalCommandFactory.createSetWriteLockCommandFor(successorNode));
+            successCommand.add()
 
 
             status = ADDING_NODE;

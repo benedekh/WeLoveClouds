@@ -27,7 +27,7 @@ public class SetWriteLock extends AbstractEcsNetworkCommand {
         this.targetedNode = setWriteLockBuilder.targetedNode;
         this.messageSerializer = setWriteLockBuilder.messageSerializer;
         this.messageDeserializer = setWriteLockBuilder.messageDeserializer;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to start node:",
+        this.errorMessage = CustomStringJoiner.join(" ", "Unable to set write lock on node:",
                 targetedNode.toString());
     }
 

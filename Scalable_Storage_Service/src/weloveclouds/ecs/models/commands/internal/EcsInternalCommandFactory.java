@@ -80,4 +80,26 @@ public class EcsInternalCommandFactory {
                 .messageDeserializer(new KVAdminMessageDeserializer())
                 .build();
     }
+
+    public ReleaseWriteLock createReleaseWriteLockCommandFor(StorageNode storageNode) {
+        return new ReleaseWriteLock.Builder()
+                .targetedNode(storageNode)
+                .communicationApi(communicationApiFactory.createCommunicationApiV1())
+                .messageSerializer(new KVAdminMessageSerializer())
+                .messageDeserializer(new KVAdminMessageDeserializer())
+                .build();
+    }
+
+    public InvokeDataTransfer createInvokeDataTransferCommandWith(StorageNode targetedNode,
+                                                                  StorageNode newNode,
+                                                                  RingMetadata ringMetadata) {
+        return new InvokeDataTransfer.Builder()
+                .targetedNode(targetedNode)
+                .communicationApi(communicationApiFactory.createCommunicationApiV1())
+                .messageSerializer(new KVAdminMessageSerializer())
+                .messageDeserializer(new KVAdminMessageDeserializer())
+                .newNode(newNode)
+                .ringMetadata(ringMetadata)
+                .build();
+    }
 }
