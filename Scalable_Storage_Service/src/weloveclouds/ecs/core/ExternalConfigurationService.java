@@ -138,7 +138,7 @@ public class ExternalConfigurationService implements Observer {
 
             AbstractBatchTasks<AbstractRetryableTask> nodeStopBatch = new BatchRetryableTasks(STOP_NODE);
 
-            for (StorageNode storageNode : repository.getNodesWithStatus(RUNNING)) {
+            for (StorageNode storageNode : repository.getNodesWithStatus(INITIALIZED)) {
                 StopNode taskCommand = ecsInternalCommandFactory.createStopNodeCommandFor(storageNode);
                 nodeStopBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_STOP_RETRIES, taskCommand));
             }
@@ -328,8 +328,10 @@ public class ExternalConfigurationService implements Observer {
 
         switch (batch.getPurpose()) {
             case SERVICE_INITIALISATION:
-                initializeRingMetadata();
-                initializeNodesWithMetadata();
+                if (!failedTasks.containsAll(batch.getTasks())) {
+                    initializeRingMetadata();
+                    initializeNodesWithMetadata();
+                }
                 break;
             case START_NODE:
                 status = EcsStatus.INITIALIZED;
