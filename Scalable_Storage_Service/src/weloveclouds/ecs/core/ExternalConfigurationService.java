@@ -252,7 +252,7 @@ public class ExternalConfigurationService implements Observer {
         }
 
         taskService.launchBatchTasks(nodeMetadataInitialisationBatch);
-        status = INITIALIZING_SERVICE;
+        status = EcsStatus.UPDATING_METADATA;
     }
 
     private void updateNodesWithMetadata() {

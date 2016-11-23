@@ -29,8 +29,8 @@ public class EcsInternalCommandFactory {
             cacheSize, String displacementStrategy) {
         return new LaunchJar.Builder()
                 .jarFilePath(jarFilePath)
-                .arguments(Arrays.asList(Integer.toString(storageNode.getPort()), Integer.toString(cacheSize),
-                        displacementStrategy, LOG_LEVEL_ALL))
+                .arguments(Arrays.asList(jarFilePath, Integer.toString(storageNode.getPort()),
+                        Integer.toString(cacheSize), displacementStrategy, LOG_LEVEL_ALL))
                 .secureShellService(secureShellServiceFactory.createJshSecureShellService())
                 .targetedNode(storageNode)
                 .build();

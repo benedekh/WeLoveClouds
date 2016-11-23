@@ -31,7 +31,7 @@ public class AuthInfos {
     }
 
     public AuthenticationMethod getAuthenticationMethod() {
-        return password == null ? PRIVATE_KEY : PASSWORD;
+        return password == null || password == "" ? PRIVATE_KEY : PASSWORD;
     }
 
     public static class AuthInfosBuilder {
