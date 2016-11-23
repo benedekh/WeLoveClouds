@@ -240,7 +240,7 @@ public class ExternalConfigurationService implements Observer {
 
     private void initializeNodesWithMetadata() {
         AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch = new
-                BatchRetryableTasks(SERVICE_INITIALISATION);
+                BatchRetryableTasks(UPDATING_METADATA);
 
         for (StorageNode storageNode : repository.getNodesWithStatus(INITIALIZED)) {
             InitNodeMetadata taskCommand = ecsInternalCommandFactory
@@ -330,7 +330,6 @@ public class ExternalConfigurationService implements Observer {
             case SERVICE_INITIALISATION:
                 initializeRingMetadata();
                 initializeNodesWithMetadata();
-                status = EcsStatus.INITIALIZED;
                 break;
             case START_NODE:
                 status = EcsStatus.INITIALIZED;
