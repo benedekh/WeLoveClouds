@@ -14,6 +14,11 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.HashRangeSerializer;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 
+/**
+ * Tests for the {@link HashRange} to verify its serialization and deserialization processes.
+ * 
+ * @author Benedek
+ */
 public class HashRangeTest {
 
     private static final IDeserializer<HashRange, String> hashRangeDeserializer =
@@ -26,7 +31,7 @@ public class HashRangeTest {
             throws DeserializationException, UnknownHostException {
         Hash start = HashingUtil.getHash("a");
         Hash end = HashingUtil.getHash("z");
-        HashRange range = new HashRange.Builder().start(start).end(end).build();
+        HashRange range = new HashRange.Builder().begin(start).end(end).build();
 
         String serializedRange = hashRangeSerializer.serialize(range);
         HashRange deserializedRange = hashRangeDeserializer.deserialize(serializedRange);

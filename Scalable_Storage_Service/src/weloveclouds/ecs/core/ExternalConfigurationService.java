@@ -85,7 +85,7 @@ public class ExternalConfigurationService implements Observer {
         this.ecsRepositoryFactory = externalConfigurationServiceBuilder.ecsRepositoryFactory;
         this.configurationFilePath = externalConfigurationServiceBuilder.configurationFilePath;
         this.ringMetadata = new RingMetadata();
-        INITIAL_HASHRANGE = new HashRange.Builder().start(Hash.MIN_VALUE).end(Hash.MAX_VALUE)
+        INITIAL_HASHRANGE = new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE)
                 .build();
         bootstrapConfiguration();
         this.status = UNINITIALIZED;

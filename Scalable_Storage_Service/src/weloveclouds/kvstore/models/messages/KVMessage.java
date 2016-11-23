@@ -75,6 +75,11 @@ public class KVMessage implements IKVMessage {
         return true;
     }
 
+    /**
+     * Builder pattern for creating a {@link KVMessage} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private KVEntry entry;
         private StatusType status;

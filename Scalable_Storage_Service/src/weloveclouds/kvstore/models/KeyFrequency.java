@@ -17,7 +17,7 @@ public class KeyFrequency implements Comparable<KeyFrequency> {
         this.frequency = frequency;
     }
 
-    public void increaseFrequency() {
+    public void increaseFrequencyByOne() {
         frequency += 1;
     }
 

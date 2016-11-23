@@ -36,7 +36,7 @@ public class RingMetadataHelper {
         rangeStart = ringPosition == FIRST_NODE_IN_THE_RING ? Hash.MIN_VALUE : previousHashRange.getEnd().incrementByOne();
         rangeEnd = ringPosition == --numberOfNodeInTheRing ? Hash.MAX_VALUE : nodeHashKey;
 
-        return new HashRange.Builder().start(rangeStart).end(rangeEnd).build();
+        return new HashRange.Builder().begin(rangeStart).end(rangeEnd).build();
     }
 
     public static StorageNode getSuccessorFrom(RingTopology<StorageNode> oldTopology,

@@ -6,6 +6,11 @@ import java.util.Set;
 
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 
+/**
+ * Stores several {@link MovableStorageUnit}s.
+ * 
+ * @author Benedek
+ */
 public class MovableStorageUnits {
 
     private Set<MovableStorageUnit> storageUnits;
@@ -60,6 +65,13 @@ public class MovableStorageUnits {
         return true;
     }
 
+    /**
+     * Converts the object to String.
+     * 
+     * @param betweenStorageUnits separator character among the storage units
+     * @param storageUnitSerializer ot convert the {@link MovableStorageUnit} into a String
+     *        representation
+     */
     public String toStringWithDelimiter(String betweenStorageUnits,
             ISerializer<String, MovableStorageUnit> storageUnitSerializer) {
         StringBuilder sb = new StringBuilder();

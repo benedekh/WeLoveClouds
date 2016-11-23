@@ -15,6 +15,12 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
 
+/**
+ * Tests for the {@link RingMetadataPart} to verify its serialization and deserialization
+ * processes.
+ * 
+ * @author Benedek
+ */
 public class RingMetadataPartTest {
 
     private static final IDeserializer<RingMetadataPart, String> metadataPartDeserializer =
@@ -28,7 +34,7 @@ public class RingMetadataPartTest {
         ServerConnectionInfo sci =
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
         RingMetadataPart metadataPart = new RingMetadataPart.Builder().connectionInfo(sci)
-                .range(new HashRange.Builder().start(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
+                .range(new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
                 .build();
 
         String serializedMetadataPart = metadataPartSerializer.serialize(metadataPart);

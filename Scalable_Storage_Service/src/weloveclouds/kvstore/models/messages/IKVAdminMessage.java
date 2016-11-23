@@ -2,7 +2,6 @@ package weloveclouds.kvstore.models.messages;
 
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.server.models.ServerInitializationContext;
 
 /**
  * Represents an administrative message between the ECS and the KVServer.
@@ -27,11 +26,6 @@ public interface IKVAdminMessage {
      *         types associated to the message
      */
     public StatusType getStatus();
-
-    /**
-     * @return the structure which stores the initialization information for the server
-     */
-    public ServerInitializationContext getInitializationContext();
 
     /**
      * @return the ring metadata parts (<IP, port, range>) for each server

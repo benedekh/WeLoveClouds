@@ -9,6 +9,11 @@ import java.util.List;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
 
+/**
+ * Utility class for the {@link Hash}.
+ *
+ * @author Benedek
+ */
 public class HashingUtil {
 
     public static List<HashRange> divideHashRangeIntoEqualSubranges(HashRange hashRange, int
@@ -23,13 +28,17 @@ public class HashingUtil {
             byte[] subRangeEnd = i.add(subRangeIntensity.subtract(BigInteger.valueOf(1)))
                     .toByteArray();
             subRanges.add(new HashRange.Builder()
-                    .start(new Hash(subRangeStart))
+                    .begin(new Hash(subRangeStart))
                     .end(new Hash(subRangeEnd))
                     .build());
         }
         return subRanges;
     }
 
+    /**
+     * @return MD5 hash representation of the parameter String or null if the algorithm is not
+     * available
+     */
     public static Hash getHash(String input) {
         Hash hash = null;
 

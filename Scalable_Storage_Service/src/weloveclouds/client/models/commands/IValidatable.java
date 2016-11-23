@@ -5,13 +5,7 @@ package weloveclouds.client.models.commands;
  *
  * @author Benoit
  */
-public interface IValidatable {
+public interface IValidatable extends weloveclouds.server.core.requests.IValidatable<ICommand> {
 
-    /**
-     * Validates the respective command. Returns the command if the validation was successful.
-     *
-     * @throws IllegalArgumentException if the command's arguments are syntactically or semantically
-     *                                  invalid
-     */
-    ICommand validate() throws IllegalArgumentException;
 }
+

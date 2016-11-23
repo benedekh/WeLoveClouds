@@ -72,7 +72,6 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
     @Override
     public void connect() throws Exception {
         if (remoteServer == null) {
-            // only for test purposes in the testing package
             remoteServer = new ServerConnectionInfo.Builder().ipAddress(address).port(port).build();
         }
 

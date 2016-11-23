@@ -10,29 +10,33 @@ import org.apache.log4j.Logger;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.models.requests.RequestFactory;
+import weloveclouds.server.core.requests.IExecutable;
+import weloveclouds.server.core.requests.IRequestFactory;
+import weloveclouds.server.core.requests.IValidatable;
 
 /**
- * An exact KV server instance which accepts messages over the network and can handle multiple
- * clients concurrently. For further details refer to {@link SimpleConnectionHandler}.
+ * A Server instance which accepts messages over the network and can handle multiple clients
+ * concurrently. For further details refer to {@link SimpleConnectionHandler}.
  * 
- * @author Benoit
+ * @param <M> the type of the message the server accepts
+ * @param <R> the type of the request which shall be created from M
+ * 
+ * @author Benoit, Benedek
  */
-public class Server extends AbstractServer {
+public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends AbstractServer {
 
     private static final Logger LOGGER = Logger.getLogger(Server.class);
 
     private CommunicationApiFactory communicationApiFactory;
-    private RequestFactory requestFactory;
-    private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
-    private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
+    private IRequestFactory<M, R> requestFactory;
+    private IMessageSerializer<SerializedMessage, M> messageSerializer;
+    private IMessageDeserializer<M, SerializedMessage> messageDeserializer;
 
     private ServerShutdownHook shutdownHook;
 
-    private Server(ServerBuilder serverBuilder) throws IOException {
+    protected Server(Builder<M, R> serverBuilder) throws IOException {
         super(serverBuilder.serverSocketFactory, serverBuilder.port);
         this.communicationApiFactory = serverBuilder.communicationApiFactory;
         this.requestFactory = serverBuilder.requestFactory;
@@ -47,7 +51,7 @@ public class Server extends AbstractServer {
             registerShutdownHookForSocket(socket);
 
             while (status == RUNNING) {
-                new SimpleConnectionHandler.SimpleConnectionBuilder()
+                new SimpleConnectionHandler.Builder<M, R>()
                         .connection(new Connection.Builder().socket(socket.accept()).build())
                         .requestFactory(requestFactory)
                         .communicationApi(
@@ -102,49 +106,49 @@ public class Server extends AbstractServer {
      * 
      * @author Benoit
      */
-    public static class ServerBuilder {
+    public static class Builder<M, R extends IExecutable<M> & IValidatable<R>> {
         private CommunicationApiFactory communicationApiFactory;
         private ServerSocketFactory serverSocketFactory;
-        private RequestFactory requestFactory;
-        private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
-        private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
+        private IRequestFactory<M, R> requestFactory;
+        private IMessageSerializer<SerializedMessage, M> messageSerializer;
+        private IMessageDeserializer<M, SerializedMessage> messageDeserializer;
         private int port;
 
-        public ServerBuilder serverSocketFactory(ServerSocketFactory serverSocketFactory) {
+        public Builder<M, R> serverSocketFactory(ServerSocketFactory serverSocketFactory) {
             this.serverSocketFactory = serverSocketFactory;
             return this;
         }
 
-        public ServerBuilder port(int port) {
+        public Builder<M, R> port(int port) {
             this.port = port;
             return this;
         }
 
-        public ServerBuilder requestFactory(RequestFactory requestFactory) {
+        public Builder<M, R> requestFactory(IRequestFactory<M, R> requestFactory) {
             this.requestFactory = requestFactory;
             return this;
         }
 
-        public ServerBuilder communicationApiFactory(
+        public Builder<M, R> communicationApiFactory(
                 CommunicationApiFactory communicationApiFactory) {
             this.communicationApiFactory = communicationApiFactory;
             return this;
         }
 
-        public ServerBuilder messageSerializer(
-                IMessageSerializer<SerializedMessage, KVMessage> messageSerializer) {
+        public Builder<M, R> messageSerializer(
+                IMessageSerializer<SerializedMessage, M> messageSerializer) {
             this.messageSerializer = messageSerializer;
             return this;
         }
 
-        public ServerBuilder messageDeserializer(
-                IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer) {
+        public Builder<M, R> messageDeserializer(
+                IMessageDeserializer<M, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return this;
         }
 
-        public Server build() throws IOException {
-            return new Server(this);
+        public Server<M, R> build() throws IOException {
+            return new Server<M, R>(this);
         }
     }
 }

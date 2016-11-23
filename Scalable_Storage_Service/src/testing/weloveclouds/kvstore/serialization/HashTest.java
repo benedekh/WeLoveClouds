@@ -13,6 +13,11 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.HashSerializer;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 
+/**
+ * Tests for the {@link Hash} to verify its serialization and deserialization processes.
+ * 
+ * @author Benedek
+ */
 public class HashTest {
 
     private static final IDeserializer<Hash, String> hashDeserializer = new HashDeserializer();
