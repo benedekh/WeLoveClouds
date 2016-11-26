@@ -1,6 +1,6 @@
 package weloveclouds.client.models.commands;
 
-import weloveclouds.cli.utils.UserOutputWriter;
+import weloveclouds.commons.cli.utils.UserOutputWriter;
 
 /**
  * Abstract common class for processing commands. It stores the {@link #arguments} that a specific

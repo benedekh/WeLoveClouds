@@ -1,6 +1,6 @@
 package weloveclouds.server.models.commands;
 
-import weloveclouds.cli.utils.UserOutputWriter;
+import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.server.core.ServerCLIHandler;
 
 /**

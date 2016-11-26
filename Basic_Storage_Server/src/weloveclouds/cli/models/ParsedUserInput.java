@@ -1,4 +1,4 @@
-package weloveclouds.cli.models;
+package weloveclouds.commons.cli.models;
 
 import weloveclouds.client.models.commands.Command;
 import weloveclouds.server.models.commands.ServerCommand;

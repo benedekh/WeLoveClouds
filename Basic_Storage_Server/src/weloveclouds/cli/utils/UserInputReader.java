@@ -1,4 +1,4 @@
-package weloveclouds.cli.utils;
+package weloveclouds.commons.cli.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.cli.models.ParsedUserInput;
+import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.client.utils.CustomStringJoiner;
 
 /**

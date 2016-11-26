@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import weloveclouds.cli.utils.UserOutputWriter;
+import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;

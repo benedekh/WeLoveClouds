@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import weloveclouds.cli.utils.UserOutputWriter;
+import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.api.v1.KVEcsApiV1;

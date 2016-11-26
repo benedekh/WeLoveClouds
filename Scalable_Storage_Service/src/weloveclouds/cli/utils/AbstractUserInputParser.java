@@ -1,4 +1,4 @@
-package weloveclouds.cli.utils;
+package weloveclouds.commons.cli.utils;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.cli.models.ParsedUserInput;
+import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
