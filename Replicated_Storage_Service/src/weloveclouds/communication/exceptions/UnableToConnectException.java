@@ -1,5 +1,6 @@
 package weloveclouds.communication.exceptions;
 
+import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**

@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.exceptions.ClientSideException;
+import weloveclouds.commons.exceptions.ClientSideException;
 
 /**
  * LogLevel command which means setting the log level to the respective value.

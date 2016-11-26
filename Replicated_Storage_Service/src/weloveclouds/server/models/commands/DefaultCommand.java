@@ -1,9 +1,10 @@
 package weloveclouds.server.models.commands;
 
+import weloveclouds.commons.exceptions.ServerSideException;
+
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 import static weloveclouds.server.utils.HelpMessageGenerator.generateHelpMessage;
 
-import weloveclouds.server.models.exceptions.ServerSideException;
 
 /**
  * An unrecognized command.

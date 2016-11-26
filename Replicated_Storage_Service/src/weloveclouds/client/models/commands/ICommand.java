@@ -1,6 +1,7 @@
 package weloveclouds.client.models.commands;
 
-import weloveclouds.communication.exceptions.ClientSideException;
+
+import weloveclouds.commons.exceptions.ClientSideException;
 
 /**
  * Represents an object (command) that can be executed.

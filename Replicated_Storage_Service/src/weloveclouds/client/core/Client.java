@@ -10,7 +10,7 @@ import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
 import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.ClientUserInputParser;
-import weloveclouds.communication.exceptions.ClientSideException;
+import weloveclouds.commons.exceptions.ClientSideException;
 
 /**
  * The echo client itself. It processes (read, validate, execute) various commands that are received

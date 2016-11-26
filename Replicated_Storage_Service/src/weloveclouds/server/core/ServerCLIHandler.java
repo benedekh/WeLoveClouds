@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import weloveclouds.cli.models.ParsedUserInput;
 import weloveclouds.cli.utils.UserInputReader;
 import weloveclouds.cli.utils.UserOutputWriter;
+import weloveclouds.commons.exceptions.ServerSideException;
 import weloveclouds.server.models.commands.ServerCommandFactory;
-import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.utils.ServerUserInputParser;
 
 /**

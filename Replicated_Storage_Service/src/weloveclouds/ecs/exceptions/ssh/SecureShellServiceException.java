@@ -1,6 +1,7 @@
 package weloveclouds.ecs.exceptions.ssh;
 
-import weloveclouds.ecs.exceptions.ClientSideException;
+
+import weloveclouds.commons.exceptions.ClientSideException;
 
 /**
  * Created by Benoit on 2016-11-19.

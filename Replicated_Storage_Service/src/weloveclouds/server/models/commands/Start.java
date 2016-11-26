@@ -5,6 +5,7 @@ import java.nio.file.Path;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.exceptions.ServerSideException;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.kvstore.models.messages.KVMessage;
@@ -12,7 +13,6 @@ import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerSocketFactory;
 import weloveclouds.server.models.ServerCLIConfigurationContext;
-import weloveclouds.server.models.exceptions.ServerSideException;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.services.DataAccessService;

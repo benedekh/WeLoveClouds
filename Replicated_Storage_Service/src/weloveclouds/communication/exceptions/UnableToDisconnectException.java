@@ -1,5 +1,7 @@
 package weloveclouds.communication.exceptions;
 
+import weloveclouds.commons.exceptions.ClientSideException;
+
 /**
  * Client is not able to disconnect from th server.
  *

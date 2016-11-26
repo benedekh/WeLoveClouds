@@ -1,6 +1,8 @@
 package weloveclouds.ecs.exceptions;
 
 
+import weloveclouds.commons.exceptions.ClientSideException;
+
 /**
  * Created by Benoit on 2016-11-21.
  */

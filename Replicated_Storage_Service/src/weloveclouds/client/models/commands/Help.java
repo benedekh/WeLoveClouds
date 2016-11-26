@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.HelpMessageGenerator;
-import weloveclouds.communication.exceptions.ClientSideException;
+import weloveclouds.commons.exceptions.ClientSideException;
 
 /**
  * Help command which means a printing the help of the application.

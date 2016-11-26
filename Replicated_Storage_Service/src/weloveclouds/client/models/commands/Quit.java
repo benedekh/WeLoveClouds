@@ -6,7 +6,7 @@ import java.security.InvalidParameterException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
-import weloveclouds.communication.exceptions.ClientSideException;
+import weloveclouds.commons.exceptions.ClientSideException;
 
 /**
  * Quit command which terminates the application.

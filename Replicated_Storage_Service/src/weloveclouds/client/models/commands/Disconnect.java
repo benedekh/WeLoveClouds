@@ -6,8 +6,8 @@ import java.security.InvalidParameterException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.ArgumentsValidator;
+import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
-import weloveclouds.communication.exceptions.ClientSideException;
 
 /**
  * Disconnect command which means a disconnection from the server.

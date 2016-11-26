@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.cli.utils.AbstractUserInputParser;
 import weloveclouds.client.utils.ArgumentsValidator;
+import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
-import weloveclouds.communication.exceptions.ClientSideException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
