@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.ecs.exceptions.ClientSideException;
+import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.ecs.exceptions.task.RetryableException;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 

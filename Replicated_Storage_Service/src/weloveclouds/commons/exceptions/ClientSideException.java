@@ -1,14 +1,9 @@
-package weloveclouds.communication.exceptions;
+package weloveclouds.commons.exceptions;
 
 /**
- * An exception which occured on the client side during the client-server communication.
- *
- * @author Benoit, Benedek
+ * Created by Benoit on 2016-11-17.
  */
 public class ClientSideException extends Exception {
-
-    private static final long serialVersionUID = -1303292214386659879L;
-
     public ClientSideException(String message) {
         super(message);
     }

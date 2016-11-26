@@ -1,5 +1,7 @@
 package weloveclouds.communication.exceptions;
 
+import weloveclouds.commons.exceptions.ClientSideException;
+
 /**
  * The connection was already closed.
  *

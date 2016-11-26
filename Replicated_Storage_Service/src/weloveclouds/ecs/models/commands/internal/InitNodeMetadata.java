@@ -1,12 +1,12 @@
 package weloveclouds.ecs.models.commands.internal;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
-import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
@@ -52,8 +52,7 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand {
                 targetedNode.setMetadataStatus(SYNCHRONIZED);
             }
 
-        } catch (UnableToConnectException | UnableToSendContentToServerException |
-                ConnectionClosedException | DeserializationException ex) {
+        } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);
         } finally {
             try {

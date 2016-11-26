@@ -2,7 +2,7 @@ package weloveclouds.ecs.models.tasks;
 
 import java.util.List;
 
-import weloveclouds.ecs.exceptions.ClientSideException;
+import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 
 /**

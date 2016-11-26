@@ -4,7 +4,7 @@ import java.security.InvalidParameterException;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.client.utils.HelpMessageGenerator;
-import weloveclouds.communication.exceptions.ClientSideException;
+import weloveclouds.commons.exceptions.ClientSideException;
 
 /**
  * Represents a command that was not recognized as a valid

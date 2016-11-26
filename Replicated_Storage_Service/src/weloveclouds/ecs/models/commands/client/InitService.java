@@ -1,7 +1,7 @@
 package weloveclouds.ecs.models.commands.client;
 
+import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.ecs.api.IKVEcsApi;
-import weloveclouds.ecs.exceptions.ClientSideException;
 import weloveclouds.ecs.models.commands.ICommand;
 import weloveclouds.ecs.utils.ArgumentsValidator;
 
