@@ -175,6 +175,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             }
         } catch (NoSuchElementException ex) {
             // iterator is over
+            LOGGER.error(ex);
         } finally {
             unitsWithFreeSpace.clear();
 
@@ -237,6 +238,8 @@ public class MovablePersistentStorage extends KVPersistentStorage {
 
             return next;
         } catch (NoSuchElementException ex) {
+            // iterator is over
+            LOGGER.error(ex);
             return null;
         }
     }
