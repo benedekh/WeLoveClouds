@@ -43,5 +43,18 @@
         <jarDirectory url="file://$MODULE_DIR$/Scalable_Storage_Service/libs" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/Replicated_Storage_Service/libs" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/Replicated_Storage_Service/libs" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/Replicated_Storage_Service/libs" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/Replicated_Storage_Service/libs" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>
