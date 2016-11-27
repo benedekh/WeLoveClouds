@@ -2,6 +2,8 @@ package weloveclouds.server.core;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -10,8 +12,8 @@ import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.server.core.requests.ICallbackRegister;
 import weloveclouds.server.core.requests.IExecutable;
 import weloveclouds.server.core.requests.IRequestFactory;
 import weloveclouds.server.core.requests.IValidatable;
@@ -28,7 +30,7 @@ import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
  * @author Benoit
  */
 public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<R>> extends Thread
-        implements IConnectionHandler {
+        implements IConnectionHandler, ICallbackRegister {
 
     private static final Logger LOGGER = Logger.getLogger(SimpleConnectionHandler.class);
 
@@ -38,17 +40,28 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
     private IMessageSerializer<SerializedMessage, M> messageSerializer;
     private IMessageDeserializer<M, SerializedMessage> messageDeserializer;
 
+    private List<Runnable> callbacks;
+    private ConnectionHandlerShutdownHook shutdownHook;
+
     protected SimpleConnectionHandler(Builder<M, R> simpleConnectionBuilder) {
         this.communicationApi = simpleConnectionBuilder.communicationApi;
         this.connection = simpleConnectionBuilder.connection;
         this.requestFactory = simpleConnectionBuilder.requestFactory;
         this.messageSerializer = simpleConnectionBuilder.messageSerializer;
         this.messageDeserializer = simpleConnectionBuilder.messageDeserializer;
+        this.callbacks = new ArrayList<>();
+        registerShutdownHookForConnection();
     }
 
     @Override
     public void handleConnection() {
         start();
+    }
+
+
+    @Override
+    public void registerCallback(Runnable callback) {
+        callbacks.add(callback);
     }
 
     @SuppressWarnings("unchecked")
@@ -64,8 +77,9 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
                     LOGGER.debug(CustomStringJoiner.join(" ", "Message received:",
                             receivedMessage.toString()));
 
-                    response = requestFactory.createRequestFromReceivedMessage(receivedMessage)
-                            .validate().execute();
+                    response =
+                            requestFactory.createRequestFromReceivedMessage(receivedMessage, this)
+                                    .validate().execute();
                 } catch (IllegalRequestException ex) {
                     try {
                         response = (M) ex.getResponse();
@@ -83,27 +97,65 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
                             LOGGER.error(e);
                         }
                     }
+                    for (Runnable callback : callbacks) {
+                        Thread callbackThread = new Thread(callback);
+                        callbackThread.start();
+                        callbackThread.join();
+                    }
                 }
             }
-        } catch (IOException | DeserializationException e) {
-            LOGGER.error(e);
-            closeConnection(connection);
         } catch (Throwable e) {
-            LOGGER.fatal(e);
-            closeConnection(connection);
+            LOGGER.error(e);
+            closeConnection();
         }
 
         LOGGER.info("Client is disconnected.");
     }
 
     /**
-     * Closes the respective connection.
+     * Registers a shutdown hook that will close the connection upon JVM exit.
      */
-    private void closeConnection(Connection connection) {
+    private void registerShutdownHookForConnection() {
+        if (shutdownHook != null) {
+            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        } else {
+            shutdownHook = new ConnectionHandlerShutdownHook(connection);
+            Runtime.getRuntime().addShutdownHook(shutdownHook);
+        }
+    }
+
+    /**
+     * Closes the stored connection.
+     */
+    private void closeConnection() {
         try {
             connection.kill();
         } catch (IOException ex) {
             LOGGER.error(ex);
+        }
+    }
+
+    /**
+     * A shutdown hook which closes connection if it was not closed beforehand.
+     * 
+     * @author Benedek
+     */
+    private static class ConnectionHandlerShutdownHook extends Thread {
+
+        private static final Logger LOGGER = Logger.getLogger(ConnectionHandlerShutdownHook.class);
+        private Connection connection;
+
+        public ConnectionHandlerShutdownHook(Connection connection) {
+            this.connection = connection;
+        }
+
+        @Override
+        public void run() {
+            try {
+                connection.kill();
+            } catch (IOException e) {
+                LOGGER.error(e);
+            }
         }
     }
 
@@ -150,4 +202,5 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
             return new SimpleConnectionHandler<M, R>(this);
         }
     }
+
 }

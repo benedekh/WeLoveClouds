@@ -68,6 +68,9 @@ public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends Abstr
         }
     }
 
+    /**
+     * Registers a shutdown hook that will close the server socket upon JVM exit.
+     */
     private void registerShutdownHookForSocket(ServerSocket socket) {
         if (shutdownHook != null) {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);

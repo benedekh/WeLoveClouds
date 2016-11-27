@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
@@ -27,6 +26,7 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
 public class KVServerHandlingECSRequestTests {
 
@@ -38,7 +38,7 @@ public class KVServerHandlingECSRequestTests {
     private static final int SERVER1_KVSERVER_REQUEST_ACCEPTING_PORT = 50001;
     private static final int SERVER2_KVSERVER_REQUEST_ACCEPTING_PORT = 60001;
 
-    private static final int SERVER1_KVECS_REQUEST_ACCEPTING_PORT = 50002;
+    private static final int SERVER1_KVECS_REQUEST_ACCEPTING_PORT = 30000;
     private static final int SERVER2_KVECS_REQUEST_ACCEPTING_PORT = 60002;
 
     IKVCommunicationApiV2 serverCommunication;
@@ -179,6 +179,18 @@ public class KVServerHandlingECSRequestTests {
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.MOVEDATA)
                 .targetServerInfo(target).build();
 
+        serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
+        KVAdminMessage response =
+                kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
+
+        Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
+    }
+
+    @Test
+    public void testShutdown() throws UnableToSendContentToServerException,
+            ConnectionClosedException, DeserializationException {
+        KVAdminMessage adminMessage =
+                new KVAdminMessage.Builder().status(StatusType.SHUTDOWN).build();
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
         KVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());

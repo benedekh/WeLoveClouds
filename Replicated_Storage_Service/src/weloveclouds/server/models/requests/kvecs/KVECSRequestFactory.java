@@ -12,6 +12,7 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.server.core.requests.ICallbackRegister;
 import weloveclouds.server.core.requests.IRequestFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
 
@@ -43,7 +44,8 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
     }
 
     @Override
-    public IKVECSRequest createRequestFromReceivedMessage(KVAdminMessage receivedMessage) {
+    public IKVECSRequest createRequestFromReceivedMessage(KVAdminMessage receivedMessage,
+            ICallbackRegister callbackRegister) {
         IKVECSRequest request = null;
         StatusType status = receivedMessage.getStatus();
 
@@ -76,7 +78,7 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
                                 receivedMessage.getTargetServerInfo().getRange());
                 break;
             case SHUTDOWN:
-                request = new ShutdownServer();
+                request = new ShutdownServer(callbackRegister);
                 break;
             default:
                 String errorMessage = "Unrecognized command for KVAdmin message";
