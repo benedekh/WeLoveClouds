@@ -3,6 +3,7 @@ package weloveclouds.kvstore.deserialization.helper;
 import static weloveclouds.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_BETWEEN_ENTRIES;
 import static weloveclouds.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_INSIDE_ENTRY;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,8 +59,14 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
             }
 
             // deserialized object
-            deserialized =
-                    new MovableStorageUnit(deserializedEntries, FileUtility.createDummyPath());
+            try {
+                deserialized =
+                        new MovableStorageUnit(deserializedEntries, FileUtility.createDummyPath());
+            } catch (IOException ex) {
+                LOGGER.error(ex);
+                throw new DeserializationException(
+                        "Error during creating the deserialized MovableStorageUnit instance.");
+            }
             LOGGER.debug("Deserializing a MovableStorageUnit from String finished.");
         }
 

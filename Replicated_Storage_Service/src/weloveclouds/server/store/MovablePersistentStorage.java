@@ -1,15 +1,11 @@
 package weloveclouds.server.store;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -20,6 +16,7 @@ import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
 import weloveclouds.server.store.models.PersistedStorageUnit;
+import weloveclouds.server.utils.FileUtility;
 
 /**
  * Represents a {@link KVPersistentStorage}, whose entries and storage units can be filtered,
@@ -44,8 +41,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
         LOGGER.debug("Putting storage units from parameter data structure started.");
 
         for (MovableStorageUnit storageUnit : fromStorageUnits.getStorageUnits()) {
-            String filename = UUID.randomUUID().toString();
-            Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
+            Path path = FileUtility.generateUniqueFilePath(rootPath, FILE_EXTENSION);
             storageUnit.setPath(path);
             storageUnit.save();
 
@@ -54,9 +50,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                 notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
             }
 
-            if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
-                unitsWithFreeSpace.add(storageUnit);
-            }
+            putStorageUnitIntoFreeSpaceCache(storageUnit);
         }
 
         LOGGER.debug("Putting storage units from parameter data structure finished.");
@@ -109,9 +103,8 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                 if (!removedKeys.isEmpty()) {
                     if (storageUnit.isEmpty()) {
                         removeStorageUnit(storageUnit);
-                    } else if (!unitsWithFreeSpace.contains(storageUnit)) {
-                        // it has free space because some keys were removed
-                        unitsWithFreeSpace.add(storageUnit);
+                    } else {
+                        putStorageUnitIntoFreeSpaceCache(storageUnit);
                     }
 
                     keysToBeRemoved.addAll(removedKeys);
@@ -164,8 +157,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                 }
 
                 if (storageUnit.isFull()) {
-                    // handle if the storage unit to which the data was moved is full
-                    unitsWithFreeSpace.remove(storageUnit);
+                    removeStorageUnitFromFreeSpaceCache(storageUnit);
                 } else {
                     // if it is not full, then move data from the forthcoming storage units
                     afterThatWillBeCompacted =
@@ -173,13 +165,11 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                 }
 
                 if (otherUnit.isEmpty()) {
-                    // handle if the storage unit from which data was moved is empty
                     try {
-                        otherUnit.deleteFile();
+                        removeStorageUnit(otherUnit);
                     } catch (IOException ex) {
                         LOGGER.error(ex);
                     }
-                    unitsWithFreeSpace.remove(otherUnit);
                 }
 
                 willBeCompacted = afterThatWillBeCompacted;
@@ -191,9 +181,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
 
             LOGGER.debug("Refreshing the data structure which stores the free stroage units.");
             for (PersistedStorageUnit hasFreeSpace : collectNotFullStorageUnits()) {
-                if (!unitsWithFreeSpace.contains(hasFreeSpace)) {
-                    unitsWithFreeSpace.add(hasFreeSpace);
-                }
+                putStorageUnitIntoFreeSpaceCache(hasFreeSpace);
             }
             LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(unitsWithFreeSpace.size()),
                     " storage units have free space after defragmentation."));
@@ -233,7 +221,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
 
         // handle if the storage unit to which the data was moved is full
         if (current.isFull()) {
-            unitsWithFreeSpace.remove(current);
+            removeStorageUnitFromFreeSpaceCache(current);
         } else {
             next = defragmentFromCurrent(current, iterator);
         }
@@ -241,11 +229,10 @@ public class MovablePersistentStorage extends KVPersistentStorage {
         // handle if the storage unit from which data was moved is empty
         if (nextUnit.isEmpty()) {
             try {
-                nextUnit.deleteFile();
+                removeStorageUnit(nextUnit);
             } catch (IOException ex) {
                 LOGGER.error(ex);
             }
-            unitsWithFreeSpace.remove(nextUnit);
         }
 
         return next;
