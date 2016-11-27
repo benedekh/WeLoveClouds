@@ -70,7 +70,7 @@ public class KVTransferMessageDeserializer
             StatusType status = StatusType.valueOf(statusStr);
             MovableStorageUnits storageUnits =
                     storageUnitsDeserializer.deserialize(storageUnitsStr);
-            String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;;
+            String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;
 
             // deserialized object
             KVTransferMessage deserialized = new KVTransferMessage.Builder().status(status)
