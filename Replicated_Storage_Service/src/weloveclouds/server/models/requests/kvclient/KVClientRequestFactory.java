@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
+import weloveclouds.server.core.requests.ICallbackRegister;
 import weloveclouds.server.core.requests.IRequestFactory;
 import weloveclouds.server.services.IDataAccessService;
 
@@ -26,7 +27,7 @@ public class KVClientRequestFactory implements IRequestFactory<KVMessage, IKVCli
     }
 
     @Override
-    public IKVClientRequest createRequestFromReceivedMessage(KVMessage receivedMessage) {
+    public IKVClientRequest createRequestFromReceivedMessage(KVMessage receivedMessage, ICallbackRegister callbackRegister) {
         IKVClientRequest request = null;
         StatusType status = receivedMessage.getStatus();
 

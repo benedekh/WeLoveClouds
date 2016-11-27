@@ -10,6 +10,12 @@ package weloveclouds.server.core.requests;
  */
 public interface IRequestFactory<M, R extends IExecutable<M> & IValidatable<R>> {
 
-    R createRequestFromReceivedMessage(M receivedMessage);
+    /**
+     * @param receivedMessage the message that shall be progressed
+     * @param callbackRegister where a callback can be registered which will be executed AFTER
+     *        sending the <R> response message to the recipient
+     * @return the response message
+     */
+    R createRequestFromReceivedMessage(M receivedMessage, ICallbackRegister callbackRegister);
 
 }

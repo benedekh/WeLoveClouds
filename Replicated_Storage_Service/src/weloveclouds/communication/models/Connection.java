@@ -51,7 +51,7 @@ public class Connection {
      *
      * @throws IOException see {@link Socket#close()}
      */
-    public void kill() throws IOException {
+    public synchronized void kill() throws IOException {
         if (isConnected()) {
             socket.shutdownOutput();
             socket.shutdownInput();
