@@ -1,8 +1,8 @@
 /SERVER_MANIFEST.MF
-/ms3-server.jar
+/ms4-server.jar
 /CLIENT_MANIFEST.MF
-/ms3-client.jar
+/ms4-client.jar
 /ECS_MANIFEST.MF
-/ms3-ecs.jar
+/ms4-ecs.jar
 /auth.properties
 /ecs.config
