@@ -7,6 +7,10 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
+
+import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
  * Utility class to make file operations (save to file, load from file, delete file) handier.
@@ -52,12 +56,43 @@ public class FileUtility {
     }
 
     /**
-     * Creates a dummy, but valid path which locates the folder of this ({@link FileUtility}) class.
+     * Creates a dummy, but valid path to a temp file in the temp folder.
+     * 
+     * @throws IOException if an error occurs
      */
-    public static Path createDummyPath() {
-        return new File(
-                FileUtility.class.getProtectionDomain().getCodeSource().getLocation().getFile())
-                        .toPath();
+    public static Path createDummyPath() throws IOException {
+        File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".ser");
+        return tempFile.toPath();
+    }
+
+    /**
+     * Generates a unique file path based on the basePath.
+     * 
+     * @param extension the file extension in the end of the path
+     */
+    public static Path generateUniqueFilePath(Path basePath, String extension) {
+        Path path = generateFilePath(basePath, extension);
+        while (exists(path)) {
+            path = generateFilePath(basePath, extension);
+        }
+        return path;
+    }
+
+    /**
+     * Checks if the path exists.
+     */
+    private static boolean exists(Path path) {
+        return path.toAbsolutePath().toFile().exists();
+    }
+
+    /**
+     * Generates a file path based on the basePath.
+     * 
+     * @param extension the file extension in the end of the path
+     */
+    private static Path generateFilePath(Path basePath, String extension) {
+        String filename = UUID.randomUUID().toString();
+        return Paths.get(basePath.toString(), CustomStringJoiner.join(".", filename, extension));
     }
 
 }

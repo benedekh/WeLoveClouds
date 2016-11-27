@@ -1,15 +1,11 @@
 package weloveclouds.server.store;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -20,6 +16,7 @@ import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
 import weloveclouds.server.store.models.PersistedStorageUnit;
+import weloveclouds.server.utils.FileUtility;
 
 /**
  * Represents a {@link KVPersistentStorage}, whose entries and storage units can be filtered,
@@ -44,8 +41,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
         LOGGER.debug("Putting storage units from parameter data structure started.");
 
         for (MovableStorageUnit storageUnit : fromStorageUnits.getStorageUnits()) {
-            String filename = UUID.randomUUID().toString();
-            Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
+            Path path = FileUtility.generateUniqueFilePath(rootPath, FILE_EXTENSION);
             storageUnit.setPath(path);
             storageUnit.save();
 
