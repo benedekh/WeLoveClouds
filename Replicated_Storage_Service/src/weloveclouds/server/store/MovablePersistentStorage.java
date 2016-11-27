@@ -49,10 +49,8 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                 storageUnits.put(key, storageUnit);
                 notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
             }
-
-            if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
-                unitsWithFreeSpace.add(storageUnit);
-            }
+            
+            putStorageUnitIntoFreeSpaceCache(storageUnit);
         }
 
         LOGGER.debug("Putting storage units from parameter data structure finished.");
@@ -105,9 +103,9 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                 if (!removedKeys.isEmpty()) {
                     if (storageUnit.isEmpty()) {
                         removeStorageUnit(storageUnit);
-                    } else if (!unitsWithFreeSpace.contains(storageUnit)) {
-                        // it has free space because some keys were removed
-                        unitsWithFreeSpace.add(storageUnit);
+                    } else {
+                        // put to the free space cache if it is not full
+                        putStorageUnitIntoFreeSpaceCache(storageUnit);
                     }
 
                     keysToBeRemoved.addAll(removedKeys);

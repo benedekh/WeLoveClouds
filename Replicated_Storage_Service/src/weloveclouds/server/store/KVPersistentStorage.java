@@ -138,7 +138,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     }
 
     /**
-     * Puts the respective storage unit into the cache for free storage units.
+     * Puts the respective storage unit into the cache for free storage units, if the storage unit
+     * is not full and the cache does not contain it yet.
      */
     protected void putStorageUnitIntoFreeSpaceCache(PersistedStorageUnit storageUnit) {
         if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
