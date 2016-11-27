@@ -12,7 +12,7 @@ import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerSocketFactory;
-import weloveclouds.server.models.ServerCLIConfigurationContext;
+import weloveclouds.server.models.conf.KVServerCLIContext;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.services.DataAccessService;
@@ -22,7 +22,8 @@ import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.utils.ArgumentsValidator;
 
 /**
- * StartNode command which starts the {@link Server}} based on the configuration in {@link #context}.
+ * StartNode command which starts the {@link Server}} based on the configuration in
+ * {@link #context}.
  *
  * @author Benedek
  */
@@ -30,15 +31,14 @@ public class Start extends AbstractServerCommand {
 
     private static final Logger LOGGER = Logger.getLogger(Start.class);
 
-
     private DataAccessServiceFactory dataAccessServiceFactory;
-    private ServerCLIConfigurationContext context;
+    private KVServerCLIContext context;
 
     /**
      * @param context contains the server parameter configuration
      */
     public Start(String[] arguments, DataAccessServiceFactory dataAccessServiceFactory,
-            ServerCLIConfigurationContext context) {
+            KVServerCLIContext context) {
         super(arguments);
         this.dataAccessServiceFactory = dataAccessServiceFactory;
         this.context = context;

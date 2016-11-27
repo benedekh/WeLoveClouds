@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.client.models.commands.Connect;
-import weloveclouds.server.models.ServerCLIConfigurationContext;
+import weloveclouds.server.models.conf.KVServerCLIContext;
 import weloveclouds.server.services.DataAccessServiceFactory;
 
 /**
@@ -23,11 +23,11 @@ public class ServerCommandFactory {
     private static final Logger LOGGER = Logger.getLogger(ServerCommandFactory.class);
 
     private DataAccessServiceFactory dataAccessServiceFactory;
-    private ServerCLIConfigurationContext context;
+    private KVServerCLIContext context;
 
     public ServerCommandFactory(DataAccessServiceFactory dataAccessServiceFactory) {
         this.dataAccessServiceFactory = dataAccessServiceFactory;
-        this.context = new ServerCLIConfigurationContext();
+        this.context = new KVServerCLIContext();
     }
 
     /**

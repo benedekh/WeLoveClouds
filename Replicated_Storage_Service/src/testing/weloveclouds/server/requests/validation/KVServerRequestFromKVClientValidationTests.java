@@ -19,6 +19,7 @@ import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.models.conf.KVServerPortConstants;
 
 /**
  * Unit tests for validating KVServer, server-side request validation of messages from KVClient.
@@ -28,7 +29,8 @@ import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 public class KVServerRequestFromKVClientValidationTests extends TestCase {
 
     private static final String SERVER_IP_ADDRESS = "localhost";
-    private static final int SERVER_KVCLIENT_REQUEST_ACCEPTING_PORT = 50000;
+    private static final int SERVER_KVCLIENT_REQUEST_ACCEPTING_PORT =
+            KVServerPortConstants.KVCLIENT_REQUESTS_PORT;
 
     IKVCommunicationApiV2 serverCommunication;
     IMessageDeserializer<KVMessage, SerializedMessage> kvmessageDeserializer;
