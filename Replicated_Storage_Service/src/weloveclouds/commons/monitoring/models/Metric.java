@@ -2,6 +2,8 @@ package weloveclouds.commons.monitoring.models;
 
 import java.util.List;
 
+import weloveclouds.client.utils.CustomStringJoiner;
+
 /**
  * Created by Benoit on 2016-11-27.
  */
@@ -13,6 +15,10 @@ public class Metric {
     protected Metric(Builder builder) {
         this.service = builder.service;
         this.name = builder.name;
+    }
+
+    public String toString() {
+        return CustomStringJoiner.join(METRIC_PART_DELIMITER, service.toString(), name);
     }
 
     public static class Builder {

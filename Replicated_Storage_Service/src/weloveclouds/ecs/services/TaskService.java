@@ -3,7 +3,6 @@ package weloveclouds.ecs.services;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.Interval;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -51,7 +50,7 @@ public class TaskService implements ITaskService, Observer {
         new Thread(taskWorker).start();
 
         STATSD_CLIENT.recordGaugeValue(new Metric.Builder().service(ECS).name(Arrays.asList
-                ("tasks", "running")).build(), failedTasks.size());
+                ("tasks", "running")).build(), runningTasks.size());
         STATSD_CLIENT.incrementCounter(new Metric.Builder().service(ECS).name(Arrays.asList
                 ("tasks", "launched")).build(), SINGLE_EVENT);
     }
@@ -81,17 +80,17 @@ public class TaskService implements ITaskService, Observer {
         if (worker.getStatus() == ERROR) {
             failedTasks.put(taskId, task);
             STATSD_CLIENT.incrementCounter(new Metric.Builder().service(ECS).name(Arrays.asList
-                    ("tasks", "succeeded")).build());
+                    ("tasks", "failed")).build());
             LOGGER.warn(task.toString());
         } else {
             succeededTasks.put(taskId, task);
             STATSD_CLIENT.incrementCounter(new Metric.Builder().service(ECS).name(Arrays.asList
-                    ("tasks", "failed")).build());
+                    ("tasks", "succeeded")).build());
             LOGGER.info(task.toString());
         }
 
         STATSD_CLIENT.recordGaugeValue(new Metric.Builder().service(ECS).name(Arrays.asList
-                ("tasks", "running")).build(), failedTasks.size());
+                ("tasks", "running")).build(), runningTasks.size());
         batch.get(task.getBatchId()).taskExecutionFinishedCallback();
     }
 }
