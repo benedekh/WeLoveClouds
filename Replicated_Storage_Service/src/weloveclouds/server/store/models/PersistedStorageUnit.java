@@ -135,7 +135,6 @@ public class PersistedStorageUnit implements Serializable {
             throw new StorageException("File was not found.");
         } catch (IOException e) {
             getLogger().error(e);
-            e.printStackTrace();
             throw new StorageException(
                     "Storage unit was not saved to the persistent storage due to IO error.");
         }
