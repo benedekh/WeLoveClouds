@@ -20,6 +20,12 @@ public class DummyStatsdClient implements IStatsdClient {
     }
 
     @Override
+    public void incrementCounter(Metric metric, long value) {
+        LOGGER.info(join(" ", metric.toString(), "has been incremented by:", String.valueOf
+                (value)));
+    }
+
+    @Override
     public void recordExecutionTime(Metric metric, Duration executionTime) {
         LOGGER.info(join(" ", "Execution time recorded for:", metric.toString(), "with value:",
                 String.valueOf(executionTime.getMillis())));

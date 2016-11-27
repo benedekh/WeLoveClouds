@@ -19,14 +19,18 @@ public class Metric {
         private Service service;
         private String name;
 
-        Builder service(Service service) {
+        public Builder service(Service service) {
             this.service = service;
             return this;
         }
 
-        Builder name(List<String> nameParts) {
+        public Builder name(List<String> nameParts) {
             this.name = String.join(METRIC_PART_DELIMITER, nameParts);
             return this;
+        }
+
+        public Metric build() {
+            return new Metric(this);
         }
     }
 }

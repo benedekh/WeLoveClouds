@@ -2,27 +2,24 @@ package weloveclouds.commons.monitoring.statsd;
 
 import com.timgroup.statsd.NonBlockingStatsDClient;
 
-import weloveclouds.commons.monitoring.models.Environment;
+import weloveclouds.commons.context.ExecutionContext;
 import weloveclouds.commons.monitoring.statsd.configuration.StatsdConfigurationProvider;
 
-import static weloveclouds.commons.monitoring.models.Environment.DEVELOPMENT;
-import static weloveclouds.commons.monitoring.models.Environment.PRODUCTION;
+import static weloveclouds.commons.context.Environment.DEVELOPMENT;
+import static weloveclouds.commons.context.Environment.PRODUCTION;
 
 
 /**
  * Created by Benoit on 2016-11-27.
  */
 public class StatsdClientFactory {
-    StatsdConfigurationProvider statsdConfigurationProvider;
+    private static StatsdConfigurationProvider statsdConfigurationProvider =
+            StatsdConfigurationProvider.getInstance();
 
-    public StatsdClientFactory() {
-        this.statsdConfigurationProvider = StatsdConfigurationProvider.getInstance();
-    }
-
-    public IStatsdClient StatsdClientcreateStatdClientFromEnvironment(Environment environment) {
+    public static IStatsdClient createStatdClientFromEnvironment() {
         IStatsdClient statsdClient;
 
-        switch (environment) {
+        switch (ExecutionContext.getExecutionEnvironment()) {
             case PRODUCTION:
                 statsdClient = new SimpleStatsdClient(new NonBlockingStatsDClient(PRODUCTION
                         .toString(), statsdConfigurationProvider.getStatsdServerAddress(),

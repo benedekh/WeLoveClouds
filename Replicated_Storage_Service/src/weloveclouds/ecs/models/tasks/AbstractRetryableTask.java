@@ -1,5 +1,7 @@
 package weloveclouds.ecs.models.tasks;
 
+import org.joda.time.Instant;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +21,7 @@ public abstract class AbstractRetryableTask {
     protected String batchId;
     protected String id;
     protected Status status;
+    protected Instant startTime;
     protected AbstractCommand command;
     protected List<AbstractCommand> successCommands;
     protected List<AbstractCommand> failCommands;
@@ -34,6 +37,14 @@ public abstract class AbstractRetryableTask {
         this.failCommands = failCommand;
         this.numberOfAttempt = 0;
         this.maxNumberOfRetries = maxNumberOfRetries;
+    }
+
+    public Instant getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Instant startTime) {
+        this.startTime = startTime;
     }
 
     public String getId() {

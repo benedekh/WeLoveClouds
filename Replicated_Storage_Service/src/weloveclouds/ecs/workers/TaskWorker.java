@@ -1,6 +1,7 @@
 package weloveclouds.ecs.workers;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 
 import java.util.Observable;
 
@@ -43,6 +44,7 @@ public class TaskWorker extends Observable implements Runnable {
         status = RUNNING;
         while (task.getStatus() != COMPLETED && task.getStatus() != FAILED) {
             try {
+                task.setStartTime(Instant.now());
                 task.run();
             } catch (RetryableException e) {
                 logger.info(e.getMessage());

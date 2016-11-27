@@ -1,5 +1,7 @@
 package weloveclouds.ecs.core;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ import java.util.Observer;
 
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.monitoring.statsd.IStatsdClient;
+import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;
 import weloveclouds.ecs.exceptions.ServiceBootstrapException;
@@ -65,6 +69,10 @@ import static weloveclouds.ecs.models.tasks.BatchPurpose.UPDATING_METADATA;
  * Created by Benoit on 2016-11-16.
  */
 public class ExternalConfigurationService implements Observer {
+    private static final Logger LOGGER = Logger.getLogger(ExternalConfigurationService.class);
+    private static final IStatsdClient STATSD_CLIENT = StatsdClientFactory
+            .createStatdClientFromEnvironment();
+
     private EcsStatus status;
     private final HashRange INITIAL_HASHRANGE;
     private RingMetadata ringMetadata;
@@ -74,6 +82,7 @@ public class ExternalConfigurationService implements Observer {
     private ITaskService taskService;
     private EcsInternalCommandFactory ecsInternalCommandFactory;
     private RingTopology<StorageNode> ringTopology;
+    private IStatsdClient statsdClient;
 
 
     public ExternalConfigurationService(Builder externalConfigurationServiceBuilder) throws ServiceBootstrapException {
