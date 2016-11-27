@@ -1,6 +1,6 @@
 package weloveclouds.ecs.models.commands.client;
 
-import weloveclouds.cli.models.ParsedUserInput;
+import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.models.commands.client.AbstractEcsClientCommand;
 import weloveclouds.ecs.models.commands.client.AddNode;

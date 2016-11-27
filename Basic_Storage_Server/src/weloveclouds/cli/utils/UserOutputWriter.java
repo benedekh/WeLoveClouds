@@ -1,4 +1,4 @@
-package weloveclouds.cli.utils;
+package weloveclouds.commons.cli.utils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

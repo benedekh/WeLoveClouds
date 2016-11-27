@@ -6,7 +6,7 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.cli.models.ParsedUserInput;
+import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;

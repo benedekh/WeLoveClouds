@@ -1,6 +1,6 @@
 package weloveclouds.ecs.utils;
 
-import weloveclouds.cli.utils.AbstractUserInputParser;
+import weloveclouds.commons.cli.utils.AbstractUserInputParser;
 import weloveclouds.ecs.models.commands.client.EcsCommand;
 
 /**

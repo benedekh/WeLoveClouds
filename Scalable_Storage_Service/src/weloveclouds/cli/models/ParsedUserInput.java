@@ -1,4 +1,4 @@
-package weloveclouds.cli.models;
+package weloveclouds.commons.cli.models;
 
 /**
  * Represents a user input which is split into a {@link #command} and its {@link #arguments}.

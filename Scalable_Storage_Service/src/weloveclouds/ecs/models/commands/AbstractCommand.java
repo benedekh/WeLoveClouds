@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import weloveclouds.cli.utils.UserOutputWriter;
+import weloveclouds.commons.cli.utils.UserOutputWriter;
 
 /**
  * Created by Benoit on 2016-11-19.
