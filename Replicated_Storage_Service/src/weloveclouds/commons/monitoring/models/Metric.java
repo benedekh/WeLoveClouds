@@ -31,7 +31,7 @@ public class Metric {
         }
 
         public Builder name(List<String> nameParts) {
-            this.name = String.join(METRIC_PART_DELIMITER, nameParts);
+            this.name = CustomStringJoiner.join(METRIC_PART_DELIMITER, nameParts);
             return this;
         }
 
