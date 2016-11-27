@@ -1,4 +1,4 @@
-package weloveclouds.server.models;
+package weloveclouds.server.models.conf;
 
 import java.nio.file.Path;
 
@@ -13,14 +13,14 @@ import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
  * 
  * @author Benedek
  */
-public class ServerCLIConfigurationContext {
+public class KVServerCLIContext {
 
     private int port;
     private boolean isStarted;
 
     private DataAccessServiceInitializationContext.Builder initializationInfoBuilder;
 
-    public ServerCLIConfigurationContext() {
+    public KVServerCLIContext() {
         this.port = -1;
         this.initializationInfoBuilder = new DataAccessServiceInitializationContext.Builder();
         this.initializationInfoBuilder.cacheSize(-1);

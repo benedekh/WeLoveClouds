@@ -11,8 +11,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.commands.LogLevel;
-import weloveclouds.server.models.ServerCLIConfigurationContext;
 import weloveclouds.server.models.commands.ServerCommand;
+import weloveclouds.server.models.conf.KVServerCLIContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
 
@@ -45,16 +45,19 @@ public class ArgumentsValidator {
     private static final int STORAGE_PATH_NUMBER_OF_ARGUMENTS = 1;
     private static final int STORAGE_PATH_INDEX = 0;
 
-    private static final int CLI_NUMBER_OF_ARGUMENTS = 4;
-    private static final int CLI_PORT_INDEX = 0;
-    private static final int CLI_CACHE_SIZE_INDEX = 1;
-    private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 2;
-    private static final int CLI_LOG_LEVEL_INDEX = 3;
+    private static final int CLI_NUMBER_OF_ARGUMENTS = 6;
+    private static final int CLI_KVCLIENT_PORT_INDEX = 0;
+    private static final int CLI_KVSERVER_PORT_INDEX = 1;
+    private static final int CLI_KVECS_PORT_INDEX = 2;
+    private static final int CLI_CACHE_SIZE_INDEX = 3;
+    private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 4;
+    private static final int CLI_LOG_LEVEL_INDEX = 5;
 
     /**
      * Validate CLI arguments for the server starting. The arguments are valid, if:<br>
      * (1) there are exactly {@link #CLI_NUMBER_OF_ARGUMENTS} number of arguments, and <br>
-     * (2) the argument at the position {@link #CLI_PORT_INDEX} is a valid port, and <br>
+     * (2) the argument at the position {@link #CLI_KVCLIENT_PORT_INDEX},
+     * {@link #CLI_KVSERVER_PORT_INDEX}, {@link #CLI_KVECS_PORT_INDEX} are valid ports, and <br>
      * (3) the argument at the position {@link #CLI_CACHE_SIZE_INDEX} is a valid cache size, and
      * <br>
      * (4) the argument at the position {@link #CLI_DISPLACEMENT_STRATEGY_INDEX} is a valid
@@ -72,7 +75,9 @@ public class ArgumentsValidator {
                     "Four arguments are needed: <port> <cache size> <displacementStrategy> <log level>");
         } else {
             validateCacheSizeArguments(new String[] {arguments[CLI_CACHE_SIZE_INDEX]});
-            validatePort(command, arguments[CLI_PORT_INDEX]);
+            validatePort(command, arguments[CLI_KVCLIENT_PORT_INDEX]);
+            validatePort(command, arguments[CLI_KVSERVER_PORT_INDEX]);
+            validatePort(command, arguments[CLI_KVECS_PORT_INDEX]);
             if (!validLogLevels.contains(arguments[CLI_LOG_LEVEL_INDEX])) {
                 logWarning(command);
                 throw new IllegalArgumentException(join(" ",
@@ -97,7 +102,7 @@ public class ArgumentsValidator {
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateStartArguments(String[] arguments,
-            ServerCLIConfigurationContext context) throws IllegalArgumentException {
+            KVServerCLIContext context) throws IllegalArgumentException {
         String command = "start";
         if (!isNullOrEmpty(arguments)) {
             logWarning(command);

@@ -17,6 +17,8 @@ import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerFactory;
 import weloveclouds.server.models.commands.ServerCommandFactory;
+import weloveclouds.server.models.conf.KVServerPortConstants;
+import weloveclouds.server.models.conf.KVServerPortContext;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
@@ -38,15 +40,14 @@ import weloveclouds.server.utils.LogSetup;
 public class KVServer {
 
     private static final String DEFAULT_LOG_PATH = "logs/server.log";
-
     private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
 
-    private static final int KVSERVER_REQUESTS_PORT = 50001;
-
-    private static final int CLI_PORT_INDEX = 0;
-    private static final int CLI_CACHE_SIZE_INDEX = 1;
-    private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 2;
-    private static final int CLI_LOG_LEVEL_INDEX = 3;
+    private static final int CLI_KVCLIENT_PORT_INDEX = 0;
+    private static final int CLI_KVSERVER_PORT_INDEX = 1;
+    private static final int CLI_KVECS_PORT_INDEX = 2;
+    private static final int CLI_CACHE_SIZE_INDEX = 3;
+    private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 4;
+    private static final int CLI_LOG_LEVEL_INDEX = 5;
 
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
@@ -69,24 +70,27 @@ public class KVServer {
     private static void startNonInteractiveMode(String[] cliArguments) {
         try {
             ArgumentsValidator.validateCLIArgumentsForServerStart(cliArguments);
-
             initializeLoggerWithLevel(cliArguments[CLI_LOG_LEVEL_INDEX]);
-            int port = Integer.valueOf(cliArguments[CLI_PORT_INDEX]);
+
             int cacheSize = Integer.valueOf(cliArguments[CLI_CACHE_SIZE_INDEX]);
             DisplacementStrategy displacementStrategy = StrategyFactory
                     .createDisplacementStrategy(cliArguments[CLI_DISPLACEMENT_STRATEGY_INDEX]);
-
             DataAccessServiceInitializationContext initializationContext =
                     new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
                             .displacementStrategy(displacementStrategy)
                             .rootFolderPath(PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER).build();
+
+            int kvClientPort = Integer.valueOf(cliArguments[CLI_KVCLIENT_PORT_INDEX]);
+            int kvServerPort = Integer.valueOf(cliArguments[CLI_KVSERVER_PORT_INDEX]);
+            int kvECSPort = Integer.valueOf(cliArguments[CLI_KVECS_PORT_INDEX]);
+
+            KVServerPortContext portConfigurationContext = new KVServerPortContext.Builder()
+                    .clientPort(kvClientPort).serverPort(kvServerPort).ecsPort(kvECSPort).build();
             IMovableDataAccessService dataAccessService = new DataAccessServiceFactory()
                     .createInitializedMovableDataAccessService(initializationContext);
 
-            createAndStartServers(port, dataAccessService);
-        } catch (IllegalArgumentException ex) {
-            LOGGER.error(ex);
-        } catch (IOException ex) {
+            createAndStartServers(portConfigurationContext, dataAccessService);
+        } catch (Throwable ex) {
             LOGGER.error(ex);
         }
     }
@@ -94,27 +98,17 @@ public class KVServer {
     /**
      * Creates and start all three servers for the different requests.
      * 
-     * @param kvClientRequestsPort port on which we server the requests from the KVClient
+     * @param portConfigurationContext context object which contains the port configuration to serve
+     *        the different requests (KVClient, KVServer, KVECS)
      * @param dataAccessService the data access service
      * @throws IOException if an error occurs
      */
-    private static void createAndStartServers(int kvClientRequestsPort,
+    private static void createAndStartServers(KVServerPortContext portConfigurationContext,
             IMovableDataAccessService dataAccessService) throws IOException {
-        LOGGER.debug("Creating the servers for the different requests.");
         ServerFactory serverFactory = new ServerFactory();
-        Server<KVAdminMessage, IKVECSRequest> serverForECSRequests =
-                serverFactory.createServerForKVECSRequests(
-                        ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT, dataAccessService);
-        Server<KVTransferMessage, IKVServerRequest> serverForKVServerRequests = serverFactory
-                .createServerForKVServerRequests(KVSERVER_REQUESTS_PORT, dataAccessService);
-        Server<KVMessage, IKVClientRequest> serverForKVClientRequests = serverFactory
-                .createServerForKVClientRequests(kvClientRequestsPort, dataAccessService);
-        LOGGER.debug("Creating the servers for the different requests finished.");
-
-        LOGGER.debug("Starting the servers for the different requests.");
-        serverForECSRequests.start();
-        serverForKVServerRequests.start();
-        serverForKVClientRequests.start();
+        weloveclouds.server.core.KVServer kvServer = new weloveclouds.server.core.KVServer(
+                serverFactory, portConfigurationContext, dataAccessService);
+        kvServer.start();
     }
 
     /**
@@ -179,7 +173,10 @@ public class KVServer {
         IMovableDataAccessService dataAccessService = new DataAccessServiceFactory()
                 .createInitializedMovableDataAccessService(initializationContext);
         try {
-            createAndStartServers(port, dataAccessService);
+            KVServerPortContext portConfigurationContext = new KVServerPortContext.Builder()
+                    .clientPort(port).serverPort(KVServerPortConstants.KVSERVER_REQUESTS_PORT)
+                    .ecsPort(KVServerPortConstants.KVECS_REQUESTS_PORT).build();
+            createAndStartServers(portConfigurationContext, dataAccessService);
         } catch (IOException e) {
             LOGGER.error(e);
         }

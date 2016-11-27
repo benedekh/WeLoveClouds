@@ -27,18 +27,22 @@ import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.models.conf.KVServerPortConstants;
 
 public class KVServerHandlingECSRequestTests {
 
     private static final String SERVER_IP_ADDRESS = "localhost";
 
-    private static final int SERVER1_KVCLIENT_REQUEST_ACCEPTING_PORT = 50000;
+    private static final int SERVER1_KVCLIENT_REQUEST_ACCEPTING_PORT =
+            KVServerPortConstants.KVCLIENT_REQUESTS_PORT;
     private static final int SERVER2_KVCLIENT_REQUEST_ACCEPTING_PORT = 60000;
 
-    private static final int SERVER1_KVSERVER_REQUEST_ACCEPTING_PORT = 50001;
+    private static final int SERVER1_KVSERVER_REQUEST_ACCEPTING_PORT =
+            KVServerPortConstants.KVSERVER_REQUESTS_PORT;
     private static final int SERVER2_KVSERVER_REQUEST_ACCEPTING_PORT = 60001;
 
-    private static final int SERVER1_KVECS_REQUEST_ACCEPTING_PORT = 30000;
+    private static final int SERVER1_KVECS_REQUEST_ACCEPTING_PORT =
+            KVServerPortConstants.KVECS_REQUESTS_PORT;
     private static final int SERVER2_KVECS_REQUEST_ACCEPTING_PORT = 60002;
 
     IKVCommunicationApiV2 serverCommunication;
