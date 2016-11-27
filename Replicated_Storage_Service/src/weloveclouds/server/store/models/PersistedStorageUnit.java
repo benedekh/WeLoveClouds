@@ -167,7 +167,6 @@ public class PersistedStorageUnit implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((entries == null) ? 0 : entries.hashCode());
-        result = prime * result + ((filePath == null) ? 0 : filePath.hashCode());
         return result;
     }
 
@@ -188,13 +187,6 @@ public class PersistedStorageUnit implements Serializable {
                 return false;
             }
         } else if (!entries.equals(other.entries)) {
-            return false;
-        }
-        if (filePath == null) {
-            if (other.filePath != null) {
-                return false;
-            }
-        } else if (!filePath.equals(other.filePath)) {
             return false;
         }
         return true;
