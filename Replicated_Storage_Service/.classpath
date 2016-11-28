@@ -12,5 +12,7 @@
 	<classpathentry kind="lib" path="libs/javax.inject.jar"/>
 	<classpathentry kind="lib" path="libs/mockito-all-1.10.19.jar"/>
 	<classpathentry kind="lib" path="libs/jsch-0.1.54.jar"/>
+	<classpathentry kind="lib" path="libs/java-statsd-client-3.1.0.jar"/>
+	<classpathentry kind="lib" path="libs/joda-time-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
