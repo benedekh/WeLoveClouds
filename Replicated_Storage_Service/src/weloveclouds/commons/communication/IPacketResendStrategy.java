@@ -3,10 +3,19 @@ package weloveclouds.commons.communication;
 import java.io.IOException;
 
 import weloveclouds.communication.api.ICommunicationApi;
+import weloveclouds.ecs.models.tasks.Status;
 
 public interface IPacketResendStrategy {
 
-    void configure(int attemptNumber);
+    void configure(int attemptNumber, ICommunicationApi communicationApi, byte[] packet);
 
-    byte[] resendPacket(ICommunicationApi communicationApi, byte[] packet) throws IOException;
+    Status getExecutionStatus();
+
+    IOException getException();
+
+    byte[] getResponse();
+
+    void tryAgain();
+
+    void incrementNumberOfAttempts();
 }

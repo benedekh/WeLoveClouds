@@ -1,5 +1,7 @@
 package weloveclouds.commons.communication;
 
+import static weloveclouds.client.utils.CustomStringJoiner.join;
+
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
@@ -11,102 +13,114 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
+import weloveclouds.ecs.models.tasks.Status;
 
 public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, Observer {
 
     private static final Logger LOGGER = Logger.getLogger(ExponentialBackoffResendStrategy.class);
+    private static final int MIN_INTERVAL_IN_MILLISECONDS = 80;
 
-    private int attemptNumber;
+    private int maxNumberOfAttempts;
+    private ICommunicationApi communicationApi;
+    private byte[] packetToBeSent;
 
-    private Thread sender;
+    private int numberOfAttemptsSoFar;
     private Thread receiver;
-    private Thread resender;
+    private Random numberGenerator;
 
     private byte[] response;
     private IOException exception;
+    private Status executionStatus;
 
-    @Override
-    public void configure(int attemptNumber) {
-        this.attemptNumber = attemptNumber;
+    public ExponentialBackoffResendStrategy() {
+        this.executionStatus = Status.WAITING;
+        this.numberGenerator = new Random();
     }
 
     @Override
-    public synchronized byte[] resendPacket(ICommunicationApi communicationApi, byte[] packet)
-            throws IOException {
-        receiver = new Thread(new PacketReceiver(communicationApi));
-        sender = new Thread(new PacketSender(packet, communicationApi));
-        resender = new Thread(new PacketResender(attemptNumber, sender));
+    public void configure(int attemptNumber, ICommunicationApi communicationApi, byte[] packet) {
+        this.maxNumberOfAttempts = attemptNumber;
+        this.communicationApi = communicationApi;
+        packetToBeSent = packet;
 
-        LOGGER.debug("Starting sender, receiver and resender threads.");
+        PacketReceiver packetReceiver = new PacketReceiver(communicationApi);
+        packetReceiver.addObserver(this);
+        receiver = new Thread(packetReceiver);
+        LOGGER.info("Starting packet receiver thread.");
         receiver.start();
         while (!receiver.isAlive());
-        sender.start();
-        while (!sender.isAlive());
-        resender.start();
+        LOGGER.info("Packet receiver thread started.");
+        executionStatus = Status.RUNNING;
+    }
 
+    @Override
+    public void tryAgain() {
         try {
-            wait();
-        } catch (InterruptedException e) {
-            LOGGER.error(e);
-            throw new IOException("Packet resend strategy abruptly stopped.");
-        }
+            if (executionStatus == Status.RUNNING && numberOfAttemptsSoFar <= maxNumberOfAttempts) {
+                LOGGER.info(join("", "#",
+                        String.valueOf(numberOfAttemptsSoFar) + " attempts were made out of #",
+                        String.valueOf(maxNumberOfAttempts), " attempts."));
 
-        if (exception != null) {
-            stopThreads();
-            throw exception;
-        } else if (response != null) {
-            stopThreads();
-            return response;
-        } else {
-            stopThreads();
-            throw new IOException("Unknown reason why packet resend strategy was waken up.");
-        }
-    }
+                int powerOfTwo = (int) Math.round(Math.pow(2, numberOfAttemptsSoFar));
+                LOGGER.info(join("", "Power of two: ", String.valueOf(powerOfTwo)));
 
-    private void stopThreads() {
-        sender.interrupt();
-        receiver.interrupt();
-        resender.interrupt();
-    }
+                int drawnFactor = numberGenerator.nextInt(powerOfTwo - 1);
+                LOGGER.info(join("", "Drawn multiplication factor: ", String.valueOf(powerOfTwo)));
 
-    private static class PacketResender extends Observable implements Runnable {
+                int sleepTime = drawnFactor * MIN_INTERVAL_IN_MILLISECONDS;
+                LOGGER.info(join("", "Sleep time in milliseconds before next resend: ",
+                        String.valueOf(sleepTime)));
 
-        private static final Logger LOGGER = Logger.getLogger(PacketResender.class);
-        private static final int MIN_INTERVAL_IN_MILLISECONDS = 80;
-
-        private int maxNumberOfAttempts;
-        private int numberOfAttemptsSoFar;
-        private Random numberGenerator;
-
-        private Thread packetSender;
-
-        public PacketResender(int maxNumberOfAttempts, Thread packetSender) {
-            this.maxNumberOfAttempts = maxNumberOfAttempts;
-            this.numberOfAttemptsSoFar = 0;
-            this.numberGenerator = new Random();
-        }
-
-        @Override
-        public void run() {
-            try {
-                int sleepTime = 0;
-                while (!Thread.currentThread().isInterrupted()
-                        && numberOfAttemptsSoFar <= maxNumberOfAttempts) {
-                    int powerOfTwo = (int) Math.round(Math.pow(2, numberOfAttemptsSoFar));
-                    sleepTime =
-                            numberGenerator.nextInt(powerOfTwo - 1) * MIN_INTERVAL_IN_MILLISECONDS;
-                    Thread.sleep(sleepTime);
-                    synchronized (packetSender) {
-                        packetSender.notify();
-                    }
-                    numberOfAttemptsSoFar++;
+                Thread.sleep(sleepTime);
+                try {
+                    communicationApi.send(packetToBeSent);
+                } catch (UnableToSendContentToServerException ex) {
+                    receiver.interrupt();
+                    LOGGER.error(ex);
+                    exception = new IOException(ex);
+                    executionStatus = Status.FAILED;
                 }
-                throw new IOException("Max number of retries have been reached.");
-            } catch (IOException | InterruptedException e) {
-                LOGGER.error(e);
-                setChanged();
-                notifyObservers(new IOException(e));
+            } else if (numberOfAttemptsSoFar > maxNumberOfAttempts) {
+                receiver.interrupt();
+                String message = "Max number of retries have been reached.";
+                LOGGER.info(message);
+                exception = new IOException(message);
+                executionStatus = Status.FAILED;
             }
+        } catch (InterruptedException ex) {
+            LOGGER.error(ex);
+        }
+    }
+
+    @Override
+    public Status getExecutionStatus() {
+        return executionStatus;
+    }
+
+    @Override
+    public IOException getException() {
+        return exception;
+    }
+
+    @Override
+    public byte[] getResponse() {
+        return response;
+    }
+
+
+    @Override
+    public void incrementNumberOfAttempts() {
+        numberOfAttemptsSoFar++;
+    }
+
+    @Override
+    public void update(Observable sender, Object argument) {
+        if (argument instanceof IOException) {
+            exception = (IOException) argument;
+            executionStatus = Status.FAILED;
+        } else if (argument instanceof byte[]) {
+            response = (byte[]) argument;
+            executionStatus = Status.COMPLETED;
         }
     }
 
@@ -130,44 +144,6 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, 
                 setChanged();
                 notifyObservers(new IOException(e));
             }
-        }
-    }
-
-    private static class PacketSender extends Observable implements Runnable {
-
-        private static final Logger LOGGER = Logger.getLogger(PacketSender.class);
-
-        private final byte[] packet;
-        private final ICommunicationApi communicationApi;
-
-        public PacketSender(byte[] packet, ICommunicationApi communicationApi) {
-            this.packet = packet;
-            this.communicationApi = communicationApi;
-        }
-
-        @Override
-        public synchronized void run() {
-            try {
-                while (!Thread.currentThread().isInterrupted()) {
-                    wait();
-                    communicationApi.send(packet);
-                }
-            } catch (UnableToSendContentToServerException | InterruptedException e) {
-                LOGGER.error(e);
-                setChanged();
-                notifyObservers(new IOException(e));
-            }
-        }
-    }
-
-    @Override
-    public synchronized void update(Observable sender, Object argument) {
-        if (argument instanceof IOException) {
-            exception = (IOException) argument;
-            notify();
-        } else if (argument instanceof byte[]) {
-            response = (byte[]) argument;
-            notify();
         }
     }
 
