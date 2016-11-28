@@ -15,6 +15,12 @@ import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.models.tasks.Status;
 
+/**
+ * A strategy class which implements the 'well-known' exponential backoff strategy used in TCP, for
+ * resending packet over the network a couple of times after each other.
+ * 
+ * @author Benedek
+ */
 public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, Observer {
 
     private static final Logger LOGGER = Logger.getLogger(ExponentialBackoffResendStrategy.class);
@@ -38,7 +44,7 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, 
     }
 
     @Override
-    public void configure(int attemptNumber, ICommunicationApi communicationApi, byte[] packet) {
+    public void initialize(int attemptNumber, ICommunicationApi communicationApi, byte[] packet) {
         this.maxNumberOfAttempts = attemptNumber;
         this.communicationApi = communicationApi;
         packetToBeSent = packet;
@@ -61,7 +67,7 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, 
                         String.valueOf(numberOfAttemptsSoFar) + " attempts were made out of #",
                         String.valueOf(maxNumberOfAttempts), " attempts."));
 
-                int powerOfTwo = (int) Math.round(Math.pow(2, numberOfAttemptsSoFar));
+                int powerOfTwo = (int) Math.round(Math.max(2, Math.pow(2, numberOfAttemptsSoFar)));
                 LOGGER.info(join("", "Power of two: ", String.valueOf(powerOfTwo)));
 
                 int drawnFactor = numberGenerator.nextInt(powerOfTwo - 1);
@@ -73,12 +79,15 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, 
 
                 Thread.sleep(sleepTime);
                 try {
+                    LOGGER.info("Sending packet over the network.");
                     communicationApi.send(packetToBeSent);
                 } catch (UnableToSendContentToServerException ex) {
-                    receiver.interrupt();
-                    LOGGER.error(ex);
-                    exception = new IOException(ex);
-                    executionStatus = Status.FAILED;
+                    if (executionStatus != Status.COMPLETED) {
+                        receiver.interrupt();
+                        LOGGER.error(ex);
+                        exception = new IOException(ex);
+                        executionStatus = Status.FAILED;
+                    }
                 }
             } else if (numberOfAttemptsSoFar > maxNumberOfAttempts) {
                 receiver.interrupt();
@@ -109,7 +118,7 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, 
 
 
     @Override
-    public void incrementNumberOfAttempts() {
+    public void incrementNumberOfAttemptsByOne() {
         numberOfAttemptsSoFar++;
     }
 
