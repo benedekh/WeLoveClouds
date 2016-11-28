@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.hashing.models.Hash;
@@ -19,6 +18,7 @@ import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
 public class KVServerInitializationUtil implements AutoCloseable {
@@ -38,7 +38,7 @@ public class KVServerInitializationUtil implements AutoCloseable {
                 new ServerConnectionInfo.Builder().ipAddress(SERVER_IP_ADDRESS)
                         .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT).build();
         serverCommunication =
-                new CommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
+                new KVCommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
 
         kvAdminMessageDeserializer = new KVAdminMessageDeserializer();
         kvAdminMessageSerializer = new KVAdminMessageSerializer();
