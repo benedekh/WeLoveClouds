@@ -39,5 +39,4 @@ public class HelpMessageGenerator {
     // @formatter:on
         return buffer.toString();
     }
-
 }
