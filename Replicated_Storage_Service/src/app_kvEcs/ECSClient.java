@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 import weloveclouds.commons.cli.utils.UserOutputWriter;
+import weloveclouds.commons.context.ExecutionContext;
+import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.api.v1.KVEcsApiV1;
@@ -24,11 +26,12 @@ import weloveclouds.server.utils.LogSetup;
 public class ECSClient {
     private static Logger LOGGER = Logger.getLogger(ECSClient.class);
     private static UserOutputWriter userOutput = UserOutputWriter.getInstance();
+    private static final String LOG_FILE = "logs/ecs.log";
 
     public static void main(String[] args) throws Exception {
-        String logFile = "logs/ecs.log";
         try {
-            new LogSetup(logFile, Level.OFF);
+            new LogSetup(LOG_FILE, Level.INFO);
+            ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
             EcsInternalCommandFactory ecsInternalCommandFactory = new EcsInternalCommandFactory
                     (new CommunicationApiFactory(), new SecureShellServiceFactory());
 
