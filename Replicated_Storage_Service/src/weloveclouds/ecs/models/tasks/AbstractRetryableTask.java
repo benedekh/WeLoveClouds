@@ -12,6 +12,7 @@ import weloveclouds.ecs.exceptions.task.RetryableException;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 
 import static weloveclouds.ecs.models.tasks.Status.COMPLETED;
+import static weloveclouds.ecs.models.tasks.Status.FAILED;
 import static weloveclouds.ecs.models.tasks.Status.WAITING;
 
 /**
@@ -25,7 +26,7 @@ public abstract class AbstractRetryableTask {
     protected AbstractCommand command;
     protected List<AbstractCommand> successCommands;
     protected List<AbstractCommand> failCommands;
-    protected int numberOfAttempt;
+    protected int numberOfRetries;
     protected int maxNumberOfRetries;
 
     public AbstractRetryableTask(int maxNumberOfRetries, AbstractCommand command,
@@ -35,8 +36,28 @@ public abstract class AbstractRetryableTask {
         this.command = command;
         this.successCommands = successCommand;
         this.failCommands = failCommand;
-        this.numberOfAttempt = 0;
+        this.numberOfRetries = 0;
         this.maxNumberOfRetries = maxNumberOfRetries;
+    }
+
+    public void setNumberOfRetriesToMaximumNumberOfRetries() {
+        numberOfRetries = getMaximumNumberOfRetries();
+    }
+
+    public int getMaxNumberOfRetries() {
+        return maxNumberOfRetries;
+    }
+
+    public void incrementNumberOfRetries() {
+        numberOfRetries++;
+    }
+
+    public int getNumberOfRetries() {
+        return numberOfRetries;
+    }
+
+    public boolean hasReachedMaximumNumberOfRetries() {
+        return numberOfRetries >= maxNumberOfRetries;
     }
 
     public Instant getStartTime() {
@@ -91,19 +112,14 @@ public abstract class AbstractRetryableTask {
 
     public void run() throws ClientSideException, RetryableException {
         try {
+            startTime = Instant.now();
             runCommand();
             runSuccessCommand();
             status = COMPLETED;
         } catch (Exception e) {
-            numberOfAttempt++;
-            if (numberOfAttempt < maxNumberOfRetries) {
-                throw new RetryableException("Task id: " + id + " Retry attempt: " + numberOfAttempt +
-                        " on: " + maxNumberOfRetries + " will retry with cause: " + e.getMessage(), e);
-            } else {
-                runFailCommand();
-                throw new ClientSideException("Maximum number of attempt reached, will not " +
-                        "retry", e);
-            }
+            status = FAILED;
+            runFailCommand();
+            throw new RetryableException(e.getMessage(), e);
         }
     }
 

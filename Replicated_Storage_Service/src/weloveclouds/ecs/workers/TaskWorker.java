@@ -1,7 +1,6 @@
 package weloveclouds.ecs.workers;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 
 import java.util.Observable;
 
@@ -42,18 +41,26 @@ public class TaskWorker extends Observable implements Runnable {
 
     public void run() {
         status = RUNNING;
-        while (task.getStatus() != COMPLETED && task.getStatus() != FAILED) {
+        while (task.getStatus() != COMPLETED && !task.hasReachedMaximumNumberOfRetries()) {
             try {
-                task.setStartTime(Instant.now());
                 task.run();
             } catch (RetryableException e) {
-                logger.info(e.getMessage());
+                logger.info("Task id: " + task.getId() + " Retry attempt: " + task.getNumberOfRetries() +
+                        " on: " + task.getMaximumNumberOfRetries() + " will retry with cause: " + e.getMessage(), e);
+                task.incrementNumberOfRetries();
             } catch (Exception e) {
                 logger.info(e.getMessage());
                 task.setStatus(FAILED);
+                task.setNumberOfRetriesToMaximumNumberOfRetries();
             }
         }
-        status = task.getStatus() == COMPLETED ? FINISHED : ERROR;
+        if (task.getStatus() == COMPLETED) {
+            status = FINISHED;
+        } else {
+            status = ERROR;
+            logger.warn("Task id: " + task.getId() + " Will not be retry, maximum number of " +
+                    "retries reached");
+        }
         setChanged();
         notifyObservers(task.getId());
     }
