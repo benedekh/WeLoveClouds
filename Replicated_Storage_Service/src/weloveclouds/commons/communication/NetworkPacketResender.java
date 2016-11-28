@@ -10,7 +10,7 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.ecs.models.tasks.Status;
 
 /**
- * A helper class which uses different strategies for resending a packet over the network.
+ * A helper class which uses different strategies for sending a packet over the network.
  * 
  * @author Benedek
  */

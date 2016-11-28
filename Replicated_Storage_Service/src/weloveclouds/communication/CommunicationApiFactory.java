@@ -1,5 +1,6 @@
 package weloveclouds.communication;
 
+import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
@@ -33,7 +34,7 @@ public class CommunicationApiFactory {
 
     public IKVCommunicationApi createKVCommunicationApiV1() {
         return new KVCommunicationApiV1(createCommunicationApiV1(), new KVMessageSerializer(),
-                new KVMessageDeserializer());
+                new KVMessageDeserializer(), new NetworkPacketResenderFactory());
     }
 
     public IKVCommunicationApiV2 createKVCommunicationApiV2(

@@ -1,13 +1,15 @@
 package weloveclouds.server.models.requests.kvecs;
 
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.communication.NetworkPacketResender;
+import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.ICommunicationApi;
-import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.hashing.models.HashRange;
@@ -43,6 +45,9 @@ public class MoveDataToDestination implements IKVECSRequest {
      * storage unit
      */
     private static final int NUMBER_OF_STORAGE_UNITS_TO_BE_TRANSFERRED_AT_ONCE = 30;
+    private static final int ATTEMPT_NUMBER_FOR_PACKET_RESEND = 10;
+
+    private NetworkPacketResenderFactory resenderFactory;
 
     private IMovableDataAccessService dataAccessService;
     private RingMetadataPart targetServerInfo;
@@ -57,16 +62,24 @@ public class MoveDataToDestination implements IKVECSRequest {
      *        target server to which those entries shall be transferred whose key's are in the range
      *        defined by this object
      * @param communicationApi to communicate with the target server
+     * @param transferMessageSerializer to serialize {@link KVTransferMessage} into
+     *        {@link SerializedMessage}
+     * @param transferMessageDeserializer to deserialize {@link KVTransferMessage} from
+     *        {@link SerializedMessage}
+     * @param resenderFactory used for creating instances of a class that can be used for resending
+     *        packets over the network
      */
     public MoveDataToDestination(IMovableDataAccessService dataAccessService,
             RingMetadataPart targetServerInfo, ICommunicationApi communicationApi,
             IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer,
+            NetworkPacketResenderFactory resenderFactory) {
         this.dataAccessService = dataAccessService;
         this.targetServerInfo = targetServerInfo;
         this.communicationApi = communicationApi;
         this.transferMessageSerializer = transferMessageSerializer;
         this.transferMessageDeserializer = transferMessageDeserializer;
+        this.resenderFactory = resenderFactory;
     }
 
     @Override
@@ -108,16 +121,11 @@ public class MoveDataToDestination implements IKVECSRequest {
      * Transfers the respective MovableStorageUnit instances to the target server. Creates bunches
      * from those units that will be transferred together.
      * 
-     * @param storageUnitsToTransferred
-     * @throws UnableToSendContentToServerException
-     * @throws ConnectionClosedException
-     * @throws DeserializationException
+     * @throws UnableToSendContentToServerException if an error occurs
      */
     private void transferStorageUnitsToTargetServer(
             Set<MovableStorageUnit> storageUnitsToTransferred)
-            throws UnableToSendContentToServerException, ConnectionClosedException,
-            DeserializationException {
-
+            throws UnableToSendContentToServerException {
         Set<MovableStorageUnit> toBeTransferred = new HashSet<>();
         for (MovableStorageUnit strageUnitToBeMoved : storageUnitsToTransferred) {
             toBeTransferred.add(strageUnitToBeMoved);
@@ -127,30 +135,33 @@ public class MoveDataToDestination implements IKVECSRequest {
                 toBeTransferred.clear();
             }
         }
-
         transferBunchOverTheNetwork(new MovableStorageUnits(toBeTransferred));
     }
 
     /**
      * Transfers a bunch of storage units over the network to the target server.
      * 
-     * @throws UnableToSendContentToServerException
-     * @throws ConnectionClosedException
-     * @throws DeserializationException
+     * @throws UnableToSendContentToServerException if an error occurs
      */
     private void transferBunchOverTheNetwork(MovableStorageUnits storageUnits)
-            throws UnableToSendContentToServerException, ConnectionClosedException,
-            DeserializationException {
-        KVTransferMessage transferMessage = new KVTransferMessage.Builder()
-                .status(StatusType.TRANSFER).storageUnits(storageUnits).build();
-        SerializedMessage serializedMessage = transferMessageSerializer.serialize(transferMessage);
+            throws UnableToSendContentToServerException {
+        try {
+            KVTransferMessage transferMessage = new KVTransferMessage.Builder()
+                    .status(StatusType.TRANSFER).storageUnits(storageUnits).build();
+            SerializedMessage serializedMessage =
+                    transferMessageSerializer.serialize(transferMessage);
 
-        communicationApi.send(serializedMessage.getBytes());
+            NetworkPacketResender resender = resenderFactory
+                    .createResenderWithExponentialBackoff(ATTEMPT_NUMBER_FOR_PACKET_RESEND);
+            byte[] responsePacket =
+                    resender.resendPacket(communicationApi, serializedMessage.getBytes());
 
-        KVTransferMessage response =
-                transferMessageDeserializer.deserialize(communicationApi.receive());
-        if (response.getStatus() == StatusType.TRANSFER_ERROR) {
-            throw new UnableToSendContentToServerException(response.getResponseMessage());
+            KVTransferMessage response = transferMessageDeserializer.deserialize(responsePacket);
+            if (response.getStatus() == StatusType.TRANSFER_ERROR) {
+                throw new UnableToSendContentToServerException(response.getResponseMessage());
+            }
+        } catch (DeserializationException | IOException ex) {
+            throw new UnableToSendContentToServerException(ex.getMessage());
         }
     }
 
