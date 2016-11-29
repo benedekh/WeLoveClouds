@@ -12,6 +12,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.models.conf.KVServerPortConstants;
 import weloveclouds.server.utils.LogSetup;
 
 /**
@@ -33,7 +34,8 @@ public class KVClient {
             new LogSetup(logFile, Level.OFF);
 
             ServerConnectionInfo bootstrapConnectionInfo =
-                    new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
+                    new ServerConnectionInfo.Builder().ipAddress("localhost")
+                            .port(KVServerPortConstants.KVCLIENT_REQUESTS_PORT).build();
             IKVCommunicationApiV2 serverCommunication = new KVCommunicationApiFactory()
                     .createKVCommunicationApiV2(bootstrapConnectionInfo);
 

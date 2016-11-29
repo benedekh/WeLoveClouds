@@ -24,7 +24,7 @@ import weloveclouds.ecs.models.tasks.Status;
 public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, Observer {
 
     private static final Logger LOGGER = Logger.getLogger(ExponentialBackoffResendStrategy.class);
-    private static final int MIN_INTERVAL_IN_MILLISECONDS = 80;
+    private static final int MIN_INTERVAL_IN_MILLISECONDS = 300;
 
     private int maxNumberOfAttempts;
     private ICommunicationApi communicationApi;
@@ -63,21 +63,6 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, 
     public void tryAgain() {
         try {
             if (executionStatus == Status.RUNNING && numberOfAttemptsSoFar <= maxNumberOfAttempts) {
-                LOGGER.info(join("", "#",
-                        String.valueOf(numberOfAttemptsSoFar) + " attempts were made out of #",
-                        String.valueOf(maxNumberOfAttempts), " attempts."));
-
-                int powerOfTwo = (int) Math.round(Math.max(2, Math.pow(2, numberOfAttemptsSoFar)));
-                LOGGER.info(join("", "Power of two: ", String.valueOf(powerOfTwo)));
-
-                int drawnFactor = numberGenerator.nextInt(powerOfTwo - 1);
-                LOGGER.info(join("", "Drawn multiplication factor: ", String.valueOf(powerOfTwo)));
-
-                int sleepTime = drawnFactor * MIN_INTERVAL_IN_MILLISECONDS;
-                LOGGER.info(join("", "Sleep time in milliseconds before next resend: ",
-                        String.valueOf(sleepTime)));
-
-                Thread.sleep(sleepTime);
                 try {
                     LOGGER.info("Sending packet over the network.");
                     communicationApi.send(packetToBeSent);
@@ -89,6 +74,23 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, 
                         executionStatus = Status.FAILED;
                     }
                 }
+
+                LOGGER.info(join("", "#",
+                        String.valueOf(numberOfAttemptsSoFar)
+                                + " resend attempts were made out of #",
+                        String.valueOf(maxNumberOfAttempts), " attempts."));
+
+                int powerOfTwo = (int) Math.round(Math.max(2, Math.pow(2, numberOfAttemptsSoFar)));
+                LOGGER.info(join("", "Power of two: ", String.valueOf(powerOfTwo)));
+
+                int drawnFactor = Math.max(1, numberGenerator.nextInt(powerOfTwo - 1));
+                LOGGER.info(join("", "Drawn multiplication factor: ", String.valueOf(powerOfTwo)));
+
+                int sleepTime = drawnFactor * MIN_INTERVAL_IN_MILLISECONDS;
+                LOGGER.info(join("", "Sleep time in milliseconds before next resend: ",
+                        String.valueOf(sleepTime)));
+
+                Thread.sleep(sleepTime);
             } else if (numberOfAttemptsSoFar > maxNumberOfAttempts) {
                 receiver.interrupt();
                 String message = "Max number of retries have been reached.";
