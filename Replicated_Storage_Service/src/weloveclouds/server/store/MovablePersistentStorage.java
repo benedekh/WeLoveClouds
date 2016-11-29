@@ -171,11 +171,11 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                         LOGGER.error(ex);
                     }
                 }
-
                 willBeCompacted = afterThatWillBeCompacted;
             }
         } catch (NoSuchElementException ex) {
             // iterator is over
+            LOGGER.error(ex);
         } finally {
             unitsWithFreeSpace.clear();
 
@@ -185,6 +185,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             }
             LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(unitsWithFreeSpace.size()),
                     " storage units have free space after defragmentation."));
+
         }
 
         LOGGER.debug("Defragmentation finished.");
@@ -201,41 +202,46 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      */
     private PersistedStorageUnit defragmentFromCurrent(MovableStorageUnit current,
             Iterator<PersistedStorageUnit> iterator) {
-
-        PersistedStorageUnit next = iterator.next();
-        MovableStorageUnit nextUnit = new MovableStorageUnit(next);
-        Set<String> movedKeys = current.moveEntriesFrom(nextUnit);
-
         try {
-            // save the storage units
-            current.save();
-            nextUnit.save();
-        } catch (StorageException ex) {
-            LOGGER.error(ex);
-        }
+            PersistedStorageUnit next = iterator.next();
+            MovableStorageUnit nextUnit = new MovableStorageUnit(next);
+            Set<String> movedKeys = current.moveEntriesFrom(nextUnit);
 
-        // update references for the moved keys
-        for (String movedKey : movedKeys) {
-            storageUnits.put(movedKey, current);
-        }
-
-        // handle if the storage unit to which the data was moved is full
-        if (current.isFull()) {
-            removeStorageUnitFromFreeSpaceCache(current);
-        } else {
-            next = defragmentFromCurrent(current, iterator);
-        }
-
-        // handle if the storage unit from which data was moved is empty
-        if (nextUnit.isEmpty()) {
             try {
-                removeStorageUnit(nextUnit);
-            } catch (IOException ex) {
+                // save the storage units
+                current.save();
+                nextUnit.save();
+            } catch (StorageException ex) {
                 LOGGER.error(ex);
             }
-        }
 
-        return next;
+            // update references for the moved keys
+            for (String movedKey : movedKeys) {
+                storageUnits.put(movedKey, current);
+            }
+
+            // handle if the storage unit to which the data was moved is full
+            if (current.isFull()) {
+                removeStorageUnitFromFreeSpaceCache(current);
+            } else {
+                next = defragmentFromCurrent(current, iterator);
+            }
+
+            // handle if the storage unit from which data was moved is empty
+            if (nextUnit.isEmpty()) {
+                try {
+                    removeStorageUnit(nextUnit);
+                } catch (IOException ex) {
+                    LOGGER.error(ex);
+                }
+            }
+
+            return next;
+        } catch (NoSuchElementException ex) {
+            // iterator is over
+            LOGGER.error(ex);
+            return null;
+        }
     }
 
     /**
