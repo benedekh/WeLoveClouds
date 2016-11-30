@@ -14,6 +14,7 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.IDLE;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 
@@ -42,6 +43,8 @@ public class ShutdownNode extends AbstractEcsNetworkCommand {
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
+            }else{
+                targetedNode.setStatus(IDLE);
             }
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);

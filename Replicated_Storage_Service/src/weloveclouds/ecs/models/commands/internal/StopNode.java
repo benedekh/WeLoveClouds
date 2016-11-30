@@ -14,6 +14,8 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.HALTED;
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 
@@ -42,6 +44,8 @@ public class StopNode extends AbstractEcsNetworkCommand {
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
+            }else{
+                targetedNode.setStatus(INITIALIZED);
             }
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);

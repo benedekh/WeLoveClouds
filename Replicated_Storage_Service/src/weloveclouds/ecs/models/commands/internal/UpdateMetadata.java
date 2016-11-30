@@ -42,6 +42,7 @@ public class UpdateMetadata extends AbstractEcsNetworkCommand {
             KVAdminMessage message = new KVAdminMessage.Builder()
                     .status(StatusType.UPDATE)
                     .ringMetadata(ringMetadata)
+                    .targetServerInfo(ringMetadata.findServerInfoByHash(targetedNode.getHashKey()))
                     .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
             KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
