@@ -20,6 +20,7 @@ import weloveclouds.ecs.models.repository.EcsRepository;
 import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.repository.StorageNodeStatus;
+import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
 import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
 import weloveclouds.ecs.models.tasks.EcsBatchFactory;
@@ -31,8 +32,6 @@ import weloveclouds.ecs.utils.ListUtils;
 import weloveclouds.ecs.utils.RingMetadataHelper;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;
 
 
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;
@@ -58,25 +57,23 @@ public class ExternalConfigurationService implements Observer {
 
     private EcsStatus status;
     private final HashRange INITIAL_HASHRANGE;
-    private RingMetadata ringMetadata;
     private String configurationFilePath;
     private EcsRepository repository;
     private EcsRepositoryFactory ecsRepositoryFactory;
     private ITaskService taskService;
     private EcsBatchFactory ecsBatchFactory;
-    private RingTopology<StorageNode> ringTopology;
+    private DistributedService distributedService;
 
     public ExternalConfigurationService(Builder externalConfigurationServiceBuilder) throws ServiceBootstrapException {
         this.taskService = externalConfigurationServiceBuilder.taskService;
         this.ecsRepositoryFactory = externalConfigurationServiceBuilder.ecsRepositoryFactory;
         this.configurationFilePath = externalConfigurationServiceBuilder.configurationFilePath;
         this.ecsBatchFactory = externalConfigurationServiceBuilder.ecsBatchFactory;
-        this.ringMetadata = new RingMetadata();
         INITIAL_HASHRANGE = new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE)
                 .build();
         bootstrapConfiguration();
         this.status = UNINITIALIZED;
-        this.ringTopology = new RingTopology<>();
+        this.distributedService = new DistributedService();
     }
 
     @SuppressWarnings("unchecked")
@@ -102,7 +99,7 @@ public class ExternalConfigurationService implements Observer {
     public void start() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
             AbstractBatchTasks<AbstractRetryableTask> nodeStartBatch = ecsBatchFactory
-                    .createStartNodeBatchFor(repository.getNodesWithStatus(INITIALIZED));
+                    .createStartNodeBatchFor(distributedService.getParticipatingNodes());
 
             nodeStartBatch.addObserver(this);
             taskService.launchBatchTasks(nodeStartBatch);
@@ -116,7 +113,7 @@ public class ExternalConfigurationService implements Observer {
     public void stop() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
             AbstractBatchTasks<AbstractRetryableTask> nodeStopBatch = ecsBatchFactory
-                    .createStopNodeBatchFor(repository.getNodesWithStatus(RUNNING));
+                    .createStopNodeBatchFor(distributedService.getParticipatingNodes());
 
             nodeStopBatch.addObserver(this);
             taskService.launchBatchTasks(nodeStopBatch);
@@ -147,16 +144,18 @@ public class ExternalConfigurationService implements Observer {
             AbstractBatchTasks<AbstractRetryableTask> addNodeBatch;
             StorageNode newStorageNode = (StorageNode) ListUtils.getRandomObjectFrom(repository
                     .getNodesWithStatus(IDLE));
-            List<StorageNode> nodes = ringTopology.getNodes();
+
+            List<StorageNode> nodes = distributedService.getParticipatingNodes();
             nodes.add(newStorageNode);
             RingTopology<StorageNode> newTopology = new RingTopology<>(RingMetadataHelper.computeRingOrder
                     (nodes));
-            StorageNode successorNode = RingMetadataHelper.getSuccessorFrom(ringTopology,
+            StorageNode successorNode = RingMetadataHelper.getSuccessorFrom(distributedService.getTopology(),
                     newTopology, newStorageNode);
-            updateRingMetadataFrom(ringTopology.updateTopologyWith(newTopology));
+            distributedService.updateTopologyWith(newTopology);
 
             addNodeBatch = ecsBatchFactory.createAddNodeBatchFrom(new AddNodeTaskDetails
-                    (newStorageNode, successorNode, ringMetadata, displacementStrategy, cacheSize));
+                    (newStorageNode, successorNode, distributedService.getRingMetadata(), displacementStrategy,
+                            cacheSize));
 
             addNodeBatch.addObserver(this);
             taskService.launchBatchTasks(addNodeBatch);
@@ -170,17 +169,19 @@ public class ExternalConfigurationService implements Observer {
     public void removeNode() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
             AbstractBatchTasks<AbstractRetryableTask> removeBatch;
-            StorageNode nodeToRemove = (StorageNode) ListUtils.getRandomObjectFrom(ringTopology.getNodes());
+            StorageNode nodeToRemove = (StorageNode) ListUtils.getRandomObjectFrom
+                    (distributedService.getParticipatingNodes());
             nodeToRemove.setStatus(REMOVED);
-            RingTopology<StorageNode> newTopology = new RingTopology<>(ringTopology);
+
+            RingTopology<StorageNode> newTopology = new RingTopology<>(distributedService.getTopology());
             newTopology.removeNodes(nodeToRemove);
 
-            StorageNode successorNode = RingMetadataHelper.getSuccessorFrom(ringTopology,
+            StorageNode successorNode = RingMetadataHelper.getSuccessorFrom(distributedService.getTopology(),
                     newTopology, nodeToRemove);
-            updateRingMetadataFrom(ringTopology.updateTopologyWith(newTopology));
+            distributedService.updateTopologyWith(newTopology);
 
             removeBatch = ecsBatchFactory.createRemoveNodeBatchFrom(new RemoveNodeTaskDetails
-                    (nodeToRemove, successorNode, ringMetadata));
+                    (nodeToRemove, successorNode, distributedService.getRingMetadata()));
 
             removeBatch.addObserver(this);
             taskService.launchBatchTasks(removeBatch);
@@ -194,7 +195,7 @@ public class ExternalConfigurationService implements Observer {
     private void initializeNodesWithMetadata() {
         AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch =
                 ecsBatchFactory.createNodeMetadataInitialisationBatchWith(repository
-                        .getNodesWithStatus(INITIALIZED), ringMetadata);
+                        .getNodesWithStatus(INITIALIZED), distributedService.getRingMetadata());
 
         nodeMetadataInitialisationBatch.addObserver(this);
         taskService.launchBatchTasks(nodeMetadataInitialisationBatch);
@@ -203,7 +204,8 @@ public class ExternalConfigurationService implements Observer {
 
     private void updateNodesWithMetadata() {
         AbstractBatchTasks<AbstractRetryableTask> nodeMetadataUpdateBatch = ecsBatchFactory
-                .createNodeMetadataUpdateBatchWith(ringTopology.getNodes(), ringMetadata, status);
+                .createNodeMetadataUpdateBatchWith(distributedService.getParticipatingNodes(),
+                        distributedService.getRingMetadata(), status);
 
         nodeMetadataUpdateBatch.addObserver(this);
         taskService.launchBatchTasks(nodeMetadataUpdateBatch);
@@ -216,31 +218,6 @@ public class ExternalConfigurationService implements Observer {
         } catch (InvalidConfigurationException ex) {
             throw new ServiceBootstrapException("Bootstrap failed. Unable to start the service : "
                     + ex.getMessage(), ex);
-        }
-    }
-
-    private void initializeRingMetadata() {
-        List<StorageNode> ringOrderedNodes = RingMetadataHelper.computeRingOrder(repository
-                .getNodesWithStatus(INITIALIZED));
-        ringTopology.updateTopologyWith(ringOrderedNodes);
-        updateRingMetadataFrom(ringTopology);
-    }
-
-    private void updateRingMetadataFrom(RingTopology<StorageNode> ringTopology) {
-        HashRange previousRange = null;
-
-        for (StorageNode node : ringTopology.getNodes()) {
-            HashRange hashRange;
-            int ringPosition = ringTopology.getRingPositionOf(node);
-
-            hashRange = RingMetadataHelper.computeHashRangeForNodeBasedOnRingPosition(ringPosition,
-                    ringTopology.getNumberOfNodes(), node.getHashKey(), previousRange);
-            node.setHashRange(hashRange);
-
-            ringMetadata.addRangeInfo(new RingMetadataPart.Builder().connectionInfo(node
-                    .getServerConnectionInfo()).range(hashRange).build());
-
-            previousRange = hashRange;
         }
     }
 
@@ -260,7 +237,7 @@ public class ExternalConfigurationService implements Observer {
         switch (batch.getPurpose()) {
             case SERVICE_INITIALISATION:
                 if (!batch.hasFailed()) {
-                    initializeRingMetadata();
+                    distributedService.initializeWith(repository.getNodesWithStatus(INITIALIZED));
                     initializeNodesWithMetadata();
                 } else {
                     status = EcsStatus.UNINITIALIZED;
