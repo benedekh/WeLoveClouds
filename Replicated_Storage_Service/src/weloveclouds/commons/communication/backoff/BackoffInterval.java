@@ -7,10 +7,10 @@ public class BackoffInterval {
     private static final int SIXTY = 60;
     private static final int THOUSAND = 1000;
 
-    private long intervalInMillis;
+    private long intervalLengthInMillis;
 
-    public BackoffInterval(long intervalInMillis) {
-        this.intervalInMillis = intervalInMillis;
+    public BackoffInterval(long intervalLengthInMillis) {
+        this.intervalLengthInMillis = intervalLengthInMillis;
     }
 
     public long getHours() {
@@ -22,15 +22,15 @@ public class BackoffInterval {
     }
 
     public long getSeconds() {
-        return intervalInMillis / THOUSAND;
+        return intervalLengthInMillis / THOUSAND;
     }
 
     public long getMillis() {
-        return intervalInMillis;
+        return intervalLengthInMillis;
     }
 
     public long getMicros() {
-        return intervalInMillis * THOUSAND;
+        return intervalLengthInMillis * THOUSAND;
     }
 
     public long getNano() {
@@ -39,7 +39,7 @@ public class BackoffInterval {
 
     @Override
     public String toString() {
-        return join("", "Interval in milliseconds: ", String.valueOf(intervalInMillis));
+        return join("", "Interval in milliseconds: ", String.valueOf(intervalLengthInMillis));
     }
 
 }

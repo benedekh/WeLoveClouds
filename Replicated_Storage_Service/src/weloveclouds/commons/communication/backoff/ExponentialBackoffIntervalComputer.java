@@ -9,13 +9,14 @@ import org.apache.log4j.Logger;
 public class ExponentialBackoffIntervalComputer implements IBackoffIntervalComputer {
 
     private static final Logger LOGGER = Logger.getLogger(ExponentialBackoffIntervalComputer.class);
-    private static final int MIN_INTERVAL_IN_MILLISECONDS = 300;
 
+    private BackoffInterval minimalInterval;
     private int numberOfAttemptsSoFar;
     private Random numberGenerator;
 
-    public ExponentialBackoffIntervalComputer() {
+    public ExponentialBackoffIntervalComputer(BackoffInterval minimalInterval) {
         this.numberOfAttemptsSoFar = 0;
+        this.minimalInterval = minimalInterval;
         this.numberGenerator = new Random();
     }
 
@@ -30,7 +31,7 @@ public class ExponentialBackoffIntervalComputer implements IBackoffIntervalCompu
         int drawnFactor = Math.max(1, numberGenerator.nextInt(powerOfTwo - 1));
         LOGGER.info(join("", "Drawn multiplication factor: ", String.valueOf(powerOfTwo)));
 
-        BackoffInterval interval = new BackoffInterval(drawnFactor * MIN_INTERVAL_IN_MILLISECONDS);
+        BackoffInterval interval = new BackoffInterval(drawnFactor * minimalInterval.getMillis());
         LOGGER.info(interval);
 
         return interval;
