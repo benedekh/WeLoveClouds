@@ -29,9 +29,9 @@ public class KVServerInitializationUtil implements AutoCloseable {
     private static final HashRange EVERY_HASH =
             new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
 
-    IKVCommunicationApiV2 serverCommunication;
-    IMessageDeserializer<KVAdminMessage, SerializedMessage> kvAdminMessageDeserializer;
-    IMessageSerializer<SerializedMessage, KVAdminMessage> kvAdminMessageSerializer;
+    private IKVCommunicationApiV2 serverCommunication;
+    private IMessageDeserializer<KVAdminMessage, SerializedMessage> kvAdminMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, KVAdminMessage> kvAdminMessageSerializer;
 
     public KVServerInitializationUtil() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo =

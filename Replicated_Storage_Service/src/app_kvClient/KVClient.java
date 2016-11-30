@@ -12,7 +12,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
-import weloveclouds.server.models.conf.KVServerPortConstants;
+import weloveclouds.server.models.configuration.KVServerPortConstants;
 import weloveclouds.server.utils.LogSetup;
 
 /**

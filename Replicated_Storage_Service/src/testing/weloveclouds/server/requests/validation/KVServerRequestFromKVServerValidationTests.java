@@ -18,7 +18,7 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
-import weloveclouds.server.models.conf.KVServerPortConstants;
+import weloveclouds.server.models.configuration.KVServerPortConstants;
 
 /**
  * Unit tests for validating KVServer, server-side request validation of messages from another

@@ -1,4 +1,4 @@
-package weloveclouds.server.models.conf;
+package weloveclouds.server.models.configuration;
 
 import weloveclouds.server.core.KVServer;
 

@@ -1,102 +1,75 @@
-package weloveclouds.commons.communication;
+package weloveclouds.commons.communication.resend.strategy;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.communication.backoff.ExponentialBackoffIntervalComputer;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.models.tasks.Status;
 
-/**
- * A strategy class which implements the 'well-known' exponential backoff strategy used in TCP, for
- * resending packet over the network a couple of times after each other.
- * 
- * @author Benedek
- */
-public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, Observer {
+public class ExponentialBackoffResendWithResponse extends ExponentialBackoffResend
+        implements Observer, IPacketResendWithResponseStrategy {
 
-    private static final Logger LOGGER = Logger.getLogger(ExponentialBackoffResendStrategy.class);
-    private static final int MIN_INTERVAL_IN_MILLISECONDS = 300;
-
-    private int maxNumberOfAttempts;
-    private ICommunicationApi communicationApi;
-    private byte[] packetToBeSent;
-
-    private int numberOfAttemptsSoFar;
-    private Thread receiver;
-    private Random numberGenerator;
+    private static final Logger LOGGER =
+            Logger.getLogger(ExponentialBackoffResendWithResponse.class);
 
     private byte[] response;
-    private IOException exception;
-    private Status executionStatus;
+    private Thread receiverThread;
 
-    public ExponentialBackoffResendStrategy() {
-        this.executionStatus = Status.WAITING;
-        this.numberGenerator = new Random();
+    public ExponentialBackoffResendWithResponse(int maxNumberOfAttempts,
+            ICommunicationApi communicationApi, byte[] packet,
+            ExponentialBackoffIntervalComputer backoffIntervalComputer) {
+        super(maxNumberOfAttempts, communicationApi, packet, backoffIntervalComputer);
+        initializePacketReceiver();
     }
 
-    @Override
-    public void initialize(int attemptNumber, ICommunicationApi communicationApi, byte[] packet) {
-        this.maxNumberOfAttempts = attemptNumber;
-        this.communicationApi = communicationApi;
-        packetToBeSent = packet;
-
+    private void initializePacketReceiver() {
         PacketReceiver packetReceiver = new PacketReceiver(communicationApi);
         packetReceiver.addObserver(this);
-        receiver = new Thread(packetReceiver);
+        receiverThread = new Thread(packetReceiver);
         LOGGER.info("Starting packet receiver thread.");
-        receiver.start();
-        while (!receiver.isAlive());
+        receiverThread.start();
+        while (!receiverThread.isAlive());
         LOGGER.info("Packet receiver thread started.");
-        executionStatus = Status.RUNNING;
     }
 
     @Override
     public void tryAgain() {
         try {
-            if (executionStatus == Status.RUNNING && numberOfAttemptsSoFar <= maxNumberOfAttempts) {
+            if (executionStatus == Status.RUNNING && numberOfAttemptsSoFar < maxNumberOfAttempts) {
                 try {
                     LOGGER.info("Sending packet over the network.");
                     communicationApi.send(packetToBeSent);
                 } catch (UnableToSendContentToServerException ex) {
                     if (executionStatus != Status.COMPLETED) {
-                        receiver.interrupt();
+                        receiverThread.interrupt();
                         LOGGER.error(ex);
                         exception = new IOException(ex);
                         executionStatus = Status.FAILED;
                     }
                 }
-
                 LOGGER.info(join("", "#",
                         String.valueOf(numberOfAttemptsSoFar)
                                 + " resend attempts were made out of #",
                         String.valueOf(maxNumberOfAttempts), " attempts."));
-
-                int powerOfTwo = (int) Math.round(Math.max(2, Math.pow(2, numberOfAttemptsSoFar)));
-                LOGGER.info(join("", "Power of two: ", String.valueOf(powerOfTwo)));
-
-                int drawnFactor = Math.max(1, numberGenerator.nextInt(powerOfTwo - 1));
-                LOGGER.info(join("", "Drawn multiplication factor: ", String.valueOf(powerOfTwo)));
-
-                int sleepTime = drawnFactor * MIN_INTERVAL_IN_MILLISECONDS;
-                LOGGER.info(join("", "Sleep time in milliseconds before next resend: ",
-                        String.valueOf(sleepTime)));
-
-                Thread.sleep(sleepTime);
-            } else if (numberOfAttemptsSoFar > maxNumberOfAttempts) {
-                receiver.interrupt();
-                String message = "Max number of retries have been reached.";
-                LOGGER.info(message);
-                exception = new IOException(message);
-                executionStatus = Status.FAILED;
+                Thread.sleep(backoffIntervalComputer.computeIntervalFrom(numberOfAttemptsSoFar)
+                        .getMillis());
+            } else if (numberOfAttemptsSoFar >= maxNumberOfAttempts) {
+                if (executionStatus != Status.COMPLETED) {
+                    receiverThread.interrupt();
+                    String message = "Max number of retries have been reached.";
+                    LOGGER.info(message);
+                    exception = new IOException(message);
+                    executionStatus = Status.FAILED;
+                }
             }
         } catch (InterruptedException ex) {
             LOGGER.error(ex);
@@ -104,24 +77,8 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, 
     }
 
     @Override
-    public Status getExecutionStatus() {
-        return executionStatus;
-    }
-
-    @Override
-    public IOException getException() {
-        return exception;
-    }
-
-    @Override
     public byte[] getResponse() {
         return response;
-    }
-
-
-    @Override
-    public void incrementNumberOfAttemptsByOne() {
-        numberOfAttemptsSoFar++;
     }
 
     @Override
@@ -135,6 +92,12 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy, 
         }
     }
 
+    /**
+     * A thread that is used for receiving response packet over the network. As soon as the response
+     * arrived, the resend strategy is stopped.
+     * 
+     * @author Benedek
+     */
     private static class PacketReceiver extends Observable implements Runnable {
 
         private static final Logger LOGGER = Logger.getLogger(PacketReceiver.class);

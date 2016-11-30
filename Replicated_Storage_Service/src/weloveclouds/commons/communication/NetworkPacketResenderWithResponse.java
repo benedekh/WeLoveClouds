@@ -6,36 +6,36 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.communication.resend.strategy.IPacketResendStrategy;
+import weloveclouds.commons.communication.resend.strategy.IPacketResendWithResponseStrategy;
 import weloveclouds.ecs.models.tasks.Status;
 
-/**
- * A helper class which uses different strategies for sending a packet over the network.
- * 
- * @author Benedek
- */
-public class NetworkPacketResender {
+public class NetworkPacketResenderWithResponse {
 
-    private static final Logger LOGGER = Logger.getLogger(NetworkPacketResender.class);
+    private static final Logger LOGGER = Logger.getLogger(NetworkPacketResenderWithResponse.class);
 
-    private IPacketResendStrategy resendStrategy;
+    private IPacketResendWithResponseStrategy resendStrategy;
 
-    /**
-     * @param resendStrategy the strategy to be used for resending the packet
-     */
-    public NetworkPacketResender(IPacketResendStrategy resendStrategy) {
-        this.resendStrategy = resendStrategy;
+    public NetworkPacketResenderWithResponse(
+            IPacketResendWithResponseStrategy resendWithResponseStrategy) {
+        this.resendStrategy = resendWithResponseStrategy;
     }
 
-    public void resendPacket() throws IOException {
+    /**
+     * Resends the packet over the network until either a response is received for that, or the max
+     * number of attempts were exceeded, or an exception occurs.
+     * 
+     * @return the response that was received for the packet
+     * @throws IOException if any error occurs, including the exceeded number of retries
+     */
+    public byte[] resendPacketWithResponse() throws IOException {
         Status status = resendStrategy.getExecutionStatus();
         while (status != Status.COMPLETED) {
             resendStrategy.tryAgain();
 
             switch (resendStrategy.getExecutionStatus()) {
                 case COMPLETED:
-                    LOGGER.info("Packet was sucessfully sent.");
-                    return;
+                    LOGGER.info("Retry resend finished, because response message was received.");
+                    return resendStrategy.getResponse();
                 case FAILED:
                     IOException exception = resendStrategy.getException();
                     LOGGER.info("Retry resend failed due to an exception.");
@@ -56,8 +56,8 @@ public class NetworkPacketResender {
 
         switch (resendStrategy.getExecutionStatus()) {
             case COMPLETED:
-                LOGGER.info("Packet was sucessfully sent.");
-                return;
+                LOGGER.info("Retry resend finished, because response message was received.");
+                return resendStrategy.getResponse();
             case FAILED:
                 IOException exception = resendStrategy.getException();
                 LOGGER.info("Retry resend failed due to an exception.");
@@ -71,6 +71,4 @@ public class NetworkPacketResender {
 
         }
     }
-
-
 }

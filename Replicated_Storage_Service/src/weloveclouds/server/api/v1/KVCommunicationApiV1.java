@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.communication.NetworkPacketResender;
 import weloveclouds.commons.communication.NetworkPacketResenderFactory;
+import weloveclouds.commons.communication.NetworkPacketResenderWithResponse;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
@@ -161,9 +162,10 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
                     new KVMessage.Builder().status(messageType).key(key).value(value).build();
             byte[] rawMessage = messageSerializer.serialize(message).getBytes();
 
-            NetworkPacketResender resender = resenderFactory
-                    .createResenderWithExponentialBackoff(ATTEMPT_NUMBER_FOR_PACKET_RESEND);
-            return resender.resendPacket(serverCommunication, rawMessage);
+            NetworkPacketResenderWithResponse resender =
+                    resenderFactory.createResenderWithResponseWithExponentialBackoff(
+                            ATTEMPT_NUMBER_FOR_PACKET_RESEND, serverCommunication, rawMessage);
+            return resender.resendPacketWithResponse();
         } catch (IOException ex) {
             LOGGER.error(ex);
             throw new UnableToSendContentToServerException(ex.getMessage());
