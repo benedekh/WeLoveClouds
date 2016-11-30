@@ -356,7 +356,7 @@ public class ExternalConfigurationService implements Observer {
                 updateNodesWithMetadata();
                 break;
             case SHUTDOWN:
-                status = EcsStatus.INITIALIZED;
+                status = EcsStatus.UNINITIALIZED;
                 break;
             case UPDATING_METADATA:
                 status = EcsStatus.INITIALIZED;
