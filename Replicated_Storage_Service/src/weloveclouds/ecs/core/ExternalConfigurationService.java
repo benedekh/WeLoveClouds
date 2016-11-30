@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
@@ -17,23 +16,15 @@ import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;
 import weloveclouds.ecs.exceptions.ServiceBootstrapException;
-import weloveclouds.ecs.models.commands.AbstractCommand;
-import weloveclouds.ecs.models.commands.internal.EcsInternalCommandFactory;
-import weloveclouds.ecs.models.commands.internal.InitNodeMetadata;
-import weloveclouds.ecs.models.commands.internal.SetWriteLock;
-import weloveclouds.ecs.models.commands.internal.ShutdownNode;
-import weloveclouds.ecs.models.commands.internal.StartNode;
-import weloveclouds.ecs.models.commands.internal.StopNode;
-import weloveclouds.ecs.models.commands.internal.UpdateMetadata;
-import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.EcsRepository;
 import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.repository.StorageNodeStatus;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
-import weloveclouds.ecs.models.tasks.BatchRetryableTasks;
 import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
-import weloveclouds.ecs.models.tasks.SimpleRetryableTask;
+import weloveclouds.ecs.models.tasks.EcsBatchFactory;
+import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
+import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.ListUtils;
@@ -51,19 +42,11 @@ import static weloveclouds.ecs.core.EcsStatus.SHUTDOWNING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STARTING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STOPPING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.UNINITIALIZED;
-import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.*;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.REMOVED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.RUNNING;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.WRITELOCKED;
-import static weloveclouds.ecs.models.tasks.BatchPurpose.ADD_NODE;
-import static weloveclouds.ecs.models.tasks.BatchPurpose.REMOVE_NODE;
-import static weloveclouds.ecs.models.tasks.BatchPurpose.SERVICE_INITIALISATION;
-import static weloveclouds.ecs.models.tasks.BatchPurpose.SHUTDOWN;
-import static weloveclouds.ecs.models.tasks.BatchPurpose.START_NODE;
-import static weloveclouds.ecs.models.tasks.BatchPurpose.STOP_NODE;
-import static weloveclouds.ecs.models.tasks.BatchPurpose.UPDATING_METADATA;
+
 
 /**
  * Created by Benoit on 2016-11-16.
@@ -80,16 +63,14 @@ public class ExternalConfigurationService implements Observer {
     private EcsRepository repository;
     private EcsRepositoryFactory ecsRepositoryFactory;
     private ITaskService taskService;
-    private EcsInternalCommandFactory ecsInternalCommandFactory;
+    private EcsBatchFactory ecsBatchFactory;
     private RingTopology<StorageNode> ringTopology;
-    private IStatsdClient statsdClient;
-
 
     public ExternalConfigurationService(Builder externalConfigurationServiceBuilder) throws ServiceBootstrapException {
         this.taskService = externalConfigurationServiceBuilder.taskService;
-        this.ecsInternalCommandFactory = externalConfigurationServiceBuilder.ecsInternalCommandFactory;
         this.ecsRepositoryFactory = externalConfigurationServiceBuilder.ecsRepositoryFactory;
         this.configurationFilePath = externalConfigurationServiceBuilder.configurationFilePath;
+        this.ecsBatchFactory = externalConfigurationServiceBuilder.ecsBatchFactory;
         this.ringMetadata = new RingMetadata();
         INITIAL_HASHRANGE = new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE)
                 .build();
@@ -102,19 +83,13 @@ public class ExternalConfigurationService implements Observer {
     public void initService(int numberOfNodes, int cacheSize, String displacementStrategy) throws
             ExternalConfigurationServiceException {
         if (status == UNINITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> nodeInitialisationBatch = new
-                    BatchRetryableTasks(SERVICE_INITIALISATION);
+            AbstractBatchTasks<AbstractRetryableTask> nodeInitialisationBatch;
             List<StorageNode> storageNodesToInitialize = (List<StorageNode>) ListUtils
                     .getPreciseNumberOfRandomObjectsFrom(repository.getNodesWithStatus(IDLE), numberOfNodes);
 
-            for (StorageNode storageNode : storageNodesToInitialize) {
-                LaunchJar taskCommand = ecsInternalCommandFactory.createLaunchJarCommandWith
-                        (storageNode, ExternalConfigurationServiceConstants.KV_SERVER_JAR_PATH, cacheSize,
-                                displacementStrategy);
+            nodeInitialisationBatch = ecsBatchFactory.createInitNodeMetadataBatchWith
+                    (storageNodesToInitialize, cacheSize, displacementStrategy);
 
-                nodeInitialisationBatch.addTask(
-                        new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
-            }
             nodeInitialisationBatch.addObserver(this);
             taskService.launchBatchTasks(nodeInitialisationBatch);
             status = INITIALIZING_SERVICE;
@@ -124,15 +99,11 @@ public class ExternalConfigurationService implements Observer {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void start() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> nodeStartBatch = new BatchRetryableTasks(START_NODE);
+            AbstractBatchTasks<AbstractRetryableTask> nodeStartBatch = ecsBatchFactory
+                    .createStartNodeBatchFor(repository.getNodesWithStatus(INITIALIZED));
 
-            for (StorageNode storageNode : repository.getNodesWithStatus(INITIALIZED)) {
-                StartNode taskCommand = ecsInternalCommandFactory.createStartNodeCommandFor(storageNode);
-                nodeStartBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_START_RETRIES, taskCommand));
-            }
             nodeStartBatch.addObserver(this);
             taskService.launchBatchTasks(nodeStartBatch);
             status = STARTING_NODE;
@@ -144,12 +115,9 @@ public class ExternalConfigurationService implements Observer {
 
     public void stop() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> nodeStopBatch = new BatchRetryableTasks(STOP_NODE);
+            AbstractBatchTasks<AbstractRetryableTask> nodeStopBatch = ecsBatchFactory
+                    .createStopNodeBatchFor(repository.getNodesWithStatus(RUNNING));
 
-            for (StorageNode storageNode : repository.getNodesWithStatus(RUNNING)) {
-                StopNode taskCommand = ecsInternalCommandFactory.createStopNodeCommandFor(storageNode);
-                nodeStopBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_STOP_RETRIES, taskCommand));
-            }
             nodeStopBatch.addObserver(this);
             taskService.launchBatchTasks(nodeStopBatch);
             status = STOPPING_NODE;
@@ -161,13 +129,10 @@ public class ExternalConfigurationService implements Observer {
 
     public void shutDown() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> nodeShutdownBatch = new BatchRetryableTasks(SHUTDOWN);
             List<StorageNodeStatus> activeNodeStatus = Arrays.asList(INITIALIZED, RUNNING);
+            AbstractBatchTasks<AbstractRetryableTask> nodeShutdownBatch = ecsBatchFactory
+                    .createShutdownNodeBatchFor(repository.getNodeWithStatus(activeNodeStatus));
 
-            for (StorageNode storageNode : repository.getNodeWithStatus(activeNodeStatus)) {
-                ShutdownNode taskCommand = ecsInternalCommandFactory.createShutDownNodeCommandFor(storageNode);
-                nodeShutdownBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES, taskCommand));
-            }
             nodeShutdownBatch.addObserver(this);
             taskService.launchBatchTasks(nodeShutdownBatch);
             status = SHUTDOWNING_NODE;
@@ -179,7 +144,7 @@ public class ExternalConfigurationService implements Observer {
 
     public void addNode(int cacheSize, String displacementStrategy) throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> addNodeBatch = new BatchRetryableTasks(ADD_NODE);
+            AbstractBatchTasks<AbstractRetryableTask> addNodeBatch;
             StorageNode newStorageNode = (StorageNode) ListUtils.getRandomObjectFrom(repository
                     .getNodesWithStatus(IDLE));
             List<StorageNode> nodes = ringTopology.getNodes();
@@ -190,21 +155,9 @@ public class ExternalConfigurationService implements Observer {
                     newTopology, newStorageNode);
             updateRingMetadataFrom(ringTopology.updateTopologyWith(newTopology));
 
-            LaunchJar taskCommand = ecsInternalCommandFactory
-                    .createLaunchJarCommandWith(newStorageNode,
-                            ExternalConfigurationServiceConstants.KV_SERVER_JAR_PATH, cacheSize,
-                            displacementStrategy);
+            addNodeBatch = ecsBatchFactory.createAddNodeBatchFrom(new AddNodeTaskDetails
+                    (newStorageNode, successorNode, ringMetadata, displacementStrategy, cacheSize));
 
-            List<AbstractCommand> successCommands = new ArrayList<>();
-            successCommands.add(ecsInternalCommandFactory.createInitNodeMetadataCommandWith
-                    (newStorageNode, ringMetadata));
-            successCommands.add(ecsInternalCommandFactory.createSetWriteLockCommandFor
-                    (successorNode));
-            successCommands.add(ecsInternalCommandFactory.createInvokeDataTransferCommandWith
-                    (successorNode, newStorageNode, ringMetadata));
-
-            addNodeBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES,
-                    taskCommand, successCommands));
             addNodeBatch.addObserver(this);
             taskService.launchBatchTasks(addNodeBatch);
             status = ADDING_NODE;
@@ -216,7 +169,7 @@ public class ExternalConfigurationService implements Observer {
 
     public void removeNode() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> removeBatch = new BatchRetryableTasks(REMOVE_NODE);
+            AbstractBatchTasks<AbstractRetryableTask> removeBatch;
             StorageNode nodeToRemove = (StorageNode) ListUtils.getRandomObjectFrom(ringTopology.getNodes());
             nodeToRemove.setStatus(REMOVED);
             RingTopology<StorageNode> newTopology = new RingTopology<>(ringTopology);
@@ -226,17 +179,9 @@ public class ExternalConfigurationService implements Observer {
                     newTopology, nodeToRemove);
             updateRingMetadataFrom(ringTopology.updateTopologyWith(newTopology));
 
-            SetWriteLock taskCommand = ecsInternalCommandFactory.createSetWriteLockCommandFor
-                    (nodeToRemove);
-
-            List<AbstractCommand> successCommands = new ArrayList<>();
-            successCommands.add(ecsInternalCommandFactory.createUpdateMetadataCommandWith
-                    (successorNode, ringMetadata));
-            successCommands.add(ecsInternalCommandFactory.createInvokeDataTransferCommandWith
+            removeBatch = ecsBatchFactory.createRemoveNodeBatchFrom(new RemoveNodeTaskDetails
                     (nodeToRemove, successorNode, ringMetadata));
 
-            removeBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES,
-                    taskCommand, successCommands));
             removeBatch.addObserver(this);
             taskService.launchBatchTasks(removeBatch);
             status = REMOVING_NODE;
@@ -247,40 +192,18 @@ public class ExternalConfigurationService implements Observer {
     }
 
     private void initializeNodesWithMetadata() {
-        AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch = new
-                BatchRetryableTasks(UPDATING_METADATA);
+        AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch =
+                ecsBatchFactory.createNodeMetadataInitialisationBatchWith(repository
+                        .getNodesWithStatus(INITIALIZED), ringMetadata);
 
-        for (StorageNode storageNode : repository.getNodesWithStatus(INITIALIZED)) {
-            InitNodeMetadata taskCommand = ecsInternalCommandFactory
-                    .createInitNodeMetadataCommandWith(storageNode, ringMetadata);
-
-            nodeMetadataInitialisationBatch.addTask(
-                    new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
-            nodeMetadataInitialisationBatch.addObserver(this);
-        }
-
+        nodeMetadataInitialisationBatch.addObserver(this);
         taskService.launchBatchTasks(nodeMetadataInitialisationBatch);
         status = EcsStatus.UPDATING_METADATA;
     }
 
     private void updateNodesWithMetadata() {
-        AbstractBatchTasks<AbstractRetryableTask> nodeMetadataUpdateBatch = new
-                BatchRetryableTasks(UPDATING_METADATA);
-
-        for (StorageNode storageNode : ringTopology.getNodes()) {
-            List<AbstractCommand> successCommands = new ArrayList<>();
-            UpdateMetadata taskCommand = ecsInternalCommandFactory
-                    .createUpdateMetadataCommandWith(storageNode, ringMetadata);
-            if (storageNode.getStatus() == WRITELOCKED && status == ADDING_NODE) {
-                successCommands.add(ecsInternalCommandFactory.createReleaseWriteLockCommandFor
-                        (storageNode));
-            } else if (storageNode.getStatus() == WRITELOCKED && status == REMOVING_NODE) {
-                successCommands.add(ecsInternalCommandFactory.createShutDownNodeCommandFor(storageNode));
-            }
-            nodeMetadataUpdateBatch.addTask(
-                    new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES,
-                            taskCommand, successCommands));
-        }
+        AbstractBatchTasks<AbstractRetryableTask> nodeMetadataUpdateBatch = ecsBatchFactory
+                .createNodeMetadataUpdateBatchWith(ringTopology.getNodes(), ringMetadata, status);
 
         nodeMetadataUpdateBatch.addObserver(this);
         taskService.launchBatchTasks(nodeMetadataUpdateBatch);
@@ -339,7 +262,7 @@ public class ExternalConfigurationService implements Observer {
                 if (!batch.hasFailed()) {
                     initializeRingMetadata();
                     initializeNodesWithMetadata();
-                }else{
+                } else {
                     status = EcsStatus.UNINITIALIZED;
                 }
                 break;
@@ -376,12 +299,7 @@ public class ExternalConfigurationService implements Observer {
         private String configurationFilePath;
         private EcsRepositoryFactory ecsRepositoryFactory;
         private ITaskService taskService;
-        private EcsInternalCommandFactory ecsInternalCommandFactory;
-
-        public Builder ecsInternalCommandFactory(EcsInternalCommandFactory ecsInternalCommandFactory) {
-            this.ecsInternalCommandFactory = ecsInternalCommandFactory;
-            return this;
-        }
+        private EcsBatchFactory ecsBatchFactory;
 
         public Builder taskService(ITaskService taskService) {
             this.taskService = taskService;
@@ -390,6 +308,11 @@ public class ExternalConfigurationService implements Observer {
 
         public Builder ecsRepositoryFactory(EcsRepositoryFactory ecsRepositoryFactory) {
             this.ecsRepositoryFactory = ecsRepositoryFactory;
+            return this;
+        }
+
+        public Builder ecsBatchFactory(EcsBatchFactory ecsBatchFactory) {
+            this.ecsBatchFactory = ecsBatchFactory;
             return this;
         }
 
