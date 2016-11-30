@@ -1,7 +1,5 @@
 package weloveclouds.commons.communication.resend.strategy;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
@@ -15,16 +13,16 @@ import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.models.tasks.Status;
 
-public class ExponentialBackoffResendWithResponse extends ExponentialBackoffResend
+public class ExponentialBackoffResendWithResponseStrategy extends ExponentialBackoffResendStrategy
         implements Observer, IPacketResendWithResponseStrategy {
 
     private static final Logger LOGGER =
-            Logger.getLogger(ExponentialBackoffResendWithResponse.class);
+            Logger.getLogger(ExponentialBackoffResendWithResponseStrategy.class);
 
     private byte[] response;
     private Thread receiverThread;
 
-    public ExponentialBackoffResendWithResponse(int maxNumberOfAttempts,
+    public ExponentialBackoffResendWithResponseStrategy(int maxNumberOfAttempts,
             ICommunicationApi communicationApi, byte[] packet,
             ExponentialBackoffIntervalComputer backoffIntervalComputer) {
         super(maxNumberOfAttempts, communicationApi, packet, backoffIntervalComputer);
@@ -48,20 +46,10 @@ public class ExponentialBackoffResendWithResponse extends ExponentialBackoffRese
                 try {
                     LOGGER.info("Sending packet over the network.");
                     communicationApi.send(packetToBeSent);
+                    sleepBeforeNextAttempt();
                 } catch (UnableToSendContentToServerException ex) {
-                    if (executionStatus != Status.COMPLETED) {
-                        receiverThread.interrupt();
-                        LOGGER.error(ex);
-                        exception = new IOException(ex);
-                        executionStatus = Status.FAILED;
-                    }
+                    sleepBeforeNextAttempt();
                 }
-                LOGGER.info(join("", "#",
-                        String.valueOf(numberOfAttemptsSoFar)
-                                + " resend attempts were made out of #",
-                        String.valueOf(maxNumberOfAttempts), " attempts."));
-                Thread.sleep(backoffIntervalComputer.computeIntervalFrom(numberOfAttemptsSoFar)
-                        .getMillis());
             } else if (numberOfAttemptsSoFar >= maxNumberOfAttempts) {
                 if (executionStatus != Status.COMPLETED) {
                     receiverThread.interrupt();
@@ -73,6 +61,8 @@ public class ExponentialBackoffResendWithResponse extends ExponentialBackoffRese
             }
         } catch (InterruptedException ex) {
             LOGGER.error(ex);
+            exception = new IOException("Resend unexpectedly stopped.");
+            executionStatus = Status.FAILED;
         }
     }
 
@@ -83,10 +73,7 @@ public class ExponentialBackoffResendWithResponse extends ExponentialBackoffRese
 
     @Override
     public void update(Observable sender, Object argument) {
-        if (argument instanceof IOException) {
-            exception = (IOException) argument;
-            executionStatus = Status.FAILED;
-        } else if (argument instanceof byte[]) {
+        if (argument instanceof byte[]) {
             response = (byte[]) argument;
             executionStatus = Status.COMPLETED;
         }
@@ -109,14 +96,15 @@ public class ExponentialBackoffResendWithResponse extends ExponentialBackoffRese
 
         @Override
         public void run() {
-            try {
-                byte[] response = communicationApi.receive();
-                setChanged();
-                notifyObservers(response);
-            } catch (ClientNotConnectedException | ConnectionClosedException e) {
-                LOGGER.error(e);
-                setChanged();
-                notifyObservers(new IOException(e));
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    byte[] response = communicationApi.receive();
+                    setChanged();
+                    notifyObservers(response);
+                    return;
+                } catch (ClientNotConnectedException | ConnectionClosedException e) {
+                    LOGGER.error(e);
+                }
             }
         }
     }

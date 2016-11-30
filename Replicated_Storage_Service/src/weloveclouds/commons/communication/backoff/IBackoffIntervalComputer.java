@@ -1,6 +1,8 @@
 package weloveclouds.commons.communication.backoff;
 
+import org.joda.time.Duration;
+
 public interface IBackoffIntervalComputer {
 
-    BackoffInterval computeIntervalFrom(int attemptNumber);
+    Duration computeIntervalFrom(int attemptNumber);
 }

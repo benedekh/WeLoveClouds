@@ -17,9 +17,9 @@ import weloveclouds.ecs.models.tasks.Status;
  * 
  * @author Benedek
  */
-public class ExponentialBackoffResend implements IPacketResendStrategy {
+public class ExponentialBackoffResendStrategy implements IPacketResendStrategy {
 
-    private static final Logger LOGGER = Logger.getLogger(ExponentialBackoffResend.class);
+    private static final Logger LOGGER = Logger.getLogger(ExponentialBackoffResendStrategy.class);
 
     protected int maxNumberOfAttempts;
     protected ICommunicationApi communicationApi;
@@ -36,7 +36,7 @@ public class ExponentialBackoffResend implements IPacketResendStrategy {
      * @param communicationApi the communication channel through which the packet shall be sent
      * @param packet that has to be sent over the network
      */
-    public ExponentialBackoffResend(int maxNumberOfAttempts, ICommunicationApi communicationApi,
+    public ExponentialBackoffResendStrategy(int maxNumberOfAttempts, ICommunicationApi communicationApi,
             byte[] packet, ExponentialBackoffIntervalComputer backoffIntervalComputer) {
         if (maxNumberOfAttempts < 0) {
             throw new IllegalArgumentException("Number of attempts has to be positive.");
@@ -59,12 +59,7 @@ public class ExponentialBackoffResend implements IPacketResendStrategy {
                     communicationApi.send(packetToBeSent);
                     executionStatus = Status.COMPLETED;
                 } catch (UnableToSendContentToServerException ex) {
-                    LOGGER.info(join("", "#",
-                            String.valueOf(numberOfAttemptsSoFar)
-                                    + " resend attempts were made out of #",
-                            String.valueOf(maxNumberOfAttempts), " attempts."));
-                    Thread.sleep(backoffIntervalComputer.computeIntervalFrom(numberOfAttemptsSoFar)
-                            .getMillis());
+                    sleepBeforeNextAttempt();
                 }
             } else if (numberOfAttemptsSoFar >= maxNumberOfAttempts) {
                 String message = "Max number of retries have been reached.";
@@ -74,6 +69,8 @@ public class ExponentialBackoffResend implements IPacketResendStrategy {
             }
         } catch (InterruptedException ex) {
             LOGGER.error(ex);
+            exception = new IOException("Resend unexpectedly stopped.");
+            executionStatus = Status.FAILED;
         }
     }
 
@@ -90,6 +87,16 @@ public class ExponentialBackoffResend implements IPacketResendStrategy {
     @Override
     public void incrementNumberOfAttemptsByOne() {
         numberOfAttemptsSoFar++;
+    }
+
+    protected void sleepBeforeNextAttempt() throws InterruptedException {
+        if (executionStatus != Status.COMPLETED) {
+            LOGGER.info(join("", "#",
+                    String.valueOf(numberOfAttemptsSoFar) + " resend attempts were made out of #",
+                    String.valueOf(maxNumberOfAttempts), " attempts."));
+            Thread.sleep(
+                    backoffIntervalComputer.computeIntervalFrom(numberOfAttemptsSoFar).getMillis());
+        }
     }
 
 }

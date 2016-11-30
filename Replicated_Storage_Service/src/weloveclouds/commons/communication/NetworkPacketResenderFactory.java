@@ -1,6 +1,6 @@
 package weloveclouds.commons.communication;
 
-import weloveclouds.commons.communication.resend.strategy.ExponentialBackoffResend;
+import weloveclouds.commons.communication.resend.strategy.ExponentialBackoffResendStrategy;
 import weloveclouds.commons.communication.resend.strategy.ExponentialBackoffResendStrategyFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 
@@ -14,7 +14,7 @@ public class NetworkPacketResenderFactory {
     }
 
     /**
-     * Creates a {@link NetworkPacketResender} which uses {@link ExponentialBackoffResend}.
+     * Creates a {@link NetworkPacketResender} which uses {@link ExponentialBackoffResendStrategy}.
      * 
      * @param maxNumberOfAttempts maximal number of attempts for resend
      * @param communicationApi the communication channel through which the packet shall be sent

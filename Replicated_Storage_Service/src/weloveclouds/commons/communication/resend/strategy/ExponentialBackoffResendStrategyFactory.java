@@ -1,35 +1,36 @@
 package weloveclouds.commons.communication.resend.strategy;
 
-import weloveclouds.commons.communication.backoff.BackoffInterval;
+import org.joda.time.Duration;
+
 import weloveclouds.commons.communication.backoff.ExponentialBackoffIntervalComputer;
 import weloveclouds.communication.api.ICommunicationApi;
 
 public class ExponentialBackoffResendStrategyFactory {
 
-    private static final BackoffInterval MINIMAL_INTERVAL = new BackoffInterval(300);
+    private static final Duration MINIMAL_INTERVAL = new Duration(300);
 
-    public ExponentialBackoffResend createExponentialBackoffResendStrategy(int maxNumberOfAttempts,
+    public ExponentialBackoffResendStrategy createExponentialBackoffResendStrategy(int maxNumberOfAttempts,
             ICommunicationApi communicationApi, byte[] packet) {
-        return new ExponentialBackoffResend(maxNumberOfAttempts, communicationApi, packet,
+        return new ExponentialBackoffResendStrategy(maxNumberOfAttempts, communicationApi, packet,
                 new ExponentialBackoffIntervalComputer(MINIMAL_INTERVAL));
     }
 
-    public ExponentialBackoffResend createExponentialBackoffResendStrategy(int maxNumberOfAttempts,
-            ICommunicationApi communicationApi, byte[] packet, BackoffInterval minimalInterval) {
-        return new ExponentialBackoffResend(maxNumberOfAttempts, communicationApi, packet,
+    public ExponentialBackoffResendStrategy createExponentialBackoffResendStrategy(int maxNumberOfAttempts,
+            ICommunicationApi communicationApi, byte[] packet, Duration minimalInterval) {
+        return new ExponentialBackoffResendStrategy(maxNumberOfAttempts, communicationApi, packet,
                 new ExponentialBackoffIntervalComputer(minimalInterval));
     }
 
-    public ExponentialBackoffResendWithResponse createExponentialBackoffResendWithResponseStrategy(
+    public ExponentialBackoffResendWithResponseStrategy createExponentialBackoffResendWithResponseStrategy(
             int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet) {
-        return new ExponentialBackoffResendWithResponse(maxNumberOfAttempts, communicationApi,
+        return new ExponentialBackoffResendWithResponseStrategy(maxNumberOfAttempts, communicationApi,
                 packet, new ExponentialBackoffIntervalComputer(MINIMAL_INTERVAL));
     }
 
-    public ExponentialBackoffResendWithResponse createExponentialBackoffResendWithResponseStrategy(
+    public ExponentialBackoffResendWithResponseStrategy createExponentialBackoffResendWithResponseStrategy(
             int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet,
-            BackoffInterval minimalInterval) {
-        return new ExponentialBackoffResendWithResponse(maxNumberOfAttempts, communicationApi,
+            Duration minimalInterval) {
+        return new ExponentialBackoffResendWithResponseStrategy(maxNumberOfAttempts, communicationApi,
                 packet, new ExponentialBackoffIntervalComputer(minimalInterval));
     }
 }
