@@ -9,6 +9,7 @@ import weloveclouds.client.core.Client;
 import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
@@ -34,7 +35,7 @@ public class KVClient {
 
             ServerConnectionInfo bootstrapConnectionInfo =
                     new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
-            IKVCommunicationApiV2 serverCommunication = new CommunicationApiFactory()
+            IKVCommunicationApiV2 serverCommunication = new KVCommunicationApiFactory()
                     .createKVCommunicationApiV2(bootstrapConnectionInfo);
 
             try {
@@ -54,5 +55,4 @@ public class KVClient {
                     logFile, "due to an error:", ex.getMessage()));
         }
     }
-
 }

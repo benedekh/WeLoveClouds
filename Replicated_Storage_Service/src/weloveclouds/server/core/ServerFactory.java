@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.networking.Server;
 import weloveclouds.commons.networking.ServerSocketFactory;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;

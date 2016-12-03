@@ -1,5 +1,8 @@
 package weloveclouds.ecs.models.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
@@ -21,6 +24,7 @@ public class StorageNode {
     private Hash hashKey;
     private HashRange previousHashRange;
     private HashRange hashRange;
+    private List<StorageNode> replicas;
 
     public StorageNode(String id, ServerConnectionInfo serverConnectionInfo) {
         this.id = id;
@@ -32,6 +36,19 @@ public class StorageNode {
                 .ipAddress(serverConnectionInfo.getIpAddress())
                 .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT)
                 .build();
+        this.replicas = new ArrayList<>();
+    }
+
+    public void addReplicas(StorageNode storageNode) {
+        replicas.add(storageNode);
+    }
+
+    public void removeReplicas(StorageNode storageNode) {
+        replicas.remove(storageNode);
+    }
+
+    public List<StorageNode> getReplicas() {
+        return new ArrayList<>(replicas);
     }
 
     public ServerConnectionInfo getEcsChannelConnectionInfo() {

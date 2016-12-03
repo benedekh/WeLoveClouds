@@ -30,14 +30,4 @@ public class CommunicationApiFactory {
     public IConcurrentCommunicationApi createConcurrentCommunicationApiV1() {
         return new ConcurrentCommunicationApiV1(new ConcurrentCommunicationService());
     }
-
-    public IKVCommunicationApi createKVCommunicationApiV1() {
-        return new KVCommunicationApiV1(createCommunicationApiV1(), new KVMessageSerializer(),
-                new KVMessageDeserializer());
-    }
-
-    public IKVCommunicationApiV2 createKVCommunicationApiV2(
-            ServerConnectionInfo bootstrapConnectionInfo) {
-        return new KVCommunicationApiV2(bootstrapConnectionInfo);
-    }
 }

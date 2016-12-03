@@ -1,6 +1,6 @@
 package weloveclouds.commons.status;
 
-import weloveclouds.commons.networking.Server;
+import weloveclouds.server.core.Server;
 
 /**
  * Represents the status of the {@link Server}.

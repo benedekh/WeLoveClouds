@@ -1,4 +1,4 @@
-package weloveclouds.commons.networking;
+package weloveclouds.server.core;
 
 
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.networking.IConnectionHandler;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;

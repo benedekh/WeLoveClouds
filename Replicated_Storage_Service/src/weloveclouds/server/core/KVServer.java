@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.networking.Server;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;

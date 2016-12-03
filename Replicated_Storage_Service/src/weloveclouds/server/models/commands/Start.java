@@ -10,7 +10,7 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
-import weloveclouds.commons.networking.Server;
+import weloveclouds.server.core.Server;
 import weloveclouds.commons.networking.ServerSocketFactory;
 import weloveclouds.server.models.conf.KVServerCLIContext;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
