@@ -4,6 +4,7 @@ package weloveclouds.ecs.models.commands.internal;
 import java.util.Arrays;
 
 import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.ssh.SecureShellServiceFactory;
@@ -30,7 +31,10 @@ public class EcsInternalCommandFactory {
         return new LaunchJar.Builder()
                 .jarFilePath(jarFilePath)
                 .arguments(Arrays.asList(jarFilePath, Integer.toString(storageNode.getPort()),
-                        Integer.toString(cacheSize), displacementStrategy, LOG_LEVEL_ALL))
+                        Integer.toString(ExternalConfigurationServiceConstants.KV_SERVER_REQUEST_PORT),
+                        Integer.toString(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT),
+                        Integer.toString(cacheSize),
+                        displacementStrategy, LOG_LEVEL_ALL))
                 .secureShellService(secureShellServiceFactory.createJshSecureShellService())
                 .targetedNode(storageNode)
                 .build();

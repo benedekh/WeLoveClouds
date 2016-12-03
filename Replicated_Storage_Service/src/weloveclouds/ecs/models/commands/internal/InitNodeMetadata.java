@@ -15,6 +15,7 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
+import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.SYNCHRONIZED;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.INITKVSERVER;
 import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
@@ -49,6 +50,7 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand {
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             } else {
+                targetedNode.setStatus(INITIALIZED);
                 targetedNode.setMetadataStatus(SYNCHRONIZED);
             }
 

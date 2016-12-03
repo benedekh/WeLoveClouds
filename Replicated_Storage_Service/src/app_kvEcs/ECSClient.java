@@ -19,6 +19,7 @@ import weloveclouds.ecs.models.commands.client.EcsClientCommandFactory;
 import weloveclouds.ecs.models.commands.internal.EcsInternalCommandFactory;
 import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.ssh.SecureShellServiceFactory;
+import weloveclouds.ecs.models.tasks.EcsBatchFactory;
 import weloveclouds.ecs.services.TaskService;
 import weloveclouds.ecs.utils.ConfigurationFileParser;
 import weloveclouds.server.utils.LogSetup;
@@ -30,14 +31,14 @@ public class ECSClient {
 
     public static void main(String[] args) throws Exception {
         try {
-            new LogSetup(LOG_FILE, Level.INFO);
+            new LogSetup(LOG_FILE, Level.OFF);
             ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
             EcsInternalCommandFactory ecsInternalCommandFactory = new EcsInternalCommandFactory
                     (new CommunicationApiFactory(), new SecureShellServiceFactory());
 
             ExternalConfigurationService ecs = new ExternalConfigurationService.Builder()
                     .taskService(new TaskService())
-                    .ecsInternalCommandFactory(ecsInternalCommandFactory)
+                    .ecsBatchFactory(new EcsBatchFactory(ecsInternalCommandFactory))
                     .configurationFilePath(args[0])
                     .ecsRepositoryFactory(new EcsRepositoryFactory(new ConfigurationFileParser()))
                     .build();
