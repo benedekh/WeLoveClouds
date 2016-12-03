@@ -149,6 +149,7 @@ public class ExternalConfigurationService implements Observer {
             nodes.add(newStorageNode);
             RingTopology<StorageNode> newTopology = new RingTopology<>(RingMetadataHelper.computeRingOrder
                     (nodes));
+
             StorageNode successorNode = RingMetadataHelper.getSuccessorFrom(distributedService.getTopology(),
                     newTopology, newStorageNode);
             distributedService.updateTopologyWith(newTopology);
