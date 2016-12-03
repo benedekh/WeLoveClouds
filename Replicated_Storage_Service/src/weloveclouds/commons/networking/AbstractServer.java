@@ -1,9 +1,11 @@
-package weloveclouds.server.core;
+package weloveclouds.commons.networking;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import static weloveclouds.server.core.ServerStatus.HALTED;
+import weloveclouds.commons.status.ServerStatus;
+
+import static weloveclouds.commons.status.ServerStatus.HALTED;
 
 /**
  * Represents an abstract server which can accept connections on the referred port.

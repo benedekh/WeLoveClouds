@@ -6,8 +6,8 @@ import static weloveclouds.kvstore.serialization.models.SerializedMessage.MESSAG
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataPartDeserializer;

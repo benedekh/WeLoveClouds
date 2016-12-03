@@ -1,4 +1,4 @@
-package weloveclouds.server.core;
+package weloveclouds.commons.networking;
 
 import java.io.IOException;
 import java.net.ServerSocket;

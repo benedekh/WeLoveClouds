@@ -3,9 +3,9 @@ package weloveclouds.server.models.requests.validator;
 import java.net.InetAddress;
 import java.util.Set;
 
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;

@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.deserialization.helper.HashDeserializer;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;

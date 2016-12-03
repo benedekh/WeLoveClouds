@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
-import weloveclouds.server.core.requests.ICallbackRegister;
+import weloveclouds.commons.networking.requests.ICallbackRegister;
 
 /**
  * Shutdown the Server itself along with every open connection.

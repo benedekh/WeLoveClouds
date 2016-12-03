@@ -1,5 +1,7 @@
 package weloveclouds.ecs.models.tasks;
 
+import com.google.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
 import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
-import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadata;
 
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.REMOVING_NODE;
@@ -25,7 +27,6 @@ import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NU
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES;
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NUMBER_OF_NODE_START_RETRIES;
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NUMBER_OF_NODE_STOP_RETRIES;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.WRITELOCKED;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.ADD_NODE;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.REMOVE_NODE;
@@ -41,6 +42,7 @@ import static weloveclouds.ecs.models.tasks.BatchPurpose.UPDATING_METADATA;
 public class EcsBatchFactory {
     EcsInternalCommandFactory ecsInternalCommandFactory;
 
+    @Inject
     public EcsBatchFactory(EcsInternalCommandFactory ecsInternalCommandFactory) {
         this.ecsInternalCommandFactory = ecsInternalCommandFactory;
     }

@@ -2,8 +2,8 @@ package weloveclouds.kvstore.serialization.helper;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadataPart;;
 
 /**
  * A serializer which converts a {@link RingMetadata} to a {@link String}.

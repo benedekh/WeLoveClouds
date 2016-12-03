@@ -13,7 +13,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.commons.networking.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;

@@ -5,8 +5,8 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.HashRangeSerializer;
 

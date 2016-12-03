@@ -1,18 +1,22 @@
 package weloveclouds.ecs.models.repository;
 
+import com.google.inject.Inject;
+
 import java.io.File;
 import java.util.List;
 
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;
 import weloveclouds.ecs.utils.ConfigurationFileParser;
+import weloveclouds.ecs.utils.IParser;
 
 /**
  * Created by Benoit on 2016-11-21.
  */
 public class EcsRepositoryFactory {
-    private ConfigurationFileParser configurationFileParser;
+    private IParser<List<StorageNode>, File> configurationFileParser;
 
-    public EcsRepositoryFactory(ConfigurationFileParser configurationFileParser) {
+    @Inject
+    public EcsRepositoryFactory(IParser<List<StorageNode>, File> configurationFileParser) {
         this.configurationFileParser = configurationFileParser;
     }
 

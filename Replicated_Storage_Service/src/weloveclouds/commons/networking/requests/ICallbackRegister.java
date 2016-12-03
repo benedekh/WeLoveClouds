@@ -1,4 +1,4 @@
-package weloveclouds.server.core.requests;
+package weloveclouds.commons.networking.requests;
 
 /**
  * Represents a callback register which stores different callbacks and can execute.

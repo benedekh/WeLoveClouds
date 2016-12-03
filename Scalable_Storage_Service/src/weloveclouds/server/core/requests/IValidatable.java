@@ -1,4 +1,4 @@
-package weloveclouds.server.core.requests;
+package weloveclouds.commons.networking.requests;
 
 /**
  * Interface for objects which can be validated.

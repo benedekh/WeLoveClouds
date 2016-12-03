@@ -1,7 +1,7 @@
 package weloveclouds.server.api.v2;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.server.api.IKVCommunicationApi;
 
 /**

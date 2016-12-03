@@ -1,6 +1,6 @@
 package weloveclouds.server.services.exceptions;
 
-import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**

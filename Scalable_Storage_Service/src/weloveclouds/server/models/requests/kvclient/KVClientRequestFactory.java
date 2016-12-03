@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.server.core.requests.IRequestFactory;
+import weloveclouds.commons.networking.requests.IRequestFactory;
 import weloveclouds.server.services.IDataAccessService;
 
 /**

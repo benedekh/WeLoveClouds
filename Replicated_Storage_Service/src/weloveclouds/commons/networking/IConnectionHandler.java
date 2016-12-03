@@ -1,4 +1,4 @@
-package weloveclouds.server.core;
+package weloveclouds.commons.networking;
 
 /**
  * A common abstraction for handling different client connections to the server.

@@ -1,8 +1,8 @@
 package weloveclouds.kvstore.models.messages;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
 
 /**
  * Represents an administrative message between the ECS and the KVServer.

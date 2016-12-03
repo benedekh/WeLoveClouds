@@ -1,4 +1,4 @@
-package weloveclouds.hashing.utils;
+package weloveclouds.commons.hashing.utils;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -6,8 +6,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
 
 /**
  * Utility class for the {@link Hash}.

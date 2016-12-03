@@ -12,7 +12,7 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.server.core.requests.IRequestFactory;
+import weloveclouds.commons.networking.requests.IRequestFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**

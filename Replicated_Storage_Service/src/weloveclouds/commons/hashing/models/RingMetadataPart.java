@@ -1,4 +1,4 @@
-package weloveclouds.hashing.models;
+package weloveclouds.commons.hashing.models;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;

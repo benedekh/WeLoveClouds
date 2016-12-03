@@ -6,9 +6,9 @@ import weloveclouds.commons.status.ServiceStatus;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.utils.RingMetadataHelper;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
 
 import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
 import static weloveclouds.commons.status.ServiceStatus.UNINITIALIZED;

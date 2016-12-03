@@ -1,6 +1,6 @@
-package weloveclouds.server.core;
+package weloveclouds.commons.networking;
 
-import static weloveclouds.server.core.ServerStatus.RUNNING;
+import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,9 +12,9 @@ import weloveclouds.communication.models.Connection;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.core.requests.IExecutable;
-import weloveclouds.server.core.requests.IRequestFactory;
-import weloveclouds.server.core.requests.IValidatable;
+import weloveclouds.commons.networking.requests.IExecutable;
+import weloveclouds.commons.networking.requests.IRequestFactory;
+import weloveclouds.commons.networking.requests.IValidatable;
 
 /**
  * A Server instance which accepts messages over the network and can handle multiple clients

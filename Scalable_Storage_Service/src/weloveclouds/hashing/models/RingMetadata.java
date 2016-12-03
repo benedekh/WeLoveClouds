@@ -1,4 +1,4 @@
-package weloveclouds.hashing.models;
+package weloveclouds.commons.hashing.models;
 
 import java.util.HashSet;
 import java.util.Set;
