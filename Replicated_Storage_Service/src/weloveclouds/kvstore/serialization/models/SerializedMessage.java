@@ -3,7 +3,7 @@ package weloveclouds.kvstore.serialization.models;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import weloveclouds.kvstore.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
 
 /**
  * Represents a byte[] of a serialized message.

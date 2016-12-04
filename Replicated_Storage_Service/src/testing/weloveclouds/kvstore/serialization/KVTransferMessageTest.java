@@ -10,11 +10,11 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.kvstore.deserialization.KVTransferMessageDeserializer;
 import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.KVTransferMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;

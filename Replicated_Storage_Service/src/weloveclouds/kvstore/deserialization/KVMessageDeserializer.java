@@ -6,6 +6,7 @@ import static weloveclouds.kvstore.serialization.models.SerializedMessage.MESSAG
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;

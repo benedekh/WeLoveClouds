@@ -4,6 +4,7 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;

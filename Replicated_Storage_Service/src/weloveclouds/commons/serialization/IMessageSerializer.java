@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.serialization;
+package weloveclouds.commons.serialization;
 
 /**
  * A serializer that can convert from type E to T.
