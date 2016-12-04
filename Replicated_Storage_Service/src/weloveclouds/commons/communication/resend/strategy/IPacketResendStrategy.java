@@ -17,6 +17,12 @@ public interface IPacketResendStrategy {
     Status getExecutionStatus();
 
     /**
+     * @return the response packet that arrived after sending the packet that had to be sent over
+     *         the network
+     */
+    byte[] getResponse();
+
+    /**
      * @return any exception that was thrown during the execution of the startegy
      */
     IOException getException();

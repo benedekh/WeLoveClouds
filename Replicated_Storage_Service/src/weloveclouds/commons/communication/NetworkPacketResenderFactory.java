@@ -27,9 +27,9 @@ public class NetworkPacketResenderFactory {
                         maxNumberOfAttempts, communicationApi, packet));
     }
 
-    public NetworkPacketResenderWithResponse createResenderWithResponseWithExponentialBackoff(
+    public NetworkPacketResender createResenderWithResponseWithExponentialBackoff(
             int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet) {
-        return new NetworkPacketResenderWithResponse(
+        return new NetworkPacketResender(
                 exponentialResendStrategyFactory.createExponentialBackoffResendWithResponseStrategy(
                         maxNumberOfAttempts, communicationApi, packet));
     }

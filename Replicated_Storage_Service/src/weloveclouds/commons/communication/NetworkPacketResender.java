@@ -27,7 +27,7 @@ public class NetworkPacketResender {
         this.resendStrategy = resendStrategy;
     }
 
-    public void resendPacket() throws IOException {
+    public byte[] resendPacket() throws IOException {
         while (resendStrategy.getExecutionStatus() == Status.RUNNING) {
             resendStrategy.tryAgain();
 
@@ -41,7 +41,7 @@ public class NetworkPacketResender {
         switch (resendStrategy.getExecutionStatus()) {
             case COMPLETED:
                 LOGGER.info("Packet was sucessfully sent.");
-                return;
+                return resendStrategy.getResponse();
             case FAILED:
                 LOGGER.info("Retry resend failed due to an exception.");
                 throw resendStrategy.getException();

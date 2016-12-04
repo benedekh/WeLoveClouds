@@ -99,4 +99,9 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy {
         }
     }
 
+    @Override
+    public byte[] getResponse() {
+        return new byte[0];
+    }
+
 }

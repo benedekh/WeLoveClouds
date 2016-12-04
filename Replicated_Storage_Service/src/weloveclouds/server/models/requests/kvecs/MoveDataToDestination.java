@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.communication.NetworkPacketResender;
 import weloveclouds.commons.communication.NetworkPacketResenderFactory;
-import weloveclouds.commons.communication.NetworkPacketResenderWithResponse;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
@@ -152,11 +151,11 @@ public class MoveDataToDestination implements IKVECSRequest {
             SerializedMessage serializedMessage =
                     transferMessageSerializer.serialize(transferMessage);
 
-            NetworkPacketResenderWithResponse resender =
+            NetworkPacketResender resender =
                     resenderFactory.createResenderWithResponseWithExponentialBackoff(
                             ATTEMPT_NUMBER_FOR_PACKET_RESEND, communicationApi,
                             serializedMessage.getBytes());
-            byte[] responsePacket = resender.resendPacketWithResponse();
+            byte[] responsePacket = resender.resendPacket();
 
             KVTransferMessage response = transferMessageDeserializer.deserialize(responsePacket);
             if (response.getStatus() == StatusType.TRANSFER_ERROR) {
