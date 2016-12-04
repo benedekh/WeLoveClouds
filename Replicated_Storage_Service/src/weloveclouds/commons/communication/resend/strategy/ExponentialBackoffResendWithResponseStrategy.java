@@ -14,7 +14,7 @@ import weloveclouds.communication.exceptions.UnableToSendContentToServerExceptio
 import weloveclouds.ecs.models.tasks.Status;
 
 public class ExponentialBackoffResendWithResponseStrategy extends ExponentialBackoffResendStrategy
-        implements Observer, IPacketResendWithResponseStrategy {
+        implements Observer, IPacketResendStrategy {
 
     private static final Logger LOGGER =
             Logger.getLogger(ExponentialBackoffResendWithResponseStrategy.class);
