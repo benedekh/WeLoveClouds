@@ -28,29 +28,13 @@ public class NetworkPacketResender {
     }
 
     public void resendPacket() throws IOException {
-        Status status = resendStrategy.getExecutionStatus();
-        while (status != Status.COMPLETED) {
+        while (resendStrategy.getExecutionStatus() == Status.RUNNING) {
             resendStrategy.tryAgain();
 
-            switch (resendStrategy.getExecutionStatus()) {
-                case COMPLETED:
-                    LOGGER.info("Packet was sucessfully sent.");
-                    return;
-                case FAILED:
-                    IOException exception = resendStrategy.getException();
-                    LOGGER.info("Retry resend failed due to an exception.");
-                    LOGGER.error(exception);
-                    throw exception;
-                case RUNNING:
-                    LOGGER.info(
-                            "Last try was unsuccessful, so incrementing the number of tries by one.");
-                    resendStrategy.incrementNumberOfAttemptsByOne();
-                    break;
-                default:
-                    String errorMessage = join("", "Illegal state (", status.toString(),
-                            ") for the resend startegy.");
-                    LOGGER.error(errorMessage);
-                    throw new IOException(errorMessage);
+            if (resendStrategy.getExecutionStatus() == Status.RUNNING) {
+                LOGGER.info(
+                        "Last try was unsuccessful, so incrementing the number of tries by one.");
+                resendStrategy.incrementNumberOfAttemptsByOne();
             }
         }
 
@@ -59,16 +43,14 @@ public class NetworkPacketResender {
                 LOGGER.info("Packet was sucessfully sent.");
                 return;
             case FAILED:
-                IOException exception = resendStrategy.getException();
                 LOGGER.info("Retry resend failed due to an exception.");
-                LOGGER.error(exception);
-                throw exception;
+                throw resendStrategy.getException();
             default:
-                String errorMessage = join("", "Illegal state (", status.toString(),
-                        ") for the resend startegy.");
+                String errorMessage =
+                        join("", "Illegal state (", resendStrategy.getExecutionStatus().toString(),
+                                ") for the resend startegy.");
                 LOGGER.error(errorMessage);
                 throw new IOException(errorMessage);
-
         }
     }
 
