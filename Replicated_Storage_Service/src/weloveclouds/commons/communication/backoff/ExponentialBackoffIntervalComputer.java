@@ -7,6 +7,12 @@ import java.util.Random;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 
+/**
+ * A backoff interval computer which calculates the length of the backoff interval, based on which
+ * attempt it is.
+ * 
+ * @author Benedek
+ */
 public class ExponentialBackoffIntervalComputer implements IBackoffIntervalComputer {
 
     private static final Logger LOGGER = Logger.getLogger(ExponentialBackoffIntervalComputer.class);

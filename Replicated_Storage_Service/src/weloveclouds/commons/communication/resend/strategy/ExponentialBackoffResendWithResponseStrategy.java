@@ -13,6 +13,15 @@ import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.models.tasks.Status;
 
+/**
+ * A strategy class which implements the 'well-known' exponential backoff strategy used in TCP, for
+ * resending packet over the network a couple of times after each other. <br>
+ * <br>
+ * This implementation expects for a response byte[] packet. As soon as it arrives the strategy is
+ * stopped.
+ * 
+ * @author Benedek
+ */
 public class ExponentialBackoffResendWithResponseStrategy extends ExponentialBackoffResendStrategy
         implements Observer, IPacketResendStrategy {
 
@@ -29,6 +38,9 @@ public class ExponentialBackoffResendWithResponseStrategy extends ExponentialBac
         initializePacketReceiver();
     }
 
+    /**
+     * Initializes the {@link PacketReceiver}.
+     */
     private void initializePacketReceiver() {
         PacketReceiver packetReceiver = new PacketReceiver(communicationApi);
         packetReceiver.addObserver(this);

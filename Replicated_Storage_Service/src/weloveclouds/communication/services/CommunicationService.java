@@ -8,10 +8,16 @@ import java.io.OutputStream;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.communication.NetworkPacketResender;
+import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.SocketFactory;
+import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.AlreadyConnectedException;
 import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
+import weloveclouds.communication.exceptions.ConnectionClosedException;
+import weloveclouds.communication.exceptions.UnableToConnectException;
+import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ServerConnectionInfo;
@@ -26,6 +32,7 @@ import weloveclouds.communication.util.MessageFramesDetector;
 public class CommunicationService implements ICommunicationService {
 
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
+    private static final int MAX_NUMBER_OF_RESEND_ATTEMPTS = 10;
 
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
 
@@ -33,15 +40,19 @@ public class CommunicationService implements ICommunicationService {
     private Connection connectionToEndpoint;
     private Thread connectionShutdownHook;
 
+    private NetworkPacketResenderFactory packetResenderFactory;
     private MessageFramesDetector messageDetector;
 
     /**
      * @param socketFactory a factory to create a socket for connection
+     * @param packetResenderFactory a factory to create resenders which overcome network errors
      */
-    public CommunicationService(SocketFactory socketFactory) {
+    public CommunicationService(SocketFactory socketFactory,
+            NetworkPacketResenderFactory packetResenderFactory) {
         this.connectionToEndpoint = new Connection.Builder().build();
         this.socketFactory = socketFactory;
         this.messageDetector = new MessageFramesDetector();
+        this.packetResenderFactory = packetResenderFactory;
     }
 
     @Override
@@ -102,17 +113,10 @@ public class CommunicationService implements ICommunicationService {
 
     @Override
     public void send(byte[] content) throws IOException, UnableToSendContentToServerException {
-        if (connectionToEndpoint.isConnected()) {
-            LOGGER.debug("Getting output stream from the connection.");
-            OutputStream outputStream = connectionToEndpoint.getOutputStream();
-            LOGGER.debug("Sending message over the connection.");
-            outputStream.write(content);
-            outputStream.flush();
-            LOGGER.info("Message sent.");
-        } else {
-            LOGGER.debug("Client is not connected, so message cannot be sent.");
-            throw new ClientNotConnectedException();
-        }
+        NetworkPacketResender packetResender = packetResenderFactory
+                .createResenderWithExponentialBackoff(MAX_NUMBER_OF_RESEND_ATTEMPTS,
+                        new OnlySenderCommunicationApi(connectionToEndpoint), content);
+        packetResender.resendPacket();
     }
 
     @Override
@@ -168,6 +172,66 @@ public class CommunicationService implements ICommunicationService {
         } else {
             LOGGER.debug(errorMessage);
             throw new ClientNotConnectedException();
+        }
+    }
+
+    /**
+     * An {@link ICommunicationApi} which is only capable of sending packets over the network. Only
+     * {@link #send(byte[])} does not throw any {@link UnsupportedOperationException}.
+     * 
+     * @author Benedek
+     */
+    protected static class OnlySenderCommunicationApi implements ICommunicationApi {
+
+        private static final Logger LOGGER = Logger.getLogger(OnlySenderCommunicationApi.class);
+        private Connection connectionToEndpoint;
+
+        public OnlySenderCommunicationApi(Connection connectionToEndpoint) {
+            this.connectionToEndpoint = connectionToEndpoint;
+        }
+
+        @Override
+        public double getVersion() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isConnected() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void connectTo(ServerConnectionInfo remoteServer) throws UnableToConnectException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void disconnect() throws UnableToDisconnectException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void send(byte[] content) throws UnableToSendContentToServerException {
+            try {
+                if (connectionToEndpoint.isConnected()) {
+                    LOGGER.debug("Getting output stream from the connection.");
+                    OutputStream outputStream = connectionToEndpoint.getOutputStream();
+                    LOGGER.debug("Sending message over the connection.");
+                    outputStream.write(content);
+                    outputStream.flush();
+                    LOGGER.info("Message sent.");
+                } else {
+                    LOGGER.debug("Client is not connected, so message cannot be sent.");
+                    throw new ClientNotConnectedException();
+                }
+            } catch (Exception ex) {
+                throw new UnableToSendContentToServerException(ex.getMessage());
+            }
+        }
+
+        @Override
+        public byte[] receive() throws ClientNotConnectedException, ConnectionClosedException {
+            throw new UnsupportedOperationException();
         }
     }
 

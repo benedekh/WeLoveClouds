@@ -17,6 +17,8 @@ public interface IPacketResendStrategy {
     Status getExecutionStatus();
 
     /**
+     * Default return value should be an empty byte[] if we don't expect for any responses.
+     * 
      * @return the response packet that arrived after sending the packet that had to be sent over
      *         the network
      */

@@ -4,14 +4,16 @@ package weloveclouds.communication.services;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.communication.NetworkPacketResender;
+import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.services.CommunicationService.OnlySenderCommunicationApi;
 import weloveclouds.communication.util.MessageFramesDetector;
 
 /**
@@ -22,28 +24,26 @@ import weloveclouds.communication.util.MessageFramesDetector;
 public class ConcurrentCommunicationService implements IConcurrentCommunicationService {
 
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
+    private static final int MAX_NUMBER_OF_RESEND_ATTEMPTS = 10;
+
     private static final Logger LOGGER = Logger.getLogger(ConcurrentCommunicationService.class);
 
+    private NetworkPacketResenderFactory packetResenderFactory;
     private Map<Connection, MessageFramesDetector> messageFrameDetectorMap;
 
-    public ConcurrentCommunicationService() {
+    /**
+     * @param packetResenderFactory a factory to create resenders which overcome network errors
+     */
+    public ConcurrentCommunicationService(NetworkPacketResenderFactory packetResenderFactory) {
         messageFrameDetectorMap = new ConcurrentHashMap<>();
     }
 
     @Override
     public void send(byte[] message, Connection connection) throws IOException {
-        if (connection.isConnected()) {
-            LOGGER.debug("Getting output stream from the connection.");
-            OutputStream outputStream = connection.getOutputStream();
-            LOGGER.debug("Sending message over the connection.");
-            outputStream.write(message);
-            outputStream.flush();
-            LOGGER.info("Message sent.");
-        } else {
-            String errorMessage = "Client is not connected, so message cannot be sent.";
-            LOGGER.debug(errorMessage);
-            throw new IOException(errorMessage);
-        }
+        NetworkPacketResender packetResender = packetResenderFactory
+                .createResenderWithExponentialBackoff(MAX_NUMBER_OF_RESEND_ATTEMPTS,
+                        new OnlySenderCommunicationApi(connection), message);
+        packetResender.resendPacket();
     }
 
     @Override

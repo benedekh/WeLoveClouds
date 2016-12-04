@@ -52,8 +52,8 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      * port. This constructor is used mainly for testing purposes.
      */
     public KVCommunicationApiV1(String address, int port) {
-        this.serverCommunication =
-                new CommunicationApiV1(new CommunicationService(new SocketFactory()));
+        this.serverCommunication = new CommunicationApiV1(
+                new CommunicationService(new SocketFactory(), new NetworkPacketResenderFactory()));
 
         this.address = address;
         this.port = port;

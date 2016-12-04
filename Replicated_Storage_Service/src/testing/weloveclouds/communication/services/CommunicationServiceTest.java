@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.exceptions.AlreadyConnectedException;
 import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
@@ -47,7 +48,8 @@ public class CommunicationServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        communicationService = new CommunicationService(socketFactoryMock);
+        communicationService =
+                new CommunicationService(socketFactoryMock, new NetworkPacketResenderFactory());
 
         validServerConnectionInfos = new ServerConnectionInfo.Builder()
                 .ipAddress(InetAddress.getByName(VALID_SERVER_IP_ADDRESS)).port(VALID_SERVER_PORT)

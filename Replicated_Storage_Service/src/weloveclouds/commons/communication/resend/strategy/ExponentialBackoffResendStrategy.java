@@ -36,8 +36,9 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy {
      * @param communicationApi the communication channel through which the packet shall be sent
      * @param packet that has to be sent over the network
      */
-    public ExponentialBackoffResendStrategy(int maxNumberOfAttempts, ICommunicationApi communicationApi,
-            byte[] packet, ExponentialBackoffIntervalComputer backoffIntervalComputer) {
+    public ExponentialBackoffResendStrategy(int maxNumberOfAttempts,
+            ICommunicationApi communicationApi, byte[] packet,
+            ExponentialBackoffIntervalComputer backoffIntervalComputer) {
         if (maxNumberOfAttempts < 0) {
             throw new IllegalArgumentException("Number of attempts has to be positive.");
         }
@@ -89,6 +90,11 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy {
         numberOfAttemptsSoFar++;
     }
 
+    /**
+     * Sleeps based on which attempts it was recently in.
+     * 
+     * @throws InterruptedException if the thread was waken up from sleep
+     */
     protected void sleepBeforeNextAttempt() throws InterruptedException {
         if (executionStatus != Status.COMPLETED) {
             LOGGER.info(join("", "#",

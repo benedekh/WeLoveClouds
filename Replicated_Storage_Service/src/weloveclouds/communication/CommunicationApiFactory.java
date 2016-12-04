@@ -1,5 +1,6 @@
 package weloveclouds.communication;
 
+import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
@@ -16,11 +17,13 @@ import weloveclouds.communication.services.ConcurrentCommunicationService;
 public class CommunicationApiFactory {
 
     public ICommunicationApi createCommunicationApiV1() {
-        return new CommunicationApiV1(new CommunicationService(new SocketFactory()));
+        return new CommunicationApiV1(
+                new CommunicationService(new SocketFactory(), new NetworkPacketResenderFactory()));
     }
 
     public IConcurrentCommunicationApi createConcurrentCommunicationApiV1() {
-        return new ConcurrentCommunicationApiV1(new ConcurrentCommunicationService());
+        return new ConcurrentCommunicationApiV1(
+                new ConcurrentCommunicationService(new NetworkPacketResenderFactory()));
     }
 
 }

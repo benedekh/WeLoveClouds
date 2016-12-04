@@ -27,6 +27,13 @@ public class NetworkPacketResender {
         this.resendStrategy = resendStrategy;
     }
 
+    /**
+     * Resends the packet over and over again, until it is successfully submitted or it cannot be
+     * sent over the network after several attempts.
+     * 
+     * @return the response byte[] if there is any. Otherwise an empty byte[] is returned.
+     * @throws IOException if an error occurs
+     */
     public byte[] resendPacket() throws IOException {
         while (resendStrategy.getExecutionStatus() == Status.RUNNING) {
             resendStrategy.tryAgain();
@@ -53,6 +60,5 @@ public class NetworkPacketResender {
                 throw new IOException(errorMessage);
         }
     }
-
 
 }
