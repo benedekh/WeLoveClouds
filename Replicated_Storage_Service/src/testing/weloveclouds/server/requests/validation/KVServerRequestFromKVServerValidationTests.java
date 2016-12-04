@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.server.models.conf.KVServerPortConstants;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
@@ -41,7 +42,7 @@ public class KVServerRequestFromKVServerValidationTests {
         ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()
                 .ipAddress(SERVER_IP_ADDRESS).port(SERVER_KVSERVER_REQUEST_ACCEPTING_PORT).build();
         serverCommunication =
-                new CommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
+                new KVCommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
         serverCommunication.connect();
 
         kvTransferMessageDeserializer = new KVTransferMessageDeserializer();

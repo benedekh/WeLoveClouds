@@ -18,6 +18,7 @@ import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.server.models.conf.KVServerPortConstants;
 
@@ -41,7 +42,7 @@ public class KVServerRequestFromKVClientValidationTests extends TestCase {
         ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()
                 .ipAddress(SERVER_IP_ADDRESS).port(SERVER_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
         serverCommunication =
-                new CommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
+                new KVCommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
         serverCommunication.connect();
 
         kvmessageDeserializer = new KVMessageDeserializer();
