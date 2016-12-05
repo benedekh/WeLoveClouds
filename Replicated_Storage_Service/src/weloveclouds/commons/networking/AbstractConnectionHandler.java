@@ -85,5 +85,10 @@ public abstract class AbstractConnectionHandler<M>
         }
     }
 
+    @Override
+    public void registerCallback(Runnable callback) {
+        callbacks.add(callback);
+    }
+
     public abstract void run();
 }

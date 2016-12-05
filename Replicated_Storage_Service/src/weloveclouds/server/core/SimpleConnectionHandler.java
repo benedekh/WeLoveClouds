@@ -43,12 +43,6 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
         start();
     }
 
-
-    @Override
-    public void registerCallback(Runnable callback) {
-        callbacks.add(callback);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public void run() {
