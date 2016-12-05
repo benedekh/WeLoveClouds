@@ -12,8 +12,8 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.networking.requests.ICallbackRegister;
-import weloveclouds.commons.networking.requests.IRequestFactory;
+import weloveclouds.commons.networking.models.requests.ICallbackRegister;
+import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**

@@ -2,7 +2,7 @@ package weloveclouds.server.models.commands;
 
 
 import weloveclouds.commons.exceptions.ServerSideException;
-import weloveclouds.commons.networking.requests.IValidatable;
+import weloveclouds.commons.networking.models.requests.IValidatable;
 
 /**
  * Represents an object (command) that can be executed.

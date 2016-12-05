@@ -1,4 +1,4 @@
-package weloveclouds.commons.networking.requests;
+package weloveclouds.commons.networking.models.requests;
 
 /**
  * Represents an executable which produces <M> typed object.

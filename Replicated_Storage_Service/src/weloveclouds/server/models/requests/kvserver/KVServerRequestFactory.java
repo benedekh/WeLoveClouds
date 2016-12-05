@@ -6,8 +6,8 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.networking.requests.ICallbackRegister;
-import weloveclouds.commons.networking.requests.IRequestFactory;
+import weloveclouds.commons.networking.models.requests.ICallbackRegister;
+import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**

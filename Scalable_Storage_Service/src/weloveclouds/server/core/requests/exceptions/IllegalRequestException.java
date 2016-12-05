@@ -1,4 +1,4 @@
-package weloveclouds.commons.networking.requests.exceptions;
+package weloveclouds.commons.networking.models.requests.exceptions;
 
 /**
  * 

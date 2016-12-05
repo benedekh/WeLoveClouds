@@ -11,7 +11,6 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
-import weloveclouds.commons.networking.requests.exceptions.IllegalRequestException;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.communication.CommunicationApiFactory;
@@ -49,7 +48,12 @@ public class HealthMonitoringService extends AbstractServer<KVAdminMessage> {
             registerShutdownHookForSocket(socket);
 
             while (status == RUNNING) {
-
+                ConnectionHandler connectionHandler = new ConnectionHandler(
+                        communicationApiFactory.createConcurrentCommunicationApiV1(),
+                        new Connection.Builder().socket(socket.accept()).build(),
+                        messageSerializer,
+                        messageDeserializer);
+                connectionHandler.handleConnection();
             }
         } catch (IOException ex) {
             logger.error(ex);
@@ -60,14 +64,15 @@ public class HealthMonitoringService extends AbstractServer<KVAdminMessage> {
         }
     }
 
-    protected class ConnectionHandler extends AbstractConnectionHandler<KVAdminMessage> {
+    private class ConnectionHandler extends AbstractConnectionHandler<KVAdminMessage> {
 
-        public ConnectionHandler(IConcurrentCommunicationApi communicationApi,
-                                 Connection connection,
-                                 IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
-                                 IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer) {
+
+        ConnectionHandler(IConcurrentCommunicationApi communicationApi,
+                          Connection connection,
+                          IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
+                          IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
-            logger = Logger.getLogger(this.getClass());
+            this.logger = Logger.getLogger(this.getClass());
         }
 
         @Override

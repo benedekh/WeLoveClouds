@@ -12,10 +12,10 @@ import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.commons.networking.requests.IExecutable;
-import weloveclouds.commons.networking.requests.IRequestFactory;
-import weloveclouds.commons.networking.requests.IValidatable;
-import weloveclouds.commons.networking.requests.exceptions.IllegalRequestException;
+import weloveclouds.commons.networking.models.requests.IExecutable;
+import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.networking.models.requests.IValidatable;
+import weloveclouds.commons.networking.models.requests.exceptions.IllegalRequestException;
 
 /**
  * A handler for a client connected to the {@link Server}. It receives and interprets different
