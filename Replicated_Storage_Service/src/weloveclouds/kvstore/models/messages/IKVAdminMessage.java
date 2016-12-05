@@ -18,7 +18,8 @@ public interface IKVAdminMessage {
         MOVEDATA, /* Move range of the data from one server to another - request */
         UPDATE, /* Update the metadata structure - request */
         RESPONSE_SUCCESS, /* Request was executed successfully. */
-        RESPONSE_ERROR /* There was an error during the execution. */
+        RESPONSE_ERROR, /* There was an error during the execution. */
+        HEARTHBEAT;
     }
 
     /**

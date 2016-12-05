@@ -1,4 +1,4 @@
-package weloveclouds.loadbalancer.services;
+package weloveclouds.loadbalancer.services.cache;
 
 /**
  * Created by Benoit on 2016-12-03.

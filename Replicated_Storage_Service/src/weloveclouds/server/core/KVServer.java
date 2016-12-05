@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
@@ -26,9 +27,9 @@ public class KVServer {
 
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
-    private Server<KVMessage, IKVClientRequest> kvClientRequestsServer;
-    private Server<KVTransferMessage, IKVServerRequest> kvServerRequestsServer;
-    private Server<KVAdminMessage, IKVECSRequest> kvECSRequestsServer;
+    private AbstractServer kvClientRequestsServer;
+    private AbstractServer kvServerRequestsServer;
+    private AbstractServer kvECSRequestsServer;
 
     public KVServer(ServerFactory serverFactory, KVServerPortContext portConfiguration,
             IMovableDataAccessService dataAccessService) throws IOException {

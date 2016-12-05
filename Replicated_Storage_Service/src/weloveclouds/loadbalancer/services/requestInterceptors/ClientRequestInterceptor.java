@@ -1,4 +1,4 @@
-package weloveclouds.loadbalancer.core.handlers.requestInterceptors;
+package weloveclouds.loadbalancer.services.requestInterceptors;
 
 import org.apache.log4j.Logger;
 
@@ -13,7 +13,7 @@ import static weloveclouds.commons.status.ServerStatus.RUNNING;
 /**
  * Created by Benoit on 2016-12-03.
  */
-public class ClientRequestInterceptor extends AbstractServer{
+public class ClientRequestInterceptor{
     private static final Logger LOGGER = Logger.getLogger(ClientRequestInterceptor.class);
 
     /**
@@ -22,22 +22,7 @@ public class ClientRequestInterceptor extends AbstractServer{
      * @throws IOException {@link ServerSocketFactory#createServerSocketFromPort(int)}}
      */
     public ClientRequestInterceptor(ServerSocketFactory serverSocketFactory, int port) throws IOException {
-        super(serverSocketFactory, port);
     }
 
-    @Override
-    public void run() {
-        status = RUNNING;
-        try (ServerSocket socket = serverSocket) {
-            while (status == RUNNING) {
 
-            }
-        } catch (IOException ex) {
-            LOGGER.error(ex);
-        } catch (Throwable ex) {
-            LOGGER.fatal(ex);
-        } finally {
-            LOGGER.info("Active server stopped.");
-        }
-    }
 }

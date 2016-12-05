@@ -21,29 +21,20 @@ import weloveclouds.commons.networking.requests.IValidatable;
 /**
  * A Server instance which accepts messages over the network and can handle multiple clients
  * concurrently. For further details refer to {@link SimpleConnectionHandler}.
- * 
+ *
  * @param <M> the type of the message the server accepts
  * @param <R> the type of the request which shall be created from M
- * 
  * @author Benoit, Benedek
  */
-public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends AbstractServer {
-
-    private static final Logger LOGGER = Logger.getLogger(Server.class);
-
-    private CommunicationApiFactory communicationApiFactory;
+public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends AbstractServer<M> {
     private IRequestFactory<M, R> requestFactory;
-    private IMessageSerializer<SerializedMessage, M> messageSerializer;
-    private IMessageDeserializer<M, SerializedMessage> messageDeserializer;
-
-    private ServerShutdownHook shutdownHook;
 
     protected Server(Builder<M, R> serverBuilder) throws IOException {
-        super(serverBuilder.serverSocketFactory, serverBuilder.port);
-        this.communicationApiFactory = serverBuilder.communicationApiFactory;
+        super(serverBuilder.communicationApiFactory, serverBuilder.serverSocketFactory,
+                serverBuilder.messageSerializer, serverBuilder.messageDeserializer,
+                serverBuilder.port);
+        this.logger = Logger.getLogger(this.getClass());
         this.requestFactory = serverBuilder.requestFactory;
-        this.messageSerializer = serverBuilder.messageSerializer;
-        this.messageDeserializer = serverBuilder.messageDeserializer;
     }
 
     @Override
@@ -62,53 +53,18 @@ public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends Abstr
                         .messageDeserializer(messageDeserializer).build().handleConnection();
             }
         } catch (IOException ex) {
-            LOGGER.error(ex);
+            logger.error(ex);
         } catch (Throwable ex) {
-            LOGGER.fatal(ex);
+            logger.fatal(ex);
         } finally {
-            LOGGER.info("Active server stopped.");
+            logger.info("Active server stopped.");
         }
     }
 
-    /**
-     * Registers a shutdown hook that will close the server socket upon JVM exit.
-     */
-    private void registerShutdownHookForSocket(ServerSocket socket) {
-        if (shutdownHook != null) {
-            Runtime.getRuntime().removeShutdownHook(shutdownHook);
-        } else {
-            shutdownHook = new ServerShutdownHook(socket);
-            Runtime.getRuntime().addShutdownHook(shutdownHook);
-        }
-    }
-
-    /**
-     * A shutdown hook which closes the open server socket if it was not closed beforehand.
-     * 
-     * @author Benedek
-     */
-    private static class ServerShutdownHook extends Thread {
-
-        private static final Logger LOGGER = Logger.getLogger(ServerShutdownHook.class);
-        private ServerSocket socket;
-
-        public ServerShutdownHook(ServerSocket socket) {
-            this.socket = socket;
-        }
-
-        @Override
-        public void run() {
-            try {
-                socket.close();
-            } catch (IOException e) {
-                LOGGER.error(e);
-            }
-        }
-    }
 
     /**
      * A builder to create a {@link Server} instance.
-     * 
+     *
      * @author Benoit
      */
     public static class Builder<M, R extends IExecutable<M> & IValidatable<R>> {
@@ -153,7 +109,7 @@ public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends Abstr
         }
 
         public Server<M, R> build() throws IOException {
-            return new Server<M, R>(this);
+            return new Server<>(this);
         }
     }
 }
