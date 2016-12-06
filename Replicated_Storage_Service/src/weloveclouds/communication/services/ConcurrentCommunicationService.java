@@ -177,7 +177,6 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
 
                     if (readBytes == -1) {
                         // connection was closed
-                        LOGGER.debug(errorMessage);
                         throw new IOException(errorMessage);
                     } else {
                         if (messageDetector.containsMessage()) {
@@ -187,7 +186,6 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
                         }
                     }
                 } else {
-                    LOGGER.debug(errorMessage);
                     throw new IOException(errorMessage);
                 }
             } catch (IOException ex) {

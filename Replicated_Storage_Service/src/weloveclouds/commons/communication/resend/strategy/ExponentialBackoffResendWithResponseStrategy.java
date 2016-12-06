@@ -115,7 +115,10 @@ public class ExponentialBackoffResendWithResponseStrategy extends ExponentialBac
                     notifyObservers(response);
                     return;
                 } catch (ClientNotConnectedException | ConnectionClosedException e) {
-                    LOGGER.error(e);
+                    /*
+                     * don't log the exceptions, otherwise the log file will be full in case of a
+                     * network error
+                     */
                 }
             }
         }

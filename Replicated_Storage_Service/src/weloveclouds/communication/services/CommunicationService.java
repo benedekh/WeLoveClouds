@@ -90,6 +90,7 @@ public class CommunicationService implements ICommunicationService {
         LOGGER.debug(CustomStringJoiner.join(" ", "Trying to connect to", remoteServer.toString()));
         connectionToEndpoint = new Connection.Builder().remoteServer(remoteServer)
                 .socket(socketFactory.createTcpSocketFromInfo(remoteServer)).build();
+        encapsulatedCommunicationApi = new EncapsulatedCommunicationApi(connectionToEndpoint);
 
         // create shutdown hook to automatically close the connection
         LOGGER.debug("Creating shutdown hook for connection.");
@@ -194,8 +195,6 @@ public class CommunicationService implements ICommunicationService {
         @Override
         public byte[] receive() throws ClientNotConnectedException, ConnectionClosedException {
             try {
-                String errorMessage = "Client is not connected, so message cannot be received.";
-
                 if (messageDetector.containsMessage()) {
                     return messageDetector.getMessage();
                 }
@@ -234,7 +233,6 @@ public class CommunicationService implements ICommunicationService {
 
                     if (readBytes == -1) {
                         // connection was closed
-                        LOGGER.debug(errorMessage);
                         throw new ClientNotConnectedException();
                     } else {
                         if (messageDetector.containsMessage()) {
@@ -244,7 +242,6 @@ public class CommunicationService implements ICommunicationService {
                         }
                     }
                 } else {
-                    LOGGER.debug(errorMessage);
                     throw new ClientNotConnectedException();
                 }
             } catch (IOException ex) {
