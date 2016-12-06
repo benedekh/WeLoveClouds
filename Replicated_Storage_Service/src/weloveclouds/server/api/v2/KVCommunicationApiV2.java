@@ -73,7 +73,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
             Instant end = Instant.now();
             STATSD_CLIENT.recordExecutionTime(
                     new Metric.Builder().service(Service.KV_CLIENT)
-                            .name(Arrays.asList(CLIENT_NAME, "put", "latency")).build(),
+                            .name(Arrays.asList(clientName, "put", "latency")).build(),
                     new Duration(start, end));
         }
     }
@@ -89,7 +89,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
             Instant end = Instant.now();
             STATSD_CLIENT.recordExecutionTime(
                     new Metric.Builder().service(Service.KV_CLIENT)
-                            .name(Arrays.asList(CLIENT_NAME, "get", "latency")).build(),
+                            .name(Arrays.asList(clientName, "get", "latency")).build(),
                     new Duration(start, end));
         }
     }
