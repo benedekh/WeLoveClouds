@@ -32,7 +32,7 @@ public class ArgumentsValidator {
     private static final int NETWORK_PORT_LOWER_LIMIT = 0;
     private static final int NETWORK_PORT_UPPER_LIMIT = 65535;
 
-    private static final int CLI_NUMBER_OF_ARGUMENTS = 1;
+    private static final int REQUIRED_CLI_ARGUMENT_NUMBER = 1;
     private static final int CLI_CLIENT_NAME_INDEX = 0;
 
     private static List<String> logLevels =
@@ -42,7 +42,7 @@ public class ArgumentsValidator {
 
     /**
      * Validate CLI arguments for the server starting. The arguments are valid, if:<br>
-     * (1) there are exactly {@link #CLI_NUMBER_OF_ARGUMENTS} number of arguments, and <br>
+     * (1) there are exactly {@link #REQUIRED_CLI_ARGUMENT_NUMBER} number of arguments, and <br>
      * (2) the argument at the position {@link #CLI_CLIENT_NAME_INDEX} is a non-empty string
      * 
      * @throws IllegalArgumentException if a validation error occurs
@@ -51,7 +51,7 @@ public class ArgumentsValidator {
             throws IllegalArgumentException {
         String command = "cliArguments";
 
-        if (isNullOrEmpty(arguments) || arguments.length != CLI_NUMBER_OF_ARGUMENTS) {
+        if (isNullOrEmpty(arguments) || arguments.length != REQUIRED_CLI_ARGUMENT_NUMBER) {
             logWarning(command);
             throw new IllegalArgumentException("One argument is needed: <client name>");
         } else if (arguments[CLI_CLIENT_NAME_INDEX].isEmpty()) {

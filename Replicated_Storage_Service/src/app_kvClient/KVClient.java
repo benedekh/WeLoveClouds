@@ -29,7 +29,7 @@ public class KVClient {
     private static final int CLI_CLIENT_NAME_INDEX = 0;
     private static final Logger LOGGER = Logger.getLogger(KVClient.class);
 
-    public static String CLIENT_NAME = "client";
+    public static String clientName = "client";
 
     /**
      * The entry point of the application.
@@ -41,7 +41,7 @@ public class KVClient {
 
         try {
             ArgumentsValidator.validateCLIArgumentsForClientStart(args);
-            CLIENT_NAME = args[CLI_CLIENT_NAME_INDEX];
+            clientName = args[CLI_CLIENT_NAME_INDEX];
 
             ServerConnectionInfo bootstrapConnectionInfo =
                     new ServerConnectionInfo.Builder().ipAddress("localhost")
