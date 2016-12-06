@@ -46,7 +46,7 @@ public class KVServer {
 
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
-    public static String SERVER_NAME = "server";
+    public static String serverName = "server";
 
     /**
      * The entry point of the application.
@@ -71,7 +71,7 @@ public class KVServer {
             ArgumentsValidator.validateCLIArgumentsForServerStart(cliArguments);
 
             initializeLoggerWithLevel(cliArguments[CLI_LOG_LEVEL_INDEX]);
-            SERVER_NAME = cliArguments[CLI_SERVER_NAME_INDEX];
+            serverName = cliArguments[CLI_SERVER_NAME_INDEX];
 
             int cacheSize = Integer.valueOf(cliArguments[CLI_CACHE_SIZE_INDEX]);
             DisplacementStrategy displacementStrategy = StrategyFactory

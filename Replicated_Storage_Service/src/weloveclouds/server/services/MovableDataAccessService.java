@@ -1,20 +1,21 @@
 package weloveclouds.server.services;
 
-import static weloveclouds.commons.monitoring.statsd.IStatsdClient.SINGLE_EVENT;
 import static weloveclouds.server.services.models.DataAccessServiceStatus.STOPPED;
-
-import java.util.Arrays;
+import static weloveclouds.server.utils.monitoring.KVServerMonitoringUtils.incrementCounter;
+import static weloveclouds.server.utils.monitoring.KVServerMonitoringUtils.recordExecutionTime;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.ERROR;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.GET_COMMAND_NAME;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.KVSTORE_MODULE_NAME;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.NOT_RESPONSIBLE;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.PUT_COMMAND_NAME;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.REMOVE_COMMAND_NAME;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.SUCCESS;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-import static app_kvServer.KVServer.*;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.commons.monitoring.models.Metric;
-import static weloveclouds.commons.monitoring.models.Service.*;
-import weloveclouds.commons.monitoring.statsd.IStatsdClient;
-import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -32,7 +33,6 @@ import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.MovableStorageUnits;
-import static weloveclouds.server.utils.statd.StatdMetricConstants.*;
 
 /**
  * An implementation of {@link IMovableDataAccessService} whose underlying storage units can be
@@ -44,8 +44,6 @@ public class MovableDataAccessService extends DataAccessService
         implements IMovableDataAccessService {
 
     private static final Logger LOGGER = Logger.getLogger(MovableDataAccessService.class);
-    private static final IStatsdClient STATSD_CLIENT =
-            StatsdClientFactory.createStatdClientFromEnvironment();
 
     private MovablePersistentStorage movablePersistentStorage;
 
@@ -67,7 +65,7 @@ public class MovableDataAccessService extends DataAccessService
     @Override
     public synchronized PutType putEntry(KVEntry entry) throws StorageException {
         if (!isServiceInitialized()) {
-            statdIncrementCounter(PUT_COMMAND_NAME, ERROR);
+            incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
             LOGGER.error("Put request while the data acess service was uninitialized.");
             throw new UninitializedServiceException();
         }
@@ -77,32 +75,33 @@ public class MovableDataAccessService extends DataAccessService
                 try {
                     checkIfKeyIsManagedByServer(entry.getKey());
                 } catch (KeyIsNotManagedByServiceException ex) {
-                    statdIncrementCounter(PUT_COMMAND_NAME, NOT_RESPONSIBLE);
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
                     throw ex;
                 }
 
                 try {
                     Instant start = Instant.now();
                     PutType putType = super.putEntry(entry);
-                    statdRecordExecutionTime(PUT_COMMAND_NAME, new Duration(start, Instant.now()));
-                    statdIncrementCounter(PUT_COMMAND_NAME, SUCCESS);
+                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME,
+                            new Duration(start, Instant.now()));
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, SUCCESS);
                     return putType;
                 } catch (StorageException ex) {
-                    statdIncrementCounter(PUT_COMMAND_NAME, ERROR);
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
                     throw ex;
                 }
             case STOPPED:
-                statdIncrementCounter(PUT_COMMAND_NAME, ERROR);
+                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
                 LOGGER.error(
                         "Put request is rejected, because the data access service is stopped.");
                 throw new ServiceIsStoppedException();
             case WRITELOCK_ACTIVE:
-                statdIncrementCounter(PUT_COMMAND_NAME, ERROR);
+                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
                 LOGGER.error(
                         "Put request is rejected, because write lock is active on the data access service.");
                 throw new WriteLockIsActiveException();
             default:
-                statdIncrementCounter(PUT_COMMAND_NAME, ERROR);
+                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
                 throw new StorageException("Unrecognized service status.");
         }
     }
@@ -111,7 +110,7 @@ public class MovableDataAccessService extends DataAccessService
     public synchronized String getValue(String key)
             throws StorageException, ValueNotFoundException {
         if (!isServiceInitialized()) {
-            statdIncrementCounter(GET_COMMAND_NAME, ERROR);
+            incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
             LOGGER.error("Get request while the data acess service was uninitialized.");
             throw new UninitializedServiceException();
         }
@@ -122,27 +121,28 @@ public class MovableDataAccessService extends DataAccessService
                 try {
                     checkIfKeyIsManagedByServer(key);
                 } catch (KeyIsNotManagedByServiceException ex) {
-                    statdIncrementCounter(GET_COMMAND_NAME, NOT_RESPONSIBLE);
+                    incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, NOT_RESPONSIBLE);
                     throw ex;
                 }
 
                 try {
                     Instant start = Instant.now();
                     String value = super.getValue(key);
-                    statdRecordExecutionTime(PUT_COMMAND_NAME, new Duration(start, Instant.now()));
-                    statdIncrementCounter(GET_COMMAND_NAME, SUCCESS);
+                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME,
+                            new Duration(start, Instant.now()));
+                    incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, SUCCESS);
                     return value;
                 } catch (StorageException ex) {
-                    statdIncrementCounter(GET_COMMAND_NAME, ERROR);
+                    incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
                     throw ex;
                 }
             case STOPPED:
-                statdIncrementCounter(GET_COMMAND_NAME, ERROR);
+                incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
                 LOGGER.error(
                         "Get request is rejected, because the data access service is stopped.");
                 throw new ServiceIsStoppedException();
             default:
-                statdIncrementCounter(GET_COMMAND_NAME, ERROR);
+                incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
                 throw new StorageException("Unrecognized service status.");
         }
     }
@@ -150,7 +150,7 @@ public class MovableDataAccessService extends DataAccessService
     @Override
     public synchronized void removeEntry(String key) throws StorageException {
         if (!isServiceInitialized()) {
-            statdIncrementCounter(REMOVE_COMMAND_NAME, ERROR);
+            incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
             LOGGER.error("Remove request while the data acess service was uninitialized.");
             throw new UninitializedServiceException();
         }
@@ -160,33 +160,33 @@ public class MovableDataAccessService extends DataAccessService
                 try {
                     checkIfKeyIsManagedByServer(key);
                 } catch (KeyIsNotManagedByServiceException ex) {
-                    statdIncrementCounter(REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
                     throw ex;
                 }
 
                 try {
                     Instant start = Instant.now();
                     super.removeEntry(key);
-                    statdRecordExecutionTime(REMOVE_COMMAND_NAME,
+                    recordExecutionTime(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME,
                             new Duration(start, Instant.now()));
-                    statdIncrementCounter(REMOVE_COMMAND_NAME, SUCCESS);
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, SUCCESS);
                 } catch (StorageException ex) {
-                    statdIncrementCounter(REMOVE_COMMAND_NAME, ERROR);
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
                     throw ex;
                 }
                 break;
             case STOPPED:
-                statdIncrementCounter(REMOVE_COMMAND_NAME, ERROR);
+                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
                 LOGGER.error(
                         "Remove request is rejected, because the data access service is stopped.");
                 throw new ServiceIsStoppedException();
             case WRITELOCK_ACTIVE:
-                statdIncrementCounter(REMOVE_COMMAND_NAME, ERROR);
+                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
                 LOGGER.error(
                         "Remove request is rejected, because write lock is active on the data access service.");
                 throw new WriteLockIsActiveException();
             default:
-                statdIncrementCounter(REMOVE_COMMAND_NAME, ERROR);
+                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
                 throw new StorageException("Unrecognized service status.");
         }
     }
@@ -277,27 +277,6 @@ public class MovableDataAccessService extends DataAccessService
     @Override
     public boolean isServiceInitialized() {
         return ringMetadata != null && rangeManagedByServer != null;
-    }
-
-    /**
-     * Increments a statd counter whose metric name ends with the referred command and status names.
-     */
-    private void statdIncrementCounter(String command, String status) {
-        STATSD_CLIENT.incrementCounter(
-                new Metric.Builder().service(KV_SERVER)
-                        .name(Arrays.asList(SERVER_NAME, "kvstore", command, status)).build(),
-                SINGLE_EVENT);
-    }
-
-    /**
-     * Records a statd execution time whose metric name ends with the referred command name and
-     * execution time duration.
-     */
-    private void statdRecordExecutionTime(String command, Duration executionTime) {
-        STATSD_CLIENT.recordExecutionTime(
-                new Metric.Builder().service(KV_SERVER)
-                        .name(Arrays.asList(SERVER_NAME, "kvstore", "exec_time", command)).build(),
-                executionTime);
     }
 
     /**

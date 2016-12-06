@@ -1,6 +1,9 @@
-package weloveclouds.server.utils.statd;
+package weloveclouds.server.utils.monitoring;
 
-public class StatdMetricConstants {
+public class MonitoringMetricConstants {
+    public static final String KVSTORE_MODULE_NAME = "kvstore";
+    public static final String CACHE_MODULE_NAME = "cache";
+
     public static final String PUT_COMMAND_NAME = "put";
     public static final String GET_COMMAND_NAME = "get";
     public static final String REMOVE_COMMAND_NAME = "remove";
