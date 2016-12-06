@@ -46,7 +46,7 @@ public class KVServer {
 
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
-    public static String SERVER_NAME = null;
+    public static String SERVER_NAME = "server";
 
     /**
      * The entry point of the application.
