@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="libs/jsch-0.1.54.jar"/>
 	<classpathentry kind="lib" path="libs/java-statsd-client-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libs/joda-time-2.0.jar"/>
+	<classpathentry kind="lib" path="/home/hb/Programming/TUMcloudDB/project/WeLoveClouds/Replicated_Storage_Service/libs/guice-3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
