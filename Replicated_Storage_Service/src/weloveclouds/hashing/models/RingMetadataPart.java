@@ -63,7 +63,6 @@ public class RingMetadataPart {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((connectionInfo == null) ? 0 : connectionInfo.hashCode());
-        result = prime * result + ((range == null) ? 0 : range.hashCode());
         return result;
     }
 
@@ -84,13 +83,6 @@ public class RingMetadataPart {
                 return false;
             }
         } else if (!connectionInfo.equals(other.connectionInfo)) {
-            return false;
-        }
-        if (range == null) {
-            if (other.range != null) {
-                return false;
-            }
-        } else if (!range.equals(other.range)) {
             return false;
         }
         return true;

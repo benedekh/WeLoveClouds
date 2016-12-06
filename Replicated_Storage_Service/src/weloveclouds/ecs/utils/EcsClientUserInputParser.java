@@ -9,6 +9,6 @@ import weloveclouds.ecs.models.commands.client.EcsCommand;
 public class EcsClientUserInputParser extends AbstractUserInputParser<EcsCommand> {
     @Override
     public EcsCommand getCommandFromEnum(String commandAsString) {
-        return EcsCommand.createCommandFromString(commandAsString);
+        return EcsCommand.getValueFromDescription(commandAsString);
     }
 }

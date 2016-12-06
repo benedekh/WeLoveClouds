@@ -55,12 +55,12 @@ public class RingTopology<T> {
         return this;
     }
 
-    public RingTopology<T> updateTopologyWith(List<T> nodes) {
+    public RingTopology<T> updateWith(List<T> nodes) {
         this.nodes = nodes;
         return this;
     }
 
-    public RingTopology<T> updateTopologyWith(RingTopology newRingTopology) {
-        return updateTopologyWith(newRingTopology.getNodes());
+    public RingTopology<T> updateWith(RingTopology newRingTopology) {
+        return updateWith(newRingTopology.getNodes());
     }
 }

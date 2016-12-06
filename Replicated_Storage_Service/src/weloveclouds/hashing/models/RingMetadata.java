@@ -24,6 +24,7 @@ public class RingMetadata {
     }
 
     public void addRangeInfo(RingMetadataPart info) {
+        metadataParts.remove(info);
         metadataParts.add(info);
     }
 
