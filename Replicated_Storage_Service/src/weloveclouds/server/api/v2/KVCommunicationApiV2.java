@@ -1,5 +1,7 @@
 package weloveclouds.server.api.v2;
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -13,6 +15,7 @@ import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.models.messages.IKVMessage;
+import weloveclouds.server.api.IKVCommunicationApi;
 import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
 /**
@@ -31,8 +34,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
 
     /**
      * @param bootstrapConnectionInfo the initial connection information, which is used for deciding
-     *                                which server to connect to first (before having any {@link
-     *                                RingMetadata}
+     *        which server to connect to first (before having any {@link RingMetadata}
      */
     public KVCommunicationApiV2(ServerConnectionInfo bootstrapConnectionInfo) {
         this.communicationApi =
@@ -89,6 +91,11 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
     }
 
     @Override
+    public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
+        return communicationApi.sendAndExpectForResponse(content);
+    }
+
+    @Override
     public byte[] receive() throws ClientNotConnectedException, ConnectionClosedException {
         return communicationApi.receive();
     }
@@ -108,7 +115,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
      * value.
      *
      * @param key of an entry (<key, value> pair) whose hash has to be calculated to decide which
-     *            server to connect to
+     *        server to connect to
      */
     private void connectToTheRightServerBasedOnHashFor(String key) {
         Hash keyHash = HashingUtil.getHash(key);

@@ -1,5 +1,7 @@
 package weloveclouds.communication.api;
 
+import java.io.IOException;
+
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
@@ -44,6 +46,15 @@ public interface ICommunicationApi {
      * @throws UnableToSendContentToServerException if any error occurs during the send
      */
     void send(byte[] content) throws UnableToSendContentToServerException;
+
+    /**
+     * Sends a message as a byte array to the server. Retries the send as long as it does not
+     * receive a response.
+     * 
+     * @return the response byte array
+     * @throws IOException if any error occurs
+     */
+    byte[] sendAndExpectForResponse(byte[] content) throws IOException;
 
     /**
      * Receives data from the server over the network.

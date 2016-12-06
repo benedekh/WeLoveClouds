@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.commons.communication.NetworkPacketResender;
 import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.ICommunicationApi;
@@ -37,13 +36,11 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
 
     private static final double VERSION = 1.5;
     private static final Logger LOGGER = Logger.getLogger(KVCommunicationApiV1.class);
-    private static final int ATTEMPT_NUMBER_FOR_PACKET_RESEND = 10;
 
     private ServerConnectionInfo remoteServer;
     private ICommunicationApi serverCommunication;
     private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
     private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
-    private NetworkPacketResenderFactory resenderFactory;
     private String address;
     private int port;
 
@@ -60,24 +57,19 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
 
         this.messageSerializer = new KVMessageSerializer();
         this.messageDeserializer = new KVMessageDeserializer();
-        this.resenderFactory = new NetworkPacketResenderFactory();
     }
 
     /**
      * @param communicationApi which transfers the messages over the network
      * @param messageSerializer to serialized {@link KVMessage} to byte[].
      * @param messageDeserializer to deserialize {@link KVMessage} from byte[].
-     * @param resenderFactory used for creating instances of a class that can be used for resending
-     *        packets over the network
      */
     public KVCommunicationApiV1(ICommunicationApi communicationApi,
             IMessageSerializer<SerializedMessage, KVMessage> messageSerializer,
-            IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer,
-            NetworkPacketResenderFactory resenderFactory) {
+            IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer) {
         this.serverCommunication = communicationApi;
         this.messageSerializer = messageSerializer;
         this.messageDeserializer = messageDeserializer;
-        this.resenderFactory = resenderFactory;
     }
 
     @Override
@@ -138,6 +130,11 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
     }
 
     @Override
+    public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
+        return serverCommunication.sendAndExpectForResponse(content);
+    }
+
+    @Override
     public byte[] receive() throws ClientNotConnectedException, ConnectionClosedException {
         return serverCommunication.receive();
     }
@@ -160,11 +157,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
             KVMessage message =
                     new KVMessage.Builder().status(messageType).key(key).value(value).build();
             byte[] rawMessage = messageSerializer.serialize(message).getBytes();
-
-            NetworkPacketResender resender =
-                    resenderFactory.createResenderWithResponseWithExponentialBackoff(
-                            ATTEMPT_NUMBER_FOR_PACKET_RESEND, serverCommunication, rawMessage);
-            return resender.resendPacket();
+            return sendAndExpectForResponse(rawMessage);
         } catch (IOException ex) {
             LOGGER.error(ex);
             throw new UnableToSendContentToServerException(ex.getMessage());

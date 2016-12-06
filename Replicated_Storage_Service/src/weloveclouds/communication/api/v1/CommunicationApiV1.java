@@ -74,4 +74,9 @@ public class CommunicationApiV1 implements ICommunicationApi {
         }
     }
 
+    @Override
+    public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
+        return communicationService.sendAndExpectForResponse(content);
+    }
+
 }

@@ -41,7 +41,7 @@ public class CommunicationService implements ICommunicationService {
     private Thread connectionShutdownHook;
 
     private NetworkPacketResenderFactory packetResenderFactory;
-    private MessageFramesDetector messageDetector;
+    private EncapsulatedCommunicationApi encapsulatedCommunicationApi;
 
     /**
      * @param socketFactory a factory to create a socket for connection
@@ -51,8 +51,8 @@ public class CommunicationService implements ICommunicationService {
             NetworkPacketResenderFactory packetResenderFactory) {
         this.connectionToEndpoint = new Connection.Builder().build();
         this.socketFactory = socketFactory;
-        this.messageDetector = new MessageFramesDetector();
         this.packetResenderFactory = packetResenderFactory;
+        this.encapsulatedCommunicationApi = new EncapsulatedCommunicationApi(connectionToEndpoint);
     }
 
     @Override
@@ -113,81 +113,38 @@ public class CommunicationService implements ICommunicationService {
 
     @Override
     public void send(byte[] content) throws IOException, UnableToSendContentToServerException {
-        NetworkPacketResender packetResender = packetResenderFactory
-                .createResenderWithExponentialBackoff(MAX_NUMBER_OF_RESEND_ATTEMPTS,
-                        new OnlySenderCommunicationApi(connectionToEndpoint), content);
+        NetworkPacketResender packetResender =
+                packetResenderFactory.createResenderWithExponentialBackoff(
+                        MAX_NUMBER_OF_RESEND_ATTEMPTS, encapsulatedCommunicationApi, content);
         packetResender.resendPacket();
     }
 
     @Override
     public byte[] receive() throws IOException, ClientNotConnectedException {
-        String errorMessage = "Client is not connected, so message cannot be received.";
-
-        if (messageDetector.containsMessage()) {
-            return messageDetector.getMessage();
-        }
-
-        if (connectionToEndpoint.isConnected()) {
-            InputStream socketDataReader = connectionToEndpoint.getInputStream();
-
-            byte[] buffer = new byte[MAX_PACKET_SIZE_IN_BYTES];
-            int readBytes = 0;
-            ByteArrayOutputStream baosBuffer = new ByteArrayOutputStream();
-            while ((readBytes = socketDataReader.read(buffer)) > 0) {
-                if (readBytes < buffer.length) {
-                    byte[] smaller = new byte[readBytes];
-                    System.arraycopy(buffer, 0, smaller, 0, readBytes);
-                    buffer = smaller;
-                }
-
-                LOGGER.debug(CustomStringJoiner.join(" ", "Received", String.valueOf(readBytes),
-                        "bytes from the connection."));
-                baosBuffer.write(buffer);
-
-                byte[] contentReceivedSoFar = baosBuffer.toByteArray();
-                contentReceivedSoFar = messageDetector.fillMessageQueue(contentReceivedSoFar);
-
-                if (messageDetector.containsMessage()) {
-                    baosBuffer.reset();
-                    baosBuffer.write(contentReceivedSoFar);
-
-                    return messageDetector.getMessage();
-                } else {
-                    baosBuffer.reset();
-                    baosBuffer.write(contentReceivedSoFar);
-                }
-            }
-
-            if (readBytes == -1) {
-                // connection was closed
-                LOGGER.debug(errorMessage);
-                throw new ClientNotConnectedException();
-            } else {
-                if (messageDetector.containsMessage()) {
-                    return messageDetector.getMessage();
-                } else {
-                    return new byte[0];
-                }
-            }
-        } else {
-            LOGGER.debug(errorMessage);
+        try {
+            return encapsulatedCommunicationApi.receive();
+        } catch (ConnectionClosedException ex) {
             throw new ClientNotConnectedException();
         }
     }
 
-    /**
-     * An {@link ICommunicationApi} which is only capable of sending packets over the network. Only
-     * {@link #send(byte[])} does not throw any {@link UnsupportedOperationException}.
-     * 
-     * @author Benedek
-     */
-    protected static class OnlySenderCommunicationApi implements ICommunicationApi {
+    @Override
+    public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
+        NetworkPacketResender packetResender =
+                packetResenderFactory.createResenderWithResponseWithExponentialBackoff(
+                        MAX_NUMBER_OF_RESEND_ATTEMPTS, encapsulatedCommunicationApi, content);
+        return packetResender.resendPacket();
+    }
 
-        private static final Logger LOGGER = Logger.getLogger(OnlySenderCommunicationApi.class);
+    private static class EncapsulatedCommunicationApi implements ICommunicationApi {
+
+        private static final Logger LOGGER = Logger.getLogger(EncapsulatedCommunicationApi.class);
         private Connection connectionToEndpoint;
+        private MessageFramesDetector messageDetector;
 
-        public OnlySenderCommunicationApi(Connection connectionToEndpoint) {
+        public EncapsulatedCommunicationApi(Connection connectionToEndpoint) {
             this.connectionToEndpoint = connectionToEndpoint;
+            this.messageDetector = new MessageFramesDetector();
         }
 
         @Override
@@ -207,6 +164,11 @@ public class CommunicationService implements ICommunicationService {
 
         @Override
         public void disconnect() throws UnableToDisconnectException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
             throw new UnsupportedOperationException();
         }
 
@@ -231,7 +193,63 @@ public class CommunicationService implements ICommunicationService {
 
         @Override
         public byte[] receive() throws ClientNotConnectedException, ConnectionClosedException {
-            throw new UnsupportedOperationException();
+            try {
+                String errorMessage = "Client is not connected, so message cannot be received.";
+
+                if (messageDetector.containsMessage()) {
+                    return messageDetector.getMessage();
+                }
+
+                if (connectionToEndpoint.isConnected()) {
+                    InputStream socketDataReader = connectionToEndpoint.getInputStream();
+
+                    byte[] buffer = new byte[MAX_PACKET_SIZE_IN_BYTES];
+                    int readBytes = 0;
+                    ByteArrayOutputStream baosBuffer = new ByteArrayOutputStream();
+                    while ((readBytes = socketDataReader.read(buffer)) > 0) {
+                        if (readBytes < buffer.length) {
+                            byte[] smaller = new byte[readBytes];
+                            System.arraycopy(buffer, 0, smaller, 0, readBytes);
+                            buffer = smaller;
+                        }
+
+                        LOGGER.debug(CustomStringJoiner.join(" ", "Received",
+                                String.valueOf(readBytes), "bytes from the connection."));
+                        baosBuffer.write(buffer);
+
+                        byte[] contentReceivedSoFar = baosBuffer.toByteArray();
+                        contentReceivedSoFar =
+                                messageDetector.fillMessageQueue(contentReceivedSoFar);
+
+                        if (messageDetector.containsMessage()) {
+                            baosBuffer.reset();
+                            baosBuffer.write(contentReceivedSoFar);
+
+                            return messageDetector.getMessage();
+                        } else {
+                            baosBuffer.reset();
+                            baosBuffer.write(contentReceivedSoFar);
+                        }
+                    }
+
+                    if (readBytes == -1) {
+                        // connection was closed
+                        LOGGER.debug(errorMessage);
+                        throw new ClientNotConnectedException();
+                    } else {
+                        if (messageDetector.containsMessage()) {
+                            return messageDetector.getMessage();
+                        } else {
+                            return new byte[0];
+                        }
+                    }
+                } else {
+                    LOGGER.debug(errorMessage);
+                    throw new ClientNotConnectedException();
+                }
+            } catch (IOException ex) {
+                throw new ClientNotConnectedException();
+            }
         }
     }
 
@@ -263,6 +281,5 @@ public class CommunicationService implements ICommunicationService {
                 }
             }
         }
-
     }
 }

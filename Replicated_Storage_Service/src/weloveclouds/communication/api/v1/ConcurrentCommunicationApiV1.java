@@ -5,6 +5,7 @@ import java.io.IOException;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.services.IConcurrentCommunicationService;
+import weloveclouds.server.core.Server;
 
 /**
  * Communication API which is used by the {@link Server} to maintain connection with the different
@@ -24,6 +25,12 @@ public class ConcurrentCommunicationApiV1 implements IConcurrentCommunicationApi
     @Override
     public void send(byte[] message, Connection connection) throws IOException {
         communicationService.send(message, connection);
+    }
+
+    @Override
+    public byte[] sendAndExpectForResponse(byte[] content, Connection connection)
+            throws IOException {
+        return communicationService.sendAndExpectForResponse(content, connection);
     }
 
     @Override

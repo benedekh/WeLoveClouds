@@ -38,7 +38,6 @@ public interface ICommunicationService {
      */
     void disconnect() throws IOException, AlreadyDisconnectedException;
 
-
     /**
      * Sends a message as a byte array to the server.
      *
@@ -46,6 +45,15 @@ public interface ICommunicationService {
      *         Connection#getOutputStream()}
      */
     void send(byte[] content) throws IOException, UnableToSendContentToServerException;
+
+    /**
+     * Sends a message as a byte array to the server. Retries the send as long as it does not
+     * receive a response.
+     * 
+     * @return the response byte array
+     * @throws IOException if any error occurs
+     */
+    byte[] sendAndExpectForResponse(byte[] content) throws IOException;
 
     /**
      * Reads a message as a byte array from the server if any is available.

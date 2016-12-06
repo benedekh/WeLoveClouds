@@ -1,6 +1,5 @@
 package weloveclouds.server.api;
 
-import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
@@ -19,7 +18,7 @@ public class KVCommunicationApiFactory extends CommunicationApiFactory {
 
     public IKVCommunicationApi createKVCommunicationApiV1() {
         return new KVCommunicationApiV1(createCommunicationApiV1(), new KVMessageSerializer(),
-                new KVMessageDeserializer(), new NetworkPacketResenderFactory());
+                new KVMessageDeserializer());
     }
 
     public IKVCommunicationApiV2 createKVCommunicationApiV2(
