@@ -9,19 +9,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerFactory;
 import weloveclouds.server.models.commands.ServerCommandFactory;
 import weloveclouds.server.models.conf.KVServerPortConstants;
 import weloveclouds.server.models.conf.KVServerPortContext;
-import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
-import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
-import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
 import weloveclouds.server.services.DataAccessServiceFactory;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.services.IMovableDataAccessService;
@@ -40,6 +32,8 @@ import weloveclouds.server.utils.LogSetup;
 public class KVServer {
 
     private static final String DEFAULT_LOG_PATH = "logs/server.log";
+    private static final String DEFAULT_LOG_LEVEL = "DEBUG";
+
     private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
 
     private static final int CLI_KVCLIENT_PORT_INDEX = 0;
@@ -55,6 +49,8 @@ public class KVServer {
      * The entry point of the application.
      */
     public static void main(String[] args) {
+        initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
+
         if (args.length == 0) {
             startInteractiveCLIMode();
         } else {
