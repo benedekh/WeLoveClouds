@@ -32,7 +32,6 @@ import weloveclouds.server.models.conf.KVServerPortConstants;
 public class KVServerHandlingECSRequestTests {
 
     private static final String SERVER_IP_ADDRESS = "localhost";
-    private static final String CLIENT_NAME = KVServerHandlingECSRequestTests.class.getName();
 
     private static final int SERVER1_KVCLIENT_REQUEST_ACCEPTING_PORT =
             KVServerPortConstants.KVCLIENT_REQUESTS_PORT;
@@ -54,8 +53,8 @@ public class KVServerHandlingECSRequestTests {
     public void init() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()
                 .ipAddress(SERVER_IP_ADDRESS).port(SERVER1_KVECS_REQUEST_ACCEPTING_PORT).build();
-        serverCommunication = new CommunicationApiFactory().createKVCommunicationApiV2(CLIENT_NAME,
-                bootstrapConnectionInfo);
+        serverCommunication =
+                new CommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
         serverCommunication.connect();
 
         kvAdminMessageDeserializer = new KVAdminMessageDeserializer();

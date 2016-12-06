@@ -9,7 +9,6 @@ import org.junit.Test;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import testing.util.KVServerInitializationUtil;
-import testing.weloveclouds.server.requests.validation.KVServerRequestFromKVClientValidationTests;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
@@ -33,8 +32,6 @@ public class HandledHashRangeTest extends TestCase {
 
     private static final String SERVER_IP_ADDRESS = "localhost";
     private static final int SERVER_KVCLIENT_REQUEST_ACCEPTING_PORT = 50000;
-
-    private static final String CLIENT_NAME = HandledHashRangeTest.class.getName();
 
     // hack because @BeforeClass, setUpBaseClass methods are not called by the TestSuite runner...
     private static boolean isTestPutACalled = false;
@@ -68,8 +65,8 @@ public class HandledHashRangeTest extends TestCase {
     public void setUp() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()
                 .ipAddress(SERVER_IP_ADDRESS).port(SERVER_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
-        serverCommunication = new CommunicationApiFactory().createKVCommunicationApiV2(CLIENT_NAME,
-                bootstrapConnectionInfo);
+        serverCommunication =
+                new CommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
         serverCommunication.connect();
 
         kvmessageDeserializer = new KVMessageDeserializer();
