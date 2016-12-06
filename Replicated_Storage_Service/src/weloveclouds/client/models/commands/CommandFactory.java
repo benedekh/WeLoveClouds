@@ -13,7 +13,7 @@ import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
- * handles several commands (see {@link Command} for the possible commands) by dispatching the
+ * handles several commands (see {@link ClientCommand} for the possible commands) by dispatching the
  * command to its respective handler.
  *
  * @author Benoit
@@ -45,10 +45,10 @@ public class CommandFactory {
      * @return the type of the recognized command
      * @throws UnknownHostException see {@link Connect}
      */
-    public ICommand createCommandFromUserInput(ParsedUserInput<Command> userInput)
+    public ICommand createCommandFromUserInput(ParsedUserInput<ClientCommand> userInput)
             throws UnknownHostException {
         ICommand recognizedCommand = null;
-        Command userCommand = userInput.getCommand();
+        ClientCommand userCommand = userInput.getCommand();
 
         switch (userCommand) {
             case CONNECT:

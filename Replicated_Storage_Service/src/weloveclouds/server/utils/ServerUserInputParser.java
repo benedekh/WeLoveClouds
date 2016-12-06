@@ -9,6 +9,6 @@ import weloveclouds.server.models.commands.ServerCommand;
 public class ServerUserInputParser extends AbstractUserInputParser<ServerCommand> {
     @Override
     public ServerCommand getCommandFromEnum(String commandAsString) {
-        return ServerCommand.createCommandFromString(commandAsString);
+        return ServerCommand.getValueFromDescription(commandAsString);
     }
 }
