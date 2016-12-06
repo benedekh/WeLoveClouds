@@ -29,6 +29,8 @@ public class KVClient {
     private static final int CLI_CLIENT_NAME_INDEX = 0;
     private static final Logger LOGGER = Logger.getLogger(KVClient.class);
 
+    public static String CLIENT_NAME = "client";
+
     /**
      * The entry point of the application.
      *
@@ -39,13 +41,13 @@ public class KVClient {
 
         try {
             ArgumentsValidator.validateCLIArgumentsForClientStart(args);
-            String clientName = args[CLI_CLIENT_NAME_INDEX];
+            CLIENT_NAME = args[CLI_CLIENT_NAME_INDEX];
 
             ServerConnectionInfo bootstrapConnectionInfo =
                     new ServerConnectionInfo.Builder().ipAddress("localhost")
                             .port(KVServerPortConstants.KVCLIENT_REQUESTS_PORT).build();
             IKVCommunicationApiV2 serverCommunication = new CommunicationApiFactory()
-                    .createKVCommunicationApiV2(clientName, bootstrapConnectionInfo);
+                    .createKVCommunicationApiV2(bootstrapConnectionInfo);
 
             try {
                 serverCommunication.connect();

@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import static app_kvClient.KVClient.*;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.monitoring.models.Metric;
 import weloveclouds.commons.monitoring.models.Service;
@@ -35,19 +36,16 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
     private static final IStatsdClient STATSD_CLIENT =
             StatsdClientFactory.createStatdClientFromEnvironment();
 
-    private String clientName;
     private KVCommunicationApiV1 communicationApi;
 
     private ServerConnectionInfo recentConnectionInfo;
     private RingMetadata metadata;
 
     /**
-     * @param clientName to differentiate the clients in the statistical monitoring
      * @param bootstrapConnectionInfo the initial connection information, which is used for deciding
      *        which server to connect to first (before having any {@link RingMetadata}
      */
-    public KVCommunicationApiV2(String clientName, ServerConnectionInfo bootstrapConnectionInfo) {
-        this.clientName = clientName;
+    public KVCommunicationApiV2(ServerConnectionInfo bootstrapConnectionInfo) {
         this.communicationApi =
                 new KVCommunicationApiV1(bootstrapConnectionInfo.getIpAddress().getHostAddress(),
                         bootstrapConnectionInfo.getPort());
@@ -75,7 +73,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
             Instant end = Instant.now();
             STATSD_CLIENT.recordExecutionTime(
                     new Metric.Builder().service(Service.KV_CLIENT)
-                            .name(Arrays.asList(clientName, "latency", "put")).build(),
+                            .name(Arrays.asList(CLIENT_NAME, "latency", "put")).build(),
                     new Duration(start, end));
         }
     }
@@ -91,7 +89,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
             Instant end = Instant.now();
             STATSD_CLIENT.recordExecutionTime(
                     new Metric.Builder().service(Service.KV_CLIENT)
-                            .name(Arrays.asList(clientName, "latency", "get")).build(),
+                            .name(Arrays.asList(CLIENT_NAME, "latency", "get")).build(),
                     new Duration(start, end));
         }
     }
