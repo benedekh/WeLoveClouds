@@ -1,10 +1,20 @@
 package weloveclouds.server.services;
 
+import static weloveclouds.commons.monitoring.statsd.IStatsdClient.SINGLE_EVENT;
 import static weloveclouds.server.services.models.DataAccessServiceStatus.STOPPED;
 
-import org.apache.log4j.Logger;
+import java.util.Arrays;
 
+import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+
+import static app_kvServer.KVServer.*;
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.monitoring.models.Metric;
+import static weloveclouds.commons.monitoring.models.Service.*;
+import weloveclouds.commons.monitoring.statsd.IStatsdClient;
+import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -33,6 +43,8 @@ public class MovableDataAccessService extends DataAccessService
         implements IMovableDataAccessService {
 
     private static final Logger LOGGER = Logger.getLogger(MovableDataAccessService.class);
+    private static final IStatsdClient STATSD_CLIENT =
+            StatsdClientFactory.createStatdClientFromEnvironment();
 
     private MovablePersistentStorage movablePersistentStorage;
 
@@ -60,8 +72,34 @@ public class MovableDataAccessService extends DataAccessService
 
         switch (serviceRecentStatus) {
             case STARTED:
-                checkIfKeyIsManagedByServer(entry.getKey());
-                return super.putEntry(entry);
+                try {
+                    checkIfKeyIsManagedByServer(entry.getKey());
+                } catch (KeyIsNotManagedByServiceException ex) {
+                    STATSD_CLIENT.incrementCounter(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "put", "not_responsible"))
+                            .build(), SINGLE_EVENT);
+                    throw ex;
+                }
+
+
+                Instant start = Instant.now();
+                try {
+                    PutType putType = super.putEntry(entry);
+                    STATSD_CLIENT.incrementCounter(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "put", "success")).build(),
+                            SINGLE_EVENT);
+                    return putType;
+                } catch (StorageException ex) {
+                    STATSD_CLIENT.incrementCounter(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "put", "error")).build(),
+                            SINGLE_EVENT);
+                    throw ex;
+                } finally {
+                    Instant end = Instant.now();
+                    STATSD_CLIENT.recordExecutionTime(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "exec_time", "put"))
+                            .build(), new Duration(start, end));
+                }
             case STOPPED:
                 LOGGER.error(
                         "Put request is rejected, because the data access service is stopped.");
@@ -86,8 +124,33 @@ public class MovableDataAccessService extends DataAccessService
         switch (serviceRecentStatus) {
             case STARTED:
             case WRITELOCK_ACTIVE:
-                checkIfKeyIsManagedByServer(key);
-                return super.getValue(key);
+                try {
+                    checkIfKeyIsManagedByServer(key);
+                } catch (KeyIsNotManagedByServiceException ex) {
+                    STATSD_CLIENT.incrementCounter(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "get", "not_responsible"))
+                            .build(), SINGLE_EVENT);
+                    throw ex;
+                }
+
+                Instant start = Instant.now();
+                try {
+                    String value = super.getValue(key);
+                    STATSD_CLIENT.incrementCounter(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "get", "success")).build(),
+                            SINGLE_EVENT);
+                    return value;
+                } catch (StorageException ex) {
+                    STATSD_CLIENT.incrementCounter(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "get", "error")).build(),
+                            SINGLE_EVENT);
+                    throw ex;
+                } finally {
+                    Instant end = Instant.now();
+                    STATSD_CLIENT.recordExecutionTime(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "exec_time", "get"))
+                            .build(), new Duration(start, end));
+                }
             case STOPPED:
                 LOGGER.error(
                         "Get request is rejected, because the data access service is stopped.");
@@ -106,8 +169,36 @@ public class MovableDataAccessService extends DataAccessService
 
         switch (serviceRecentStatus) {
             case STARTED:
-                checkIfKeyIsManagedByServer(key);
-                super.removeEntry(key);
+                try {
+                    checkIfKeyIsManagedByServer(key);
+                } catch (KeyIsNotManagedByServiceException ex) {
+                    STATSD_CLIENT
+                            .incrementCounter(
+                                    new Metric.Builder()
+                                            .service(KV_SERVER).name(Arrays.asList(SERVER_NAME,
+                                                    "kvstore", "remove", "not_responsible"))
+                                            .build(),
+                                    SINGLE_EVENT);
+                    throw ex;
+                }
+
+                Instant start = Instant.now();
+                try {
+                    super.removeEntry(key);
+                    STATSD_CLIENT.incrementCounter(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "remove", "success"))
+                            .build(), SINGLE_EVENT);
+                } catch (StorageException ex) {
+                    STATSD_CLIENT.incrementCounter(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "remove", "error")).build(),
+                            SINGLE_EVENT);
+                    throw ex;
+                } finally {
+                    Instant end = Instant.now();
+                    STATSD_CLIENT.recordExecutionTime(new Metric.Builder().service(KV_SERVER)
+                            .name(Arrays.asList(SERVER_NAME, "kvstore", "exec_time", "remove"))
+                            .build(), new Duration(start, end));
+                }
                 break;
             case STOPPED:
                 LOGGER.error(

@@ -28,6 +28,11 @@ public class LFUStrategy implements DisplacementStrategy {
     }
 
     @Override
+    public String getStrategyName() {
+        return "LFU";
+    }
+
+    @Override
     public synchronized String displaceKey() throws StorageException {
         try {
             // order by frequency, the least frequent will be the first
