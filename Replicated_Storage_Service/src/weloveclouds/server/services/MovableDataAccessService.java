@@ -1,9 +1,10 @@
 package weloveclouds.server.services;
 
 import static weloveclouds.server.services.models.DataAccessServiceStatus.STOPPED;
-import static weloveclouds.server.utils.monitoring.KVServerMonitoringUtils.incrementCounter;
-import static weloveclouds.server.utils.monitoring.KVServerMonitoringUtils.recordExecutionTime;
+import static weloveclouds.server.utils.monitoring.KVServerMonitoringMetricUtils.incrementCounter;
+import static weloveclouds.server.utils.monitoring.KVServerMonitoringMetricUtils.recordExecutionTime;
 import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.ERROR;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.EXEC_TIME;
 import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.GET_COMMAND_NAME;
 import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.KVSTORE_MODULE_NAME;
 import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.NOT_RESPONSIBLE;
@@ -82,7 +83,7 @@ public class MovableDataAccessService extends DataAccessService
                 try {
                     Instant start = Instant.now();
                     PutType putType = super.putEntry(entry);
-                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME,
+                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
                             new Duration(start, Instant.now()));
                     incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, SUCCESS);
                     return putType;
@@ -128,7 +129,7 @@ public class MovableDataAccessService extends DataAccessService
                 try {
                     Instant start = Instant.now();
                     String value = super.getValue(key);
-                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME,
+                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
                             new Duration(start, Instant.now()));
                     incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, SUCCESS);
                     return value;
@@ -167,7 +168,7 @@ public class MovableDataAccessService extends DataAccessService
                 try {
                     Instant start = Instant.now();
                     super.removeEntry(key);
-                    recordExecutionTime(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME,
+                    recordExecutionTime(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, EXEC_TIME,
                             new Duration(start, Instant.now()));
                     incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, SUCCESS);
                 } catch (StorageException ex) {

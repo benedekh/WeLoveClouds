@@ -12,7 +12,7 @@ import weloveclouds.commons.monitoring.models.Metric;
 import weloveclouds.commons.monitoring.statsd.IStatsdClient;
 import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 
-public class KVServerMonitoringUtils {
+public class KVServerMonitoringMetricUtils {
 
     private static final IStatsdClient MONITORING_CLIENT =
             StatsdClientFactory.createStatdClientFromEnvironment();
@@ -24,11 +24,10 @@ public class KVServerMonitoringUtils {
                 SINGLE_EVENT);
     }
 
-    public static void recordExecutionTime(String moduleName, String infix,
-            Duration executionTime) {
-        MONITORING_CLIENT.recordExecutionTime(
-                new Metric.Builder().service(KV_SERVER)
-                        .name(Arrays.asList(serverName, moduleName, infix, "exec_time")).build(),
+    public static void recordExecutionTime(String moduleName, String commandName,
+            String durationName, Duration executionTime) {
+        MONITORING_CLIENT.recordExecutionTime(new Metric.Builder().service(KV_SERVER)
+                .name(Arrays.asList(serverName, moduleName, commandName, durationName)).build(),
                 executionTime);
     }
 

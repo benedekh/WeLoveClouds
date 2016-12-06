@@ -13,4 +13,6 @@ public class MonitoringMetricConstants {
     public static final String NOT_RESPONSIBLE = "not_responsible";
 
     public static final String MISS = "miss";
+
+    public static final String EXEC_TIME = "exec_time";
 }

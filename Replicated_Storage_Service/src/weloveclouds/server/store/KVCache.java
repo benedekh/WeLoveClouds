@@ -1,6 +1,6 @@
 package weloveclouds.server.store;
 
-import static weloveclouds.server.utils.monitoring.KVServerMonitoringUtils.incrementCounter;
+import static weloveclouds.server.utils.monitoring.KVServerMonitoringMetricUtils.incrementCounter;
 import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.CACHE_MODULE_NAME;
 import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.MISS;
 import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.SUCCESS;
