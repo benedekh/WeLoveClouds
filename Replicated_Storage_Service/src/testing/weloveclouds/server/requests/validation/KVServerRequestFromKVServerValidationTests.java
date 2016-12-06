@@ -32,6 +32,9 @@ public class KVServerRequestFromKVServerValidationTests {
     private static final int SERVER_KVSERVER_REQUEST_ACCEPTING_PORT =
             KVServerPortConstants.KVSERVER_REQUESTS_PORT;
 
+    private static final String CLIENT_NAME =
+            KVServerRequestFromKVServerValidationTests.class.getName();
+
     IKVCommunicationApiV2 serverCommunication;
     IMessageDeserializer<KVTransferMessage, SerializedMessage> kvTransferMessageDeserializer;
     IMessageSerializer<SerializedMessage, KVTransferMessage> kvTransferMessageSerializer;
@@ -40,8 +43,8 @@ public class KVServerRequestFromKVServerValidationTests {
     public void init() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()
                 .ipAddress(SERVER_IP_ADDRESS).port(SERVER_KVSERVER_REQUEST_ACCEPTING_PORT).build();
-        serverCommunication =
-                new CommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
+        serverCommunication = new CommunicationApiFactory().createKVCommunicationApiV2(CLIENT_NAME,
+                bootstrapConnectionInfo);
         serverCommunication.connect();
 
         kvTransferMessageDeserializer = new KVTransferMessageDeserializer();

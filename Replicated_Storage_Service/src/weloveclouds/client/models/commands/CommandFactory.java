@@ -25,14 +25,13 @@ public class CommandFactory {
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
 
     /**
-     * @param communicationApi         an instance for the communication module for those commands
-     *                                 which <<<<<<< HEAD need to communicate via the network
-     *                                 ======= need to communicate via the network
+     * @param communicationApi an instance for the communication module for those commands which
+     *        need to communicate via the network
      * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object to
-     *                                 its original representation from String >>>>>>> master
+     *        its original representation from String
      */
     public CommandFactory(IKVCommunicationApiV2 communicationApi,
-                          IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
+            IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         this.communicationApi = communicationApi;
         this.ringMetadataDeserializer = ringMetadataDeserializer;
     }

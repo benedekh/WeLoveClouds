@@ -4,7 +4,7 @@ package weloveclouds.commons.context;
  * Created by Benoit on 2016-11-27.
  */
 public enum Environment {
-    PRODUCTION("prod"), DEVELOPMENT("dev");
+    PRODUCTION("prod"), DEVELOPMENT("dev"), DEFAULT("default");
 
     private String description;
 

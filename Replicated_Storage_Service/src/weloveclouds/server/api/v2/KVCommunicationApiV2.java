@@ -1,8 +1,16 @@
 package weloveclouds.server.api.v2;
 
+import java.util.Arrays;
+
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.monitoring.models.Metric;
+import weloveclouds.commons.monitoring.models.Service;
+import weloveclouds.commons.monitoring.statsd.IStatsdClient;
+import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
@@ -13,6 +21,7 @@ import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.models.messages.IKVMessage;
+import weloveclouds.server.api.IKVCommunicationApi;
 import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
 /**
@@ -23,18 +32,22 @@ import weloveclouds.server.api.v1.KVCommunicationApiV1;
 public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
 
     private static final Logger LOGGER = Logger.getLogger(KVCommunicationApiV2.class);
+    private static final IStatsdClient STATSD_CLIENT =
+            StatsdClientFactory.createStatdClientFromEnvironment();
 
+    private String clientName;
     private KVCommunicationApiV1 communicationApi;
 
     private ServerConnectionInfo recentConnectionInfo;
     private RingMetadata metadata;
 
     /**
+     * @param clientName to differentiate the clients in the statistical monitoring
      * @param bootstrapConnectionInfo the initial connection information, which is used for deciding
-     *                                which server to connect to first (before having any {@link
-     *                                RingMetadata}
+     *        which server to connect to first (before having any {@link RingMetadata}
      */
-    public KVCommunicationApiV2(ServerConnectionInfo bootstrapConnectionInfo) {
+    public KVCommunicationApiV2(String clientName, ServerConnectionInfo bootstrapConnectionInfo) {
+        this.clientName = clientName;
         this.communicationApi =
                 new KVCommunicationApiV1(bootstrapConnectionInfo.getIpAddress().getHostAddress(),
                         bootstrapConnectionInfo.getPort());
@@ -54,13 +67,33 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
     @Override
     public IKVMessage put(String key, String value) throws Exception {
         connectToTheRightServerBasedOnHashFor(key);
-        return communicationApi.put(key, value);
+
+        Instant start = Instant.now();
+        try {
+            return communicationApi.put(key, value);
+        } finally {
+            Instant end = Instant.now();
+            STATSD_CLIENT.recordExecutionTime(
+                    new Metric.Builder().service(Service.KV_CLIENT)
+                            .name(Arrays.asList(clientName, "latency", "put")).build(),
+                    new Duration(start, end));
+        }
     }
 
     @Override
     public IKVMessage get(String key) throws Exception {
         connectToTheRightServerBasedOnHashFor(key);
-        return communicationApi.get(key);
+
+        Instant start = Instant.now();
+        try {
+            return communicationApi.get(key);
+        } finally {
+            Instant end = Instant.now();
+            STATSD_CLIENT.recordExecutionTime(
+                    new Metric.Builder().service(Service.KV_CLIENT)
+                            .name(Arrays.asList(clientName, "latency", "get")).build(),
+                    new Duration(start, end));
+        }
     }
 
     @Override
@@ -108,7 +141,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
      * value.
      *
      * @param key of an entry (<key, value> pair) whose hash has to be calculated to decide which
-     *            server to connect to
+     *        server to connect to
      */
     private void connectToTheRightServerBasedOnHashFor(String key) {
         Hash keyHash = HashingUtil.getHash(key);

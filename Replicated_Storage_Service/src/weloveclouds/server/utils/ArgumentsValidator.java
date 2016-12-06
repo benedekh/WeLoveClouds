@@ -71,8 +71,8 @@ public class ArgumentsValidator {
         String command = "cliArguments";
         if (isNullOrEmpty(arguments) || arguments.length != CLI_NUMBER_OF_ARGUMENTS) {
             logWarning(command);
-            throw new IllegalArgumentException(
-                    "Four arguments are needed: <port> <cache size> <displacementStrategy> <log level>");
+            throw new IllegalArgumentException(join("", String.valueOf(CLI_NUMBER_OF_ARGUMENTS),
+                    " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level>"));
         } else {
             validateCacheSizeArguments(new String[] {arguments[CLI_CACHE_SIZE_INDEX]});
             validatePort(command, arguments[CLI_KVCLIENT_PORT_INDEX]);
@@ -101,8 +101,8 @@ public class ArgumentsValidator {
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
-    public static void validateStartArguments(String[] arguments,
-            KVServerCLIContext context) throws IllegalArgumentException {
+    public static void validateStartArguments(String[] arguments, KVServerCLIContext context)
+            throws IllegalArgumentException {
         String command = "start";
         if (!isNullOrEmpty(arguments)) {
             logWarning(command);

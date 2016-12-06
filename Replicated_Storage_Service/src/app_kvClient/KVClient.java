@@ -7,12 +7,13 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.core.Client;
 import weloveclouds.client.models.commands.CommandFactory;
+import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.server.api.v2.IKVCommunicationApiV2;
-import weloveclouds.server.models.conf.KVServerPortConstants;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.models.conf.KVServerPortConstants;
 import weloveclouds.server.utils.LogSetup;
 
 /**
@@ -23,8 +24,9 @@ import weloveclouds.server.utils.LogSetup;
 public class KVClient {
 
     private static final String DEFAULT_LOG_PATH = "logs/client.log";
-    private static final String DEFAULT_LOG_LEVEL = "OFF";
+    private static final String DEFAULT_LOG_LEVEL = "ERROR";
 
+    private static final int CLI_CLIENT_NAME_INDEX = 0;
     private static final Logger LOGGER = Logger.getLogger(KVClient.class);
 
     /**
@@ -36,11 +38,14 @@ public class KVClient {
         initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
 
         try {
+            ArgumentsValidator.validateCLIArgumentsForClientStart(args);
+            String clientName = args[CLI_CLIENT_NAME_INDEX];
+
             ServerConnectionInfo bootstrapConnectionInfo =
                     new ServerConnectionInfo.Builder().ipAddress("localhost")
                             .port(KVServerPortConstants.KVCLIENT_REQUESTS_PORT).build();
             IKVCommunicationApiV2 serverCommunication = new CommunicationApiFactory()
-                    .createKVCommunicationApiV2(bootstrapConnectionInfo);
+                    .createKVCommunicationApiV2(clientName, bootstrapConnectionInfo);
 
             try {
                 serverCommunication.connect();
@@ -56,6 +61,8 @@ public class KVClient {
             client.run();
         } catch (IOException ex) {
             LOGGER.error("Unable to resolve default, bootstrap server IP address.");
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error(ex);
         }
     }
 

@@ -26,6 +26,8 @@ public class KVServerInitializationUtil implements AutoCloseable {
     private static final String SERVER_IP_ADDRESS = "localhost";
     private static final int SERVER_KVCLIENT_PORT = 50000;
 
+    private static final String CLIENT_NAME = KVServerInitializationUtil.class.getName();
+
     private static final HashRange EVERY_HASH =
             new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
 
@@ -37,8 +39,8 @@ public class KVServerInitializationUtil implements AutoCloseable {
         ServerConnectionInfo bootstrapConnectionInfo =
                 new ServerConnectionInfo.Builder().ipAddress(SERVER_IP_ADDRESS)
                         .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT).build();
-        serverCommunication =
-                new CommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
+        serverCommunication = new CommunicationApiFactory().createKVCommunicationApiV2(CLIENT_NAME,
+                bootstrapConnectionInfo);
 
         kvAdminMessageDeserializer = new KVAdminMessageDeserializer();
         kvAdminMessageSerializer = new KVAdminMessageSerializer();

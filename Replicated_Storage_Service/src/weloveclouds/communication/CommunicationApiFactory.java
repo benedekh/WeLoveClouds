@@ -36,8 +36,8 @@ public class CommunicationApiFactory {
                 new KVMessageDeserializer());
     }
 
-    public IKVCommunicationApiV2 createKVCommunicationApiV2(
+    public IKVCommunicationApiV2 createKVCommunicationApiV2(String clientName,
             ServerConnectionInfo bootstrapConnectionInfo) {
-        return new KVCommunicationApiV2(bootstrapConnectionInfo);
+        return new KVCommunicationApiV2(clientName, bootstrapConnectionInfo);
     }
 }

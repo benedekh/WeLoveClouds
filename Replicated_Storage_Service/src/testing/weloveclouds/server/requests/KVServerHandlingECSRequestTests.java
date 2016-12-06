@@ -32,6 +32,7 @@ import weloveclouds.server.models.conf.KVServerPortConstants;
 public class KVServerHandlingECSRequestTests {
 
     private static final String SERVER_IP_ADDRESS = "localhost";
+    private static final String CLIENT_NAME = KVServerHandlingECSRequestTests.class.getName();
 
     private static final int SERVER1_KVCLIENT_REQUEST_ACCEPTING_PORT =
             KVServerPortConstants.KVCLIENT_REQUESTS_PORT;
@@ -45,16 +46,16 @@ public class KVServerHandlingECSRequestTests {
             KVServerPortConstants.KVECS_REQUESTS_PORT;
     private static final int SERVER2_KVECS_REQUEST_ACCEPTING_PORT = 60002;
 
-    IKVCommunicationApiV2 serverCommunication;
-    IMessageDeserializer<KVAdminMessage, SerializedMessage> kvAdminMessageDeserializer;
-    IMessageSerializer<SerializedMessage, KVAdminMessage> kvAdminMessageSerializer;
+    private IKVCommunicationApiV2 serverCommunication;
+    private IMessageDeserializer<KVAdminMessage, SerializedMessage> kvAdminMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, KVAdminMessage> kvAdminMessageSerializer;
 
     @Before
     public void init() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()
                 .ipAddress(SERVER_IP_ADDRESS).port(SERVER1_KVECS_REQUEST_ACCEPTING_PORT).build();
-        serverCommunication =
-                new CommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
+        serverCommunication = new CommunicationApiFactory().createKVCommunicationApiV2(CLIENT_NAME,
+                bootstrapConnectionInfo);
         serverCommunication.connect();
 
         kvAdminMessageDeserializer = new KVAdminMessageDeserializer();
