@@ -1,7 +1,12 @@
 package weloveclouds.loadbalancer.services.cache;
 
+import weloveclouds.loadbalancer.exceptions.cache.UnableToFindRequestedKeyException;
+
 /**
  * Created by Benoit on 2016-12-03.
  */
-public class ICacheService {
+public interface ICacheService<K, V> {
+    V get(String key) throws UnableToFindRequestedKeyException;
+
+    void put(K key, V value);
 }

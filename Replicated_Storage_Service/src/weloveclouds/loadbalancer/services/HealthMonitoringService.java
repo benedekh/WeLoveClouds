@@ -16,9 +16,9 @@ import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.configuration.annotations.HealthMonitoringServicePort;
+import weloveclouds.loadbalancer.models.KVHearthbeatMessage;
 
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
@@ -26,14 +26,14 @@ import static weloveclouds.commons.status.ServerStatus.RUNNING;
 /**
  * Created by Benoit on 2016-12-05.
  */
-public class HealthMonitoringService extends AbstractServer<KVAdminMessage> {
+public class HealthMonitoringService extends AbstractServer<KVHearthbeatMessage> {
     private DistributedSystemAccessService distributedSystemAccessService;
 
     @Inject
     public HealthMonitoringService(CommunicationApiFactory communicationApiFactory,
                                    ServerSocketFactory serverSocketFactory,
-                                   IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
-                                   IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer,
+                                   IMessageSerializer<SerializedMessage, KVHearthbeatMessage> messageSerializer,
+                                   IMessageDeserializer<KVHearthbeatMessage, SerializedMessage> messageDeserializer,
                                    @HealthMonitoringServicePort int port,
                                    DistributedSystemAccessService distributedSystemAccessService) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer, port);
@@ -52,7 +52,8 @@ public class HealthMonitoringService extends AbstractServer<KVAdminMessage> {
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
                         new Connection.Builder().socket(socket.accept()).build(),
                         messageSerializer,
-                        messageDeserializer);
+                        messageDeserializer,
+                        distributedSystemAccessService);
                 connectionHandler.handleConnection();
             }
         } catch (IOException ex) {
@@ -64,15 +65,17 @@ public class HealthMonitoringService extends AbstractServer<KVAdminMessage> {
         }
     }
 
-    private class ConnectionHandler extends AbstractConnectionHandler<KVAdminMessage> {
-
+    private class ConnectionHandler extends AbstractConnectionHandler<KVHearthbeatMessage> {
+        private DistributedSystemAccessService distributedSystemAccessService;
 
         ConnectionHandler(IConcurrentCommunicationApi communicationApi,
                           Connection connection,
-                          IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
-                          IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer) {
+                          IMessageSerializer<SerializedMessage, KVHearthbeatMessage> messageSerializer,
+                          IMessageDeserializer<KVHearthbeatMessage, SerializedMessage>
+                                  messageDeserializer, DistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
+            this.distributedSystemAccessService = distributedSystemAccessService;
         }
 
         @Override
@@ -85,10 +88,12 @@ public class HealthMonitoringService extends AbstractServer<KVAdminMessage> {
             logger.info("Client is connected to server.");
             try {
                 while (connection.isConnected()) {
-                    KVAdminMessage receivedMessage = messageDeserializer
+                    KVHearthbeatMessage receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
                     logger.debug(CustomStringJoiner.join(" ", "Message received:",
                             receivedMessage.toString()));
+                    distributedSystemAccessService.updateServiceHealthWith(receivedMessage
+                            .getNodeHealthInfos());
                 }
             } catch (Throwable e) {
                 logger.error(e);

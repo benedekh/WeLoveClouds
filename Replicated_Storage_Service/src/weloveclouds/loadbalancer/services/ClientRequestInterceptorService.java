@@ -19,6 +19,7 @@ import weloveclouds.communication.models.Connection;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.configuration.annotations.ClientRequestsInterceptorPort;
+import weloveclouds.loadbalancer.services.cache.ICacheService;
 
 import static weloveclouds.commons.status.ServerStatus.*;
 
@@ -26,15 +27,21 @@ import static weloveclouds.commons.status.ServerStatus.*;
  * Created by Benoit on 2016-12-03.
  */
 public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
+    private DistributedSystemAccessService distributedSystemAccessService;
+    private ICacheService cacheService;
 
     @Inject
     public ClientRequestInterceptorService(CommunicationApiFactory communicationApiFactory,
                                            ServerSocketFactory serverSocketFactory,
                                            IMessageSerializer<SerializedMessage, KVMessage> messageSerializer,
                                            IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer,
-                                           @ClientRequestsInterceptorPort int port) throws IOException {
+                                           @ClientRequestsInterceptorPort int port,
+                                           DistributedSystemAccessService distributedSystemAccessService,
+                                           ICacheService cacheService) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer, port);
-        logger = Logger.getLogger(ClientRequestInterceptorService.class);
+        this.logger = Logger.getLogger(ClientRequestInterceptorService.class);
+        this.distributedSystemAccessService = distributedSystemAccessService;
+        this.cacheService = cacheService;
     }
 
     @Override
@@ -48,7 +55,9 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
                         new Connection.Builder().socket(socket.accept()).build(),
                         messageSerializer,
-                        messageDeserializer);
+                        messageDeserializer,
+                        distributedSystemAccessService,
+                        cacheService);
                 connectionHandler.handleConnection();
             }
         } catch (IOException ex) {
@@ -61,14 +70,19 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
     }
 
     private class ConnectionHandler extends AbstractConnectionHandler<KVMessage> {
+        private DistributedSystemAccessService distributedSystemAccessService;
+        private ICacheService cacheService;
 
         public ConnectionHandler(IConcurrentCommunicationApi communicationApi,
                                  Connection connection,
                                  IMessageSerializer<SerializedMessage, KVMessage> messageSerializer,
-                                 IMessageDeserializer<KVMessage, SerializedMessage>
-                                         messageDeserializer) {
+                                 IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer,
+                                 DistributedSystemAccessService distributedSystemAccessService,
+                                 ICacheService cacheService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
-            logger = Logger.getLogger(this.getClass());
+            this.logger = Logger.getLogger(this.getClass());
+            this.distributedSystemAccessService = distributedSystemAccessService;
+            this.cacheService = cacheService;
         }
 
         @Override
@@ -81,10 +95,12 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
             logger.info("Client is connected to server.");
             try {
                 while (connection.isConnected()) {
-                    KVMessage receivedMessage = messageDeserializer
-                            .deserialize(communicationApi.receiveFrom(connection));
+                    byte[] serializedMessage = communicationApi.receiveFrom(connection);
+                    KVMessage deserializedMessage = messageDeserializer.deserialize(serializedMessage);
                     logger.debug(CustomStringJoiner.join(" ", "Message received:",
-                            receivedMessage.toString()));
+                            deserializedMessage.toString()));
+
+
                 }
             } catch (Throwable e) {
                 logger.error(e);

@@ -7,7 +7,7 @@ import java.util.List;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.services.DistributedService;
-import weloveclouds.loadbalancer.models.ServerHealthInfos;
+import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 /**
  * Created by Benoit on 2016-12-03.
@@ -16,7 +16,7 @@ public class DistributedSystemAccessService {
     private static final int FIRST = 0;
     private DistributedService distributedService;
 
-    synchronized public void updateServerHealthWith(ServerHealthInfos serverHealthInfos) {
+    public void updateServiceHealthWith(NodeHealthInfos serverHealthInfos) {
 
     }
 
@@ -28,7 +28,7 @@ public class DistributedSystemAccessService {
         return null;
     }
 
-    public StorageNode getHealthiestServerFrom(List<StorageNode> storageNodes) {
+    public StorageNode getHealthiestNodeFrom(List<StorageNode> storageNodes) {
         Collections.sort(storageNodes, new Comparator<StorageNode>() {
             @Override
             public int compare(StorageNode node1, StorageNode node2) {
