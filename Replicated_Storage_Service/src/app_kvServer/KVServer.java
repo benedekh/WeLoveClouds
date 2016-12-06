@@ -46,6 +46,7 @@ public class KVServer {
 
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
+    private static LogSetup logSetup = null;
     public static String serverName = "server";
 
     /**
@@ -134,7 +135,11 @@ public class KVServer {
      */
     private static void initializeLoggerWithLevel(Level logLevel) {
         try {
-            new LogSetup(DEFAULT_LOG_PATH, logLevel);
+            if (logSetup == null) {
+                logSetup = new LogSetup(DEFAULT_LOG_PATH, logLevel);
+            } else {
+                Logger.getRootLogger().setLevel(logLevel);
+            }
         } catch (IOException ex) {
             System.err.println(CustomStringJoiner.join(" ", "Log file cannot be created on path ",
                     DEFAULT_LOG_PATH, "due to an error:", ex.getMessage()));
