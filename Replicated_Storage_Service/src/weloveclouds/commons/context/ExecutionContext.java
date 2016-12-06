@@ -1,6 +1,6 @@
 package weloveclouds.commons.context;
 
-import static weloveclouds.commons.context.Environment.DEFAULT;
+import static weloveclouds.commons.context.Environment.DEBUG;
 import static weloveclouds.commons.context.Environment.DEVELOPMENT;
 import static weloveclouds.commons.context.Environment.PRODUCTION;
 
@@ -27,7 +27,7 @@ public class ExecutionContext {
                 .getValueFromDescription(System.getProperty(EXECUTION_ENVIRONMENT_PROPERTIES));
 
         if (environment == null) {
-            environment = DEFAULT;
+            environment = DEBUG;
         }
         return environment;
     }
