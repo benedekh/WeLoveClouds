@@ -101,8 +101,8 @@ public class ArgumentsValidator {
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
-    public static void validateStartArguments(String[] arguments,
-            KVServerCLIContext context) throws IllegalArgumentException {
+    public static void validateStartArguments(String[] arguments, KVServerCLIContext context)
+            throws IllegalArgumentException {
         String command = "start";
         if (!isNullOrEmpty(arguments)) {
             logWarning(command);
@@ -114,9 +114,6 @@ public class ArgumentsValidator {
             } else if (context.getCacheSize() == -1) {
                 logWarning(command);
                 throw new IllegalArgumentException("Cache size should be initialized first.");
-            } else if (context.getPort() == -1) {
-                logWarning(command);
-                throw new IllegalArgumentException("Port should be initialized first.");
             } else if (context.getDisplacementStrategy() == null) {
                 logWarning(command);
                 throw new IllegalArgumentException(

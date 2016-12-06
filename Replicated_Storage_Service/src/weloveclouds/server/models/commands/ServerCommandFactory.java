@@ -6,8 +6,9 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.client.models.commands.Connect;
+import weloveclouds.commons.cli.models.ParsedUserInput;
+import weloveclouds.server.core.ServerFactory;
 import weloveclouds.server.models.conf.KVServerCLIContext;
 import weloveclouds.server.services.DataAccessServiceFactory;
 
@@ -22,11 +23,14 @@ public class ServerCommandFactory {
 
     private static final Logger LOGGER = Logger.getLogger(ServerCommandFactory.class);
 
+    private ServerFactory serverFactory;
     private DataAccessServiceFactory dataAccessServiceFactory;
     private KVServerCLIContext context;
 
-    public ServerCommandFactory(DataAccessServiceFactory dataAccessServiceFactory) {
+    public ServerCommandFactory(DataAccessServiceFactory dataAccessServiceFactory,
+            ServerFactory serverFactory) {
         this.dataAccessServiceFactory = dataAccessServiceFactory;
+        this.serverFactory = serverFactory;
         this.context = new KVServerCLIContext();
     }
 
@@ -54,11 +58,18 @@ public class ServerCommandFactory {
             case LOGLEVEL:
                 recognizedCommand = new LogLevel(arguments);
                 break;
-            case PORT:
-                recognizedCommand = new Port(arguments, context);
+            case CLIENT_PORT:
+                recognizedCommand = new ClientPort(arguments, context);
+                break;
+            case SERVER_PORT:
+                recognizedCommand = new ServerPort(arguments, context);
+                break;
+            case ECS_PORT:
+                recognizedCommand = new EcsPort(arguments, context);
                 break;
             case START:
-                recognizedCommand = new Start(arguments, dataAccessServiceFactory, context);
+                recognizedCommand =
+                        new Start(arguments, serverFactory, dataAccessServiceFactory, context);
                 break;
             case STORAGEPATH:
                 recognizedCommand = new StoragePath(arguments, context);
