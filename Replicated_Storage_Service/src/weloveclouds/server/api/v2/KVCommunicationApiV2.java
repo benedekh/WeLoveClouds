@@ -1,17 +1,15 @@
 package weloveclouds.server.api.v2;
 
-import java.util.Arrays;
+import static weloveclouds.client.utils.monitoring.KVClientMonitoringMetricUtils.recordExecutionTime;
+import static weloveclouds.client.utils.monitoring.MonitoringMetricConstants.GET_COMMAND_NAME;
+import static weloveclouds.client.utils.monitoring.MonitoringMetricConstants.LATENCY;
+import static weloveclouds.client.utils.monitoring.MonitoringMetricConstants.PUT_COMMAND_NAME;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-import static app_kvClient.KVClient.*;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.commons.monitoring.models.Metric;
-import weloveclouds.commons.monitoring.models.Service;
-import weloveclouds.commons.monitoring.statsd.IStatsdClient;
-import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
@@ -33,8 +31,6 @@ import weloveclouds.server.api.v1.KVCommunicationApiV1;
 public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
 
     private static final Logger LOGGER = Logger.getLogger(KVCommunicationApiV2.class);
-    private static final IStatsdClient STATSD_CLIENT =
-            StatsdClientFactory.createStatdClientFromEnvironment();
 
     private KVCommunicationApiV1 communicationApi;
 
@@ -70,11 +66,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
         try {
             return communicationApi.put(key, value);
         } finally {
-            Instant end = Instant.now();
-            STATSD_CLIENT.recordExecutionTime(
-                    new Metric.Builder().service(Service.KV_CLIENT)
-                            .name(Arrays.asList(clientName, "put", "latency")).build(),
-                    new Duration(start, end));
+            recordExecutionTime(PUT_COMMAND_NAME, LATENCY, new Duration(start, Instant.now()));
         }
     }
 
@@ -86,11 +78,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
         try {
             return communicationApi.get(key);
         } finally {
-            Instant end = Instant.now();
-            STATSD_CLIENT.recordExecutionTime(
-                    new Metric.Builder().service(Service.KV_CLIENT)
-                            .name(Arrays.asList(clientName, "get", "latency")).build(),
-                    new Duration(start, end));
+            recordExecutionTime(GET_COMMAND_NAME, LATENCY, new Duration(start, Instant.now()));
         }
     }
 
