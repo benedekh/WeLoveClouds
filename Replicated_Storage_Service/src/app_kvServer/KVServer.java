@@ -32,6 +32,8 @@ import weloveclouds.server.utils.LogSetup;
 public class KVServer {
 
     private static final String DEFAULT_LOG_PATH = "logs/server.log";
+    private static final String DEFAULT_LOG_LEVEL = "DEBUG";
+
     private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
 
     private static final int CLI_KVCLIENT_PORT_INDEX = 0;
@@ -43,10 +45,14 @@ public class KVServer {
 
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
+    private static LogSetup LOG_SETUP = null;
+
     /**
      * The entry point of the application.
      */
     public static void main(String[] args) {
+        initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
+
         if (args.length == 0) {
             startInteractiveCLIMode();
         } else {
@@ -125,7 +131,11 @@ public class KVServer {
      */
     private static void initializeLoggerWithLevel(Level logLevel) {
         try {
-            new LogSetup(DEFAULT_LOG_PATH, logLevel);
+            if (LOG_SETUP == null) {
+                LOG_SETUP = new LogSetup(DEFAULT_LOG_PATH, logLevel);
+            } else {
+                Logger.getRootLogger().setLevel(logLevel);
+            }
         } catch (IOException ex) {
             System.err.println(CustomStringJoiner.join(" ", "Log file cannot be created on path ",
                     DEFAULT_LOG_PATH, "due to an error:", ex.getMessage()));

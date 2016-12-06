@@ -11,6 +11,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.models.conf.KVServerPortConstants;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.server.utils.LogSetup;
@@ -21,6 +22,10 @@ import weloveclouds.server.utils.LogSetup;
  * @author Benoit, Benedek, Hunton
  */
 public class KVClient {
+
+    private static final String DEFAULT_LOG_PATH = "logs/client.log";
+    private static final String DEFAULT_LOG_LEVEL = "OFF";
+
     private static final Logger LOGGER = Logger.getLogger(KVClient.class);
 
     /**
@@ -29,12 +34,14 @@ public class KVClient {
      * @param args is discarded so far
      */
     public static void main(String[] args) {
-        String logFile = "logs/client.log";
-        try {
-            new LogSetup(logFile, Level.OFF);
+        initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
 
+        try {
             ServerConnectionInfo bootstrapConnectionInfo =
-                    new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
+                    new ServerConnectionInfo.Builder()
+                            .ipAddress("localhost")
+                            .port(KVServerPortConstants.KVCLIENT_REQUESTS_PORT)
+                            .build();
             IKVCommunicationApiV2 serverCommunication = new KVCommunicationApiFactory()
                     .createKVCommunicationApiV2(bootstrapConnectionInfo);
 
@@ -51,8 +58,26 @@ public class KVClient {
             Client client = new Client(System.in, commandFactory);
             client.run();
         } catch (IOException ex) {
+            LOGGER.error("Unable to resolve default, bootstrap server IP address.");
+        }
+    }
+
+    /**
+     * Initializes the root logger with the referred logLevel.
+     */
+    private static void initializeLoggerWithLevel(String logLevel) {
+        initializeLoggerWithLevel(Level.toLevel(logLevel));
+    }
+
+    /**
+     * Initializes the root logger with the referred logLevel.
+     */
+    private static void initializeLoggerWithLevel(Level logLevel) {
+        try {
+            new LogSetup(DEFAULT_LOG_PATH, logLevel);
+        } catch (IOException ex) {
             System.err.println(CustomStringJoiner.join(" ", "Log file cannot be created on path ",
-                    logFile, "due to an error:", ex.getMessage()));
+                    DEFAULT_LOG_PATH, "due to an error:", ex.getMessage()));
         }
     }
 }

@@ -6,10 +6,9 @@ package weloveclouds.commons.monitoring.statsd.configuration;
 public class StatsdConfigurationProvider {
     private static final String STATSD_SERVER_ADDRESS = "192.168.229.129";
     private static final int DEFAULT_STATSD_SERVICE_PORT = 8125;
-    private static StatsdConfigurationProvider instance;
+    private static final StatsdConfigurationProvider instance = new StatsdConfigurationProvider();
 
-    private StatsdConfigurationProvider() {
-    }
+    private StatsdConfigurationProvider() {}
 
     public int getStatsdServicePort() {
         return DEFAULT_STATSD_SERVICE_PORT;
@@ -20,9 +19,6 @@ public class StatsdConfigurationProvider {
     }
 
     public static StatsdConfigurationProvider getInstance() {
-        if (instance == null) {
-            instance = new StatsdConfigurationProvider();
-        }
         return instance;
     }
 }
