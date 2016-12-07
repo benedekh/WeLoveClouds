@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.commons.communication.NetworkPacketResender;
+import weloveclouds.commons.communication.AbstractNetworkPacketResender;
 import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.ICommunicationApi;
@@ -114,7 +114,7 @@ public class CommunicationService implements ICommunicationService {
 
     @Override
     public void send(byte[] content) throws IOException, UnableToSendContentToServerException {
-        NetworkPacketResender packetResender =
+        AbstractNetworkPacketResender packetResender =
                 packetResenderFactory.createResenderWithExponentialBackoff(
                         MAX_NUMBER_OF_RESEND_ATTEMPTS, encapsulatedCommunicationApi, content);
         packetResender.resendPacket();
@@ -131,7 +131,7 @@ public class CommunicationService implements ICommunicationService {
 
     @Override
     public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
-        NetworkPacketResender packetResender =
+        AbstractNetworkPacketResender packetResender =
                 packetResenderFactory.createResenderWithResponseWithExponentialBackoff(
                         MAX_NUMBER_OF_RESEND_ATTEMPTS, encapsulatedCommunicationApi, content);
         return packetResender.resendPacket();

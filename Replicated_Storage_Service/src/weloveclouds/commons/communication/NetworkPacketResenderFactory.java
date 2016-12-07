@@ -1,9 +1,8 @@
 package weloveclouds.commons.communication;
 
-import weloveclouds.commons.communication.resend.strategy.ExponentialBackoffResendStrategy;
-import weloveclouds.commons.communication.resend.strategy.ExponentialBackoffResendStrategyFactory;
-import weloveclouds.commons.communication.resend.strategy.ExponentialBackoffResendWithResponseStrategy;
-import weloveclouds.commons.communication.resend.strategy.IPacketResendStrategy;
+import org.joda.time.Duration;
+
+import weloveclouds.commons.communication.backoff.ExponentialBackoffIntervalComputer;
 import weloveclouds.communication.api.ICommunicationApi;
 
 /**
@@ -13,49 +12,68 @@ import weloveclouds.communication.api.ICommunicationApi;
  */
 public class NetworkPacketResenderFactory {
 
-    private ExponentialBackoffResendStrategyFactory exponentialResendStrategyFactory;
-
-    public NetworkPacketResenderFactory() {
-        this.exponentialResendStrategyFactory = new ExponentialBackoffResendStrategyFactory();
-    }
+    private static final Duration MINIMAL_INTERVAL = new Duration(300);
 
     /**
-     * Creates a {@link NetworkPacketResender} based on the strategy it uses.
+     * Creates a {@link NetworkPacketResender} which uses {@link ExponentialBackoffIntervalComputer}
+     * based on the following parameterization. Default {@link #MINIMAL_INTERVAL} duration is used
+     * between two resends.
      * 
-     * @param backoffStrategy that shall be used for resend
+     * @param maxNumberOfAttempts maximal number of attempts for resend
+     * @param communicationApi the communication channel through which the packet shall be sent
+     * @param packet that has to be sent over the network
      */
-    public NetworkPacketResender createResender(IPacketResendStrategy resendStrategy) {
-        return new NetworkPacketResender(resendStrategy);
+    public AbstractNetworkPacketResender createResenderWithExponentialBackoff(
+            int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet) {
+        return new NetworkPacketResender(maxNumberOfAttempts, communicationApi, packet,
+                new ExponentialBackoffIntervalComputer(MINIMAL_INTERVAL));
     }
 
     /**
-     * Creates a {@link NetworkPacketResender} which uses {@link ExponentialBackoffResendStrategy}
+     * Creates a {@link NetworkPacketResender} which uses {@link ExponentialBackoffIntervalComputer}
      * based on the following parameterization.
      * 
      * @param maxNumberOfAttempts maximal number of attempts for resend
      * @param communicationApi the communication channel through which the packet shall be sent
      * @param packet that has to be sent over the network
+     * @param minimalInterval how much time shall elapse between two resend attempts
      */
-    public NetworkPacketResender createResenderWithExponentialBackoff(int maxNumberOfAttempts,
-            ICommunicationApi communicationApi, byte[] packet) {
-        return new NetworkPacketResender(
-                exponentialResendStrategyFactory.createExponentialBackoffResendStrategy(
-                        maxNumberOfAttempts, communicationApi, packet));
+    public AbstractNetworkPacketResender createResenderWithExponentialBackoff(
+            int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet,
+            Duration minimalInterval) {
+        return new NetworkPacketResender(maxNumberOfAttempts, communicationApi, packet,
+                new ExponentialBackoffIntervalComputer(minimalInterval));
     }
 
     /**
-     * Creates a {@link NetworkPacketResender} which uses
-     * {@link ExponentialBackoffResendWithResponseStrategy} based on the following parameterization.
+     * Creates a {@link NetworkPacketResender} which uses {@link ExponentialBackoffIntervalComputer}
+     * based on the following parameterization. Default {@link #MINIMAL_INTERVAL} duration is used
+     * between two resends.
      * 
      * @param maxNumberOfAttempts maximal number of attempts for resend
      * @param communicationApi the communication channel through which the packet shall be sent
      * @param packet that has to be sent over the network
      */
-    public NetworkPacketResender createResenderWithResponseWithExponentialBackoff(
+    public AbstractNetworkPacketResender createResenderWithResponseWithExponentialBackoff(
             int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet) {
-        return new NetworkPacketResender(
-                exponentialResendStrategyFactory.createExponentialBackoffResendWithResponseStrategy(
-                        maxNumberOfAttempts, communicationApi, packet));
+        return new NetworkPacketResenderWithResponse(maxNumberOfAttempts, communicationApi, packet,
+                new ExponentialBackoffIntervalComputer(MINIMAL_INTERVAL));
+    }
+
+    /**
+     * Creates a {@link NetworkPacketResender} which uses {@link ExponentialBackoffIntervalComputer}
+     * based on the following parameterization.
+     * 
+     * @param maxNumberOfAttempts maximal number of attempts for resend
+     * @param communicationApi the communication channel through which the packet shall be sent
+     * @param packet that has to be sent over the network
+     * @param minimalInterval how much time shall elapse between two resend attempts
+     */
+    public AbstractNetworkPacketResender createResenderWithResponseWithExponentialBackoff(
+            int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet,
+            Duration minimalInterval) {
+        return new NetworkPacketResenderWithResponse(maxNumberOfAttempts, communicationApi, packet,
+                new ExponentialBackoffIntervalComputer(minimalInterval));
     }
 
 }

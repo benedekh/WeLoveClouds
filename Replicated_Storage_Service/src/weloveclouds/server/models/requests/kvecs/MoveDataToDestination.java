@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.communication.NetworkPacketResender;
+import weloveclouds.commons.communication.AbstractNetworkPacketResender;
 import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToConnectException;
@@ -151,7 +151,7 @@ public class MoveDataToDestination implements IKVECSRequest {
             SerializedMessage serializedMessage =
                     transferMessageSerializer.serialize(transferMessage);
 
-            NetworkPacketResender resender =
+            AbstractNetworkPacketResender resender =
                     resenderFactory.createResenderWithResponseWithExponentialBackoff(
                             ATTEMPT_NUMBER_FOR_PACKET_RESEND, communicationApi,
                             serializedMessage.getBytes());

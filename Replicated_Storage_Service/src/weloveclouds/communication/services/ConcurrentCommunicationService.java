@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.commons.communication.NetworkPacketResender;
+import weloveclouds.commons.communication.AbstractNetworkPacketResender;
 import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
@@ -46,7 +46,7 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
 
     @Override
     public void send(byte[] message, Connection connection) throws IOException {
-        NetworkPacketResender packetResender = packetResenderFactory
+        AbstractNetworkPacketResender packetResender = packetResenderFactory
                 .createResenderWithExponentialBackoff(MAX_NUMBER_OF_RESEND_ATTEMPTS,
                         new EncapsulatedCommunicationApi(connection, messageFrameDetectorMap),
                         message);
@@ -56,7 +56,7 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
     @Override
     public byte[] sendAndExpectForResponse(byte[] content, Connection connection)
             throws IOException {
-        NetworkPacketResender packetResender = packetResenderFactory
+        AbstractNetworkPacketResender packetResender = packetResenderFactory
                 .createResenderWithResponseWithExponentialBackoff(MAX_NUMBER_OF_RESEND_ATTEMPTS,
                         new EncapsulatedCommunicationApi(connection, messageFrameDetectorMap),
                         content);
