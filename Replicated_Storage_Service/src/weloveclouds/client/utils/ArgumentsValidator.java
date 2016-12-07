@@ -53,7 +53,9 @@ public class ArgumentsValidator {
 
         if (isNullOrEmpty(arguments) || arguments.length != REQUIRED_CLI_ARGUMENT_NUMBER) {
             logWarning(command);
-            throw new IllegalArgumentException("One argument is needed: <client name>");
+            throw new IllegalArgumentException(
+                    join("", String.valueOf(REQUIRED_CLI_ARGUMENT_NUMBER),
+                            " argument is needed: <client name>"));
         } else if (arguments[CLI_CLIENT_NAME_INDEX].isEmpty()) {
             logWarning(command);
             throw new IllegalArgumentException("Client name cannot be empty.");
