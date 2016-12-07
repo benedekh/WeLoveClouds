@@ -46,9 +46,9 @@ public class KVServerHandlingECSRequestTests {
             KVServerPortConstants.KVECS_REQUESTS_PORT;
     private static final int SERVER2_KVECS_REQUEST_ACCEPTING_PORT = 60002;
 
-    IKVCommunicationApiV2 serverCommunication;
-    IMessageDeserializer<KVAdminMessage, SerializedMessage> kvAdminMessageDeserializer;
-    IMessageSerializer<SerializedMessage, KVAdminMessage> kvAdminMessageSerializer;
+    private IKVCommunicationApiV2 serverCommunication;
+    private IMessageDeserializer<KVAdminMessage, SerializedMessage> kvAdminMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, KVAdminMessage> kvAdminMessageSerializer;
 
     @Before
     public void init() throws Exception {

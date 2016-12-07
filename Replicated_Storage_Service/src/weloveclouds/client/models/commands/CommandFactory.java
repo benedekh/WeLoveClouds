@@ -13,7 +13,7 @@ import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
- * handles several commands (see {@link Command} for the possible commands) by dispatching the
+ * handles several commands (see {@link ClientCommand} for the possible commands) by dispatching the
  * command to its respective handler.
  *
  * @author Benoit
@@ -25,14 +25,13 @@ public class CommandFactory {
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
 
     /**
-     * @param communicationApi         an instance for the communication module for those commands
-     *                                 which <<<<<<< HEAD need to communicate via the network
-     *                                 ======= need to communicate via the network
+     * @param communicationApi an instance for the communication module for those commands which
+     *        need to communicate via the network
      * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object to
-     *                                 its original representation from String >>>>>>> master
+     *        its original representation from String
      */
     public CommandFactory(IKVCommunicationApiV2 communicationApi,
-                          IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
+            IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         this.communicationApi = communicationApi;
         this.ringMetadataDeserializer = ringMetadataDeserializer;
     }
@@ -45,10 +44,10 @@ public class CommandFactory {
      * @return the type of the recognized command
      * @throws UnknownHostException see {@link Connect}
      */
-    public ICommand createCommandFromUserInput(ParsedUserInput<Command> userInput)
+    public ICommand createCommandFromUserInput(ParsedUserInput<ClientCommand> userInput)
             throws UnknownHostException {
         ICommand recognizedCommand = null;
-        Command userCommand = userInput.getCommand();
+        ClientCommand userCommand = userInput.getCommand();
 
         switch (userCommand) {
             case CONNECT:

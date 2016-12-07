@@ -4,7 +4,7 @@ package weloveclouds.commons.context;
  * Created by Benoit on 2016-11-27.
  */
 public enum Environment {
-    PRODUCTION("prod"), DEVELOPMENT("dev");
+    PRODUCTION("prod"), DEVELOPMENT("dev"), DEBUG("debug");
 
     private String description;
 
@@ -17,13 +17,11 @@ public enum Environment {
     }
 
     public static Environment getValueFromDescription(String description) {
-        Environment environment = null;
-
-        for (Environment env : Environment.values()) {
-            if (env.description == description) {
-                environment = env;
+        for (Environment environment : Environment.values()) {
+            if (environment.description.equals(description)) {
+                return environment;
             }
         }
-        return environment;
+        return null;
     }
 }

@@ -1,8 +1,5 @@
 package weloveclouds.server.models.commands;
 
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -14,49 +11,32 @@ import weloveclouds.client.utils.CustomStringJoiner;
  * @author Benedek
  */
 public enum ServerCommand {
-    CACHESIZE("cacheSize"), HELP("help"), LOGLEVEL("logLevel"), PORT("port"), START(
-            "start"), STORAGEPATH(
-                    "storagePath"), STRATEGY("strategy"), QUIT("quit"), DEFAULT("default");
+    CACHESIZE("cacheSize"), HELP("help"), LOGLEVEL("logLevel"), CLIENT_PORT(
+            "clientPort"), SERVER_PORT("serverPort"), ECS_PORT("ecsPort"), START(
+                    "start"), STORAGEPATH(
+                            "storagePath"), STRATEGY("strategy"), QUIT("quit"), DEFAULT("default");
 
     private static final Logger LOGGER = Logger.getLogger(ServerCommand.class);
 
-    private String name;
+    private String description;
 
-    ServerCommand(String name) {
-        this.name = name;
-    }
-
-    private String getName() {
-        return name;
-    }
-
-    /**
-     * Creates a map from the names of the commands and its command object.
-     */
-    private static Map<String, ServerCommand> getCommandNames() {
-        Map<String, ServerCommand> names = new TreeMap<>();
-        for (ServerCommand command : values()) {
-            names.put(command.getName(), command);
-        }
-        return names;
+    ServerCommand(String description) {
+        this.description = description;
     }
 
     /**
      * Converts the parameter to a command if its name matches with one of the commands. Otherwise
      * it returns {@link #DEFAULT}
      */
-    public static ServerCommand createCommandFromString(String commandAsString) {
-        Map<String, ServerCommand> commandNames = getCommandNames();
-        ServerCommand recognizedCommand =
-                (commandAsString == null || !commandNames.containsKey(commandAsString) ? DEFAULT
-                        : commandNames.get(commandAsString));
-
-        if (recognizedCommand == DEFAULT) {
-            LOGGER.warn(CustomStringJoiner.join("", "Command (", commandAsString,
-                    ") is not recognized."));
+    public static ServerCommand getValueFromDescription(String description) {
+        for (ServerCommand command : ServerCommand.values()) {
+            if (command.description.equals(description)) {
+                return command;
+            }
         }
 
-        return recognizedCommand;
+        LOGGER.warn(CustomStringJoiner.join("", "Command (", description, ") is not recognized."));
+        return DEFAULT;
     }
 
 }

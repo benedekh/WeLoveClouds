@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.core.Client;
 import weloveclouds.client.models.commands.CommandFactory;
+import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.server.models.conf.KVServerPortConstants;
@@ -24,9 +24,12 @@ import weloveclouds.server.utils.LogSetup;
 public class KVClient {
 
     private static final String DEFAULT_LOG_PATH = "logs/client.log";
-    private static final String DEFAULT_LOG_LEVEL = "OFF";
+    private static final String DEFAULT_LOG_LEVEL = "ERROR";
 
+    private static final int CLI_CLIENT_NAME_INDEX = 0;
     private static final Logger LOGGER = Logger.getLogger(KVClient.class);
+
+    public static String clientName = "client";
 
     /**
      * The entry point of the application.
@@ -37,6 +40,9 @@ public class KVClient {
         initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
 
         try {
+            ArgumentsValidator.validateCLIArgumentsForClientStart(args);
+            clientName = args[CLI_CLIENT_NAME_INDEX];
+
             ServerConnectionInfo bootstrapConnectionInfo =
                     new ServerConnectionInfo.Builder()
                             .ipAddress("localhost")
@@ -59,6 +65,8 @@ public class KVClient {
             client.run();
         } catch (IOException ex) {
             LOGGER.error("Unable to resolve default, bootstrap server IP address.");
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error(ex);
         }
     }
 

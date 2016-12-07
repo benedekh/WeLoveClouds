@@ -33,9 +33,9 @@ public class KVServerRequestFromKVClientValidationTests extends TestCase {
     private static final int SERVER_KVCLIENT_REQUEST_ACCEPTING_PORT =
             KVServerPortConstants.KVCLIENT_REQUESTS_PORT;
 
-    IKVCommunicationApiV2 serverCommunication;
-    IMessageDeserializer<KVMessage, SerializedMessage> kvmessageDeserializer;
-    IMessageSerializer<SerializedMessage, KVMessage> kvmessageSerializer;
+    private IKVCommunicationApiV2 serverCommunication;
+    private IMessageDeserializer<KVMessage, SerializedMessage> kvmessageDeserializer;
+    private IMessageSerializer<SerializedMessage, KVMessage> kvmessageSerializer;
 
     @Before
     public void setUp() throws Exception {

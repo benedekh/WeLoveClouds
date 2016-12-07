@@ -31,15 +31,15 @@ public class Put extends AbstractKVCommunicationApiCommand {
     private boolean commandWasAlreadyExecuted;
 
     /**
-     * @param arguments                contains the key in the {@link #KEY_INDEX} position and the
-     *                                 value is merged into one value starting from the index {@link
-     *                                 #VALUE_INDEX} and going until the end of the array
-     * @param communicationApi         which is used for querying the value from the server
+     * @param arguments contains the key in the {@link #KEY_INDEX} position and the value is merged
+     *        into one value starting from the index {@link #VALUE_INDEX} and going until the end of
+     *        the array
+     * @param communicationApi which is used for querying the value from the server
      * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object to
-     *                                 its original representation from String
+     *        its original representation from String
      */
     public Put(String[] arguments, IKVCommunicationApiV2 communicationApi,
-               IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
+            IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         super(arguments, communicationApi);
         this.ringMetadataDeserializer = ringMetadataDeserializer;
         this.communicationApiV2 = communicationApi;

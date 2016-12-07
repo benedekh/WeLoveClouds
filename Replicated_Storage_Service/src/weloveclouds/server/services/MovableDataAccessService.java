@@ -1,8 +1,20 @@
 package weloveclouds.server.services;
 
 import static weloveclouds.server.services.models.DataAccessServiceStatus.STOPPED;
+import static weloveclouds.server.utils.monitoring.KVServerMonitoringMetricUtils.incrementCounter;
+import static weloveclouds.server.utils.monitoring.KVServerMonitoringMetricUtils.recordExecutionTime;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.ERROR;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.EXEC_TIME;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.GET_COMMAND_NAME;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.KVSTORE_MODULE_NAME;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.NOT_RESPONSIBLE;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.PUT_COMMAND_NAME;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.REMOVE_COMMAND_NAME;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.SUCCESS;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.HashRange;
@@ -54,23 +66,43 @@ public class MovableDataAccessService extends DataAccessService
     @Override
     public synchronized PutType putEntry(KVEntry entry) throws StorageException {
         if (!isServiceInitialized()) {
+            incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
             LOGGER.error("Put request while the data acess service was uninitialized.");
             throw new UninitializedServiceException();
         }
 
         switch (serviceRecentStatus) {
             case STARTED:
-                checkIfKeyIsManagedByServer(entry.getKey());
-                return super.putEntry(entry);
+                try {
+                    checkIfKeyIsManagedByServer(entry.getKey());
+                } catch (KeyIsNotManagedByServiceException ex) {
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
+                    throw ex;
+                }
+
+                try {
+                    Instant start = Instant.now();
+                    PutType putType = super.putEntry(entry);
+                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
+                            new Duration(start, Instant.now()));
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, SUCCESS);
+                    return putType;
+                } catch (StorageException ex) {
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
+                    throw ex;
+                }
             case STOPPED:
+                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
                 LOGGER.error(
                         "Put request is rejected, because the data access service is stopped.");
                 throw new ServiceIsStoppedException();
             case WRITELOCK_ACTIVE:
+                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
                 LOGGER.error(
                         "Put request is rejected, because write lock is active on the data access service.");
                 throw new WriteLockIsActiveException();
             default:
+                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
                 throw new StorageException("Unrecognized service status.");
         }
     }
@@ -79,6 +111,7 @@ public class MovableDataAccessService extends DataAccessService
     public synchronized String getValue(String key)
             throws StorageException, ValueNotFoundException {
         if (!isServiceInitialized()) {
+            incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
             LOGGER.error("Get request while the data acess service was uninitialized.");
             throw new UninitializedServiceException();
         }
@@ -86,13 +119,31 @@ public class MovableDataAccessService extends DataAccessService
         switch (serviceRecentStatus) {
             case STARTED:
             case WRITELOCK_ACTIVE:
-                checkIfKeyIsManagedByServer(key);
-                return super.getValue(key);
+                try {
+                    checkIfKeyIsManagedByServer(key);
+                } catch (KeyIsNotManagedByServiceException ex) {
+                    incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, NOT_RESPONSIBLE);
+                    throw ex;
+                }
+
+                try {
+                    Instant start = Instant.now();
+                    String value = super.getValue(key);
+                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
+                            new Duration(start, Instant.now()));
+                    incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, SUCCESS);
+                    return value;
+                } catch (StorageException ex) {
+                    incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
+                    throw ex;
+                }
             case STOPPED:
+                incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
                 LOGGER.error(
                         "Get request is rejected, because the data access service is stopped.");
                 throw new ServiceIsStoppedException();
             default:
+                incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
                 throw new StorageException("Unrecognized service status.");
         }
     }
@@ -100,24 +151,43 @@ public class MovableDataAccessService extends DataAccessService
     @Override
     public synchronized void removeEntry(String key) throws StorageException {
         if (!isServiceInitialized()) {
+            incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
             LOGGER.error("Remove request while the data acess service was uninitialized.");
             throw new UninitializedServiceException();
         }
 
         switch (serviceRecentStatus) {
             case STARTED:
-                checkIfKeyIsManagedByServer(key);
-                super.removeEntry(key);
+                try {
+                    checkIfKeyIsManagedByServer(key);
+                } catch (KeyIsNotManagedByServiceException ex) {
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
+                    throw ex;
+                }
+
+                try {
+                    Instant start = Instant.now();
+                    super.removeEntry(key);
+                    recordExecutionTime(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, EXEC_TIME,
+                            new Duration(start, Instant.now()));
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, SUCCESS);
+                } catch (StorageException ex) {
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
+                    throw ex;
+                }
                 break;
             case STOPPED:
+                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
                 LOGGER.error(
                         "Remove request is rejected, because the data access service is stopped.");
                 throw new ServiceIsStoppedException();
             case WRITELOCK_ACTIVE:
+                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
                 LOGGER.error(
                         "Remove request is rejected, because write lock is active on the data access service.");
                 throw new WriteLockIsActiveException();
             default:
+                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
                 throw new StorageException("Unrecognized service status.");
         }
     }
@@ -210,6 +280,10 @@ public class MovableDataAccessService extends DataAccessService
         return ringMetadata != null && rangeManagedByServer != null;
     }
 
+    /**
+     * @throws KeyIsNotManagedByServiceException if the referred key's hash value is not managed by
+     *         this server.
+     */
     private void checkIfKeyIsManagedByServer(String key) throws KeyIsNotManagedByServiceException {
         if (rangeManagedByServer == null
                 || !rangeManagedByServer.contains(HashingUtil.getHash(key))) {

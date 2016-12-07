@@ -1,4 +1,4 @@
-package weloveclouds.ecs.models.commands.client;
+package weloveclouds.client.models.commands;
 
 import org.apache.log4j.Logger;
 
@@ -6,19 +6,19 @@ import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
  * Different commands which are handled by
- * {@link weloveclouds.ecs.models.commands.client.EcsClientCommandFactory}.
+ * {@link weloveclouds.client.models.commands.CommandFactory}.
  *
- * @author Benoit
+ * @author Benedek
  */
-public enum EcsCommand {
-    START("start"), STOP("stop"), INIT_SERVICE("initService"), SHUTDOWN("shutDown"), ADD_NODE(
-            "addNode"), REMOVE_NODE("removeNode"), DEFAULT("default");
+public enum ClientCommand {
+    CONNECT("connect"), DISCONNECT("disconnect"), PUT("put"), GET("get"), LOGLEVEL(
+            "logLevel"), HELP("help"), QUIT("quit"), DEFAULT("default");
 
-    private static final Logger LOGGER = Logger.getLogger(EcsCommand.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientCommand.class);
 
     private String description;
 
-    EcsCommand(String description) {
+    ClientCommand(String description) {
         this.description = description;
     }
 
@@ -26,8 +26,8 @@ public enum EcsCommand {
      * Converts the parameter to a command if its name matches with one of the commands. Otherwise
      * it returns {@link #DEFAULT}
      */
-    public static EcsCommand getValueFromDescription(String description) {
-        for (EcsCommand command : EcsCommand.values()) {
+    public static ClientCommand createCommandFromString(String description) {
+        for (ClientCommand command : ClientCommand.values()) {
             if (command.description.equals(description)) {
                 return command;
             }
@@ -36,4 +36,5 @@ public enum EcsCommand {
         LOGGER.warn(CustomStringJoiner.join("", "Command (", description, ") is not recognized."));
         return DEFAULT;
     }
+
 }
