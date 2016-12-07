@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import weloveclouds.loadbalancer.configuration.annotations.CacheMaximalCapacity;
 import weloveclouds.loadbalancer.exceptions.cache.UnableToFindRequestedKeyException;
 import weloveclouds.loadbalancer.models.cache.strategies.IDisplacementStrategy;
 
@@ -17,7 +18,8 @@ public class SimpleRequestCache<K, V> implements ICache<K, V> {
     private int maximumCapacity;
 
     @Inject
-    public SimpleRequestCache(int maximumCapacity, IDisplacementStrategy<K> displacementStrategy) {
+    public SimpleRequestCache(@CacheMaximalCapacity int maximumCapacity, IDisplacementStrategy<K>
+            displacementStrategy) {
         this.cache = new LinkedHashMap<>();
         this.maximumCapacity = maximumCapacity;
     }

@@ -1,6 +1,5 @@
 package weloveclouds.ecs.contexts;
 
-import weloveclouds.commons.context.Environment;
 
 /**
  * Created by Benoit on 2016-12-03.

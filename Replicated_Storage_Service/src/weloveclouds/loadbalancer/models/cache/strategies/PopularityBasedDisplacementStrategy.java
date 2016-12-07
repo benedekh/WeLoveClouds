@@ -24,7 +24,7 @@ public class PopularityBasedDisplacementStrategy<K> implements IDisplacementStra
 
     public PopularityBasedDisplacementStrategy(int maximumCapacity, int
             timeBetweenKeyOrderingInSec) {
-        keyOrderingTask = Executors.newScheduledThreadPool(10);
+        keyOrderingTask = Executors.newScheduledThreadPool(1);
         keyUsage = new LinkedHashMap<>(maximumCapacity);
         sortedCachedKeyUsage = new ArrayList<>();
         keyOrderingTask.scheduleAtFixedRate(new Runnable() {
@@ -44,7 +44,7 @@ public class PopularityBasedDisplacementStrategy<K> implements IDisplacementStra
 
     @Override
     public K getKeyToDisplace() {
-        K leastUsedKey = null;
+        K leastUsedKey;
         synchronized (sortedCachedKeyUsage) {
             leastUsedKey = sortedCachedKeyUsage.remove(FIRST).getKey();
         }

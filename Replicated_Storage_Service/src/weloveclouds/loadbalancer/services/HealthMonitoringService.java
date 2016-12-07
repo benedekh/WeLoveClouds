@@ -35,7 +35,8 @@ public class HealthMonitoringService extends AbstractServer<KVHearthbeatMessage>
                                    IMessageSerializer<SerializedMessage, KVHearthbeatMessage> messageSerializer,
                                    IMessageDeserializer<KVHearthbeatMessage, SerializedMessage> messageDeserializer,
                                    @HealthMonitoringServicePort int port,
-                                   DistributedSystemAccessService distributedSystemAccessService) throws IOException {
+                                   DistributedSystemAccessService distributedSystemAccessService,
+                                   EcsNotificationService ecsNotificationService) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer, port);
         this.distributedSystemAccessService = distributedSystemAccessService;
         this.logger = Logger.getLogger(this.getClass());

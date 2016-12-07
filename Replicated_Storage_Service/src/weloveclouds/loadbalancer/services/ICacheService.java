@@ -1,4 +1,4 @@
-package weloveclouds.loadbalancer.services.cache;
+package weloveclouds.loadbalancer.services;
 
 import weloveclouds.loadbalancer.exceptions.cache.UnableToFindRequestedKeyException;
 

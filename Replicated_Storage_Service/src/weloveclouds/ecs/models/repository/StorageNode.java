@@ -25,6 +25,7 @@ public class StorageNode {
     private HashRange previousHashRange;
     private HashRange hashRange;
     private List<StorageNode> replicas;
+    private List<HashRange> childHashranges;
 
     public StorageNode(String id, ServerConnectionInfo serverConnectionInfo) {
         this.id = id;
@@ -37,6 +38,40 @@ public class StorageNode {
                 .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT)
                 .build();
         this.replicas = new ArrayList<>();
+        this.childHashranges = new ArrayList<>();
+    }
+
+    public boolean isReadResponsibleOf(Hash hash) {
+        if (isWriteResponsibleOf(hash)) {
+            return true;
+        }
+
+        for (HashRange hashRange : childHashranges) {
+            if (hashRange.contains(hash)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isWriteResponsibleOf(Hash hash) {
+        return hashRange.contains(hash);
+    }
+
+    public void addChildHashrange(HashRange childHashRange) {
+        this.childHashranges.add(childHashRange);
+    }
+
+    public void removeChildHashrange(HashRange childHashRange) {
+        this.childHashranges.remove(childHashRange);
+    }
+
+    public List<HashRange> getChildHashranges() {
+        return childHashranges;
+    }
+
+    public void clearReplicas() {
+        this.replicas.clear();
     }
 
     public void addReplicas(StorageNode storageNode) {

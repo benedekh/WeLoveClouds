@@ -1,8 +1,12 @@
 package weloveclouds.ecs.models.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.status.ServiceStatus;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForReadingException;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForWritingException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.utils.RingMetadataHelper;
@@ -25,6 +29,29 @@ public class DistributedService {
         this.topology = new RingTopology<>();
         this.ringMetadata = new RingMetadata();
         this.status = UNINITIALIZED;
+    }
+
+    public List<StorageNode> getResponsibleForReadingOf(Hash hash) throws
+            UnableToFindResponsibleForReadingException {
+        List<StorageNode> responsibles = new ArrayList<>();
+        for (StorageNode node : getParticipatingNodes()) {
+            if (node.isWriteResponsibleOf(hash)) {
+                responsibles.add(node);
+                responsibles.addAll(node.getReplicas());
+                return responsibles;
+            }
+        }
+        throw new UnableToFindResponsibleForReadingException(hash);
+    }
+
+    public StorageNode getResponsibleForWritingOf(Hash hash) throws
+            UnableToFindResponsibleForWritingException {
+        for (StorageNode node : getParticipatingNodes()) {
+            if (node.isWriteResponsibleOf(hash)) {
+                return node;
+            }
+        }
+        throw new UnableToFindResponsibleForWritingException(hash);
     }
 
     public ServiceStatus getStatus() {

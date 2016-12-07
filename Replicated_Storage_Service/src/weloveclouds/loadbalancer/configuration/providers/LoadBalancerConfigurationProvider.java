@@ -6,6 +6,7 @@ package weloveclouds.loadbalancer.configuration.providers;
 public class LoadBalancerConfigurationProvider {
     private static final int CLIENT_REQUESTS_INTERCEPTOR_PORT = 10000;
     private static final int HEALTH_MONITORING_SERVICE_PORT = 20000;
+    private static final int CACHE_MAXIMAL_CAPACITY = 200;
 
     public static int getClientInterceptorServicePort() {
         return CLIENT_REQUESTS_INTERCEPTOR_PORT;
@@ -13,5 +14,9 @@ public class LoadBalancerConfigurationProvider {
 
     public static int getHealthMonitoringServicePort() {
         return HEALTH_MONITORING_SERVICE_PORT;
+    }
+
+    public static int getCacheMaximalCapacity() {
+        return CACHE_MAXIMAL_CAPACITY;
     }
 }
