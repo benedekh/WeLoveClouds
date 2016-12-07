@@ -1,12 +1,10 @@
 package weloveclouds.commons.communication.resend.strategy;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.communication.backoff.ExponentialBackoffIntervalComputer;
+import weloveclouds.commons.communication.backoff.IBackoffIntervalComputer;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.ecs.models.tasks.Status;
@@ -17,38 +15,14 @@ import weloveclouds.ecs.models.tasks.Status;
  * 
  * @author Benedek
  */
-public class ExponentialBackoffResendStrategy implements IPacketResendStrategy {
+public class ExponentialBackoffResendStrategy extends AbstractResendStrategyWithBackoffInterval {
 
     private static final Logger LOGGER = Logger.getLogger(ExponentialBackoffResendStrategy.class);
 
-    protected int maxNumberOfAttempts;
-    protected ICommunicationApi communicationApi;
-    protected byte[] packetToBeSent;
-
-    protected int numberOfAttemptsSoFar;
-    protected ExponentialBackoffIntervalComputer backoffIntervalComputer;
-
-    protected IOException exception;
-    protected Status executionStatus;
-
-    /**
-     * @param maxNumberOfAttempts maximal number of attempts for resend
-     * @param communicationApi the communication channel through which the packet shall be sent
-     * @param packet that has to be sent over the network
-     */
     public ExponentialBackoffResendStrategy(int maxNumberOfAttempts,
             ICommunicationApi communicationApi, byte[] packet,
-            ExponentialBackoffIntervalComputer backoffIntervalComputer) {
-        if (maxNumberOfAttempts < 0) {
-            throw new IllegalArgumentException("Number of attempts has to be positive.");
-        }
-
-        this.maxNumberOfAttempts = maxNumberOfAttempts;
-        this.communicationApi = communicationApi;
-        this.packetToBeSent = packet;
-        this.backoffIntervalComputer = backoffIntervalComputer;
-
-        this.executionStatus = Status.RUNNING;
+            IBackoffIntervalComputer backoffIntervalComputer) {
+        super(maxNumberOfAttempts, communicationApi, packet, backoffIntervalComputer);
     }
 
     @Override
@@ -72,36 +46,6 @@ public class ExponentialBackoffResendStrategy implements IPacketResendStrategy {
             LOGGER.error(ex);
             exception = new IOException("Resend unexpectedly stopped.");
             executionStatus = Status.FAILED;
-        }
-    }
-
-    @Override
-    public Status getExecutionStatus() {
-        return executionStatus;
-    }
-
-    @Override
-    public IOException getException() {
-        return exception;
-    }
-
-    @Override
-    public void incrementNumberOfAttemptsByOne() {
-        numberOfAttemptsSoFar++;
-    }
-
-    /**
-     * Sleeps based on which attempts it was recently in.
-     * 
-     * @throws InterruptedException if the thread was waken up from sleep
-     */
-    protected void sleepBeforeNextAttempt() throws InterruptedException {
-        if (executionStatus != Status.COMPLETED) {
-            LOGGER.info(join("", "#",
-                    String.valueOf(numberOfAttemptsSoFar) + " resend attempts were made out of #",
-                    String.valueOf(maxNumberOfAttempts), " attempts."));
-            Thread.sleep(
-                    backoffIntervalComputer.computeIntervalFrom(numberOfAttemptsSoFar).getMillis());
         }
     }
 

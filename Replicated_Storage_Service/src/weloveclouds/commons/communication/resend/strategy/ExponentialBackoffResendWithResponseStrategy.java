@@ -22,8 +22,8 @@ import weloveclouds.ecs.models.tasks.Status;
  * 
  * @author Benedek
  */
-public class ExponentialBackoffResendWithResponseStrategy extends ExponentialBackoffResendStrategy
-        implements Observer, IPacketResendStrategy {
+public class ExponentialBackoffResendWithResponseStrategy
+        extends AbstractResendStrategyWithBackoffInterval implements Observer {
 
     private static final Logger LOGGER =
             Logger.getLogger(ExponentialBackoffResendWithResponseStrategy.class);
@@ -99,7 +99,6 @@ public class ExponentialBackoffResendWithResponseStrategy extends ExponentialBac
      */
     private static class PacketReceiver extends Observable implements Runnable {
 
-        private static final Logger LOGGER = Logger.getLogger(PacketReceiver.class);
         private final ICommunicationApi communicationApi;
 
         public PacketReceiver(ICommunicationApi communicationApi) {
