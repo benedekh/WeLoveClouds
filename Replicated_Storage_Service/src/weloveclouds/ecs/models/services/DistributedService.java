@@ -67,6 +67,10 @@ public class DistributedService {
         return ringMetadata;
     }
 
+    public void updateRingMetadataWith(RingMetadata ringMetadata) {
+        this.ringMetadata = ringMetadata;
+    }
+
     public RingTopology<StorageNode> getTopology() {
         return this.topology;
     }

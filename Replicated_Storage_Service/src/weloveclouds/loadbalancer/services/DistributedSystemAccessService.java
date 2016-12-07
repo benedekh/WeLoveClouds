@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForReadingException;
 import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForWritingException;
 import weloveclouds.ecs.models.repository.StorageNode;
@@ -19,11 +20,20 @@ public class DistributedSystemAccessService {
     private DistributedService distributedService;
 
     public void updateServiceHealthWith(NodeHealthInfos serverHealthInfos) {
-        distributedService.getNodeFrom(serverHealthInfos.getServerConnectionInfo())
-                .updateHealthInfos(serverHealthInfos);
+        synchronized (distributedService) {
+            distributedService.getNodeFrom(serverHealthInfos.getServerConnectionInfo())
+                    .updateHealthInfos(serverHealthInfos);
+        }
+    }
+
+    public void updateServiceRingMetadataWith(RingMetadata ringMetadata) {
+        synchronized (distributedService) {
+            distributedService.updateRingMetadataWith(ringMetadata);
+        }
     }
 
     public StorageNode getReadServerFor(String key) throws UnableToFindResponsibleForReadingException {
+
         return getHealthiestNodeFrom(distributedService.getResponsibleForReadingOf(new Hash(key.getBytes())));
     }
 

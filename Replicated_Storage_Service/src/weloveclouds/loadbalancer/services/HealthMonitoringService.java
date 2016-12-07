@@ -95,6 +95,7 @@ public class HealthMonitoringService extends AbstractServer<KVHearthbeatMessage>
                             receivedMessage.toString()));
                     distributedSystemAccessService.updateServiceHealthWith(receivedMessage
                             .getNodeHealthInfos());
+                    connection.kill();
                 }
             } catch (Throwable e) {
                 logger.error(e);

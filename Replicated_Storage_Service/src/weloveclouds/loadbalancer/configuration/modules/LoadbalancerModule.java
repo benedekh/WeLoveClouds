@@ -15,6 +15,7 @@ import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.configuration.annotations.CacheMaximalCapacity;
 import weloveclouds.loadbalancer.configuration.annotations.ClientRequestsInterceptorPort;
+import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
 import weloveclouds.loadbalancer.configuration.annotations.HealthMonitoringServicePort;
 import weloveclouds.loadbalancer.configuration.providers.LoadBalancerConfigurationProvider;
 import weloveclouds.loadbalancer.models.cache.ICache;
@@ -56,13 +57,18 @@ public class LoadbalancerModule extends AbstractModule {
         bind(Integer.class).annotatedWith(HealthMonitoringServicePort.class).toInstance
                 (LoadBalancerConfigurationProvider.getHealthMonitoringServicePort());
 
+        bind(Integer.class).annotatedWith(EcsNotificationServicePort.class).toInstance
+                (LoadBalancerConfigurationProvider.getEcsNotificationServicePort());
+
         bind(Integer.class).annotatedWith(CacheMaximalCapacity.class).toInstance
                 (LoadBalancerConfigurationProvider.getCacheMaximalCapacity());
 
         bind(new TypeLiteral<ICache<String, String>>() {
-        }).to(new TypeLiteral<SimpleRequestCache<String,String>>() {});
+        }).to(new TypeLiteral<SimpleRequestCache<String, String>>() {
+        });
 
         bind(new TypeLiteral<ICacheService<String, String>>() {
-        }).to(new TypeLiteral<CacheService>() {});
+        }).to(new TypeLiteral<CacheService>() {
+        });
     }
 }
