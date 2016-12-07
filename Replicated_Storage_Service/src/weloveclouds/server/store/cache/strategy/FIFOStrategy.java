@@ -11,17 +11,22 @@ import weloveclouds.server.store.exceptions.StorageException;
 
 /**
  * FIFO (First In First Out) strategy for displacing a key from a full cache.
- *  
+ * 
  * @author Benedek
  */
 public class FIFOStrategy implements DisplacementStrategy {
 
     private static final Logger LOGGER = Logger.getLogger(FIFOStrategy.class);
-    
+
     private Queue<String> fifo;
 
     public FIFOStrategy() {
         this.fifo = new ArrayDeque<>();
+    }
+
+    @Override
+    public String getStrategyName() {
+        return "FIFO";
     }
 
     @Override
@@ -64,4 +69,5 @@ public class FIFOStrategy implements DisplacementStrategy {
             LOGGER.error("Key cannot be null for remove in FIFO strategy.");
         }
     }
+
 }

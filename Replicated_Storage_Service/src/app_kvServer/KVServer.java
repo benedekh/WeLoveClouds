@@ -42,8 +42,12 @@ public class KVServer {
     private static final int CLI_CACHE_SIZE_INDEX = 3;
     private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 4;
     private static final int CLI_LOG_LEVEL_INDEX = 5;
+    private static final int CLI_SERVER_NAME_INDEX = 6;
 
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
+
+    private static LogSetup logSetup = null;
+    public static String serverName = "server";
 
     /**
      * The entry point of the application.
@@ -66,7 +70,9 @@ public class KVServer {
     private static void startNonInteractiveMode(String[] cliArguments) {
         try {
             ArgumentsValidator.validateCLIArgumentsForServerStart(cliArguments);
+
             initializeLoggerWithLevel(cliArguments[CLI_LOG_LEVEL_INDEX]);
+            serverName = cliArguments[CLI_SERVER_NAME_INDEX];
 
             int cacheSize = Integer.valueOf(cliArguments[CLI_CACHE_SIZE_INDEX]);
             DisplacementStrategy displacementStrategy = StrategyFactory
@@ -129,7 +135,11 @@ public class KVServer {
      */
     private static void initializeLoggerWithLevel(Level logLevel) {
         try {
-            new LogSetup(DEFAULT_LOG_PATH, logLevel);
+            if (logSetup == null) {
+                logSetup = new LogSetup(DEFAULT_LOG_PATH, logLevel);
+            } else {
+                Logger.getRootLogger().setLevel(logLevel);
+            }
         } catch (IOException ex) {
             System.err.println(CustomStringJoiner.join(" ", "Log file cannot be created on path ",
                     DEFAULT_LOG_PATH, "due to an error:", ex.getMessage()));

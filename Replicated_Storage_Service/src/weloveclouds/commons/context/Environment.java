@@ -17,13 +17,11 @@ public enum Environment {
     }
 
     public static Environment getValueFromDescription(String description) {
-        Environment environment = null;
-
-        for (Environment env : Environment.values()) {
-            if (env.description == description) {
-                environment = env;
+        for (Environment environment : Environment.values()) {
+            if (environment.description.equals(description)) {
+                return environment;
             }
         }
-        return environment;
+        return null;
     }
 }
