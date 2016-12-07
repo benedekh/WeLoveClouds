@@ -1,5 +1,10 @@
 package weloveclouds.server.store;
 
+import static weloveclouds.server.utils.monitoring.KVServerMonitoringMetricUtils.incrementCounter;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.CACHE_MODULE_NAME;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.MISS;
+import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.SUCCESS;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -9,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
@@ -23,7 +29,7 @@ import weloveclouds.server.store.exceptions.ValueNotFoundException;
 public class KVCache implements IDataAccessService, Observer {
 
     private static final Logger LOGGER = Logger.getLogger(KVCache.class);
-    
+
     private Map<String, String> cache;
     private int currentSize;
     private int capacity;
@@ -53,6 +59,8 @@ public class KVCache implements IDataAccessService, Observer {
             if (cache.containsKey(key)) {
                 cache.put(key, value);
                 response = PutType.UPDATE;
+                incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(),
+                        SUCCESS);
             } else {
                 if (currentSize == capacity) {
                     String displacedKey = displacementStrategy.displaceKey();
@@ -62,6 +70,7 @@ public class KVCache implements IDataAccessService, Observer {
                 cache.put(key, value);
                 currentSize++;
                 response = PutType.INSERT;
+                incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
             }
 
             LOGGER.debug(CustomStringJoiner.join(" ", entry.toString(), "was added to cache."));
@@ -69,10 +78,12 @@ public class KVCache implements IDataAccessService, Observer {
 
             return response;
         } catch (NullPointerException ex) {
+            incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
             String errorMessage = "Key or value is null when adding element to cache.";
             LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         } catch (IllegalArgumentException ex) {
+            incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
             LOGGER.error(ex);
             throw new StorageException(
                     "Some property of the key or value prevents it from being stored in the cache.");
@@ -85,14 +96,18 @@ public class KVCache implements IDataAccessService, Observer {
         try {
             String value = cache.get(key);
             if (value == null) {
+                incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
                 throw new ValueNotFoundException(key);
             } else {
                 displacementStrategy.get(key);
                 LOGGER.debug(CustomStringJoiner.join(" ", value, "was retrieved from cache for key",
                         key));
+                incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(),
+                        SUCCESS);
                 return value;
             }
         } catch (NullPointerException ex) {
+            incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
             String errorMessage = "Key cannot be null to get value from cache.";
             LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
@@ -107,8 +122,13 @@ public class KVCache implements IDataAccessService, Observer {
                 currentSize--;
                 displacementStrategy.remove(key);
                 LOGGER.debug(CustomStringJoiner.join(" ", key, "was removed from cache."));
+                incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(),
+                        SUCCESS);
+            } else {
+                incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
             }
         } catch (NullPointerException ex) {
+            incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
             String errorMessage = "Key cannot be null to remove from cache.";
             LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
