@@ -5,7 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import weloveclouds.commons.hashing.models.Hash;
-import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForReadingException;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForWritingException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
@@ -18,31 +19,23 @@ public class DistributedSystemAccessService {
     private DistributedService distributedService;
 
     public void updateServiceHealthWith(NodeHealthInfos serverHealthInfos) {
-
+        distributedService.getNodeFrom(serverHealthInfos.getServerConnectionInfo())
+                .updateHealthInfos(serverHealthInfos);
     }
 
-    public StorageNode getMasterOf(HashRange hashRange) {
-        return null;
+    public StorageNode getReadServerFor(String key) throws UnableToFindResponsibleForReadingException {
+        return getHealthiestNodeFrom(distributedService.getResponsibleForReadingOf(new Hash(key.getBytes())));
     }
 
-    public List<StorageNode> getReplicasOf(HashRange hashRange) {
-        return null;
-    }
-
-    public StorageNode getReadServerFor(String key) {
-        Hash hash = new Hash(key.getBytes());
-        return null;
-    }
-
-    public StorageNode getWriteServerFor(String key) {
-        return null;
+    public StorageNode getWriteServerFor(String key) throws UnableToFindResponsibleForWritingException {
+        return distributedService.getResponsibleForWritingOf(new Hash(key.getBytes()));
     }
 
     private StorageNode getHealthiestNodeFrom(List<StorageNode> storageNodes) {
         Collections.sort(storageNodes, new Comparator<StorageNode>() {
             @Override
             public int compare(StorageNode node1, StorageNode node2) {
-                return node1.getHashKey().compareTo(node2.getHashKey());
+                return node1.getHealthInfos().compareTo(node2.getHealthInfos());
             }
         });
         return storageNodes.get(FIRST);

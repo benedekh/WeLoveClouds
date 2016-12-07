@@ -5,6 +5,7 @@ import java.util.List;
 
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.status.ServiceStatus;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForReadingException;
 import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForWritingException;
 import weloveclouds.ecs.models.repository.StorageNode;
@@ -72,6 +73,18 @@ public class DistributedService {
 
     public List<StorageNode> getParticipatingNodes() {
         return this.topology.getNodes();
+    }
+
+    public StorageNode getNodeFrom(ServerConnectionInfo serverConnectionInfo) {
+        StorageNode storageNode = null;
+
+        for (StorageNode node : getParticipatingNodes()) {
+            if (node.getServerConnectionInfo().equals(serverConnectionInfo)) {
+                storageNode = node;
+                break;
+            }
+        }
+        return storageNode;
     }
 
     public void updateTopologyWith(RingTopology newTopology) {

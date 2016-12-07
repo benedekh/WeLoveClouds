@@ -9,6 +9,7 @@ import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
 
@@ -16,6 +17,8 @@ import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
  * Created by Benoit on 2016-11-16.
  */
 public class StorageNode {
+    private static final int NO_CONNECTION = 0;
+
     private String id;
     private StorageNodeStatus metadataStatus;
     private StorageNodeStatus status;
@@ -26,6 +29,7 @@ public class StorageNode {
     private HashRange hashRange;
     private List<StorageNode> replicas;
     private List<HashRange> childHashranges;
+    private NodeHealthInfos healthInfos;
 
     public StorageNode(String id, ServerConnectionInfo serverConnectionInfo) {
         this.id = id;
@@ -39,6 +43,15 @@ public class StorageNode {
                 .build();
         this.replicas = new ArrayList<>();
         this.childHashranges = new ArrayList<>();
+        this.healthInfos = new NodeHealthInfos(id, serverConnectionInfo, NO_CONNECTION);
+    }
+
+    public NodeHealthInfos getHealthInfos() {
+        return healthInfos;
+    }
+
+    public void updateHealthInfos(NodeHealthInfos healthInfos) {
+        this.healthInfos = healthInfos;
     }
 
     public boolean isReadResponsibleOf(Hash hash) {

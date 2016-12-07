@@ -19,16 +19,13 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.kvstore.models.messages.IKVMessage;
 import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.configuration.annotations.ClientRequestsInterceptorPort;
 import weloveclouds.loadbalancer.exceptions.cache.UnableToFindRequestedKeyException;
 
 import static weloveclouds.commons.status.ServerStatus.*;
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
-import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_NOT_RESPONSIBLE;
 
 /**
  * Created by Benoit on 2016-12-03.
@@ -123,22 +120,28 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
                             } catch (UnableToFindRequestedKeyException ex) {
                                 transferDestination = distributedSystemAccessService
                                         .getReadServerFor(deserializedMessage.getKey());
-                                respondToClientWithStatus(transferMessageToServerAndGetResponse
-                                        (receivedMessage, transferDestination));
+                                communicationApi.send(transferMessageToServerAndGetResponse
+                                        (receivedMessage, transferDestination), connection);
                             }
                             break;
                         case PUT:
                             cacheService.put(deserializedMessage.getKey(), deserializedMessage.getValue());
                             transferDestination = distributedSystemAccessService
                                     .getWriteServerFor(deserializedMessage.getKey());
-                            respondToClientWithStatus(transferMessageToServerAndGetResponse
-                                    (receivedMessage, transferDestination));
+                            communicationApi.send(transferMessageToServerAndGetResponse
+                                    (receivedMessage, transferDestination), connection);
                             break;
+                        case DELETE:
+                            cacheService.delete(deserializedMessage.getKey());
+                            transferDestination = distributedSystemAccessService
+                                    .getWriteServerFor(deserializedMessage.getKey());
+                            communicationApi.send(transferMessageToServerAndGetResponse
+                                    (receivedMessage, transferDestination), connection);
                         default:
                             transferDestination = distributedSystemAccessService
                                     .getWriteServerFor(deserializedMessage.getKey());
-                            respondToClientWithStatus(transferMessageToServerAndGetResponse
-                                    (receivedMessage, transferDestination));
+                            communicationApi.send(transferMessageToServerAndGetResponse
+                                    (receivedMessage, transferDestination), connection);
                             break;
                     }
                 }
@@ -149,27 +152,16 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
             logger.info("Client is disconnected.");
         }
 
-        private IKVMessage.StatusType transferMessageToServerAndGetResponse(byte[] rawMessage,
-                                                                            StorageNode destination) {
-            IKVMessage.StatusType response = SERVER_NOT_RESPONSIBLE;
-            try {
-                ICommunicationApi communicationApi = communicationApiFactory.createCommunicationApiV1();
-                communicationApi.connectTo(destination.getServerConnectionInfo());
-                communicationApi.send(rawMessage);
-                KVMessage receivedMessage = messageDeserializer.deserialize(communicationApi
-                        .receive());
-                communicationApi.disconnect();
-                response = receivedMessage.getStatus();
-            } catch (ClientSideException | DeserializationException ex) {
-                //logg
-            }
-            return response;
-        }
+        private byte[] transferMessageToServerAndGetResponse(byte[] rawMessage,
+                                                             StorageNode destination) throws ClientSideException {
+            byte[] serverResponse = null;
+            ICommunicationApi communicationApi = communicationApiFactory.createCommunicationApiV1();
+            communicationApi.connectTo(destination.getServerConnectionInfo());
+            communicationApi.send(rawMessage);
+            serverResponse = communicationApi.receive();
+            communicationApi.disconnect();
 
-        private void respondToClientWithStatus(IKVMessage.StatusType status) throws IOException {
-            communicationApi.send(messageSerializer.serialize(new KVMessage.Builder()
-                    .status(status)
-                    .build()).getBytes(), connection);
+            return serverResponse;
         }
     }
 }

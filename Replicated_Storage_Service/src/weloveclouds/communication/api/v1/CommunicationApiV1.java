@@ -59,7 +59,12 @@ public class CommunicationApiV1 implements ICommunicationApi {
     @Override
     public void send(byte[] content) throws UnableToSendContentToServerException {
         try {
-            communicationService.send(content);
+            if (content != null) {
+                communicationService.send(content);
+            } else {
+                throw new UnableToSendContentToServerException("Null content provided, unable to " +
+                        "send content to server.");
+            }
         } catch (IOException e) {
             throw new UnableToSendContentToServerException();
         }

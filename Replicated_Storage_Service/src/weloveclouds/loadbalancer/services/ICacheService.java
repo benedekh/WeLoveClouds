@@ -9,4 +9,6 @@ public interface ICacheService<K, V> {
     V get(String key) throws UnableToFindRequestedKeyException;
 
     void put(K key, V value);
+
+    void delete(K key);
 }

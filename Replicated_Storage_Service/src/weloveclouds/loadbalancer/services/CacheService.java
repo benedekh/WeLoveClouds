@@ -15,7 +15,7 @@ public class CacheService implements ICacheService<String, String> {
     private ICache<String, String> cache;
 
     @Inject
-    public CacheService(ICache<String,String> cache) {
+    public CacheService(ICache<String, String> cache) {
         this.cache = cache;
     }
 
@@ -27,5 +27,10 @@ public class CacheService implements ICacheService<String, String> {
     @Override
     synchronized public void put(String key, String value) {
         cache.put(key, value);
+    }
+
+    @Override
+    synchronized public void delete(String key) {
+        cache.delete(key);
     }
 }

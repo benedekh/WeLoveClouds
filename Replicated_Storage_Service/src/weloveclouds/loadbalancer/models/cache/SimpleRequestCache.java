@@ -38,4 +38,9 @@ public class SimpleRequestCache<K, V> implements ICache<K, V> {
         cache.put(key, value);
         displacementStrategy.registerPut(key);
     }
+
+    @Override
+    public void delete(K key) {
+        cache.remove(key);
+    }
 }
