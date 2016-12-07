@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.models.commands.LogLevel;
 import weloveclouds.server.models.commands.ServerCommand;
-import weloveclouds.server.models.conf.KVServerCLIContext;
+import weloveclouds.server.models.configuration.KVServerCLIContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
 

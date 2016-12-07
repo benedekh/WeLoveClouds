@@ -8,12 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-
-import weloveclouds.commons.cli.models.ParsedUserInput;
-import weloveclouds.commons.cli.utils.AbstractUserInputParser;
 import weloveclouds.client.models.commands.ClientCommand;
 import weloveclouds.client.utils.ClientUserInputParser;
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.cli.models.ParsedUserInput;
+import weloveclouds.commons.cli.utils.AbstractUserInputParser;
 
 /**
  * Unit tests to validate the {@link AbstractUserInputParser}'s correct behavior.

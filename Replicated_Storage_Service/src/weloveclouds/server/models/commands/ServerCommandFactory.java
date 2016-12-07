@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.models.commands.Connect;
 import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.server.core.ServerFactory;
-import weloveclouds.server.models.conf.KVServerCLIContext;
+import weloveclouds.server.models.configuration.KVServerCLIContext;
 import weloveclouds.server.services.DataAccessServiceFactory;
 
 /**

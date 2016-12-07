@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.util.MessageFramesDetector;
 
@@ -27,19 +28,24 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
     private Map<Connection, MessageFramesDetector> messageFrameDetectorMap;
 
     public ConcurrentCommunicationService() {
-        messageFrameDetectorMap = new ConcurrentHashMap<>();
+        this.messageFrameDetectorMap = new ConcurrentHashMap<>();
     }
 
     @Override
     public void send(byte[] message, Connection connection) throws IOException {
-        if (connection.isConnected()) {
-            LOGGER.debug("Getting output stream from the connection.");
-            OutputStream outputStream = connection.getOutputStream();
-            LOGGER.debug("Sending message over the connection.");
-            outputStream.write(message);
-            outputStream.flush();
-            LOGGER.info("Message sent.");
-        } else {
+        try {
+            if (connection.isConnected()) {
+                LOGGER.debug("Getting output stream from the connection.");
+                OutputStream outputStream = connection.getOutputStream();
+                LOGGER.debug("Sending message over the connection.");
+                outputStream.write(message);
+                outputStream.flush();
+                LOGGER.info("Message sent.");
+            } else {
+                LOGGER.debug("Client is not connected, so message cannot be sent.");
+                throw new ClientNotConnectedException();
+            }
+        } catch (Exception ex) {
             String errorMessage = "Client is not connected, so message cannot be sent.";
             LOGGER.debug(errorMessage);
             throw new IOException(errorMessage);
@@ -92,7 +98,6 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
 
             if (readBytes == -1) {
                 // connection was closed
-                LOGGER.debug(errorMessage);
                 throw new IOException(errorMessage);
             } else {
                 if (messageDetector.containsMessage()) {
@@ -102,7 +107,6 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
                 }
             }
         } else {
-            LOGGER.debug(errorMessage);
             throw new IOException(errorMessage);
         }
     }

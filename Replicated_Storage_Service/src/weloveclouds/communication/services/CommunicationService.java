@@ -26,7 +26,6 @@ import weloveclouds.communication.util.MessageFramesDetector;
 public class CommunicationService implements ICommunicationService {
 
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
-
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
 
     private SocketFactory socketFactory;
@@ -102,23 +101,25 @@ public class CommunicationService implements ICommunicationService {
 
     @Override
     public void send(byte[] content) throws IOException, UnableToSendContentToServerException {
-        if (connectionToEndpoint.isConnected()) {
-            LOGGER.debug("Getting output stream from the connection.");
-            OutputStream outputStream = connectionToEndpoint.getOutputStream();
-            LOGGER.debug("Sending message over the connection.");
-            outputStream.write(content);
-            outputStream.flush();
-            LOGGER.info("Message sent.");
-        } else {
-            LOGGER.debug("Client is not connected, so message cannot be sent.");
-            throw new ClientNotConnectedException();
+        try {
+            if (connectionToEndpoint.isConnected()) {
+                LOGGER.debug("Getting output stream from the connection.");
+                OutputStream outputStream = connectionToEndpoint.getOutputStream();
+                LOGGER.debug("Sending message over the connection.");
+                outputStream.write(content);
+                outputStream.flush();
+                LOGGER.info("Message sent.");
+            } else {
+                LOGGER.debug("Client is not connected, so message cannot be sent.");
+                throw new ClientNotConnectedException();
+            }
+        } catch (Exception ex) {
+            throw new UnableToSendContentToServerException(ex.getMessage());
         }
     }
 
     @Override
     public byte[] receive() throws IOException, ClientNotConnectedException {
-        String errorMessage = "Client is not connected, so message cannot be received.";
-
         if (messageDetector.containsMessage()) {
             return messageDetector.getMessage();
         }
@@ -156,7 +157,6 @@ public class CommunicationService implements ICommunicationService {
 
             if (readBytes == -1) {
                 // connection was closed
-                LOGGER.debug(errorMessage);
                 throw new ClientNotConnectedException();
             } else {
                 if (messageDetector.containsMessage()) {
@@ -166,7 +166,6 @@ public class CommunicationService implements ICommunicationService {
                 }
             }
         } else {
-            LOGGER.debug(errorMessage);
             throw new ClientNotConnectedException();
         }
     }
@@ -199,6 +198,5 @@ public class CommunicationService implements ICommunicationService {
                 }
             }
         }
-
     }
 }
