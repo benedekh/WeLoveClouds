@@ -20,12 +20,11 @@ public class NetworkPacketResenderFactory {
      * between two resends.
      * 
      * @param maxNumberOfAttempts maximal number of attempts for resend
-     * @param communicationApi the communication channel through which the packet shall be sent
      * @param packet that has to be sent over the network
      */
     public AbstractNetworkPacketResender createResenderWithExponentialBackoff(
-            int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet) {
-        return new NetworkPacketResender(maxNumberOfAttempts, communicationApi, packet,
+            int maxNumberOfAttempts, byte[] packet) {
+        return new NetworkPacketResender(maxNumberOfAttempts, packet,
                 new ExponentialBackoffIntervalComputer(MINIMAL_INTERVAL));
     }
 
@@ -34,14 +33,12 @@ public class NetworkPacketResenderFactory {
      * based on the following parameterization.
      * 
      * @param maxNumberOfAttempts maximal number of attempts for resend
-     * @param communicationApi the communication channel through which the packet shall be sent
      * @param packet that has to be sent over the network
      * @param minimalInterval how much time shall elapse between two resend attempts
      */
     public AbstractNetworkPacketResender createResenderWithExponentialBackoff(
-            int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet,
-            Duration minimalInterval) {
-        return new NetworkPacketResender(maxNumberOfAttempts, communicationApi, packet,
+            int maxNumberOfAttempts, byte[] packet, Duration minimalInterval) {
+        return new NetworkPacketResender(maxNumberOfAttempts, packet,
                 new ExponentialBackoffIntervalComputer(minimalInterval));
     }
 
@@ -51,12 +48,11 @@ public class NetworkPacketResenderFactory {
      * between two resends.
      * 
      * @param maxNumberOfAttempts maximal number of attempts for resend
-     * @param communicationApi the communication channel through which the packet shall be sent
      * @param packet that has to be sent over the network
      */
     public AbstractNetworkPacketResender createResenderWithResponseWithExponentialBackoff(
-            int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet) {
-        return new NetworkPacketResenderWithResponse(maxNumberOfAttempts, communicationApi, packet,
+            int maxNumberOfAttempts, byte[] packet) {
+        return new NetworkPacketResenderWithResponse(maxNumberOfAttempts, packet,
                 new ExponentialBackoffIntervalComputer(MINIMAL_INTERVAL));
     }
 
@@ -65,14 +61,13 @@ public class NetworkPacketResenderFactory {
      * based on the following parameterization.
      * 
      * @param maxNumberOfAttempts maximal number of attempts for resend
-     * @param communicationApi the communication channel through which the packet shall be sent
      * @param packet that has to be sent over the network
      * @param minimalInterval how much time shall elapse between two resend attempts
      */
     public AbstractNetworkPacketResender createResenderWithResponseWithExponentialBackoff(
             int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet,
             Duration minimalInterval) {
-        return new NetworkPacketResenderWithResponse(maxNumberOfAttempts, communicationApi, packet,
+        return new NetworkPacketResenderWithResponse(maxNumberOfAttempts, packet,
                 new ExponentialBackoffIntervalComputer(minimalInterval));
     }
 

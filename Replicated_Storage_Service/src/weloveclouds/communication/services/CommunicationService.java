@@ -8,16 +8,10 @@ import java.io.OutputStream;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.commons.communication.AbstractNetworkPacketResender;
-import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.SocketFactory;
-import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.AlreadyConnectedException;
 import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
-import weloveclouds.communication.exceptions.ConnectionClosedException;
-import weloveclouds.communication.exceptions.UnableToConnectException;
-import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ServerConnectionInfo;
@@ -32,27 +26,21 @@ import weloveclouds.communication.util.MessageFramesDetector;
 public class CommunicationService implements ICommunicationService {
 
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
-    private static final int MAX_NUMBER_OF_RESEND_ATTEMPTS = 10;
-
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
 
     private SocketFactory socketFactory;
     private Connection connectionToEndpoint;
     private Thread connectionShutdownHook;
 
-    private NetworkPacketResenderFactory packetResenderFactory;
-    private EncapsulatedCommunicationApi encapsulatedCommunicationApi;
+    private MessageFramesDetector messageDetector;
 
     /**
      * @param socketFactory a factory to create a socket for connection
-     * @param packetResenderFactory a factory to create resenders which overcome network errors
      */
-    public CommunicationService(SocketFactory socketFactory,
-            NetworkPacketResenderFactory packetResenderFactory) {
+    public CommunicationService(SocketFactory socketFactory) {
         this.connectionToEndpoint = new Connection.Builder().build();
         this.socketFactory = socketFactory;
-        this.packetResenderFactory = packetResenderFactory;
-        this.encapsulatedCommunicationApi = new EncapsulatedCommunicationApi(connectionToEndpoint);
+        this.messageDetector = new MessageFramesDetector();
     }
 
     @Override
@@ -90,7 +78,6 @@ public class CommunicationService implements ICommunicationService {
         LOGGER.debug(CustomStringJoiner.join(" ", "Trying to connect to", remoteServer.toString()));
         connectionToEndpoint = new Connection.Builder().remoteServer(remoteServer)
                 .socket(socketFactory.createTcpSocketFromInfo(remoteServer)).build();
-        encapsulatedCommunicationApi = new EncapsulatedCommunicationApi(connectionToEndpoint);
 
         // create shutdown hook to automatically close the connection
         LOGGER.debug("Creating shutdown hook for connection.");
@@ -114,139 +101,72 @@ public class CommunicationService implements ICommunicationService {
 
     @Override
     public void send(byte[] content) throws IOException, UnableToSendContentToServerException {
-        AbstractNetworkPacketResender packetResender =
-                packetResenderFactory.createResenderWithExponentialBackoff(
-                        MAX_NUMBER_OF_RESEND_ATTEMPTS, encapsulatedCommunicationApi, content);
-        packetResender.resendPacket();
+        try {
+            if (connectionToEndpoint.isConnected()) {
+                LOGGER.debug("Getting output stream from the connection.");
+                OutputStream outputStream = connectionToEndpoint.getOutputStream();
+                LOGGER.debug("Sending message over the connection.");
+                outputStream.write(content);
+                outputStream.flush();
+                LOGGER.info("Message sent.");
+            } else {
+                LOGGER.debug("Client is not connected, so message cannot be sent.");
+                throw new ClientNotConnectedException();
+            }
+        } catch (Exception ex) {
+            throw new UnableToSendContentToServerException(ex.getMessage());
+        }
     }
 
     @Override
     public byte[] receive() throws IOException, ClientNotConnectedException {
-        try {
-            return encapsulatedCommunicationApi.receive();
-        } catch (ConnectionClosedException ex) {
-            throw new ClientNotConnectedException();
-        }
-    }
-
-    @Override
-    public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
-        AbstractNetworkPacketResender packetResender =
-                packetResenderFactory.createResenderWithResponseWithExponentialBackoff(
-                        MAX_NUMBER_OF_RESEND_ATTEMPTS, encapsulatedCommunicationApi, content);
-        return packetResender.resendPacket();
-    }
-
-    private static class EncapsulatedCommunicationApi implements ICommunicationApi {
-
-        private static final Logger LOGGER = Logger.getLogger(EncapsulatedCommunicationApi.class);
-        private Connection connectionToEndpoint;
-        private MessageFramesDetector messageDetector;
-
-        public EncapsulatedCommunicationApi(Connection connectionToEndpoint) {
-            this.connectionToEndpoint = connectionToEndpoint;
-            this.messageDetector = new MessageFramesDetector();
+        if (messageDetector.containsMessage()) {
+            return messageDetector.getMessage();
         }
 
-        @Override
-        public double getVersion() {
-            throw new UnsupportedOperationException();
-        }
+        if (connectionToEndpoint.isConnected()) {
+            InputStream socketDataReader = connectionToEndpoint.getInputStream();
 
-        @Override
-        public boolean isConnected() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void connectTo(ServerConnectionInfo remoteServer) throws UnableToConnectException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void disconnect() throws UnableToDisconnectException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void send(byte[] content) throws UnableToSendContentToServerException {
-            try {
-                if (connectionToEndpoint.isConnected()) {
-                    LOGGER.debug("Getting output stream from the connection.");
-                    OutputStream outputStream = connectionToEndpoint.getOutputStream();
-                    LOGGER.debug("Sending message over the connection.");
-                    outputStream.write(content);
-                    outputStream.flush();
-                    LOGGER.info("Message sent.");
-                } else {
-                    LOGGER.debug("Client is not connected, so message cannot be sent.");
-                    throw new ClientNotConnectedException();
+            byte[] buffer = new byte[MAX_PACKET_SIZE_IN_BYTES];
+            int readBytes = 0;
+            ByteArrayOutputStream baosBuffer = new ByteArrayOutputStream();
+            while ((readBytes = socketDataReader.read(buffer)) > 0) {
+                if (readBytes < buffer.length) {
+                    byte[] smaller = new byte[readBytes];
+                    System.arraycopy(buffer, 0, smaller, 0, readBytes);
+                    buffer = smaller;
                 }
-            } catch (Exception ex) {
-                throw new UnableToSendContentToServerException(ex.getMessage());
-            }
-        }
 
-        @Override
-        public byte[] receive() throws ClientNotConnectedException, ConnectionClosedException {
-            try {
+                LOGGER.debug(CustomStringJoiner.join(" ", "Received", String.valueOf(readBytes),
+                        "bytes from the connection."));
+                baosBuffer.write(buffer);
+
+                byte[] contentReceivedSoFar = baosBuffer.toByteArray();
+                contentReceivedSoFar = messageDetector.fillMessageQueue(contentReceivedSoFar);
+
+                if (messageDetector.containsMessage()) {
+                    baosBuffer.reset();
+                    baosBuffer.write(contentReceivedSoFar);
+
+                    return messageDetector.getMessage();
+                } else {
+                    baosBuffer.reset();
+                    baosBuffer.write(contentReceivedSoFar);
+                }
+            }
+
+            if (readBytes == -1) {
+                // connection was closed
+                throw new ClientNotConnectedException();
+            } else {
                 if (messageDetector.containsMessage()) {
                     return messageDetector.getMessage();
-                }
-
-                if (connectionToEndpoint.isConnected()) {
-                    InputStream socketDataReader = connectionToEndpoint.getInputStream();
-
-                    byte[] buffer = new byte[MAX_PACKET_SIZE_IN_BYTES];
-                    int readBytes = 0;
-                    ByteArrayOutputStream baosBuffer = new ByteArrayOutputStream();
-                    while ((readBytes = socketDataReader.read(buffer)) > 0) {
-                        if (readBytes < buffer.length) {
-                            byte[] smaller = new byte[readBytes];
-                            System.arraycopy(buffer, 0, smaller, 0, readBytes);
-                            buffer = smaller;
-                        }
-
-                        LOGGER.debug(CustomStringJoiner.join(" ", "Received",
-                                String.valueOf(readBytes), "bytes from the connection."));
-                        baosBuffer.write(buffer);
-
-                        byte[] contentReceivedSoFar = baosBuffer.toByteArray();
-                        contentReceivedSoFar =
-                                messageDetector.fillMessageQueue(contentReceivedSoFar);
-
-                        if (messageDetector.containsMessage()) {
-                            baosBuffer.reset();
-                            baosBuffer.write(contentReceivedSoFar);
-
-                            return messageDetector.getMessage();
-                        } else {
-                            baosBuffer.reset();
-                            baosBuffer.write(contentReceivedSoFar);
-                        }
-                    }
-
-                    if (readBytes == -1) {
-                        // connection was closed
-                        throw new ClientNotConnectedException();
-                    } else {
-                        if (messageDetector.containsMessage()) {
-                            return messageDetector.getMessage();
-                        } else {
-                            return new byte[0];
-                        }
-                    }
                 } else {
-                    throw new ClientNotConnectedException();
+                    return new byte[0];
                 }
-            } catch (IOException ex) {
-                throw new ClientNotConnectedException();
             }
+        } else {
+            throw new ClientNotConnectedException();
         }
     }
 

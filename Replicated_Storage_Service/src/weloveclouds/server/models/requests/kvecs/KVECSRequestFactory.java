@@ -4,15 +4,14 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.ICommunicationApi;
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.kvstore.serialization.IMessageSerializer;
+import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.core.requests.ICallbackRegister;
 import weloveclouds.server.core.requests.IRequestFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
@@ -28,7 +27,6 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
 
     private static final Logger LOGGER = Logger.getLogger(KVECSRequestFactory.class);
 
-    private NetworkPacketResenderFactory resenderFactory;
     private IMovableDataAccessService dataAccessService;
     private ICommunicationApi communicationApi;
 
@@ -38,13 +36,11 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
     public KVECSRequestFactory(IMovableDataAccessService dataAccessService,
             CommunicationApiFactory communicationApiFactory,
             IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer,
-            NetworkPacketResenderFactory resenderFactory) {
+            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
         this.dataAccessService = dataAccessService;
         this.communicationApi = communicationApiFactory.createCommunicationApiV1();
         this.transferMessageSerializer = transferMessageSerializer;
         this.transferMessageDeserializer = transferMessageDeserializer;
-        this.resenderFactory = resenderFactory;
     }
 
     @Override
@@ -74,7 +70,7 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
             case MOVEDATA:
                 request = new MoveDataToDestination(dataAccessService,
                         receivedMessage.getTargetServerInfo(), communicationApi,
-                        transferMessageSerializer, transferMessageDeserializer, resenderFactory);
+                        transferMessageSerializer, transferMessageDeserializer);
                 break;
             case UPDATE:
                 request =

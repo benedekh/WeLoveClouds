@@ -2,6 +2,7 @@ package weloveclouds.communication.api.v1;
 
 import java.io.IOException;
 
+import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
@@ -21,11 +22,15 @@ import weloveclouds.communication.services.ICommunicationService;
  */
 public class CommunicationApiV1 implements ICommunicationApi {
     private static final double VERSION = 1.0;
+    private static final int MAX_NUMBER_OF_RESEND_ATTEMPTS = 10;
 
     private ICommunicationService communicationService;
+    private NetworkPacketResenderFactory resenderFactory;
 
-    public CommunicationApiV1(ICommunicationService communicationService) {
+    public CommunicationApiV1(ICommunicationService communicationService,
+            NetworkPacketResenderFactory resenderFactory) {
         this.communicationService = communicationService;
+        this.resenderFactory = resenderFactory;
     }
 
     @Override
@@ -59,7 +64,9 @@ public class CommunicationApiV1 implements ICommunicationApi {
     @Override
     public void send(byte[] content) throws UnableToSendContentToServerException {
         try {
-            communicationService.send(content);
+            resenderFactory
+                    .createResenderWithExponentialBackoff(MAX_NUMBER_OF_RESEND_ATTEMPTS, content)
+                    .sendWith(communicationService);
         } catch (IOException e) {
             throw new UnableToSendContentToServerException();
         }
@@ -76,7 +83,8 @@ public class CommunicationApiV1 implements ICommunicationApi {
 
     @Override
     public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
-        return communicationService.sendAndExpectForResponse(content);
+        return resenderFactory.createResenderWithResponseWithExponentialBackoff(
+                MAX_NUMBER_OF_RESEND_ATTEMPTS, content).sendWith(communicationService);
     }
 
 }

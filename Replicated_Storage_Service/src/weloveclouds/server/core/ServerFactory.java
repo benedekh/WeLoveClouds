@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
 import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
@@ -85,8 +84,7 @@ public class ServerFactory {
         return new Server.Builder<KVAdminMessage, IKVECSRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
                 .requestFactory(new KVECSRequestFactory(dataAccessService, communicationApiFactory,
-                        new KVTransferMessageSerializer(), new KVTransferMessageDeserializer(),
-                        new NetworkPacketResenderFactory()))
+                        new KVTransferMessageSerializer(), new KVTransferMessageDeserializer()))
                 .communicationApiFactory(communicationApiFactory)
                 .messageSerializer(new KVAdminMessageSerializer())
                 .messageDeserializer(new KVAdminMessageDeserializer()).build();

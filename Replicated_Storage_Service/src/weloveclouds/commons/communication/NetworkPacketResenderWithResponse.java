@@ -7,10 +7,11 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.communication.backoff.IBackoffIntervalComputer;
-import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
-import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
+import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.services.ICommunicationService;
+import weloveclouds.communication.services.IConcurrentCommunicationService;
 import weloveclouds.ecs.models.tasks.Status;
 
 /**
@@ -29,37 +30,82 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
     private Status executionStatus;
     private Thread receiverThread;
 
-    public NetworkPacketResenderWithResponse(int maxNumberOfAttempts,
-            ICommunicationApi communicationApi, byte[] packet,
+    public NetworkPacketResenderWithResponse(int maxNumberOfAttempts, byte[] packet,
             IBackoffIntervalComputer waitStrategy) {
-        super(maxNumberOfAttempts, communicationApi, packet, waitStrategy);
-        initializePacketReceiver();
-        this.executionStatus = Status.RUNNING;
+        super(maxNumberOfAttempts, packet, waitStrategy);
+        this.executionStatus = Status.WAITING;
     }
 
-    /**
-     * Initializes the {@link PacketReceiver}.
-     */
-    private void initializePacketReceiver() {
-        PacketReceiver packetReceiver = new PacketReceiver(communicationApi);
+    private void createPacketReceiver(ICommunicationService communicationService) {
+        PacketReceiver packetReceiver = new PacketReceiver(communicationService);
         packetReceiver.addObserver(this);
+        initializePacketReceiverThread(packetReceiver);
+    }
+
+    private void createPacketReceiver(
+            IConcurrentCommunicationService concurrentCommunicationService, Connection connection) {
+        PacketReceiver packetReceiver =
+                new PacketReceiver(concurrentCommunicationService, connection);
+        packetReceiver.addObserver(this);
+        initializePacketReceiverThread(packetReceiver);
+    }
+
+    private void initializePacketReceiverThread(PacketReceiver packetReceiver) {
         receiverThread = new Thread(packetReceiver);
         LOGGER.info("Starting packet receiver thread.");
         receiverThread.start();
         while (!receiverThread.isAlive());
         LOGGER.info("Packet receiver thread started.");
+        this.executionStatus = Status.RUNNING;
     }
 
     @Override
-    public byte[] resendPacket() throws IOException {
+    public byte[] sendWith(ICommunicationService communicationService) throws IOException {
+        createPacketReceiver(communicationService);
+
         while (executionStatus == Status.RUNNING && numberOfAttemptsSoFar < maxNumberOfAttempts) {
             try {
                 try {
                     LOGGER.info("Sending packet over the network.");
-                    communicationApi.send(packetToBeSent);
+                    communicationService.send(packetToBeSent);
                     sleepBeforeNextAttempt();
                     ++numberOfAttemptsSoFar;
                 } catch (UnableToSendContentToServerException ex) {
+                    sleepBeforeNextAttempt();
+                    ++numberOfAttemptsSoFar;
+                }
+            } catch (InterruptedException ex) {
+                receiverThread.interrupt();
+                LOGGER.error(ex);
+                throw new IOException("Resend unexpectedly stopped.");
+            }
+        }
+
+        if (executionStatus == Status.COMPLETED) {
+            return response;
+        } else if (numberOfAttemptsSoFar >= maxNumberOfAttempts) {
+            receiverThread.interrupt();
+            String message = "Max number of retries have been reached.";
+            LOGGER.info(message);
+            throw new IOException(message);
+        } else {
+            return new byte[0];
+        }
+    }
+
+    @Override
+    public byte[] sendWith(IConcurrentCommunicationService concurrentCommunicationService,
+            Connection connection) throws IOException {
+        createPacketReceiver(concurrentCommunicationService, connection);
+
+        while (executionStatus == Status.RUNNING && numberOfAttemptsSoFar < maxNumberOfAttempts) {
+            try {
+                try {
+                    LOGGER.info("Sending packet over the network.");
+                    concurrentCommunicationService.send(packetToBeSent, connection);
+                    sleepBeforeNextAttempt();
+                    ++numberOfAttemptsSoFar;
+                } catch (IOException ex) {
                     sleepBeforeNextAttempt();
                     ++numberOfAttemptsSoFar;
                 }
@@ -98,21 +144,35 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
      */
     private static class PacketReceiver extends Observable implements Runnable {
 
-        private final ICommunicationApi communicationApi;
+        private ICommunicationService communicationService = null;
 
-        public PacketReceiver(ICommunicationApi communicationApi) {
-            this.communicationApi = communicationApi;
+        private IConcurrentCommunicationService concurrentCommunicationService = null;
+        private Connection connection = null;
+
+        public PacketReceiver(ICommunicationService communicationService) {
+            this.communicationService = communicationService;
+        }
+
+        public PacketReceiver(IConcurrentCommunicationService concurrentCommunicationService,
+                Connection connection) {
+            this.concurrentCommunicationService = concurrentCommunicationService;
+            this.connection = connection;
         }
 
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    byte[] response = communicationApi.receive();
+                    byte[] response = null;
+                    if (communicationService != null) {
+                        response = communicationService.receive();
+                    } else if (concurrentCommunicationService != null) {
+                        response = concurrentCommunicationService.receiveFrom(connection);
+                    }
                     setChanged();
                     notifyObservers(response);
                     return;
-                } catch (ClientNotConnectedException | ConnectionClosedException e) {
+                } catch (ClientNotConnectedException | IOException e) {
                     /*
                      * don't log the exceptions, otherwise the log file will be full in case of a
                      * network error

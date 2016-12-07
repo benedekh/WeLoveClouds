@@ -2,6 +2,7 @@ package weloveclouds.communication.api.v1;
 
 import java.io.IOException;
 
+import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.services.IConcurrentCommunicationService;
@@ -16,21 +17,28 @@ import weloveclouds.server.core.Server;
  */
 public class ConcurrentCommunicationApiV1 implements IConcurrentCommunicationApi {
 
-    private IConcurrentCommunicationService communicationService;
+    private static final int MAX_NUMBER_OF_RESEND_ATTEMPTS = 10;
 
-    public ConcurrentCommunicationApiV1(IConcurrentCommunicationService communicationService) {
+    private IConcurrentCommunicationService communicationService;
+    private NetworkPacketResenderFactory resenderFactory;
+
+    public ConcurrentCommunicationApiV1(IConcurrentCommunicationService communicationService,
+            NetworkPacketResenderFactory resenderFactory) {
         this.communicationService = communicationService;
+        this.resenderFactory = resenderFactory;
     }
 
     @Override
     public void send(byte[] message, Connection connection) throws IOException {
-        communicationService.send(message, connection);
+        resenderFactory.createResenderWithExponentialBackoff(MAX_NUMBER_OF_RESEND_ATTEMPTS, message)
+                .sendWith(communicationService, connection);
     }
 
     @Override
     public byte[] sendAndExpectForResponse(byte[] content, Connection connection)
             throws IOException {
-        return communicationService.sendAndExpectForResponse(content, connection);
+        return resenderFactory.createResenderWithResponseWithExponentialBackoff(
+                MAX_NUMBER_OF_RESEND_ATTEMPTS, content).sendWith(communicationService, connection);
     }
 
     @Override

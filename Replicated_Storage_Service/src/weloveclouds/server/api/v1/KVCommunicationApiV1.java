@@ -50,7 +50,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      */
     public KVCommunicationApiV1(String address, int port) {
         this.serverCommunication = new CommunicationApiV1(
-                new CommunicationService(new SocketFactory(), new NetworkPacketResenderFactory()));
+                new CommunicationService(new SocketFactory()), new NetworkPacketResenderFactory());
 
         this.address = address;
         this.port = port;

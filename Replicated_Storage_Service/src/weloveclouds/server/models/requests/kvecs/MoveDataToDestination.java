@@ -7,8 +7,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.communication.AbstractNetworkPacketResender;
-import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
@@ -45,9 +43,6 @@ public class MoveDataToDestination implements IKVECSRequest {
      * storage unit
      */
     private static final int NUMBER_OF_STORAGE_UNITS_TO_BE_TRANSFERRED_AT_ONCE = 30;
-    private static final int ATTEMPT_NUMBER_FOR_PACKET_RESEND = 10;
-
-    private NetworkPacketResenderFactory resenderFactory;
 
     private IMovableDataAccessService dataAccessService;
     private RingMetadataPart targetServerInfo;
@@ -66,20 +61,16 @@ public class MoveDataToDestination implements IKVECSRequest {
      *        {@link SerializedMessage}
      * @param transferMessageDeserializer to deserialize {@link KVTransferMessage} from
      *        {@link SerializedMessage}
-     * @param resenderFactory used for creating instances of a class that can be used for resending
-     *        packets over the network
      */
     public MoveDataToDestination(IMovableDataAccessService dataAccessService,
             RingMetadataPart targetServerInfo, ICommunicationApi communicationApi,
             IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer,
-            NetworkPacketResenderFactory resenderFactory) {
+            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
         this.dataAccessService = dataAccessService;
         this.targetServerInfo = targetServerInfo;
         this.communicationApi = communicationApi;
         this.transferMessageSerializer = transferMessageSerializer;
         this.transferMessageDeserializer = transferMessageDeserializer;
-        this.resenderFactory = resenderFactory;
     }
 
     @Override
@@ -151,11 +142,8 @@ public class MoveDataToDestination implements IKVECSRequest {
             SerializedMessage serializedMessage =
                     transferMessageSerializer.serialize(transferMessage);
 
-            AbstractNetworkPacketResender resender =
-                    resenderFactory.createResenderWithResponseWithExponentialBackoff(
-                            ATTEMPT_NUMBER_FOR_PACKET_RESEND, communicationApi,
-                            serializedMessage.getBytes());
-            byte[] responsePacket = resender.resendPacket();
+            byte[] responsePacket =
+                    communicationApi.sendAndExpectForResponse(serializedMessage.getBytes());
 
             KVTransferMessage response = transferMessageDeserializer.deserialize(responsePacket);
             if (response.getStatus() == StatusType.TRANSFER_ERROR) {

@@ -17,13 +17,13 @@ import weloveclouds.communication.services.ConcurrentCommunicationService;
 public class CommunicationApiFactory {
 
     public ICommunicationApi createCommunicationApiV1() {
-        return new CommunicationApiV1(
-                new CommunicationService(new SocketFactory(), new NetworkPacketResenderFactory()));
+        return new CommunicationApiV1(new CommunicationService(new SocketFactory()),
+                new NetworkPacketResenderFactory());
     }
 
     public IConcurrentCommunicationApi createConcurrentCommunicationApiV1() {
-        return new ConcurrentCommunicationApiV1(
-                new ConcurrentCommunicationService(new NetworkPacketResenderFactory()));
+        return new ConcurrentCommunicationApiV1(new ConcurrentCommunicationService(),
+                new NetworkPacketResenderFactory());
     }
 
 }
