@@ -115,7 +115,7 @@ public class KVServer {
     private static void startInteractiveCLIMode() {
         initializeLoggerWithLevel(Level.OFF);
         ServerCLIHandler cli = new ServerCLIHandler(System.in,
-                new ServerCommandFactory(new DataAccessServiceFactory()));
+                new ServerCommandFactory(new DataAccessServiceFactory(), new ServerFactory()));
         cli.run();
     }
 

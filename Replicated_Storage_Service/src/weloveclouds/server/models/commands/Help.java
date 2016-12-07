@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.ServerSideException;
-import weloveclouds.server.utils.HelpMessageGenerator;
 import weloveclouds.server.utils.ArgumentsValidator;
+import weloveclouds.server.utils.HelpMessageGenerator;
 
 /**
  * Prints the help message of the server-side CLI.

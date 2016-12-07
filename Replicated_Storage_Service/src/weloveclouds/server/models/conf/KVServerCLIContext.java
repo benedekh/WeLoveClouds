@@ -15,55 +15,78 @@ import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
  */
 public class KVServerCLIContext {
 
-    private int port;
     private boolean isStarted;
-
-    private DataAccessServiceInitializationContext.Builder initializationInfoBuilder;
+    private KVServerPortContext portContext;
+    private DataAccessServiceInitializationContext dASInitializationContext;
 
     public KVServerCLIContext() {
-        this.port = -1;
-        this.initializationInfoBuilder = new DataAccessServiceInitializationContext.Builder();
-        this.initializationInfoBuilder.cacheSize(-1);
+        this.portContext = new KVServerPortContext();
+        this.portContext.setKvClientPort(KVServerPortConstants.KVCLIENT_REQUESTS_PORT);
+        this.portContext.setKvServerPort(KVServerPortConstants.KVSERVER_REQUESTS_PORT);
+        this.portContext.setKvECSPort(KVServerPortConstants.KVECS_REQUESTS_PORT);
+        this.dASInitializationContext = new DataAccessServiceInitializationContext();
+        this.dASInitializationContext.setCacheSize(-1);
     }
 
-    public int getPort() {
-        return port;
+    public KVServerPortContext getPortContext() {
+        return portContext;
     }
 
-    public int getCacheSize() {
-        return initializationInfoBuilder.build().getCacheSize();
+    public int getClientPort() {
+        return portContext.getKVClientPort();
     }
 
-    public DisplacementStrategy getDisplacementStrategy() {
-        return initializationInfoBuilder.build().getDisplacementStrategy();
+    public int getServerPort() {
+        return portContext.getKVServerPort();
     }
 
-    public Path getStoragePath() {
-        return initializationInfoBuilder.build().getStorageRootFolderPath();
+    public int getEcsPort() {
+        return portContext.getKVECSPort();
     }
 
     public boolean isStarted() {
         return isStarted;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public int getCacheSize() {
+        return dASInitializationContext.getCacheSize();
     }
 
-    public void setCacheSize(int cacheSize) {
-        initializationInfoBuilder.cacheSize(cacheSize);
+    public DisplacementStrategy getDisplacementStrategy() {
+        return dASInitializationContext.getDisplacementStrategy();
     }
 
-    public void setDisplacementStrategy(DisplacementStrategy displacementStrategy) {
-        initializationInfoBuilder.displacementStrategy(displacementStrategy);
+    public Path getStoragePath() {
+        return dASInitializationContext.getStorageRootFolderPath();
     }
 
-    public void setStoragePath(Path storagePath) {
-        initializationInfoBuilder.rootFolderPath(storagePath);
+    public void setClientPort(int clientPort) {
+        portContext.setKvClientPort(clientPort);
+    }
+
+    public void setServerPort(int serverPort) {
+        portContext.setKvServerPort(serverPort);
+    }
+
+    public void setEcsPort(int ecsPort) {
+        portContext.setKvECSPort(ecsPort);
     }
 
     public void setStarted(boolean isStarted) {
         this.isStarted = isStarted;
     }
+
+    public void setCacheSize(int cacheSize) {
+        dASInitializationContext.setCacheSize(cacheSize);
+    }
+
+    public void setDisplacementStrategy(DisplacementStrategy displacementStrategy) {
+        dASInitializationContext.setDisplacementStrategy(displacementStrategy);
+    }
+
+    public void setStoragePath(Path storagePath) {
+        dASInitializationContext.setStorageRootFolderPath(storagePath);
+    }
+
 
 }
