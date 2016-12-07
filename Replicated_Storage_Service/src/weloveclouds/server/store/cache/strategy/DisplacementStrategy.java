@@ -16,4 +16,9 @@ public interface DisplacementStrategy extends IKVStoreNotification {
      * @throws StorageException if an error occurs
      */
     public String displaceKey() throws StorageException;
+
+    /**
+     * @return name of the strategy
+     */
+    public String getStrategyName();
 }

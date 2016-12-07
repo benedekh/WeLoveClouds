@@ -14,6 +14,12 @@ public class KVServerPortContext {
     private int kvServerPort;
     private int kvECSPort;
 
+    public KVServerPortContext() {
+        this.kvClientPort = 0;
+        this.kvServerPort = 0;
+        this.kvECSPort = 0;
+    }
+
     private KVServerPortContext(Builder builder) {
         this.kvClientPort = builder.kvClientPort;
         this.kvServerPort = builder.kvServerPort;
@@ -31,6 +37,20 @@ public class KVServerPortContext {
     public int getKVECSPort() {
         return kvECSPort;
     }
+
+    public void setKvClientPort(int kvClientPort) {
+        this.kvClientPort = kvClientPort;
+    }
+
+    public void setKvServerPort(int kvServerPort) {
+        this.kvServerPort = kvServerPort;
+    }
+
+    public void setKvECSPort(int kvECSPort) {
+        this.kvECSPort = kvECSPort;
+    }
+
+
 
     /**
      * Builder pattern for creating a {@link KVServerPortContext} instance.

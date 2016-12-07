@@ -17,11 +17,16 @@ import weloveclouds.server.store.exceptions.StorageException;
 public class LRUStrategy implements DisplacementStrategy {
 
     private static final Logger LOGGER = Logger.getLogger(LRUStrategy.class);
-    
+
     private Deque<String> recentKeys;
 
     public LRUStrategy() {
         this.recentKeys = new ArrayDeque<>();
+    }
+
+    @Override
+    public String getStrategyName() {
+        return "LRU";
     }
 
     @Override

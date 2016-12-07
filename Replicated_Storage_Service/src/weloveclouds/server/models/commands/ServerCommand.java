@@ -11,9 +11,10 @@ import weloveclouds.client.utils.CustomStringJoiner;
  * @author Benedek
  */
 public enum ServerCommand {
-    CACHESIZE("cacheSize"), HELP("help"), LOGLEVEL("logLevel"), PORT("port"), START(
-            "start"), STORAGEPATH(
-                    "storagePath"), STRATEGY("strategy"), QUIT("quit"), DEFAULT("default");
+    CACHESIZE("cacheSize"), HELP("help"), LOGLEVEL("logLevel"), CLIENT_PORT(
+            "clientPort"), SERVER_PORT("serverPort"), ECS_PORT("ecsPort"), START(
+                    "start"), STORAGEPATH(
+                            "storagePath"), STRATEGY("strategy"), QUIT("quit"), DEFAULT("default");
 
     private static final Logger LOGGER = Logger.getLogger(ServerCommand.class);
 

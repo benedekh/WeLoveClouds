@@ -45,34 +45,36 @@ public class ArgumentsValidator {
     private static final int STORAGE_PATH_NUMBER_OF_ARGUMENTS = 1;
     private static final int STORAGE_PATH_INDEX = 0;
 
-    private static final int CLI_NUMBER_OF_ARGUMENTS = 6;
+    private static final int REQUIRED_CLI_ARGUMENT_NUMBER = 7;
     private static final int CLI_KVCLIENT_PORT_INDEX = 0;
     private static final int CLI_KVSERVER_PORT_INDEX = 1;
     private static final int CLI_KVECS_PORT_INDEX = 2;
     private static final int CLI_CACHE_SIZE_INDEX = 3;
     private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 4;
     private static final int CLI_LOG_LEVEL_INDEX = 5;
+    private static final int CLI_SERVER_NAME_INDEX = 6;
 
     /**
      * Validate CLI arguments for the server starting. The arguments are valid, if:<br>
-     * (1) there are exactly {@link #CLI_NUMBER_OF_ARGUMENTS} number of arguments, and <br>
-     * (2) the argument at the position {@link #CLI_KVCLIENT_PORT_INDEX},
-     * {@link #CLI_KVSERVER_PORT_INDEX}, {@link #CLI_KVECS_PORT_INDEX} are valid ports, and <br>
-     * (3) the argument at the position {@link #CLI_CACHE_SIZE_INDEX} is a valid cache size, and
-     * <br>
+     * (1) there are exactly {@link #REQUIRED_CLI_ARGUMENT_NUMBER} number of arguments, and<br>
+     * (2) the arguments at the position {@link #CLI_KVCLIENT_PORT_INDEX},
+     * {@link #CLI_KVSERVER_PORT_INDEX}, {@link #CLI_KVECS_PORT_INDEX} are valid ports, and<br>
+     * (3) the argument at the position {@link #CLI_CACHE_SIZE_INDEX} is a valid cache size, and<br>
      * (4) the argument at the position {@link #CLI_DISPLACEMENT_STRATEGY_INDEX} is a valid
-     * displacement strategy, and <br>
-     * (5) the argument at the position {@link #CLI_LOG_LEVEL_INDEX} is a valid log level
+     * displacement strategy, and<br>
+     * (5) the argument at the position {@link #CLI_LOG_LEVEL_INDEX} is a valid log level and<br>
+     * (6) the argument at the position {@link #CLI_SERVER_NAME_INDEX} is a non-empty string
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateCLIArgumentsForServerStart(String[] arguments)
             throws IllegalArgumentException {
         String command = "cliArguments";
-        if (isNullOrEmpty(arguments) || arguments.length != CLI_NUMBER_OF_ARGUMENTS) {
+        if (isNullOrEmpty(arguments) || arguments.length != REQUIRED_CLI_ARGUMENT_NUMBER) {
             logWarning(command);
-            throw new IllegalArgumentException(
-                    "Four arguments are needed: <port> <cache size> <displacementStrategy> <log level>");
+            throw new IllegalArgumentException(join("",
+                    String.valueOf(REQUIRED_CLI_ARGUMENT_NUMBER),
+                    " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level> <server name>"));
         } else {
             validateCacheSizeArguments(new String[] {arguments[CLI_CACHE_SIZE_INDEX]});
             validatePort(command, arguments[CLI_KVCLIENT_PORT_INDEX]);
@@ -91,6 +93,10 @@ public class ArgumentsValidator {
                 throw new IllegalArgumentException(
                         "Displacement startegy name is not recognized. Correct values are: FIFO, LRU, LFU");
             }
+            if (arguments[CLI_SERVER_NAME_INDEX].isEmpty()) {
+                logWarning(command);
+                throw new IllegalArgumentException("Server name cannot be empty.");
+            }
         }
     }
 
@@ -101,8 +107,8 @@ public class ArgumentsValidator {
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
-    public static void validateStartArguments(String[] arguments,
-            KVServerCLIContext context) throws IllegalArgumentException {
+    public static void validateStartArguments(String[] arguments, KVServerCLIContext context)
+            throws IllegalArgumentException {
         String command = "start";
         if (!isNullOrEmpty(arguments)) {
             logWarning(command);
@@ -114,9 +120,6 @@ public class ArgumentsValidator {
             } else if (context.getCacheSize() == -1) {
                 logWarning(command);
                 throw new IllegalArgumentException("Cache size should be initialized first.");
-            } else if (context.getPort() == -1) {
-                logWarning(command);
-                throw new IllegalArgumentException("Port should be initialized first.");
             } else if (context.getDisplacementStrategy() == null) {
                 logWarning(command);
                 throw new IllegalArgumentException(
