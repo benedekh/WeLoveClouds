@@ -1,6 +1,13 @@
 package weloveclouds.server.api.v2;
 
+import static weloveclouds.client.utils.monitoring.KVClientMonitoringMetricUtils.recordExecutionTime;
+import static weloveclouds.client.utils.monitoring.MonitoringMetricConstants.GET_COMMAND_NAME;
+import static weloveclouds.client.utils.monitoring.MonitoringMetricConstants.LATENCY;
+import static weloveclouds.client.utils.monitoring.MonitoringMetricConstants.PUT_COMMAND_NAME;
+
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
@@ -13,6 +20,7 @@ import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.models.messages.IKVMessage;
+import weloveclouds.server.api.IKVCommunicationApi;
 import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
 /**
@@ -31,8 +39,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
 
     /**
      * @param bootstrapConnectionInfo the initial connection information, which is used for deciding
-     *                                which server to connect to first (before having any {@link
-     *                                RingMetadata}
+     *        which server to connect to first (before having any {@link RingMetadata}
      */
     public KVCommunicationApiV2(ServerConnectionInfo bootstrapConnectionInfo) {
         this.communicationApi =
@@ -54,13 +61,25 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
     @Override
     public IKVMessage put(String key, String value) throws Exception {
         connectToTheRightServerBasedOnHashFor(key);
-        return communicationApi.put(key, value);
+
+        Instant start = Instant.now();
+        try {
+            return communicationApi.put(key, value);
+        } finally {
+            recordExecutionTime(PUT_COMMAND_NAME, LATENCY, new Duration(start, Instant.now()));
+        }
     }
 
     @Override
     public IKVMessage get(String key) throws Exception {
         connectToTheRightServerBasedOnHashFor(key);
-        return communicationApi.get(key);
+
+        Instant start = Instant.now();
+        try {
+            return communicationApi.get(key);
+        } finally {
+            recordExecutionTime(GET_COMMAND_NAME, LATENCY, new Duration(start, Instant.now()));
+        }
     }
 
     @Override
@@ -108,7 +127,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
      * value.
      *
      * @param key of an entry (<key, value> pair) whose hash has to be calculated to decide which
-     *            server to connect to
+     *        server to connect to
      */
     private void connectToTheRightServerBasedOnHashFor(String key) {
         Hash keyHash = HashingUtil.getHash(key);
