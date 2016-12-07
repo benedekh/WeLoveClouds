@@ -21,6 +21,12 @@ public class DataAccessServiceInitializationContext {
     private DisplacementStrategy displacementStrategy;
     private Path storageRootFolderPath;
 
+    public DataAccessServiceInitializationContext(){
+        this.cacheSize = 0;
+        this.displacementStrategy = null;
+        this.storageRootFolderPath = null;
+    }
+    
     protected DataAccessServiceInitializationContext(Builder builder) {
         this.cacheSize = builder.cacheSize;
         this.displacementStrategy = builder.displacementStrategy;
@@ -38,6 +44,20 @@ public class DataAccessServiceInitializationContext {
     public Path getStorageRootFolderPath() {
         return storageRootFolderPath;
     }
+
+    public void setCacheSize(int cacheSize) {
+        this.cacheSize = cacheSize;
+    }
+
+    public void setDisplacementStrategy(DisplacementStrategy displacementStrategy) {
+        this.displacementStrategy = displacementStrategy;
+    }
+
+    public void setStorageRootFolderPath(Path storageRootFolderPath) {
+        this.storageRootFolderPath = storageRootFolderPath;
+    }
+
+
 
     /**
      * A builder to create a {@link DataAccessServiceInitializationContext} instance.
