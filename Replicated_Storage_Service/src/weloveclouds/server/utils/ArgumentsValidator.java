@@ -56,19 +56,12 @@ public class ArgumentsValidator {
 
     /**
      * Validate CLI arguments for the server starting. The arguments are valid, if:<br>
-     * <<<<<<< HEAD (1) there are exactly {@link #CLI_NUMBER_OF_ARGUMENTS} number of arguments,
-     * and<br>
+     * (1) there are exactly {@link #REQUIRED_CLI_ARGUMENT_NUMBER} number of arguments, and<br>
      * (2) the arguments at the position {@link #CLI_KVCLIENT_PORT_INDEX},
      * {@link #CLI_KVSERVER_PORT_INDEX}, {@link #CLI_KVECS_PORT_INDEX} are valid ports, and<br>
      * (3) the argument at the position {@link #CLI_CACHE_SIZE_INDEX} is a valid cache size, and<br>
-     * ======= (1) there are exactly {@link #REQUIRED_CLI_ARGUMENT_NUMBER} number of arguments, and
-     * <br>
-     * (2) the argument at the position {@link #CLI_KVCLIENT_PORT_INDEX},
-     * {@link #CLI_KVSERVER_PORT_INDEX}, {@link #CLI_KVECS_PORT_INDEX} are valid ports, and <br>
-     * (3) the argument at the position {@link #CLI_CACHE_SIZE_INDEX} is a valid cache size, and
-     * <br>
-     * >>>>>>> fix/#149 (4) the argument at the position {@link #CLI_DISPLACEMENT_STRATEGY_INDEX} is
-     * a valid displacement strategy, and<br>
+     * (4) the argument at the position {@link #CLI_DISPLACEMENT_STRATEGY_INDEX} is a valid
+     * displacement strategy, and<br>
      * (5) the argument at the position {@link #CLI_LOG_LEVEL_INDEX} is a valid log level and<br>
      * (6) the argument at the position {@link #CLI_SERVER_NAME_INDEX} is a non-empty string
      * 
