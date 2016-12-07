@@ -11,14 +11,14 @@ import weloveclouds.server.models.conf.KVServerCLIContext;
 import weloveclouds.server.utils.ArgumentsValidator;
 
 /**
- * The port on which the server is going to listen for the client.
+ * The port on which the server is going to listen to ECS.
  *
  * @author Benedek
  */
-public class Port extends AbstractServerCommand {
+public class EcsPort extends AbstractServerCommand {
 
     private static final int PORT_INDEX = 0;
-    private static final Logger LOGGER = Logger.getLogger(Port.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientPort.class);
 
     private KVServerCLIContext context;
 
@@ -26,7 +26,7 @@ public class Port extends AbstractServerCommand {
      * @param arguments the {@link #PORT_INDEX} element of the array shall contain new port
      * @param context contains the server parameter configuration
      */
-    public Port(String[] arguments, KVServerCLIContext context) {
+    public EcsPort(String[] arguments, KVServerCLIContext context) {
         super(arguments);
         this.context = context;
     }
@@ -34,9 +34,9 @@ public class Port extends AbstractServerCommand {
     @Override
     public void execute() throws ServerSideException {
         try {
-            LOGGER.info("Executing port command.");
+            LOGGER.info("Executing ecs port command.");
             int port = Integer.parseInt(arguments[PORT_INDEX]);
-            context.setPort(port);
+            context.setEcsPort(port);
 
             String statusMessage = join(" ", "Latest port:", String.valueOf(port));
             userOutputWriter.writeLine(statusMessage);
@@ -45,7 +45,7 @@ public class Port extends AbstractServerCommand {
             LOGGER.error(ex);
             throw new ServerSideException(ex.getMessage(), ex);
         } finally {
-            LOGGER.info("port command execution finished.");
+            LOGGER.info("ecs port command execution finished.");
         }
     }
 

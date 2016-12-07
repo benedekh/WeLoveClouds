@@ -120,9 +120,6 @@ public class ArgumentsValidator {
             } else if (context.getCacheSize() == -1) {
                 logWarning(command);
                 throw new IllegalArgumentException("Cache size should be initialized first.");
-            } else if (context.getPort() == -1) {
-                logWarning(command);
-                throw new IllegalArgumentException("Port should be initialized first.");
             } else if (context.getDisplacementStrategy() == null) {
                 logWarning(command);
                 throw new IllegalArgumentException(
