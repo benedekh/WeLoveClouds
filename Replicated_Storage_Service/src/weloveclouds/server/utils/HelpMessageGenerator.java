@@ -1,7 +1,7 @@
 package weloveclouds.server.utils;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.server.models.conf.KVServerPortConstants;
+import weloveclouds.server.models.configuration.KVServerPortConstants;
 
 /**
  * Generates the help message for the application.

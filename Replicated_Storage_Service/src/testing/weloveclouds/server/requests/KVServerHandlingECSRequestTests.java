@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.Assert;
-import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
@@ -28,7 +27,7 @@ import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
-import weloveclouds.server.models.conf.KVServerPortConstants;
+import weloveclouds.server.models.configuration.KVServerPortConstants;
 
 public class KVServerHandlingECSRequestTests {
 

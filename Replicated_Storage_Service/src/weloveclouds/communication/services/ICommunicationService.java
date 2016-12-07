@@ -38,7 +38,6 @@ public interface ICommunicationService {
      */
     void disconnect() throws IOException, AlreadyDisconnectedException;
 
-
     /**
      * Sends a message as a byte array to the server.
      *

@@ -9,7 +9,6 @@ import org.junit.Test;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import testing.util.KVServerInitializationUtil;
-import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;

@@ -8,7 +8,7 @@ import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.server.models.conf.KVServerPortContext;
+import weloveclouds.server.models.configuration.KVServerPortContext;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.models.requests.kvserver.IKVServerRequest;

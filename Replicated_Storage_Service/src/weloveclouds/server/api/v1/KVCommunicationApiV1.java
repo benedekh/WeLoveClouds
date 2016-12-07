@@ -1,8 +1,11 @@
 package weloveclouds.server.api.v1;
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.communication.NetworkPacketResenderFactory;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
@@ -46,8 +49,8 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      * port. This constructor is used mainly for testing purposes.
      */
     public KVCommunicationApiV1(String address, int port) {
-        this.serverCommunication =
-                new CommunicationApiV1(new CommunicationService(new SocketFactory()));
+        this.serverCommunication = new CommunicationApiV1(
+                new CommunicationService(new SocketFactory()), new NetworkPacketResenderFactory());
 
         this.address = address;
         this.port = port;
@@ -89,14 +92,14 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
 
     @Override
     public IKVMessage put(String key, String value) throws Exception {
-        sendMessage(StatusType.PUT, key, value);
-        return receiveMessage();
+        byte[] responsePacket = sendMessage(StatusType.PUT, key, value);
+        return convertToKVMessage(responsePacket);
     }
 
     @Override
     public IKVMessage get(String key) throws Exception {
-        sendMessage(StatusType.GET, key, null);
-        return receiveMessage();
+        byte[] responsePacket = sendMessage(StatusType.GET, key, null);
+        return convertToKVMessage(responsePacket);
     }
 
     @Override
@@ -127,6 +130,11 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
     }
 
     @Override
+    public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
+        return serverCommunication.sendAndExpectForResponse(content);
+    }
+
+    @Override
     public byte[] receive() throws ClientNotConnectedException, ConnectionClosedException {
         return serverCommunication.receive();
     }
@@ -140,23 +148,29 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      * @param value value fields's value in the message
      * 
      * @throws UnableToSendContentToServerException if any error occurs
+     * 
+     * @return the response received for that message
      */
-    private void sendMessage(StatusType messageType, String key, String value)
+    private byte[] sendMessage(StatusType messageType, String key, String value)
             throws UnableToSendContentToServerException {
-        KVMessage message =
-                new KVMessage.Builder().status(messageType).key(key).value(value).build();
-        byte[] rawMessage = messageSerializer.serialize(message).getBytes();
-        send(rawMessage);
-        LOGGER.debug(CustomStringJoiner.join(" ", message.toString(), "is sent."));
+        try {
+            KVMessage message =
+                    new KVMessage.Builder().status(messageType).key(key).value(value).build();
+            byte[] rawMessage = messageSerializer.serialize(message).getBytes();
+            return sendAndExpectForResponse(rawMessage);
+        } catch (IOException ex) {
+            LOGGER.error(ex);
+            throw new UnableToSendContentToServerException(ex.getMessage());
+        }
     }
 
     /**
-     * Receives a byte[] response over the network, and deserializes a {@link IKVMessage} from that.
+     * Deserializes a {@link IKVMessage} from the parameter byte[] if it is possible.
      * 
      * @throws Exception if any error occurs
      */
-    private IKVMessage receiveMessage() throws Exception {
-        KVMessage response = messageDeserializer.deserialize(receive());
+    private IKVMessage convertToKVMessage(byte[] packet) throws Exception {
+        KVMessage response = messageDeserializer.deserialize(packet);
         LOGGER.debug(CustomStringJoiner.join(" ", response.toString(), "is received."));
         return response;
     }

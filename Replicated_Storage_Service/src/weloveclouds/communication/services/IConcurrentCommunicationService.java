@@ -16,8 +16,7 @@ public interface IConcurrentCommunicationService {
      * @throws IOException if any error occurs during the send
      */
     void send(byte[] message, Connection connection) throws IOException;
-
-
+    
     /**
      * Receives data over the connection.
      *

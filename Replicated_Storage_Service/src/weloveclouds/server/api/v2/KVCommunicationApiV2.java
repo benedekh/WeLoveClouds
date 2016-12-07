@@ -1,9 +1,12 @@
 package weloveclouds.server.api.v2;
 
+
 import static weloveclouds.client.utils.monitoring.KVClientMonitoringMetricUtils.recordExecutionTime;
 import static weloveclouds.client.utils.monitoring.MonitoringMetricConstants.GET_COMMAND_NAME;
 import static weloveclouds.client.utils.monitoring.MonitoringMetricConstants.LATENCY;
 import static weloveclouds.client.utils.monitoring.MonitoringMetricConstants.PUT_COMMAND_NAME;
+
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
@@ -105,6 +108,11 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
     @Override
     public void send(byte[] content) throws UnableToSendContentToServerException {
         communicationApi.send(content);
+    }
+
+    @Override
+    public byte[] sendAndExpectForResponse(byte[] content) throws IOException {
+        return communicationApi.sendAndExpectForResponse(content);
     }
 
     @Override
