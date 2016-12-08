@@ -2,8 +2,10 @@ package weloveclouds.kvstore.serialization.helper;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.server.models.replication.HashRangeWithRole;
+import weloveclouds.server.models.replication.Role;
 
 /**
  * A serializer which converts a {@link HashRangeWithRole} to a {@link String}.
@@ -23,7 +25,16 @@ public class HashRangeWithRoleSerializer implements ISerializer<String, HashRang
 
         if (target != null) {
             LOGGER.debug("Serializing a HashRangeWithRole.");
-            serialized = target.toStringWithDelimiter(SEPARATOR, rangeSerializer);
+            // original fields
+            HashRange hashRange = target.getHashRange();
+            Role role = target.getRole();
+
+            // string representation
+            String hashRangeStr = rangeSerializer.serialize(hashRange);
+            String roleStr = role == null ? "null" : role.toString();
+
+            // merged string representation
+            serialized = CustomStringJoiner.join(SEPARATOR, hashRangeStr, roleStr);
             LOGGER.debug("Serializing a HashRangeWithRole finished.");
         }
 

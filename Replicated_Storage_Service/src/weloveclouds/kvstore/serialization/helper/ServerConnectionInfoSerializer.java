@@ -1,7 +1,10 @@
 package weloveclouds.kvstore.serialization.helper;
 
+import java.net.InetAddress;
+
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -20,7 +23,16 @@ public class ServerConnectionInfoSerializer implements ISerializer<String, Serve
 
         if (target != null) {
             LOGGER.debug("Serializing a ServerConnectionInfo.");
-            serialized = target.toStringWithDelimiter(SEPARATOR);
+            // original fields
+            InetAddress ipAddress = target.getIpAddress();
+            int port = target.getPort();
+
+            // string representation
+            String ipAddressStr = ipAddress.getHostAddress();
+            String portStr = String.valueOf(port);
+
+            // merged string representation
+            serialized = CustomStringJoiner.join(SEPARATOR, ipAddressStr, portStr);
             LOGGER.debug("Serializing a ServerConnectionInfo finished.");
         }
 

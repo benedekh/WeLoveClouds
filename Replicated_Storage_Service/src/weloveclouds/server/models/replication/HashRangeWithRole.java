@@ -2,7 +2,6 @@ package weloveclouds.server.models.replication;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.HashRange;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
 
 /**
  * Encapsulates a {@link HashRange} with a {@link Role} that represents the role of the node
@@ -65,19 +64,7 @@ public class HashRangeWithRole {
     @Override
     public String toString() {
         return CustomStringJoiner.join("", "{", "Range: ", hashRange.toString(), ", Role: ",
-                role.toString(), "}");
-    }
-
-    /**
-     * Converts the object to String.
-     * 
-     * @param delimiter separator character among the fields
-     * @param rangeSerializer to convert the {@link HashRange} into a String representation
-     */
-    public String toStringWithDelimiter(String delimiter,
-            ISerializer<String, HashRange> rangeSerializer) {
-        return CustomStringJoiner.join(delimiter, rangeSerializer.serialize(hashRange),
-                role.toString());
+                role == null ? "null" : role.toString(), "}");
     }
 
     /**

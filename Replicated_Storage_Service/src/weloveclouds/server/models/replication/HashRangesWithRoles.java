@@ -1,8 +1,7 @@
 package weloveclouds.server.models.replication;
 
+import java.util.Collections;
 import java.util.Set;
-
-import weloveclouds.kvstore.serialization.helper.ISerializer;
 
 /**
  * Encapsulates a {@link HashRangeWithRole} instances that represents the roles of the node
@@ -19,7 +18,7 @@ public class HashRangesWithRoles {
     }
 
     public Set<HashRangeWithRole> getRangesWithRoles() {
-        return rangesWithRoles;
+        return Collections.unmodifiableSet(rangesWithRoles);
     }
 
     @Override
@@ -54,39 +53,17 @@ public class HashRangesWithRoles {
 
     @Override
     public String toString() {
-        ISerializer<String, HashRangeWithRole> defaultSerializer =
-                new ISerializer<String, HashRangeWithRole>() {
-                    @Override
-                    public String serialize(HashRangeWithRole target) {
-                        return target.toString();
-                    }
-                };
+        String delimiter = ", ";
 
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        String delimiter = ", ";
-        sb.append(toStringWithDelimiter(delimiter, defaultSerializer));
+        for (HashRangeWithRole rangeWithRole : rangesWithRoles) {
+            sb.append(rangeWithRole);
+            sb.append(delimiter);
+        }
+        sb.setLength(sb.length() - delimiter.length());
         sb.append("}");
 
         return sb.toString();
     }
-
-    /**
-     * Converts the object to String.
-     * 
-     * @param delimiter separator character among the fields
-     * @param rangeWithRoleSerializer to convert the {@link HashRangeWithRole} into a String
-     *        representation
-     */
-    public String toStringWithDelimiter(String delimiter,
-            ISerializer<String, HashRangeWithRole> rangeWithRoleSerializer) {
-        StringBuilder sb = new StringBuilder();
-        for (HashRangeWithRole rangeWithRole : rangesWithRoles) {
-            sb.append(rangeWithRoleSerializer.serialize(rangeWithRole));
-            sb.append(delimiter);
-        }
-        sb.setLength(sb.length() - delimiter.length());
-        return sb.toString();
-    }
-
 }

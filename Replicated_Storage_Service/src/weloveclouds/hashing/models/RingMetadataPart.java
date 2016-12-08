@@ -2,13 +2,12 @@ package weloveclouds.hashing.models;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.server.models.replication.HashRangeWithRole;
 import weloveclouds.server.models.replication.Role;
 
 /**
- * Represents an <IP, port> and <hash-range with role> triplet, which defines respective server (denoted by
- * its <ip,port>) is responsible for which hash range with what role.
+ * Represents an <IP, port> and <hash-range with role> triplet, which defines respective server
+ * (denoted by its <ip,port>) is responsible for which hash range with what role.
  * 
  * @author Benedek
  */
@@ -26,7 +25,7 @@ public class RingMetadataPart {
         return connectionInfo;
     }
 
-    public HashRange getHashRange() {
+    public HashRange getRange() {
         return rangeWithRole.getHashRange();
     }
 
@@ -34,28 +33,15 @@ public class RingMetadataPart {
         return rangeWithRole.getRole();
     }
 
+    public HashRangeWithRole getRangeWithRole() {
+        return rangeWithRole;
+    }
+
     /**
      * @return true if the range contains the referred hash
      */
     public boolean rangeContains(Hash hash) {
         return rangeWithRole.getHashRange().contains(hash);
-    }
-
-    /**
-     * Converts the object to String.
-     * 
-     * @param delimiter separator character among the fields
-     * @param connectionInfoSerializer to convert the {@link ServerConnectionInfo} into a String
-     *        representation
-     * @param hashRangeWithRoleSerializer to convert the {@link HashRangeWithRole} into a String
-     *        representation
-     */
-    public String toStringWithDelimiter(String delimiter,
-            ISerializer<String, ServerConnectionInfo> connectionInfoSerializer,
-            ISerializer<String, HashRangeWithRole> hashRangeWithRoleSerializer) {
-        return CustomStringJoiner.join(delimiter,
-                connectionInfoSerializer.serialize(connectionInfo),
-                hashRangeWithRoleSerializer.serialize(rangeWithRole));
     }
 
     @Override

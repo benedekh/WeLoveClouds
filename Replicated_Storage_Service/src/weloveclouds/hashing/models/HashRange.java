@@ -3,7 +3,6 @@ package weloveclouds.hashing.models;
 import java.math.BigInteger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
 
 /**
  * The following properties should be held for the range:<br>
@@ -56,18 +55,6 @@ public class HashRange {
                 return false;
             }
         }
-    }
-
-    /**
-     * Converts the object to String.
-     *
-     * @param betweenHashes  separator character between the {@link #start} and the {@link #end}
-     *                       hash values
-     * @param hashSerializer to convert the {@link Hash} into a String representation
-     */
-    public String toStringWithDelimiter(String betweenHashes, ISerializer<String, Hash> hashSerializer) {
-        return CustomStringJoiner.join(betweenHashes, hashSerializer.serialize(begin),
-                hashSerializer.serialize(end));
     }
 
     @Override

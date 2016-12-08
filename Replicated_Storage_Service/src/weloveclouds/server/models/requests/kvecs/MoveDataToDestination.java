@@ -78,7 +78,7 @@ public class MoveDataToDestination implements IKVECSRequest {
         try {
             LOGGER.debug("Executing move data request.");
 
-            HashRange hashRange = targetServerInfo.getHashRange();
+            HashRange hashRange = targetServerInfo.getRange();
             MovableStorageUnits filteredEntries = dataAccessService.filterEntries(hashRange);
 
             if (!filteredEntries.getStorageUnits().isEmpty()) {
