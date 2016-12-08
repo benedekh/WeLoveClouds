@@ -1,7 +1,12 @@
 package weloveclouds.kvstore.serialization.helper;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;;
 
@@ -24,7 +29,17 @@ public class RingMetadataSerializer implements ISerializer<String, RingMetadata>
 
         if (target != null) {
             LOGGER.debug("Serializing a RingMetadata.");
-            serialized = target.toStringWithDelimiter(SEPARATOR, metadataPartSerializer);
+            // original fields
+            Set<RingMetadataPart> metadataParts = target.getMetadataParts();
+
+            // string representation
+            Set<String> metadataPartsStrs = new HashSet<>();
+            for (RingMetadataPart metadataPart : metadataParts) {
+                metadataPartsStrs.add(metadataPartSerializer.serialize(metadataPart));
+            }
+
+            // merged string representation
+            serialized = CustomStringJoiner.join(SEPARATOR, new ArrayList<>(metadataPartsStrs));
             LOGGER.debug("Serializing a RingMetadata finished.");
         }
 
