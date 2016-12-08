@@ -14,6 +14,7 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.core.requests.ICallbackRegister;
 import weloveclouds.server.core.requests.IRequestFactory;
+import weloveclouds.server.models.requests.kvecs.utils.StorageUnitsTransporterFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**
@@ -29,6 +30,7 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
 
     private IMovableDataAccessService dataAccessService;
     private ICommunicationApi communicationApi;
+    private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
 
     private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
     private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
@@ -36,11 +38,13 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
     public KVECSRequestFactory(IMovableDataAccessService dataAccessService,
             CommunicationApiFactory communicationApiFactory,
             IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer,
+            StorageUnitsTransporterFactory storageUnitsTransporterFactory) {
         this.dataAccessService = dataAccessService;
         this.communicationApi = communicationApiFactory.createCommunicationApiV1();
         this.transferMessageSerializer = transferMessageSerializer;
         this.transferMessageDeserializer = transferMessageDeserializer;
+        this.storageUnitsTransporterFactory = storageUnitsTransporterFactory;
     }
 
     @Override
@@ -67,10 +71,15 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
             case UNLOCKWRITE:
                 request = new UnlockWriteAccess(dataAccessService);
                 break;
+            case COPYDATA:
+                request = new CopyDataToDestination(dataAccessService, communicationApi,
+                        receivedMessage.getTargetServerInfo(), transferMessageSerializer,
+                        transferMessageDeserializer, storageUnitsTransporterFactory);
+                break;
             case MOVEDATA:
-                request = new MoveDataToDestination(dataAccessService,
-                        receivedMessage.getTargetServerInfo(), communicationApi,
-                        transferMessageSerializer, transferMessageDeserializer);
+                request = new MoveDataToDestination(dataAccessService, communicationApi,
+                        receivedMessage.getTargetServerInfo(), transferMessageSerializer,
+                        transferMessageDeserializer, storageUnitsTransporterFactory);
                 break;
             case UPDATE:
                 request =

@@ -19,18 +19,17 @@ import weloveclouds.server.models.requests.kvecs.utils.StorageUnitsTransporter;
 import weloveclouds.server.models.requests.kvecs.utils.StorageUnitsTransporterFactory;
 import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
-import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
 /**
- * A data move request to the {@link IMovableDataAccessService}, which moves a range of the data
+ * A data copy request to the {@link IMovableDataAccessService}, which copies a range of the data
  * stored on the data access service to a remote location.
  * 
  * @author Benedek
  */
-public class MoveDataToDestination implements IKVECSRequest {
+public class CopyDataToDestination implements IKVECSRequest {
 
-    private static final Logger LOGGER = Logger.getLogger(MoveDataToDestination.class);
+    private static final Logger LOGGER = Logger.getLogger(CopyDataToDestination.class);
 
     private IMovableDataAccessService dataAccessService;
 
@@ -42,17 +41,17 @@ public class MoveDataToDestination implements IKVECSRequest {
 
     /**
      * @param dataAccessService a reference to the data access service
-     * @param communicationApi to communicate with the target server
      * @param targetServerInfo which contains the <IP, port> and <hash range> information about the
      *        target server to which those entries shall be transferred whose key's are in the range
      *        defined by this object
+     * @param communicationApi to communicate with the target server
      * @param transferMessageSerializer to serialize {@link KVTransferMessage} into
      *        {@link SerializedMessage}
      * @param transferMessageDeserializer to deserialize {@link KVTransferMessage} from
      *        {@link SerializedMessage}
      * @param storageUnitsTransporterFactory a factory to create {@link StorageUnitsTransporter}
      */
-    public MoveDataToDestination(IMovableDataAccessService dataAccessService,
+    public CopyDataToDestination(IMovableDataAccessService dataAccessService,
             ICommunicationApi communicationApi, RingMetadataPart targetServerInfo,
             IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
             IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer,
@@ -68,7 +67,7 @@ public class MoveDataToDestination implements IKVECSRequest {
     @Override
     public KVAdminMessage execute() {
         try {
-            LOGGER.debug("Executing move data request.");
+            LOGGER.debug("Executing copy data request.");
             HashRange hashRange = targetServerInfo.getRange();
             MovableStorageUnits filteredEntries = dataAccessService.filterEntries(hashRange);
 
@@ -78,8 +77,7 @@ public class MoveDataToDestination implements IKVECSRequest {
                                 communicationApi, targetServerInfo.getConnectionInfo(),
                                 transferMessageSerializer, transferMessageDeserializer);
                 storageUnitsTransporter.transferStorageUnits(filteredEntries.getStorageUnits());
-                removeStorageUnitsInRangeFromDataStore(hashRange);
-                LOGGER.debug("Move data request finished successfully.");
+                LOGGER.debug("Copy data request finished successfully.");
             }
         } catch (Exception ex) {
             LOGGER.error(ex);
@@ -87,17 +85,6 @@ public class MoveDataToDestination implements IKVECSRequest {
         }
 
         return new KVAdminMessage.Builder().status(RESPONSE_SUCCESS).build();
-    }
-
-    /**
-     * Removes those storage units from the {@link IMovableDataAccessService} whose keys are in the
-     * respective range.
-     * 
-     * @throws StorageException
-     */
-    private void removeStorageUnitsInRangeFromDataStore(HashRange range) throws StorageException {
-        dataAccessService.removeEntries(range);
-        dataAccessService.defragment();
     }
 
     private KVAdminMessage createErrorKVAdminMessage(String errorMessage) {

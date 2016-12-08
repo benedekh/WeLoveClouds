@@ -16,6 +16,7 @@ public interface IKVAdminMessage {
         SHUTDOWN, /* Shut down the server - request */
         LOCKWRITE, /* Lock the write operation on the server - request */
         UNLOCKWRITE, /* Unlock the write lock on the server - request */
+        COPYDATA, /* Copy range of the data from one server to another - request */
         MOVEDATA, /* Move range of the data from one server to another - request */
         UPDATE, /* Update the metadata structure - request */
         RESPONSE_SUCCESS, /* Request was executed successfully. */

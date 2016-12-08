@@ -3,6 +3,7 @@ package weloveclouds.server.models.requests.validator;
 import java.net.InetAddress;
 import java.util.Set;
 
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
@@ -146,12 +147,16 @@ public class KVServerRequestsValidator {
 
         validateHashRange(ringMetadataPart.getRange());
 
-        InetAddress ipAddress = ringMetadataPart.getConnectionInfo().getIpAddress();
+        ServerConnectionInfo connectionInfo = ringMetadataPart.getConnectionInfo();
+        if (connectionInfo == null) {
+            throw new IllegalArgumentException();
+        }
+        InetAddress ipAddress = connectionInfo.getIpAddress();
         if (ipAddress == null) {
             throw new IllegalArgumentException();
         }
 
-        int port = ringMetadataPart.getConnectionInfo().getPort();
+        int port = connectionInfo.getPort();
         if (port < NETWORK_PORT_LOWER_LIMIT || port > NETWORK_PORT_UPPER_LIMIT) {
             throw new IllegalArgumentException();
         }

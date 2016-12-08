@@ -18,6 +18,7 @@ import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.models.requests.kvecs.KVECSRequestFactory;
+import weloveclouds.server.models.requests.kvecs.utils.StorageUnitsTransporterFactory;
 import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
 import weloveclouds.server.models.requests.kvserver.KVServerRequestFactory;
 import weloveclouds.server.services.IDataAccessService;
@@ -84,7 +85,8 @@ public class ServerFactory {
         return new Server.Builder<KVAdminMessage, IKVECSRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
                 .requestFactory(new KVECSRequestFactory(dataAccessService, communicationApiFactory,
-                        new KVTransferMessageSerializer(), new KVTransferMessageDeserializer()))
+                        new KVTransferMessageSerializer(), new KVTransferMessageDeserializer(),
+                        new StorageUnitsTransporterFactory()))
                 .communicationApiFactory(communicationApiFactory)
                 .messageSerializer(new KVAdminMessageSerializer())
                 .messageDeserializer(new KVAdminMessageDeserializer()).build();
