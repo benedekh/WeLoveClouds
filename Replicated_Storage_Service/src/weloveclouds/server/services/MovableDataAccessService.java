@@ -157,12 +157,13 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public void removeEntryWithoutAuthorization(String key) throws StorageException {
+    public synchronized void removeEntryWithoutAuthorization(String key) throws StorageException {
         removeEntry(key, false);
     }
 
     @Override
-    public void putEntries(MovableStorageUnits fromStorageUnits) throws StorageException {
+    public synchronized void putEntries(MovableStorageUnits fromStorageUnits)
+            throws StorageException {
         if (!isServiceInitialized()) {
             LOGGER.error("Put entries request while the data acess service was uninitialized.");
             throw new UninitializedServiceException();
@@ -174,7 +175,8 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public MovableStorageUnits filterEntries(HashRange range) throws UninitializedServiceException {
+    public synchronized MovableStorageUnits filterEntries(HashRange range)
+            throws UninitializedServiceException {
         if (!isServiceInitialized()) {
             LOGGER.error("Filter entries request while the data acess service was uninitialized.");
             throw new UninitializedServiceException();
@@ -185,7 +187,7 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public void removeEntries(HashRange range) throws StorageException {
+    public synchronized void removeEntries(HashRange range) throws StorageException {
         if (!isServiceInitialized()) {
             LOGGER.error("Remove entries request while the data acess service was uninitialized.");
             throw new UninitializedServiceException();
@@ -197,7 +199,7 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public void defragment() throws UninitializedServiceException {
+    public synchronized void defragment() throws UninitializedServiceException {
         if (!isServiceInitialized()) {
             LOGGER.error("Defragmentation request while the data acess service was uninitialized.");
             throw new UninitializedServiceException();
@@ -209,7 +211,7 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public void setServiceStatus(DataAccessServiceStatus serviceNewStatus)
+    public synchronized void setServiceStatus(DataAccessServiceStatus serviceNewStatus)
             throws UninitializedServiceException {
         if (!isServiceInitialized()) {
             LOGGER.error(
@@ -235,17 +237,17 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public void setRingMetadata(RingMetadata ringMetadata) {
+    public synchronized void setRingMetadata(RingMetadata ringMetadata) {
         this.ringMetadata = ringMetadata;
     }
 
     @Override
-    public void setManagedHashRanges(HashRangesWithRoles rangesManagedByServer) {
+    public synchronized void setManagedHashRanges(HashRangesWithRoles rangesManagedByServer) {
         this.rangesManagedByServer = rangesManagedByServer;
     }
 
     @Override
-    public boolean isServiceInitialized() {
+    public synchronized boolean isServiceInitialized() {
         return ringMetadata != null && rangesManagedByServer != null;
     }
 
