@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.kvstore.deserialization.helper.HashRangesWithRolesDeserializer;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataPartDeserializer;
@@ -16,6 +17,7 @@ import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.server.models.replication.HashRangesWithRoles;
 
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link KVAdminMessage}.
@@ -25,19 +27,21 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 public class KVAdminMessageDeserializer
         implements IMessageDeserializer<KVAdminMessage, SerializedMessage> {
 
-    private static final int NUMBER_OF_MESSAGE_PARTS = 4;
-
+    private static final int NUMBER_OF_MESSAGE_PARTS = 5;
     private static final int MESSAGE_STATUS_INDEX = 0;
     private static final int MESSAGE_RING_METADATA_INDEX = 1;
     private static final int MESSAGE_TARGET_SERVER_INFO_INDEX = 2;
-    private static final int MESSAGE_RESPONSE_MESSAGE_INDEX = 3;
+    private static final int MESSAGE_RANGES_WITH_ROLES_INDEX = 3;
+    private static final int MESSAGE_RESPONSE_MESSAGE_INDEX = 4;
 
     private static final Logger LOGGER = Logger.getLogger(KVAdminMessageDeserializer.class);
 
     private IDeserializer<RingMetadata, String> metadataDeserializer =
             new RingMetadataDeserializer();
     private IDeserializer<RingMetadataPart, String> metadataPartDeserializer =
-            new RingMetadataPartDeserializer();;
+            new RingMetadataPartDeserializer();
+    private IDeserializer<HashRangesWithRoles, String> hashRangesWithRolesDeserializer =
+            new HashRangesWithRolesDeserializer();
 
     @Override
     public KVAdminMessage deserialize(SerializedMessage serializedMessage)
@@ -70,6 +74,7 @@ public class KVAdminMessageDeserializer
             String statusStr = messageParts[MESSAGE_STATUS_INDEX];
             String ringMetadataStr = messageParts[MESSAGE_RING_METADATA_INDEX];
             String targetServerInfoStr = messageParts[MESSAGE_TARGET_SERVER_INFO_INDEX];
+            String rangesWithRolesStr = messageParts[MESSAGE_RANGES_WITH_ROLES_INDEX];
             String responseMessageStr = messageParts[MESSAGE_RESPONSE_MESSAGE_INDEX];
 
             // deserialized fields
@@ -77,12 +82,14 @@ public class KVAdminMessageDeserializer
             RingMetadata ringMetadata = metadataDeserializer.deserialize(ringMetadataStr);
             RingMetadataPart targetServerInfo =
                     metadataPartDeserializer.deserialize(targetServerInfoStr);
+            HashRangesWithRoles rangesWithRoles =
+                    hashRangesWithRolesDeserializer.deserialize(rangesWithRolesStr);
             String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;
 
             // deserialized object
             KVAdminMessage deserialized = new KVAdminMessage.Builder().status(status)
                     .ringMetadata(ringMetadata).targetServerInfo(targetServerInfo)
-                    .responseMessage(responseMessage).build();
+                    .rangesWithRoles(rangesWithRoles)   .responseMessage(responseMessage).build();
 
             LOGGER.debug(join(" ", "Deserialized KVAdminMessage is:", deserialized.toString()));
             return deserialized;

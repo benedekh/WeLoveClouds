@@ -8,6 +8,8 @@ import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.server.models.replication.HashRangeWithRole;
+import weloveclouds.server.models.replication.HashRangesWithRoles;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
@@ -58,6 +60,42 @@ public class KVServerRequestsValidator {
         if (key.length > limit) {
             throw new IllegalArgumentException();
         }
+    }
+
+    /**
+     * A {@link HashRangesWithRoles} is valid, if it is not null and the encapsulated
+     * {@link HashRangeWithRole} instances are valid.
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
+    public static void validateHashRangesWithRoles(HashRangesWithRoles hashRangesWithRoles)
+            throws IllegalArgumentException {
+        if (hashRangesWithRoles == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Set<HashRangeWithRole> rangesWithRoles = hashRangesWithRoles.getRangesWithRoles();
+        if (rangesWithRoles == null) {
+            throw new IllegalArgumentException();
+        }
+        for (HashRangeWithRole rangeWithRole : rangesWithRoles) {
+            validateHashRangeWithRole(rangeWithRole);
+        }
+
+    }
+
+    /**
+     * A {@link HashRangeWithRole} is valid, if neither it, nor its role is not null and the
+     * encapsulated {@link HashRange} is valid.
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
+    public static void validateHashRangeWithRole(HashRangeWithRole hashRangeWithRole)
+            throws IllegalArgumentException {
+        if (hashRangeWithRole == null || hashRangeWithRole.getRole() == null) {
+            throw new IllegalArgumentException();
+        }
+        validateHashRange(hashRangeWithRole.getHashRange());
     }
 
     /**

@@ -9,10 +9,12 @@ import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.kvstore.serialization.helper.HashRangesWithRolesSerializer;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.server.models.replication.HashRangesWithRoles;
 
 /**
  * A serializer which converts a {@link KVAdminMessage} to a {@link SerializedMessage}.
@@ -31,6 +33,8 @@ public class KVAdminMessageSerializer
     private ISerializer<String, RingMetadata> metadataSerializer = new RingMetadataSerializer();
     private ISerializer<String, RingMetadataPart> metadataPartSerializer =
             new RingMetadataPartSerializer();
+    private ISerializer<String, HashRangesWithRoles> hashRangesWithRolesSerializer =
+            new HashRangesWithRolesSerializer();
 
     @Override
     public SerializedMessage serialize(KVAdminMessage unserializedMessage) {
@@ -40,16 +44,18 @@ public class KVAdminMessageSerializer
         StatusType status = unserializedMessage.getStatus();
         RingMetadata ringMetadata = unserializedMessage.getRingMetadata();
         RingMetadataPart targetServerInfo = unserializedMessage.getTargetServerInfo();
+        HashRangesWithRoles rangesWithRoles = unserializedMessage.getManagedHashRangesWithRole();
 
         // string representation
         String statusStr = status == null ? null : status.toString();
         String ringMetadataStr = metadataSerializer.serialize(ringMetadata);
         String targetServerStr = metadataPartSerializer.serialize(targetServerInfo);
+        String rangesWithRolesStr = hashRangesWithRolesSerializer.serialize(rangesWithRoles);
         String responseMessage = unserializedMessage.getResponseMessage();
 
         // merged string representation
         String serialized = CustomStringJoiner.join(SEPARATOR, statusStr, ringMetadataStr,
-                targetServerStr, responseMessage);
+                targetServerStr, rangesWithRolesStr, responseMessage);
         String prefixed = CustomStringJoiner.join("", PREFIX, serialized);
         String postfixed = CustomStringJoiner.join("", prefixed, POSTFIX);
 

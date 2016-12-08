@@ -11,6 +11,11 @@ import weloveclouds.kvstore.serialization.helper.HashRangeWithRoleSerializer;
 import weloveclouds.server.models.replication.HashRangeWithRole;
 import weloveclouds.server.models.replication.Role;
 
+/**
+ * A deserializer which converts a {@link HashRangeWithRole} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class HashRangeWithRoleDeserializer implements IDeserializer<HashRangeWithRole, String> {
 
     private static final int NUMBER_OF_RANGE_INFO_PARTS = 2;

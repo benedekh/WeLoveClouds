@@ -23,6 +23,7 @@ import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.models.replication.HashRangeWithRole;
+import weloveclouds.server.models.replication.HashRangesWithRoles;
 import weloveclouds.server.models.replication.Role;
 
 /**
@@ -58,9 +59,12 @@ public class KVAdminMessageTest extends TestCase {
 
         RingMetadata metadata =
                 new RingMetadata(new HashSet<>(Arrays.asList(metadataPart1, metadataPart2)));
+        HashRangesWithRoles rangesWithRoles = new HashRangesWithRoles(
+                new HashSet<>(Arrays.asList(hashRangeWithRole1, hashRangeWithRole2)));
 
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.INITKVSERVER)
-                .ringMetadata(metadata).targetServerInfo(metadataPart1).build();
+                .ringMetadata(metadata).targetServerInfo(metadataPart1)
+                .rangesWithRoles(rangesWithRoles).build();
 
         SerializedMessage serializedMessage = adminMessageSerializer.serialize(adminMessage);
         KVAdminMessage deserializedAdminMessage =

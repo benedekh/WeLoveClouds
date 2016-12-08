@@ -2,11 +2,11 @@ package weloveclouds.server.models.requests.kvecs;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.server.models.replication.HashRangesWithRoles;
 import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 
@@ -22,25 +22,26 @@ public class UpdateRingMetadata implements IKVECSRequest {
 
     private IMovableDataAccessService dataAccessService;
     private RingMetadata ringMetadata;
-    private HashRange rangeManagedByServer;
+    private HashRangesWithRoles rangesManagedByServer;
 
     /**
      * @param dataAccessService a reference to the data access service
      * @param ringMetadata the metadata information about the ring in which the servers are placed
-     * @param rangeManagedByServer the range of hashes which are managed by the server
+     * @param rangesManagedByServer the hash ranges which are managed by this server together with
+     *        roles the server has for each range
      */
     public UpdateRingMetadata(IMovableDataAccessService dataAccessService,
-            RingMetadata ringMetadata, HashRange rangeManagedByServer) {
+            RingMetadata ringMetadata, HashRangesWithRoles rangesManagedByServer) {
         this.dataAccessService = dataAccessService;
         this.ringMetadata = ringMetadata;
-        this.rangeManagedByServer = rangeManagedByServer;
+        this.rangesManagedByServer = rangesManagedByServer;
     }
 
     @Override
     public KVAdminMessage execute() {
         LOGGER.debug("Executing update ring metadata write request.");
         dataAccessService.setRingMetadata(ringMetadata);
-        dataAccessService.setManagedHashRange(rangeManagedByServer);
+        dataAccessService.setManagedHashRanges(rangesManagedByServer);
         LOGGER.debug("Update ring metadata write request finished successfully.");
         return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
     }
@@ -53,16 +54,17 @@ public class UpdateRingMetadata implements IKVECSRequest {
     @Override
     public IKVECSRequest validate() throws IllegalArgumentException {
         try {
-            KVServerRequestsValidator.validateHashRange(rangeManagedByServer);
+            KVServerRequestsValidator.validateRingMetadata(ringMetadata);
         } catch (IllegalArgumentException ex) {
-            String errorMessage = "Hash range managed by server cannot be null.";
+            String errorMessage = "Ring metadata is invalid.";
             LOGGER.error(errorMessage);
             throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
         }
         try {
-            KVServerRequestsValidator.validateRingMetadata(ringMetadata);
+
+            KVServerRequestsValidator.validateHashRangesWithRoles(rangesManagedByServer);
         } catch (IllegalArgumentException ex) {
-            String errorMessage = "Ring metadata cannot be null.";
+            String errorMessage = "Hash range with roles is invalid.";
             LOGGER.error(errorMessage);
             throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
         }

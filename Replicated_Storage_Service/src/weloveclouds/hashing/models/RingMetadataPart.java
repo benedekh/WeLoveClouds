@@ -7,8 +7,8 @@ import weloveclouds.server.models.replication.HashRangeWithRole;
 import weloveclouds.server.models.replication.Role;
 
 /**
- * Represents an <IP, port> and <hash-range> triplet, which defines respective server (denoted by
- * its <ip,port>) is responsible for which hash range.
+ * Represents an <IP, port> and <hash-range with role> triplet, which defines respective server (denoted by
+ * its <ip,port>) is responsible for which hash range with what role.
  * 
  * @author Benedek
  */
@@ -35,7 +35,7 @@ public class RingMetadataPart {
     }
 
     /**
-     * @return true if the {@link #range} contains the referred hash.
+     * @return true if the range contains the referred hash
      */
     public boolean rangeContains(Hash hash) {
         return rangeWithRole.getHashRange().contains(hash);

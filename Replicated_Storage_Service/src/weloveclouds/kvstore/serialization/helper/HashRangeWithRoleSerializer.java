@@ -5,6 +5,11 @@ import org.apache.log4j.Logger;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.server.models.replication.HashRangeWithRole;
 
+/**
+ * A serializer which converts a {@link HashRangeWithRole} to a {@link String}.
+ * 
+ * @author Benedek
+ */
 public class HashRangeWithRoleSerializer implements ISerializer<String, HashRangeWithRole> {
 
     public static final String SEPARATOR = "-łŁ-";

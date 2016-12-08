@@ -8,15 +8,13 @@ import junit.framework.TestCase;
 import weloveclouds.server.api.IKVServerApi;
 import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
-
 public class ConnectionTest extends TestCase {
 
     @Test
     public void testConnectionSuccess() {
-
         Exception ex = null;
-
         IKVServerApi kvClient = new KVCommunicationApiV1("localhost", 50000);
+
         try {
             kvClient.connect();
         } catch (Exception e) {
@@ -53,8 +51,6 @@ public class ConnectionTest extends TestCase {
 
         assertTrue(ex instanceof IllegalArgumentException);
     }
-
-
 
 }
 

@@ -6,8 +6,8 @@ import java.util.Set;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 
 /**
- * Stores <IP, port> and <hash-range> triplets, which defines respective server (denoted by its
- * <ip,port>) is responsible for which hash range.
+ * Stores <IP, port> and <hash-range with roles> triplets, which defines respective server (denoted
+ * by its <ip,port>) is responsible for which hash range with what role.
  * 
  * @author Benedek
  */

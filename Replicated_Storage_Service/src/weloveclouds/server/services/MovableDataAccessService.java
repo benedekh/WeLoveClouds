@@ -23,6 +23,9 @@ import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
+import weloveclouds.server.models.replication.HashRangeWithRole;
+import weloveclouds.server.models.replication.HashRangesWithRoles;
+import weloveclouds.server.models.replication.Role;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
@@ -52,7 +55,7 @@ public class MovableDataAccessService extends DataAccessService
     private volatile DataAccessServiceStatus serviceRecentStatus;
 
     private volatile RingMetadata ringMetadata;
-    private volatile HashRange rangeManagedByServer;
+    private volatile HashRangesWithRoles rangesManagedByServer;
 
     private ISerializer<String, RingMetadata> ringMetadatSerializer = new RingMetadataSerializer();
 
@@ -74,7 +77,7 @@ public class MovableDataAccessService extends DataAccessService
         switch (serviceRecentStatus) {
             case STARTED:
                 try {
-                    checkIfKeyIsManagedByServer(entry.getKey());
+                    checkIfKeyIsManagedByServer(entry.getKey(), Role.MASTER);
                 } catch (KeyIsNotManagedByServiceException ex) {
                     incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
                     throw ex;
@@ -120,7 +123,7 @@ public class MovableDataAccessService extends DataAccessService
             case STARTED:
             case WRITELOCK_ACTIVE:
                 try {
-                    checkIfKeyIsManagedByServer(key);
+                    checkIfKeyIsManagedByServer(key, Role.REPLICA);
                 } catch (KeyIsNotManagedByServiceException ex) {
                     incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, NOT_RESPONSIBLE);
                     throw ex;
@@ -159,7 +162,7 @@ public class MovableDataAccessService extends DataAccessService
         switch (serviceRecentStatus) {
             case STARTED:
                 try {
-                    checkIfKeyIsManagedByServer(key);
+                    checkIfKeyIsManagedByServer(key, Role.MASTER);
                 } catch (KeyIsNotManagedByServiceException ex) {
                     incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
                     throw ex;
@@ -271,28 +274,51 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public void setManagedHashRange(HashRange rangeManagedByServer) {
-        this.rangeManagedByServer = rangeManagedByServer;
+    public void setManagedHashRanges(HashRangesWithRoles rangesManagedByServer) {
+        this.rangesManagedByServer = rangesManagedByServer;
     }
 
     @Override
     public boolean isServiceInitialized() {
-        return ringMetadata != null && rangeManagedByServer != null;
+        return ringMetadata != null && rangesManagedByServer != null;
     }
 
     /**
+     * @param key the key whose hash value is expected to be handled by the server
+     * @param expectedRole the expected type of the role which belongs to the hash range (in which
+     *        the hash value of the key is)
      * @throws KeyIsNotManagedByServiceException if the referred key's hash value is not managed by
      *         this server.
      */
-    private void checkIfKeyIsManagedByServer(String key) throws KeyIsNotManagedByServiceException {
-        if (rangeManagedByServer == null
-                || !rangeManagedByServer.contains(HashingUtil.getHash(key))) {
+    private void checkIfKeyIsManagedByServer(String key, Role expectedRole)
+            throws KeyIsNotManagedByServiceException {
+        if (rangesManagedByServer == null || !keyIsManagedByServer(key, expectedRole)) {
             LOGGER.debug(
                     CustomStringJoiner.join("", "Key (", key, ") is not managed by the server."));
             throw new KeyIsNotManagedByServiceException(
                     ringMetadatSerializer.serialize(ringMetadata));
         }
+    }
 
+    /**
+     * @param key the key whose hash value is expected to be handled by the server
+     * @param expectedRole the expected type of the role which belongs to the hash range (in which
+     *        the hash value of the key is)
+     * @return true if the key's hash value is managed by the server and the role for that range is
+     *         the same as the expected one
+     */
+    private boolean keyIsManagedByServer(String key, Role expectedRole) {
+        for (HashRangeWithRole rangeWithRole : rangesManagedByServer.getRangesWithRoles()) {
+            boolean keyIsContainedInTheRange =
+                    rangeWithRole.getHashRange().contains(HashingUtil.getHash(key));
+            boolean roleIsTheExpected = expectedRole.equals(rangeWithRole.getRole());
+            if (keyIsContainedInTheRange && roleIsTheExpected) {
+                return true;
+            } else if (keyIsContainedInTheRange && !roleIsTheExpected) {
+                return false;
+            }
+        }
+        return false;
     }
 
 }

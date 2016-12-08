@@ -6,10 +6,11 @@ import junit.framework.TestSuite;
 public class SerializationValidationTests {
 
     public static Test suite() {
-        TestSuite clientSuite = new TestSuite("Scalable Storage Service SerializationTest-Suite");
+        TestSuite clientSuite = new TestSuite("Replicated Storage Service SerializationTest-Suite");
         clientSuite.addTestSuite(HashTest.class);
         clientSuite.addTestSuite(HashRangeTest.class);
         clientSuite.addTestSuite(HashRangeWithRoleTest.class);
+        clientSuite.addTestSuite(HashRangesWithRolesTest.class);
         clientSuite.addTestSuite(KVAdminMessageTest.class);
         clientSuite.addTestSuite(KVMessageTest.class);
         clientSuite.addTestSuite(KVTransferMessageTest.class);

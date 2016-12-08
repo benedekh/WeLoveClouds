@@ -16,6 +16,12 @@ import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.server.models.replication.HashRangeWithRole;
 import weloveclouds.server.models.replication.Role;
 
+/**
+ * Tests for the {@link HashRangeWithRole} to verify its serialization and deserialization
+ * processes.
+ * 
+ * @author Benedek
+ */
 public class HashRangeWithRoleTest extends TestCase {
 
     private static final IDeserializer<HashRangeWithRole, String> hashRangeWithRoleDeserializer =

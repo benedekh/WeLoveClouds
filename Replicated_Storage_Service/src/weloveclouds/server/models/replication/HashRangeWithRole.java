@@ -4,6 +4,12 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 
+/**
+ * Encapsulates a {@link HashRange} with a {@link Role} that represents the role of the node
+ * regarding that hash range.
+ * 
+ * @author Benedek
+ */
 public class HashRangeWithRole {
 
     private HashRange hashRange;
@@ -74,6 +80,11 @@ public class HashRangeWithRole {
                 role.toString());
     }
 
+    /**
+     * Builder pattern to create a new {@link HashRangeWithRole} instance.
+     * 
+     * @author Benedek
+     */
     public static class Builder {
         private HashRange hashRange;
         private Role role;
