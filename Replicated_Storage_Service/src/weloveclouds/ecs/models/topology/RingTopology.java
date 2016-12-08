@@ -63,4 +63,6 @@ public class RingTopology<T> {
     public RingTopology<T> updateWith(RingTopology newRingTopology) {
         return updateWith(newRingTopology.getNodes());
     }
+
+
 }
