@@ -77,13 +77,13 @@ public class SerializedNode {
             return this;
         }
 
-        public Builder serializedReplicas(String serializedReplicas) {
-            this.serializedReplicas = serializedReplicas;
+        public Builder addSerializedReplica(String serializedReplicas) {
+            this.serializedReplicas += serializedReplicas;
             return this;
         }
 
-        public Builder serializedChildHashRanges(String serializedChildHashRanges) {
-            this.serializedChildHashRanges = serializedChildHashRanges;
+        public Builder addSerializedChildHashRange(String serializedChildHashRanges) {
+            this.serializedChildHashRanges += serializedChildHashRanges;
             return this;
         }
 

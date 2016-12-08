@@ -2,14 +2,19 @@ package weloveclouds.ecs.serialization;
 
 import com.google.inject.Inject;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.serialization.models.SerializedNode;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
-import static weloveclouds.ecs.serialization.SerializationTokens.*;
+import static weloveclouds.ecs.serialization.SerializationTokens.CHILD_HASH_RANGE_END_TOKEN;
+import static weloveclouds.ecs.serialization.SerializationTokens.CHILD_HASH_RANGE_START_TOKEN;
+import static weloveclouds.ecs.serialization.SerializationTokens.REPLICA_END_TOKEN;
+import static weloveclouds.ecs.serialization.SerializationTokens.REPLICA_START_TOKEN;
 
 /**
  * Created by Benoit on 2016-12-08.
@@ -33,13 +38,31 @@ public class StorageNodeSerializer implements ISerializer<String, StorageNode> {
 
     @Override
     public String serialize(StorageNode nodeToSerialize) {
-        String serializedNode = "";
+        SerializedNode.Builder serializedNodeBuilder = new SerializedNode.Builder();
 
         try {
-            
-        } catch (Exception e) {
+            serializedNodeBuilder
+                    .serializedName(nodeToSerialize.getId())
+                    .serializedConnectionInfos(serverConnectionInfoISerializer.serialize
+                            (nodeToSerialize.getServerConnectionInfo()))
+                    .serializedHashKey(hashSerializer.serialize(nodeToSerialize.getHashKey()))
+                    .serializedHashRange(hashRangeSerializer.serialize(nodeToSerialize
+                            .getHashRange()));
 
+            for (StorageNode replica : nodeToSerialize.getReplicas()) {
+                serializedNodeBuilder.addSerializedReplica(CustomStringJoiner.join("",
+                        REPLICA_START_TOKEN, serverConnectionInfoISerializer.serialize(replica
+                                .getServerConnectionInfo()), REPLICA_END_TOKEN));
+            }
+
+            for (HashRange childHashRange : nodeToSerialize.getChildHashranges()) {
+                serializedNodeBuilder.addSerializedChildHashRange(CustomStringJoiner.join("",
+                        CHILD_HASH_RANGE_START_TOKEN, hashRangeSerializer.serialize
+                                (childHashRange), CHILD_HASH_RANGE_END_TOKEN));
+            }
+        } catch (Exception e) {
+            //log throw
         }
-        return serializedNode;
+        return serializedNodeBuilder.build().toString();
     }
 }

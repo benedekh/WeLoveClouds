@@ -30,11 +30,17 @@ import weloveclouds.ecs.models.tasks.EcsBatchFactory;
 import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
 import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
 import weloveclouds.ecs.models.topology.RingTopology;
+import weloveclouds.ecs.serialization.NodeHealthInfosSerializer;
+import weloveclouds.ecs.serialization.RingTopologySerializer;
+import weloveclouds.ecs.serialization.StorageNodeSerializer;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.commons.utils.ListUtils;
 import weloveclouds.ecs.utils.RingMetadataHelper;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.kvstore.serialization.helper.HashRangeSerializer;
+import weloveclouds.kvstore.serialization.helper.HashSerializer;
+import weloveclouds.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 
 
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;
@@ -246,6 +252,10 @@ public class ExternalConfigurationService implements Observer {
                 if (!batch.hasFailed()) {
                     distributedService.initializeWith(repository.getNodesWithStatus(INITIALIZED));
                     initializeNodesWithMetadata();
+                    String test = new RingTopologySerializer<>(new StorageNodeSerializer(new
+                            ServerConnectionInfoSerializer(), new HashSerializer(), new
+                            HashRangeSerializer(), new NodeHealthInfosSerializer(new
+                            ServerConnectionInfoSerializer()))).serialize(distributedService.getTopology());
                 } else {
                     status = EcsStatus.UNINITIALIZED;
                 }

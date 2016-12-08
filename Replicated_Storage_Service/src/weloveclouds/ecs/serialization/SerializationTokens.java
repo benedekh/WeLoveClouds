@@ -4,6 +4,8 @@ package weloveclouds.ecs.serialization;
  * Created by Benoit on 2016-12-08.
  */
 public class SerializationTokens {
+    public static final String TOPOLOGY_START_TOKEN = "<TOPOLOGY>";
+    public static final String TOPOLOGY_END_TOKEN = "</TOPOLOGY>";
     public static final String ORDERED_NODES_START_TOKEN = "<ORDERED_NODES>";
     public static final String ORDERED_NODES_END_TOKEN = "</ORDERED_NODES>";
     public static final String NODE_START_TOKEN = "<NODE>";
