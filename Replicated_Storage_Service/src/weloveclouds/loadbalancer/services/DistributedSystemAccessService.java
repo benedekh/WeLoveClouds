@@ -3,6 +3,7 @@ package weloveclouds.loadbalancer.services;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.RingMetadata;
@@ -18,36 +19,62 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
 public class DistributedSystemAccessService {
     private static final int FIRST = 0;
     private DistributedService distributedService;
+    private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
 
     public void updateServiceHealthWith(NodeHealthInfos serverHealthInfos) {
-        synchronized (distributedService) {
+        try {
+            reentrantReadWriteLock.writeLock().lock();
             distributedService.getNodeFrom(serverHealthInfos.getServerConnectionInfo())
                     .updateHealthInfos(serverHealthInfos);
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
         }
+
     }
 
     public void updateServiceRingMetadataWith(RingMetadata ringMetadata) {
-        synchronized (distributedService) {
+        try {
+            reentrantReadWriteLock.writeLock().lock();
             distributedService.updateRingMetadataWith(ringMetadata);
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
         }
     }
 
     public StorageNode getReadServerFor(String key) throws UnableToFindResponsibleForReadingException {
-
-        return getHealthiestNodeFrom(distributedService.getResponsibleForReadingOf(new Hash(key.getBytes())));
+        StorageNode healthiestNode = null;
+        try {
+            reentrantReadWriteLock.readLock().lock();
+            healthiestNode = getHealthiestNodeFrom(distributedService.getResponsibleForReadingOf(new Hash(key.getBytes())));
+        } finally {
+            reentrantReadWriteLock.readLock().unlock();
+        }
+        return healthiestNode;
     }
 
     public StorageNode getWriteServerFor(String key) throws UnableToFindResponsibleForWritingException {
-        return distributedService.getResponsibleForWritingOf(new Hash(key.getBytes()));
+        StorageNode writeServer = null;
+        try {
+            reentrantReadWriteLock.readLock().lock();
+            writeServer = distributedService.getResponsibleForWritingOf(new Hash(key.getBytes()));
+        } finally {
+            reentrantReadWriteLock.readLock().unlock();
+        }
+        return writeServer;
     }
 
     private StorageNode getHealthiestNodeFrom(List<StorageNode> storageNodes) {
-        Collections.sort(storageNodes, new Comparator<StorageNode>() {
-            @Override
-            public int compare(StorageNode node1, StorageNode node2) {
-                return node1.getHealthInfos().compareTo(node2.getHealthInfos());
-            }
-        });
+        try {
+            reentrantReadWriteLock.readLock().lock();
+            Collections.sort(storageNodes, new Comparator<StorageNode>() {
+                @Override
+                public int compare(StorageNode node1, StorageNode node2) {
+                    return node1.getHealthInfos().compareTo(node2.getHealthInfos());
+                }
+            });
+        } finally {
+            reentrantReadWriteLock.readLock().unlock();
+        }
         return storageNodes.get(FIRST);
     }
 }

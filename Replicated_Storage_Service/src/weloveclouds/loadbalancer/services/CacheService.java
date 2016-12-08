@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import weloveclouds.loadbalancer.exceptions.cache.UnableToFindRequestedKeyException;
 import weloveclouds.loadbalancer.models.cache.ICache;
 
@@ -13,6 +15,7 @@ import weloveclouds.loadbalancer.models.cache.ICache;
 public class CacheService implements ICacheService<String, String> {
     private static final Logger LOGGER = Logger.getLogger(CacheService.class);
     private ICache<String, String> cache;
+    private ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
 
     @Inject
     public CacheService(ICache<String, String> cache) {
@@ -20,17 +23,34 @@ public class CacheService implements ICacheService<String, String> {
     }
 
     @Override
-    synchronized public String get(String key) throws UnableToFindRequestedKeyException {
-        return cache.get(key);
+    public String get(String key) throws UnableToFindRequestedKeyException {
+        String value;
+        try {
+            reentrantReadWriteLock.readLock().lock();
+            value = cache.get(key);
+        } finally {
+            reentrantReadWriteLock.readLock().unlock();
+        }
+        return value;
     }
 
     @Override
-    synchronized public void put(String key, String value) {
-        cache.put(key, value);
+    public void put(String key, String value) {
+        try {
+            reentrantReadWriteLock.writeLock().lock();
+            cache.put(key, value);
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
+        }
     }
 
     @Override
-    synchronized public void delete(String key) {
-        cache.delete(key);
+    public void delete(String key) {
+        try {
+            reentrantReadWriteLock.writeLock().lock();
+            cache.delete(key);
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
+        }
     }
 }
