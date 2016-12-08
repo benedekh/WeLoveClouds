@@ -53,7 +53,7 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
             case INITKVSERVER:
                 request =
                         new InitializeKVServer(dataAccessService, receivedMessage.getRingMetadata(),
-                                receivedMessage.getTargetServerInfo().getRange());
+                                receivedMessage.getTargetServerInfo().getHashRange());
                 break;
             case START:
                 request = new StartDataAcessService(dataAccessService);
@@ -75,7 +75,7 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
             case UPDATE:
                 request =
                         new UpdateRingMetadata(dataAccessService, receivedMessage.getRingMetadata(),
-                                receivedMessage.getTargetServerInfo().getRange());
+                                receivedMessage.getTargetServerInfo().getHashRange());
                 break;
             case SHUTDOWN:
                 request = new ShutdownServer(callbackRegister);

@@ -1,5 +1,8 @@
 package weloveclouds.ecs.models.services;
 
+import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
+import static weloveclouds.commons.status.ServiceStatus.UNINITIALIZED;
+
 import java.util.List;
 
 import weloveclouds.commons.status.ServiceStatus;
@@ -9,9 +12,8 @@ import weloveclouds.ecs.utils.RingMetadataHelper;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
-
-import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
-import static weloveclouds.commons.status.ServiceStatus.UNINITIALIZED;
+import weloveclouds.server.models.replication.HashRangeWithRole;
+import weloveclouds.server.models.replication.Role;
 
 /**
  * Created by Benoit on 2016-11-30.
@@ -69,8 +71,12 @@ public class DistributedService {
                     ringTopology.getNumberOfNodes(), node.getHashKey(), previousRange);
             node.setHashRange(hashRange);
 
-            ringMetadata.addRangeInfo(new RingMetadataPart.Builder().connectionInfo(node
-                    .getServerConnectionInfo()).range(hashRange).build());
+            // TODO set the role according to the ring topology
+            HashRangeWithRole hashRangeWithRole =
+                    new HashRangeWithRole.Builder().hashRange(hashRange).role(Role.MASTER).build();
+            ringMetadata.addRangeInfo(
+                    new RingMetadataPart.Builder().connectionInfo(node.getServerConnectionInfo())
+                            .rangeWithRole(hashRangeWithRole).build());
 
             previousRange = hashRange;
         }

@@ -20,6 +20,8 @@ import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.models.replication.HashRangeWithRole;
+import weloveclouds.server.models.replication.Role;
 
 public class KVServerInitializationUtil implements AutoCloseable {
 
@@ -106,7 +108,10 @@ public class KVServerInitializationUtil implements AutoCloseable {
     private RingMetadataPart createRingMetadataPart(HashRange range) throws IOException {
         ServerConnectionInfo server = new ServerConnectionInfo.Builder().ipAddress("localhost")
                 .port(SERVER_KVCLIENT_PORT).build();
-        return new RingMetadataPart.Builder().connectionInfo(server).range(range).build();
+        HashRangeWithRole hashRangeWithRole =
+                new HashRangeWithRole.Builder().hashRange(range).role(Role.MASTER).build();
+        return new RingMetadataPart.Builder().connectionInfo(server)
+                .rangeWithRole(hashRangeWithRole).build();
     }
 
 

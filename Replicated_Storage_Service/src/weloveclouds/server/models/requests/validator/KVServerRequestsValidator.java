@@ -98,7 +98,7 @@ public class KVServerRequestsValidator {
             throw new IllegalArgumentException();
         }
 
-        validateHashRange(ringMetadataPart.getRange());
+        validateHashRange(ringMetadataPart.getHashRange());
 
         InetAddress ipAddress = ringMetadataPart.getConnectionInfo().getIpAddress();
         if (ipAddress == null) {

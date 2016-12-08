@@ -3,8 +3,8 @@ package weloveclouds.kvstore.serialization.helper;
 import org.apache.log4j.Logger;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.server.models.replication.HashRangeWithRole;
 
 /**
  * A serializer which converts a {@link RingMetadataPart} to a {@link String}.
@@ -18,7 +18,8 @@ public class RingMetadataPartSerializer implements ISerializer<String, RingMetad
 
     private ISerializer<String, ServerConnectionInfo> connectionInfoSerializer =
             new ServerConnectionInfoSerializer();
-    private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
+    private ISerializer<String, HashRangeWithRole> hashRangeWithRoleSerializer =
+            new HashRangeWithRoleSerializer();
 
     @Override
     public String serialize(RingMetadataPart target) {
@@ -27,7 +28,7 @@ public class RingMetadataPartSerializer implements ISerializer<String, RingMetad
         if (target != null) {
             LOGGER.debug("Serializing a RingMetadataPart.");
             serialized = target.toStringWithDelimiter(SEPARATOR, connectionInfoSerializer,
-                    hashRangeSerializer);
+                    hashRangeWithRoleSerializer);
             LOGGER.debug("Serializing a RingMetadataPart finished.");
         }
 

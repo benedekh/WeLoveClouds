@@ -3,6 +3,8 @@ package weloveclouds.hashing.models;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
+import weloveclouds.server.models.replication.HashRangeWithRole;
+import weloveclouds.server.models.replication.Role;
 
 /**
  * Represents an <IP, port> and <hash-range> triplet, which defines respective server (denoted by
@@ -13,28 +15,31 @@ import weloveclouds.kvstore.serialization.helper.ISerializer;
 public class RingMetadataPart {
 
     private ServerConnectionInfo connectionInfo;
-    private HashRange range;
+    private HashRangeWithRole rangeWithRole;
 
     protected RingMetadataPart(Builder builder) {
         this.connectionInfo = builder.connectionInfo;
-        this.range = builder.range;
+        this.rangeWithRole = builder.rangeWithRole;
     }
 
     public ServerConnectionInfo getConnectionInfo() {
         return connectionInfo;
     }
 
-    public HashRange getRange() {
-        return range;
+    public HashRange getHashRange() {
+        return rangeWithRole.getHashRange();
+    }
+
+    public Role getRole() {
+        return rangeWithRole.getRole();
     }
 
     /**
      * @return true if the {@link #range} contains the referred hash.
      */
     public boolean rangeContains(Hash hash) {
-        return range.contains(hash);
+        return rangeWithRole.getHashRange().contains(hash);
     }
-
 
     /**
      * Converts the object to String.
@@ -42,20 +47,21 @@ public class RingMetadataPart {
      * @param delimiter separator character among the fields
      * @param connectionInfoSerializer to convert the {@link ServerConnectionInfo} into a String
      *        representation
-     * @param hashRangeSerializer to convert the {@link HashRange} into a String representation
+     * @param hashRangeWithRoleSerializer to convert the {@link HashRangeWithRole} into a String
+     *        representation
      */
     public String toStringWithDelimiter(String delimiter,
             ISerializer<String, ServerConnectionInfo> connectionInfoSerializer,
-            ISerializer<String, HashRange> hashRangeSerializer) {
+            ISerializer<String, HashRangeWithRole> hashRangeWithRoleSerializer) {
         return CustomStringJoiner.join(delimiter,
                 connectionInfoSerializer.serialize(connectionInfo),
-                hashRangeSerializer.serialize(range));
+                hashRangeWithRoleSerializer.serialize(rangeWithRole));
     }
 
     @Override
     public String toString() {
         return CustomStringJoiner.join("", "{", "Connection info: ", connectionInfo.toString(),
-                ", Range: ", range.toString(), "}");
+                ", Range with role: ", rangeWithRole.toString(), "}");
     }
 
     @Override
@@ -95,15 +101,15 @@ public class RingMetadataPart {
      */
     public static class Builder {
         private ServerConnectionInfo connectionInfo;
-        private HashRange range;
+        private HashRangeWithRole rangeWithRole;
 
         public Builder connectionInfo(ServerConnectionInfo connectionInfo) {
             this.connectionInfo = connectionInfo;
             return this;
         }
 
-        public Builder range(HashRange range) {
-            this.range = range;
+        public Builder rangeWithRole(HashRangeWithRole rangeWithRole) {
+            this.rangeWithRole = rangeWithRole;
             return this;
         }
 

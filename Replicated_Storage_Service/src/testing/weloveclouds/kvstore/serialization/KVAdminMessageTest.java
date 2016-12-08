@@ -22,6 +22,8 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.server.models.replication.HashRangeWithRole;
+import weloveclouds.server.models.replication.Role;
 
 /**
  * Tests for the {@link KVAdminMessage} to verify its serialization and deserialization processes.
@@ -38,19 +40,21 @@ public class KVAdminMessageTest extends TestCase {
     @Test
     public void testKVAdminMessageSerializationAndDeserialization()
             throws DeserializationException, UnknownHostException {
-
-        RingMetadataPart metadataPart1 = new RingMetadataPart.Builder()
-                .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080)
-                        .build())
-                .range(new HashRange.Builder().begin(HashingUtil.getHash("a"))
+        HashRangeWithRole hashRangeWithRole1 = new HashRangeWithRole.Builder()
+                .hashRange(new HashRange.Builder().begin(HashingUtil.getHash("a"))
                         .end(HashingUtil.getHash("b")).build())
-                .build();
+                .role(Role.MASTER).build();
+        RingMetadataPart metadataPart1 = new RingMetadataPart.Builder().connectionInfo(
+                new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build())
+                .rangeWithRole(hashRangeWithRole1).build();
 
-        RingMetadataPart metadataPart2 = new RingMetadataPart.Builder()
-                .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost").port(8082)
-                        .build())
-                .range(new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
-                .build();
+        HashRangeWithRole hashRangeWithRole2 = new HashRangeWithRole.Builder()
+                .hashRange(
+                        new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
+                .role(Role.MASTER).build();
+        RingMetadataPart metadataPart2 = new RingMetadataPart.Builder().connectionInfo(
+                new ServerConnectionInfo.Builder().ipAddress("localhost").port(8082).build())
+                .rangeWithRole(hashRangeWithRole2).build();
 
         RingMetadata metadata =
                 new RingMetadata(new HashSet<>(Arrays.asList(metadataPart1, metadataPart2)));

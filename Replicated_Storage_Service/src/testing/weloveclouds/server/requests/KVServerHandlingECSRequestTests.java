@@ -28,6 +28,8 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.server.models.configuration.KVServerPortConstants;
+import weloveclouds.server.models.replication.HashRangeWithRole;
+import weloveclouds.server.models.replication.Role;
 
 public class KVServerHandlingECSRequestTests {
 
@@ -120,15 +122,19 @@ public class KVServerHandlingECSRequestTests {
                 .port(SERVER1_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
         HashRange rangeForServer1 = new HashRange.Builder().begin(HashingUtil.getHash("a"))
                 .end(HashingUtil.getHash("a")).build();
+        HashRangeWithRole rangeWithRoleForServer1 = new HashRangeWithRole.Builder()
+                .hashRange(rangeForServer1).role(Role.MASTER).build();
         RingMetadataPart part1 = new RingMetadataPart.Builder().connectionInfo(server1)
-                .range(rangeForServer1).build();
+                .rangeWithRole(rangeWithRoleForServer1).build();
 
         ServerConnectionInfo server2 = new ServerConnectionInfo.Builder().ipAddress("localhost")
                 .port(SERVER2_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
         HashRange rangeForServer2 = new HashRange.Builder().begin(HashingUtil.getHash("b"))
                 .end(HashingUtil.getHash("b")).build();
+        HashRangeWithRole rangeWithRoleForServer2 = new HashRangeWithRole.Builder()
+                .hashRange(rangeForServer2).role(Role.MASTER).build();
         RingMetadataPart part2 = new RingMetadataPart.Builder().connectionInfo(server2)
-                .range(rangeForServer2).build();
+                .rangeWithRole(rangeWithRoleForServer2).build();
 
         RingMetadata ringMetadata = new RingMetadata(new HashSet<>(Arrays.asList(part1, part2)));
 
@@ -149,15 +155,19 @@ public class KVServerHandlingECSRequestTests {
                 .port(SERVER1_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
         HashRange rangeForServer1 =
                 new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
+        HashRangeWithRole rangeWithRoleForServer1 = new HashRangeWithRole.Builder()
+                .hashRange(rangeForServer1).role(Role.MASTER).build();
         RingMetadataPart part1 = new RingMetadataPart.Builder().connectionInfo(server1)
-                .range(rangeForServer1).build();
+                .rangeWithRole(rangeWithRoleForServer1).build();
 
         ServerConnectionInfo server2 = new ServerConnectionInfo.Builder().ipAddress("localhost")
                 .port(SERVER2_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
         HashRange rangeForServer2 = new HashRange.Builder().begin(HashingUtil.getHash("1"))
                 .end(HashingUtil.getHash("2")).build();
+        HashRangeWithRole rangeWithRoleForServer2 = new HashRangeWithRole.Builder()
+                .hashRange(rangeForServer2).role(Role.MASTER).build();
         RingMetadataPart part2 = new RingMetadataPart.Builder().connectionInfo(server2)
-                .range(rangeForServer2).build();
+                .rangeWithRole(rangeWithRoleForServer2).build();
 
         RingMetadata ringMetadata = new RingMetadata(new HashSet<>(Arrays.asList(part1)));
 
@@ -177,8 +187,10 @@ public class KVServerHandlingECSRequestTests {
                 .ipAddress("localhost").port(SERVER1_KVSERVER_REQUEST_ACCEPTING_PORT).build();
         HashRange targetRange = new HashRange.Builder().begin(HashingUtil.getHash("b"))
                 .end(HashingUtil.getHash("b")).build();
+        HashRangeWithRole targetRangeWithRole =
+                new HashRangeWithRole.Builder().hashRange(targetRange).role(Role.MASTER).build();
         RingMetadataPart target = new RingMetadataPart.Builder().connectionInfo(targetServer)
-                .range(targetRange).build();
+                .rangeWithRole(targetRangeWithRole).build();
 
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.MOVEDATA)
                 .targetServerInfo(target).build();

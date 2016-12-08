@@ -7,8 +7,9 @@ public class SerializationValidationTests {
 
     public static Test suite() {
         TestSuite clientSuite = new TestSuite("Scalable Storage Service SerializationTest-Suite");
-        clientSuite.addTestSuite(HashRangeTest.class);
         clientSuite.addTestSuite(HashTest.class);
+        clientSuite.addTestSuite(HashRangeTest.class);
+        clientSuite.addTestSuite(HashRangeWithRoleTest.class);
         clientSuite.addTestSuite(KVAdminMessageTest.class);
         clientSuite.addTestSuite(KVMessageTest.class);
         clientSuite.addTestSuite(KVTransferMessageTest.class);
