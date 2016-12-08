@@ -50,8 +50,12 @@ public class KVTransferMessageTest extends TestCase {
         MovableStorageUnits storageUnits =
                 new MovableStorageUnits(new HashSet<>(Arrays.asList(unit1, unit2)));
 
+        String removableKey = "apple";
+        String responseMessage = "hello world";
+
         KVTransferMessage transferMessage = new KVTransferMessage.Builder()
-                .storageUnits(storageUnits).status(StatusType.TRANSFER).build();
+                .storageUnits(storageUnits).status(StatusType.TRANSFER).removableKey(removableKey)
+                .responseMessage(responseMessage).build();
 
         SerializedMessage serializedMessage = transferMessageSerializer.serialize(transferMessage);
         KVTransferMessage deserializedMessage =

@@ -41,6 +41,16 @@ public interface IMovableDataAccessService extends IDataAccessService {
     public void removeEntries(HashRange range) throws StorageException;
 
     /**
+     * Removes an entry denoted by its key from the persistent storage without checking either the
+     * role (@link weloveclouds.server.models.replication.Role) of this server regarding that key,
+     * or the fact that the key is managed by the server.
+     * 
+     * @param key the key of the entry that shall be removed
+     * @throws StorageException if an error occurs
+     */
+    public void removeEntryWithoutAuthorization(String key) throws StorageException;
+
+    /**
      * Merges those storage units which are not full yet.
      * 
      * @throws StorageException if the service was not initialized yet

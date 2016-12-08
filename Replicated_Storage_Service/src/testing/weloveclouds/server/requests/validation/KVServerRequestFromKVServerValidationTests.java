@@ -63,7 +63,7 @@ public class KVServerRequestFromKVServerValidationTests {
 
         KVTransferMessage response =
                 kvTransferMessageDeserializer.deserialize(serverCommunication.receive());
-        Assert.assertEquals(StatusType.TRANSFER_ERROR, response.getStatus());
+        Assert.assertEquals(StatusType.ERROR, response.getStatus());
     }
 
 

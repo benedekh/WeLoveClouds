@@ -123,7 +123,7 @@ public class StorageUnitsTransporter {
                     communicationApi.sendAndExpectForResponse(serializedMessage.getBytes());
 
             KVTransferMessage response = transferMessageDeserializer.deserialize(responsePacket);
-            if (response.getStatus() == StatusType.TRANSFER_ERROR) {
+            if (response.getStatus() == StatusType.ERROR) {
                 throw new UnableToSendContentToServerException(response.getResponseMessage());
             }
         } catch (DeserializationException | IOException ex) {

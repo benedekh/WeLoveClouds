@@ -38,6 +38,9 @@ public class KVServerRequestFactory
             case TRANSFER:
                 request = new Transfer(dataAccessService, receivedMessage.getStorageUnits());
                 break;
+            case REMOVE_ENTRY_BY_KEY:
+                request = new RemoveEntry(dataAccessService, receivedMessage.getRemovableKey());
+                break;
             default:
                 String errorMessage = "Unrecognized command for transfer message";
                 LOGGER.error(join(" ", errorMessage, receivedMessage.toString()));

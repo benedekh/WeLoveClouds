@@ -153,46 +153,12 @@ public class MovableDataAccessService extends DataAccessService
 
     @Override
     public synchronized void removeEntry(String key) throws StorageException {
-        if (!isServiceInitialized()) {
-            incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
-            LOGGER.error("Remove request while the data acess service was uninitialized.");
-            throw new UninitializedServiceException();
-        }
+        removeEntry(key, true);
+    }
 
-        switch (serviceRecentStatus) {
-            case STARTED:
-                try {
-                    checkIfKeyIsManagedByServer(key, Role.MASTER);
-                } catch (KeyIsNotManagedByServiceException ex) {
-                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
-                    throw ex;
-                }
-
-                try {
-                    Instant start = Instant.now();
-                    super.removeEntry(key);
-                    recordExecutionTime(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, EXEC_TIME,
-                            new Duration(start, Instant.now()));
-                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, SUCCESS);
-                } catch (StorageException ex) {
-                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
-                    throw ex;
-                }
-                break;
-            case STOPPED:
-                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
-                LOGGER.error(
-                        "Remove request is rejected, because the data access service is stopped.");
-                throw new ServiceIsStoppedException();
-            case WRITELOCK_ACTIVE:
-                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
-                LOGGER.error(
-                        "Remove request is rejected, because write lock is active on the data access service.");
-                throw new WriteLockIsActiveException();
-            default:
-                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
-                throw new StorageException("Unrecognized service status.");
-        }
+    @Override
+    public void removeEntryWithoutAuthorization(String key) throws StorageException {
+        removeEntry(key, false);
     }
 
     @Override
@@ -281,6 +247,60 @@ public class MovableDataAccessService extends DataAccessService
     @Override
     public boolean isServiceInitialized() {
         return ringMetadata != null && rangesManagedByServer != null;
+    }
+
+    /**
+     * Removes the respective key along with the stored value from the storage
+     * 
+     * @param key the key of the entry that shall be removed
+     * @param authorizationShallBeChecked if it has to be checked that the server really handles
+     *        that key
+     * @throws StorageException if any error occurs
+     */
+    private void removeEntry(String key, boolean authorizationShallBeChecked)
+            throws StorageException {
+        if (!isServiceInitialized()) {
+            incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
+            LOGGER.error("Remove request while the data acess service was uninitialized.");
+            throw new UninitializedServiceException();
+        }
+
+        switch (serviceRecentStatus) {
+            case STARTED:
+                if (authorizationShallBeChecked) {
+                    try {
+                        checkIfKeyIsManagedByServer(key, Role.MASTER);
+                    } catch (KeyIsNotManagedByServiceException ex) {
+                        incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
+                        throw ex;
+                    }
+                }
+
+                try {
+                    Instant start = Instant.now();
+                    super.removeEntry(key);
+                    recordExecutionTime(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, EXEC_TIME,
+                            new Duration(start, Instant.now()));
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, SUCCESS);
+                } catch (StorageException ex) {
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
+                    throw ex;
+                }
+                break;
+            case STOPPED:
+                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
+                LOGGER.error(
+                        "Remove request is rejected, because the data access service is stopped.");
+                throw new ServiceIsStoppedException();
+            case WRITELOCK_ACTIVE:
+                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
+                LOGGER.error(
+                        "Remove request is rejected, because write lock is active on the data access service.");
+                throw new WriteLockIsActiveException();
+            default:
+                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
+                throw new StorageException("Unrecognized service status.");
+        }
     }
 
     /**

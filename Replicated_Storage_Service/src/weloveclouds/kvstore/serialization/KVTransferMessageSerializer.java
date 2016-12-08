@@ -36,6 +36,7 @@ public class KVTransferMessageSerializer
         // original fields
         StatusType status = unserializedMessage.getStatus();
         MovableStorageUnits storageUnits = unserializedMessage.getStorageUnits();
+        String removableKey = unserializedMessage.getRemovableKey();
         String responseMessage = unserializedMessage.getResponseMessage();
 
         // string representation
@@ -43,7 +44,8 @@ public class KVTransferMessageSerializer
         String storageUnitsStr = storageUnitsSerializer.serialize(storageUnits);
 
         // merged string representation
-        String serialized = join(SEPARATOR, statusStr, storageUnitsStr, responseMessage);
+        String serialized =
+                join(SEPARATOR, statusStr, storageUnitsStr, removableKey, responseMessage);
         String prefixed = CustomStringJoiner.join("", PREFIX, serialized);
         String postfixed = CustomStringJoiner.join("", prefixed, POSTFIX);
 

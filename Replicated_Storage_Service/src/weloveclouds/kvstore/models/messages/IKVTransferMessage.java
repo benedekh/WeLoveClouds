@@ -11,8 +11,9 @@ public interface IKVTransferMessage {
 
     public enum StatusType {
         TRANSFER, /* Storage unit transfer - request */
-        TRANSFER_SUCCESS, /* Transfer was successful */
-        TRANSFER_ERROR /* Transfer was unsuccessful */
+        REMOVE_ENTRY_BY_KEY, /* Remove an entry denoted by its key - request */
+        SUCCESS, /* Transfer was successful */
+        ERROR /* Transfer was unsuccessful */
     }
 
     /**
@@ -27,7 +28,12 @@ public interface IKVTransferMessage {
     public MovableStorageUnits getStorageUnits();
 
     /**
-     * @return if the message is a response then the message text can be obtained here.
+     * @return the key whose entry shall be removed
+     */
+    public String getRemovableKey();
+
+    /**
+     * @return if the message is a response then the message text can be obtained here
      */
     public String getResponseMessage();
 

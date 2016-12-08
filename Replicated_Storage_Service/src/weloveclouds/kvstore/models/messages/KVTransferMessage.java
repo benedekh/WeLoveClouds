@@ -13,11 +13,13 @@ public class KVTransferMessage implements IKVTransferMessage {
     private StatusType status;
 
     private MovableStorageUnits storageUnits;
+    private String removableKey;
     private String responseMessage;
 
     protected KVTransferMessage(Builder builder) {
         this.status = builder.status;
         this.storageUnits = builder.storageUnits;
+        this.removableKey = builder.removableKey;
         this.responseMessage = builder.responseMessage;
     }
 
@@ -32,6 +34,11 @@ public class KVTransferMessage implements IKVTransferMessage {
     }
 
     @Override
+    public String getRemovableKey() {
+        return removableKey;
+    }
+
+    @Override
     public String getResponseMessage() {
         return responseMessage;
     }
@@ -40,6 +47,7 @@ public class KVTransferMessage implements IKVTransferMessage {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((removableKey == null) ? 0 : removableKey.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result + ((storageUnits == null) ? 0 : storageUnits.hashCode());
@@ -58,6 +66,13 @@ public class KVTransferMessage implements IKVTransferMessage {
             return false;
         }
         KVTransferMessage other = (KVTransferMessage) obj;
+        if (removableKey == null) {
+            if (other.removableKey != null) {
+                return false;
+            }
+        } else if (!removableKey.equals(other.removableKey)) {
+            return false;
+        }
         if (responseMessage == null) {
             if (other.responseMessage != null) {
                 return false;
@@ -82,8 +97,8 @@ public class KVTransferMessage implements IKVTransferMessage {
     public String toString() {
         return CustomStringJoiner.join(" ", "Message status:",
                 status == null ? null : status.toString(), ", Storage units:",
-                storageUnits == null ? null : storageUnits.toString(), ", Response message: ",
-                responseMessage == null ? null : responseMessage.toString());
+                storageUnits == null ? null : storageUnits.toString(), ", Removable key: ",
+                removableKey, ", Response message: ", responseMessage);
     }
 
     /**
@@ -94,6 +109,7 @@ public class KVTransferMessage implements IKVTransferMessage {
     public static class Builder {
         private StatusType status;
         private MovableStorageUnits storageUnits;
+        private String removableKey;
         private String responseMessage;
 
         public Builder status(StatusType status) {
@@ -106,6 +122,11 @@ public class KVTransferMessage implements IKVTransferMessage {
             return this;
         }
 
+        public Builder removableKey(String removableKey) {
+            this.removableKey = removableKey;
+            return this;
+        }
+
         public Builder responseMessage(String message) {
             this.responseMessage = message;
             return this;
@@ -115,5 +136,7 @@ public class KVTransferMessage implements IKVTransferMessage {
             return new KVTransferMessage(this);
         }
     }
+
+
 
 }
