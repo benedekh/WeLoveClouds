@@ -4,9 +4,10 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
@@ -21,18 +22,18 @@ import weloveclouds.server.store.exceptions.StorageException;
  */
 public class MovableStorageUnit extends PersistedStorageUnit {
 
-    private static final long serialVersionUID = -5804417133252642642L;
+    private static final Logger LOGGER = Logger.getLogger(MovableStorageUnit.class);
 
     public MovableStorageUnit(PersistedStorageUnit other) {
-        super(other.entries, other.getPath());
+        super(other.entries, other.filePath);
     }
 
-    public MovableStorageUnit(Map<String, String> entries, Path filePath) {
+    public MovableStorageUnit(HashMap<String, String> entries, Path filePath) {
         super(entries, filePath);
     }
 
     public MovableStorageUnit copyEntries(HashRange range) {
-        return new MovableStorageUnit(filterEntries(range), getPath());
+        return new MovableStorageUnit(filterEntries(range), filePath);
     }
 
     /**
@@ -43,15 +44,20 @@ public class MovableStorageUnit extends PersistedStorageUnit {
      * @throws StorageException if an error occurs
      */
     public Set<String> removeEntries(HashRange range) {
-        Set<String> removable = filterEntries(range).keySet();
-        for (String key : removable) {
-            try {
-                removeEntry(key);
-            } catch (StorageException ex) {
-                getLogger().error(ex);
+        try {
+            acquireLock();
+            Set<String> removable = filterEntries(range).keySet();
+            for (String key : removable) {
+                try {
+                    removeEntry(key);
+                } catch (StorageException ex) {
+                    LOGGER.error(ex);
+                }
             }
+            return removable;
+        } finally {
+            releaseLock();
         }
-        return removable;
     }
 
     /**
@@ -62,21 +68,29 @@ public class MovableStorageUnit extends PersistedStorageUnit {
      * @return the keys of the entries which were moved from the other unit
      */
     public Set<String> moveEntriesFrom(PersistedStorageUnit otherUnit) {
-        Set<String> movedKeys = new HashSet<>();
-        Iterator<String> otherKeysIterator = otherUnit.getKeys().iterator();
+        try {
+            acquireLock();
+            otherUnit.acquireLock();
 
-        while (!isFull() && otherKeysIterator.hasNext()) {
-            try {
-                String key = otherKeysIterator.next();
-                putEntry(new KVEntry(key, otherUnit.getValue(key)));
-                otherUnit.removeEntry(key);
-                movedKeys.add(key);
-            } catch (StorageException ex) {
-                getLogger().error(ex);
+            Set<String> movedKeys = new HashSet<>();
+            Iterator<String> otherKeysIterator = otherUnit.getKeys().iterator();
+
+            while (!isFull() && otherKeysIterator.hasNext()) {
+                try {
+                    String key = otherKeysIterator.next();
+                    putEntry(new KVEntry(key, otherUnit.getValue(key)));
+                    otherUnit.removeEntry(key);
+                    movedKeys.add(key);
+                } catch (StorageException ex) {
+                    LOGGER.error(ex);
+                }
             }
-        }
 
-        return movedKeys;
+            return movedKeys;
+        } finally {
+            releaseLock();
+            otherUnit.releaseLock();
+        }
     }
 
     /**
@@ -85,26 +99,36 @@ public class MovableStorageUnit extends PersistedStorageUnit {
      * @param range within that shall be the hash values of the keys
      * @return the key-value pairs of those entries which satisfy the filter
      */
-    private Map<String, String> filterEntries(HashRange range) {
-        Map<String, String> filtered = new HashMap<>();
-        for (String key : entries.keySet()) {
-            Hash hash = HashingUtil.getHash(key);
-            if (range.contains(hash)) {
-                filtered.put(key, entries.get(key));
+    private HashMap<String, String> filterEntries(HashRange range) {
+        try {
+            acquireAndLoad();
+            HashMap<String, String> filtered = new HashMap<>();
+            for (String key : entries.keySet()) {
+                Hash hash = HashingUtil.getHash(key);
+                if (range.contains(hash)) {
+                    filtered.put(key, entries.get(key));
+                }
             }
+            return filtered;
+        } finally {
+            releaseAndSaveSilent();
         }
-        return filtered;
     }
 
     public String toStringWithDelimiter(String betweenEntries, String insideEntry) {
-        StringBuilder sb = new StringBuilder();
-        for (Entry<String, String> entry : entries.entrySet()) {
-            KVEntry compact = new KVEntry(entry.getKey(), entry.getValue());
-            sb.append(compact.toStringWithDelimiter(insideEntry));
-            sb.append(betweenEntries);
+        try {
+            acquireAndLoad();
+            StringBuilder sb = new StringBuilder();
+            for (Entry<String, String> entry : entries.entrySet()) {
+                KVEntry compact = new KVEntry(entry.getKey(), entry.getValue());
+                sb.append(compact.toStringWithDelimiter(insideEntry));
+                sb.append(betweenEntries);
+            }
+            sb.setLength(sb.length() - betweenEntries.length());
+            return sb.toString();
+        } finally {
+            releaseAndSaveSilent();
         }
-        sb.setLength(sb.length() - betweenEntries.length());
-        return sb.toString();
     }
 
     @Override

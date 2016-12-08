@@ -7,12 +7,11 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayDeque;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -74,15 +73,14 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 putEntryIntoStorageUnit(storageUnit, entry);
                 storageUnits.put(key, storageUnit);
             } else {
-                String filename = UUID.randomUUID().toString();
-                Path path = Paths.get(rootPath.toString(), join(".", filename, FILE_EXTENSION));
+                Path path = FileUtility.generateUniqueFilePath(rootPath, FILE_EXTENSION);
 
                 // if there is no, then create a new storage unit
                 storageUnit = new PersistedStorageUnit(path);
                 storageUnit.putEntry(entry);
 
                 storageUnits.put(key, storageUnit);
-                unitsWithFreeSpace.add(storageUnit);
+                putStorageUnitIntoFreeSpaceCache(storageUnit);
             }
         }
 
@@ -117,9 +115,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 if (storageUnit.isEmpty()) {
                     removeStorageUnit(storageUnit);
                 } else {
-                    if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
-                        unitsWithFreeSpace.add(storageUnit);
-                    }
+                    putStorageUnitIntoFreeSpaceCache(storageUnit);
                 }
             }
         } catch (NullPointerException ex) {
@@ -141,15 +137,41 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         removeKeyFromStore(key);
     }
 
+    /**
+     * Puts the respective storage unit into the cache for free storage units.
+     */
+    protected void putStorageUnitIntoFreeSpaceCache(PersistedStorageUnit storageUnit) {
+        if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
+            unitsWithFreeSpace.add(storageUnit);
+            storageUnit.enableSavingIntoMemory();
+        }
+    }
+
+    /**
+     * Removes the respective storage unit from the cache for free storage units.
+     */
+    protected void removeStorageUnitFromFreeSpaceCache(PersistedStorageUnit storageUnit) {
+        boolean removeWasSuccessful = unitsWithFreeSpace.remove(storageUnit);
+        if (removeWasSuccessful) {
+            storageUnit.disableSavingIntoMemory();
+        }
+    }
+
+    /**
+     * Removes the respective key from the store.
+     */
     protected void removeKeyFromStore(String key) {
         storageUnits.remove(key);
         notifyObservers(key);
     }
 
+    /**
+     * Removes the respective storage unit from the store completely.
+     * 
+     * @throws IOException if an error occurred
+     */
     protected void removeStorageUnit(PersistedStorageUnit storageUnit) throws IOException {
-        if (unitsWithFreeSpace.contains(storageUnit)) {
-            unitsWithFreeSpace.remove(storageUnit);
-        }
+        removeStorageUnitFromFreeSpaceCache(storageUnit);
         storageUnit.deleteFile();
     }
 
@@ -160,20 +182,13 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     }
 
     /**
-     * Clears the internal meta-data cache structures of the persistent storage.
-     */
-    public void clear() {
-        storageUnits.clear();
-        unitsWithFreeSpace.clear();
-    }
-
-    /**
      * Scans through the hard storage and notes which keys were already stored in the hard storage
      * on what paths.
      */
     public void loadStorageUnits() {
         LOGGER.debug("Initializing persistent store with already stored keys.");
-        clear();
+        storageUnits.clear();
+        unitsWithFreeSpace.clear();
 
         for (File file : filterFilesInRootPath()) {
             try {
@@ -185,9 +200,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                     LOGGER.debug(CustomStringJoiner.join(" ", "Key", key,
                             "is put in the persistent store metastore from path", path.toString()));
                 }
-                if (!storageUnit.isFull()) {
-                    unitsWithFreeSpace.add(storageUnit);
-                }
+                putStorageUnitIntoFreeSpaceCache(storageUnit);
             } catch (StorageException ex) {
                 LOGGER.error(join(" ", file.toString(), ex.getMessage()));
             }
@@ -214,7 +227,9 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      */
     protected PersistedStorageUnit loadStorageUnitFromPath(Path path) throws StorageException {
         try {
-            return FileUtility.<PersistedStorageUnit>loadFromFile(path);
+            // if it does not fail, then it contains the storage unit
+            FileUtility.<HashMap<String, String>>loadFromFile(path);
+            return new PersistedStorageUnit(path);
         } catch (IOException ex) {
             LOGGER.error(ex);
             throw new StorageException(
@@ -235,8 +250,8 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             throws StorageException {
         storageUnit.putEntry(entry);
 
-        if (storageUnit.isFull() && unitsWithFreeSpace.contains(storageUnit)) {
-            unitsWithFreeSpace.remove(storageUnit);
+        if (storageUnit.isFull()) {
+            removeStorageUnitFromFreeSpaceCache(storageUnit);
         }
     }
 
