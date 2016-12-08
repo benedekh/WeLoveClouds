@@ -2,6 +2,7 @@ package weloveclouds.kvstore.serialization.helper;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
 
@@ -14,7 +15,7 @@ public class HashRangeSerializer implements ISerializer<String, HashRange> {
 
     public static final String SEPARATOR = "-Ł-";
     private static final Logger LOGGER = Logger.getLogger(HashRangeSerializer.class);
-    
+
     private ISerializer<String, Hash> hashSerializer = new HashSerializer();
 
     @Override
@@ -23,7 +24,16 @@ public class HashRangeSerializer implements ISerializer<String, HashRange> {
 
         if (target != null) {
             LOGGER.debug("Serializing a HashRange.");
-            serialized = target.toStringWithDelimiter(SEPARATOR, hashSerializer);
+            // original fields
+            Hash begin = target.getStart();
+            Hash end = target.getEnd();
+
+            // string representation
+            String beginStr = hashSerializer.serialize(begin);
+            String endStr = hashSerializer.serialize(end);
+
+            // merged string representation
+            serialized = CustomStringJoiner.join(SEPARATOR, beginStr, endStr);
             LOGGER.debug("Serializing a HashRange finished.");
         }
 
