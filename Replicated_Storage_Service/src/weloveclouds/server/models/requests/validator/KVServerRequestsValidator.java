@@ -75,13 +75,12 @@ public class KVServerRequestsValidator {
         }
 
         Set<HashRangeWithRole> rangesWithRoles = hashRangesWithRoles.getRangesWithRoles();
-        if (rangesWithRoles == null) {
+        if (rangesWithRoles == null || rangesWithRoles.isEmpty()) {
             throw new IllegalArgumentException();
         }
         for (HashRangeWithRole rangeWithRole : rangesWithRoles) {
             validateHashRangeWithRole(rangeWithRole);
         }
-
     }
 
     /**
@@ -110,7 +109,8 @@ public class KVServerRequestsValidator {
     }
 
     /**
-     * A {@link RingMetadata} is valid, if it is not null.
+     * A {@link RingMetadata} is valid, if it is not null and the encapsulated
+     * {@link RingMetadataPart} instances are valid.
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
@@ -118,6 +118,14 @@ public class KVServerRequestsValidator {
             throws IllegalArgumentException {
         if (ringMetadata == null) {
             throw new IllegalArgumentException();
+        }
+
+        Set<RingMetadataPart> metadataParts = ringMetadata.getMetadataParts();
+        if (metadataParts == null || metadataParts.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        for (RingMetadataPart metadataPart : metadataParts) {
+            validateRingMetadataPart(metadataPart);
         }
     }
 
