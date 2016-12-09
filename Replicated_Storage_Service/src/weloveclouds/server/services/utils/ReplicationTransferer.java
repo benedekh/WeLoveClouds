@@ -41,28 +41,27 @@ public class ReplicationTransferer implements IReplicationTransferer {
 
     private ExecutorService executorService;
 
-    public ReplicationTransferer(IConcurrentCommunicationApi concurrentCommunicationApi,
-            ConnectionFactory connectionFactory, Set<ServerConnectionInfo> replicaConnectionInfos,
-            IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
-        this.concurrentCommunicationApi = concurrentCommunicationApi;
-        this.connectionFactory = connectionFactory;
-        this.replicaConnectionInfos = replicaConnectionInfos;
-        this.transferMessageSerializer = transferMessageSerializer;
-        this.transferMessageDeserializer = transferMessageDeserializer;
+    protected ReplicationTransferer(Builder builder) {
+        this.concurrentCommunicationApi = builder.concurrentCommunicationApi;
+        this.connectionFactory = builder.connectionFactory;
+        this.replicaConnectionInfos = builder.replicaConnectionInfos;
+        this.transferMessageSerializer = builder.transferMessageSerializer;
+        this.transferMessageDeserializer = builder.transferMessageDeserializer;
 
         this.executorService = Executors.newFixedThreadPool(replicaConnectionInfos.size());
     }
 
     @Override
     public void putEntryOnReplicas(KVEntry entry) {
-        Set<AbstractReplicationRequest<?>> replicationRequests = new HashSet<>();
+        Set<AbstractReplicationRequest<?, ?>> replicationRequests = new HashSet<>();
 
         for (ServerConnectionInfo connectionInfo : replicaConnectionInfos) {
             try {
                 Connection connection = connectionFactory.createConnectionFrom(connectionInfo);
-                replicationRequests.add(new PutReplicationRequest(concurrentCommunicationApi,
-                        connection, entry, transferMessageSerializer, transferMessageDeserializer));
+                replicationRequests.add(new PutReplicationRequest.Builder()
+                        .communicationApi(concurrentCommunicationApi).connection(connection)
+                        .payload(entry).messageSerializer(transferMessageSerializer)
+                        .messageDeserializer(transferMessageDeserializer).build());
             } catch (IOException ex) {
                 LOGGER.error(CustomStringJoiner.join(" ", "Exception (", ex.toString(),
                         ") occured while replicating PUT (", entry.toString(), ") on",
@@ -75,13 +74,15 @@ public class ReplicationTransferer implements IReplicationTransferer {
 
     @Override
     public void removeEntryOnReplicas(String key) {
-        Set<AbstractReplicationRequest<?>> replicationRequests = new HashSet<>();
+        Set<AbstractReplicationRequest<?, ?>> replicationRequests = new HashSet<>();
 
         for (ServerConnectionInfo connectionInfo : replicaConnectionInfos) {
             try {
                 Connection connection = connectionFactory.createConnectionFrom(connectionInfo);
-                replicationRequests.add(new DeleteReplicationRequest(concurrentCommunicationApi,
-                        connection, key, transferMessageSerializer, transferMessageDeserializer));
+                replicationRequests.add(new DeleteReplicationRequest.Builder()
+                        .communicationApi(concurrentCommunicationApi).connection(connection)
+                        .payload(key).messageSerializer(transferMessageSerializer)
+                        .messageDeserializer(transferMessageDeserializer).build());
             } catch (IOException ex) {
                 LOGGER.error(CustomStringJoiner.join(" ", "Exception (", ex.toString(),
                         ") occured while replicating DELETE (", key, ") on",
@@ -96,10 +97,10 @@ public class ReplicationTransferer implements IReplicationTransferer {
      * Submits the respective replication requests on the {@link #executorService} and waits until
      * all of them is completed.
      */
-    private void submitExecutorTasks(Set<AbstractReplicationRequest<?>> replicationRequests) {
+    private void submitExecutorTasks(Set<AbstractReplicationRequest<?, ?>> replicationRequests) {
         Collection<Future<?>> futures = new HashSet<>();
 
-        for (AbstractReplicationRequest<?> replicationRequest : replicationRequests) {
+        for (AbstractReplicationRequest<?, ?> replicationRequest : replicationRequests) {
             Future<?> future = executorService.submit(replicationRequest);
             futures.add(future);
         }
@@ -112,5 +113,49 @@ public class ReplicationTransferer implements IReplicationTransferer {
             }
         }
         futures.clear();
+    }
+
+    /**
+     * Builder pattern for creating a {@link ReplicationTransferer} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private IConcurrentCommunicationApi concurrentCommunicationApi;
+        private ConnectionFactory connectionFactory;
+        private Set<ServerConnectionInfo> replicaConnectionInfos;
+        private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
+        private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+
+        public Builder communicationApi(IConcurrentCommunicationApi concurrentCommunicationApi) {
+            this.concurrentCommunicationApi = concurrentCommunicationApi;
+            return this;
+        }
+
+        public Builder connectionFactory(ConnectionFactory connectionFactory) {
+            this.connectionFactory = connectionFactory;
+            return this;
+        }
+
+        public Builder replicaConnectionInfos(Set<ServerConnectionInfo> replicaConnectionInfos) {
+            this.replicaConnectionInfos = replicaConnectionInfos;
+            return this;
+        }
+
+        public Builder messageSerializer(
+                IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer) {
+            this.transferMessageSerializer = transferMessageSerializer;
+            return this;
+        }
+
+        public Builder messageDeserializer(
+                IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+            this.transferMessageDeserializer = transferMessageDeserializer;
+            return this;
+        }
+
+        public ReplicationTransferer build() {
+            return new ReplicationTransferer(this);
+        }
     }
 }

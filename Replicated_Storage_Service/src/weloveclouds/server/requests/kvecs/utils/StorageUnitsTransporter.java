@@ -43,22 +43,11 @@ public class StorageUnitsTransporter {
     private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
     private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
-    /**
-     * @param communicationApi to communicate with the target server
-     * @param connectionInfo the IP + port of the destination
-     * @param transferMessageSerializer to serialize {@link KVTransferMessage} into
-     *        {@link SerializedMessage}
-     * @param transferMessageDeserializer to deserialize {@link KVTransferMessage} from
-     *        {@link SerializedMessage}
-     */
-    public StorageUnitsTransporter(ICommunicationApi communicationApi,
-            ServerConnectionInfo connectionInfo,
-            IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
-        this.communicationApi = communicationApi;
-        this.connectionInfo = connectionInfo;
-        this.transferMessageSerializer = transferMessageSerializer;
-        this.transferMessageDeserializer = transferMessageDeserializer;
+    protected StorageUnitsTransporter(Builder builder) {
+        this.communicationApi = builder.communicationApi;
+        this.connectionInfo = builder.connectionInfo;
+        this.transferMessageSerializer = builder.transferMessageSerializer;
+        this.transferMessageDeserializer = builder.transferMessageDeserializer;
     }
 
     /**
@@ -128,6 +117,58 @@ public class StorageUnitsTransporter {
             }
         } catch (DeserializationException | IOException ex) {
             throw new UnableToSendContentToServerException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Builder pattern for creating a {@link StorageUnitsTransporter} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private ICommunicationApi communicationApi;
+        private ServerConnectionInfo connectionInfo;
+        private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
+        private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+
+        /**
+         * @param connectionInfo the IP + port of the destination
+         */
+        public Builder connectionInfo(ServerConnectionInfo connectionInfo) {
+            this.connectionInfo = connectionInfo;
+            return this;
+        }
+
+        /**
+         * @param communicationApi to communicate with the target server
+         */
+        public Builder communicationApi(ICommunicationApi communicationApi) {
+            this.communicationApi = communicationApi;
+            return this;
+        }
+
+        /**
+         * @param transferMessageSerializer to serialize {@link KVTransferMessage} into
+         *        {@link SerializedMessage}
+         */
+        public Builder transferMessageSerializer(
+                IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer) {
+            this.transferMessageSerializer = transferMessageSerializer;
+            return this;
+        }
+
+        /**
+         * @param transferMessageDeserializer to deserialize {@link KVTransferMessage} from
+         *        {@link SerializedMessage}
+         */
+        public Builder transferMessageDeserializer(
+                IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+            this.transferMessageDeserializer = transferMessageDeserializer;
+            return this;
+        }
+
+        public StorageUnitsTransporter build() {
+            return new StorageUnitsTransporter(this);
         }
     }
 

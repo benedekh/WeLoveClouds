@@ -20,7 +20,8 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
  *
  * @param <T> The type of the payload that is transferred in the {@link ITransferMessage}.
  */
-public abstract class AbstractReplicationRequest<T> implements Runnable {
+public abstract class AbstractReplicationRequest<T, E extends AbstractReplicationRequest.Builder<T, E>>
+        implements Runnable {
 
     private IConcurrentCommunicationApi communicationApi;
     private Connection connection;
@@ -31,16 +32,13 @@ public abstract class AbstractReplicationRequest<T> implements Runnable {
     protected IMessageSerializer<SerializedMessage, KVTransferMessage> messageSerializer;
     protected IMessageDeserializer<KVTransferMessage, SerializedMessage> messageDeserializer;
 
-    protected AbstractReplicationRequest(IConcurrentCommunicationApi communicationApi,
-            Connection connection, T payload, Logger logger,
-            IMessageSerializer<SerializedMessage, KVTransferMessage> messageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> messageDeserializer) {
-        this.connection = connection;
-        this.communicationApi = communicationApi;
-        this.payload = payload;
-        this.logger = logger;
-        this.messageSerializer = messageSerializer;
-        this.messageDeserializer = messageDeserializer;
+    protected AbstractReplicationRequest(Builder<T, E> builder) {
+        this.connection = builder.connection;
+        this.communicationApi = builder.communicationApi;
+        this.payload = builder.payload;
+        this.logger = builder.logger;
+        this.messageSerializer = builder.messageSerializer;
+        this.messageDeserializer = builder.messageDeserializer;
     }
 
     @Override
@@ -71,4 +69,54 @@ public abstract class AbstractReplicationRequest<T> implements Runnable {
      * @return a {@link KVTransferMessage} whose content is the referred payload
      */
     protected abstract KVTransferMessage createTransferMessageFrom(T payload);
+
+    /**
+     * Builder pattern for creating a {@link AbstractReplicationRequest} instance.
+     *
+     * @author Benedek
+     */
+    protected abstract static class Builder<T, E extends Builder<T, E>> {
+        protected IConcurrentCommunicationApi communicationApi;
+        protected Connection connection;
+        protected T payload;
+        protected Logger logger;
+        protected IMessageSerializer<SerializedMessage, KVTransferMessage> messageSerializer;
+        protected IMessageDeserializer<KVTransferMessage, SerializedMessage> messageDeserializer;
+
+        public Builder<T, E> communicationApi(IConcurrentCommunicationApi communicationApi) {
+            this.communicationApi = communicationApi;
+            return getThis();
+        }
+
+        public Builder<T, E> connection(Connection connection) {
+            this.connection = connection;
+            return getThis();
+        }
+
+        public Builder<T, E> payload(T payload) {
+            this.payload = payload;
+            return getThis();
+        }
+
+        public Builder<T, E> logger(Logger logger) {
+            this.logger = logger;
+            return getThis();
+        }
+
+        public Builder<T, E> messageSerializer(
+                IMessageSerializer<SerializedMessage, KVTransferMessage> messageSerializer) {
+            this.messageSerializer = messageSerializer;
+            return getThis();
+        }
+
+        public Builder<T, E> messageDeserializer(
+                IMessageDeserializer<KVTransferMessage, SerializedMessage> messageDeserializer) {
+            this.messageDeserializer = messageDeserializer;
+            return getThis();
+        }
+
+        protected abstract E getThis();
+
+        protected abstract AbstractReplicationRequest<T, E> build();
+    }
 }

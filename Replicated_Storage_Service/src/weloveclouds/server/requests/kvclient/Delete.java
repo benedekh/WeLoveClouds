@@ -5,12 +5,12 @@ import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.DELETE_
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_NOT_RESPONSIBLE;
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_STOPPED;
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_WRITE_LOCK;
+import static weloveclouds.server.requests.kvclient.utils.KVMessageFactory.createKVMessage;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
@@ -49,17 +49,17 @@ public class Delete implements IKVClientRequest {
         try {
             LOGGER.debug(CustomStringJoiner.join(" ", "Trying to remove key", key));
             dataAccessService.removeEntry(key);
-            response = createResponse(DELETE_SUCCESS, key, null);
+            response = createKVMessage(DELETE_SUCCESS, key, null);
         } catch (KeyIsNotManagedByServiceException ex) {
             RingMetadata ringMetadata = dataAccessService.getRingMetadata();
             String ringMetadataStr = ringMetadataSerializer.serialize(ringMetadata);
-            response = createResponse(SERVER_NOT_RESPONSIBLE, key, ringMetadataStr);
+            response = createKVMessage(SERVER_NOT_RESPONSIBLE, key, ringMetadataStr);
         } catch (ServiceIsStoppedException ex) {
-            response = createResponse(SERVER_STOPPED, key, null);
+            response = createKVMessage(SERVER_STOPPED, key, null);
         } catch (WriteLockIsActiveException ex) {
-            response = createResponse(SERVER_WRITE_LOCK, key, null);
+            response = createKVMessage(SERVER_WRITE_LOCK, key, null);
         } catch (StorageException e) {
-            response = createResponse(DELETE_ERROR, key, e.getMessage());
+            response = createKVMessage(DELETE_ERROR, key, e.getMessage());
         } finally {
             LOGGER.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
         }
@@ -73,13 +73,9 @@ public class Delete implements IKVClientRequest {
         } catch (IllegalArgumentException ex) {
             String errorMessage = "Key is invalid.";
             LOGGER.error(errorMessage);
-            throw new IllegalRequestException(createResponse(DELETE_ERROR, key, errorMessage));
+            throw new IllegalRequestException(createKVMessage(DELETE_ERROR, key, errorMessage));
         }
         return this;
-    }
-
-    private KVMessage createResponse(StatusType status, String key, String value) {
-        return new KVMessage.Builder().status(status).key(key).value(value).build();
     }
 
     /**

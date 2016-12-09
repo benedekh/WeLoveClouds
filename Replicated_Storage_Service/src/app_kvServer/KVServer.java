@@ -108,8 +108,9 @@ public class KVServer {
     private static void createAndStartServers(KVServerPortContext portConfigurationContext,
             IReplicableDataAccessService dataAccessService) throws IOException {
         ServerFactory serverFactory = new ServerFactory();
-        weloveclouds.server.core.KVServer kvServer = new weloveclouds.server.core.KVServer(
-                serverFactory, portConfigurationContext, dataAccessService);
+        weloveclouds.server.core.KVServer kvServer = new weloveclouds.server.core.KVServer.Builder()
+                .serverFactory(serverFactory).portConfiguration(portConfigurationContext)
+                .dataAccessService(dataAccessService).build();
         kvServer.start();
     }
 

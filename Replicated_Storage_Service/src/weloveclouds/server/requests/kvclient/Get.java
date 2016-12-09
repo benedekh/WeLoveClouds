@@ -4,12 +4,12 @@ import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_ERR
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_NOT_RESPONSIBLE;
 import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_STOPPED;
+import static weloveclouds.server.requests.kvclient.utils.KVMessageFactory.createKVMessage;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
@@ -47,23 +47,19 @@ public class Get implements IKVClientRequest {
         KVMessage response = null;
         try {
             LOGGER.debug(CustomStringJoiner.join(" ", "Trying to get value for key", key));
-            response = createResponse(GET_SUCCESS, key, dataAccessService.getValue(key));
+            response = createKVMessage(GET_SUCCESS, key, dataAccessService.getValue(key));
         } catch (KeyIsNotManagedByServiceException ex) {
             RingMetadata ringMetadata = dataAccessService.getRingMetadata();
             String ringMetadataStr = ringMetadataSerializer.serialize(ringMetadata);
-            response = createResponse(SERVER_NOT_RESPONSIBLE, key, ringMetadataStr);
+            response = createKVMessage(SERVER_NOT_RESPONSIBLE, key, ringMetadataStr);
         } catch (ServiceIsStoppedException ex) {
-            response = createResponse(SERVER_STOPPED, key, null);
+            response = createKVMessage(SERVER_STOPPED, key, null);
         } catch (StorageException e) {
-            response = createResponse(GET_ERROR, key, e.getMessage());
+            response = createKVMessage(GET_ERROR, key, e.getMessage());
         } finally {
             LOGGER.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
         }
         return response;
-    }
-
-    private KVMessage createResponse(StatusType status, String key, String value) {
-        return new KVMessage.Builder().status(status).key(key).value(value).build();
     }
 
     @Override
@@ -73,7 +69,7 @@ public class Get implements IKVClientRequest {
         } catch (IllegalArgumentException ex) {
             String errorMessage = "Key is invalid.";
             LOGGER.error(errorMessage);
-            throw new IllegalRequestException(createResponse(GET_ERROR, key, errorMessage));
+            throw new IllegalRequestException(createKVMessage(GET_ERROR, key, errorMessage));
         }
         return this;
     }

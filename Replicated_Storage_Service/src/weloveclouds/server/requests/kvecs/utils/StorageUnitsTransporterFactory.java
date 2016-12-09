@@ -28,7 +28,8 @@ public class StorageUnitsTransporterFactory {
             ServerConnectionInfo connectionInfo,
             IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
             IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
-        return new StorageUnitsTransporter(communicationApi, connectionInfo,
-                transferMessageSerializer, transferMessageDeserializer);
+        return new StorageUnitsTransporter.Builder().communicationApi(communicationApi)
+                .connectionInfo(connectionInfo).transferMessageSerializer(transferMessageSerializer)
+                .transferMessageDeserializer(transferMessageDeserializer).build();
     }
 }

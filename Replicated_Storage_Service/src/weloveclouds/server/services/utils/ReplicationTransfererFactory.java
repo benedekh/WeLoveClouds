@@ -23,11 +23,13 @@ public class ReplicationTransfererFactory {
      */
     public IReplicationTransferer createReplicationTransferer(
             Set<ServerConnectionInfo> replicaConnectionInfos) {
-        return new ReplicationTransferer(
-                new ConcurrentCommunicationApiV1(new ConcurrentCommunicationService(),
-                        new NetworkPacketResenderFactory()),
-                new ConnectionFactory(new SocketFactory()), replicaConnectionInfos,
-                new KVTransferMessageSerializer(), new KVTransferMessageDeserializer());
+        return new ReplicationTransferer.Builder()
+                .communicationApi(new ConcurrentCommunicationApiV1(
+                        new ConcurrentCommunicationService(), new NetworkPacketResenderFactory()))
+                .connectionFactory(new ConnectionFactory(new SocketFactory()))
+                .replicaConnectionInfos(replicaConnectionInfos)
+                .messageSerializer(new KVTransferMessageSerializer())
+                .messageDeserializer(new KVTransferMessageDeserializer()).build();
     }
 
 }

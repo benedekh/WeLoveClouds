@@ -54,7 +54,8 @@ public class Start extends AbstractServerCommand {
             IReplicableDataAccessService dataAccessService = dataAccessServiceFactory
                     .createInitializedReplicableDataAccessService(initializationContext);
 
-            KVServer kvServer = new KVServer(serverFactory, portContext, dataAccessService);
+            KVServer kvServer = new KVServer.Builder().serverFactory(serverFactory)
+                    .portConfiguration(portContext).dataAccessService(dataAccessService).build();
             kvServer.start();
 
             context.setStarted(true);
