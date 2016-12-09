@@ -223,11 +223,11 @@ public class MovableDataAccessService extends DataAccessService
      * Puts the respective entry into the storage
      * 
      * @param entry that has to be put in the storage
-     * @param authorizationShallBeChecked if it has to be checked that the server really handles
-     *        that key
+     * @param coordinatorRoleIsExpected if it has to be checked that the server really handles that
+     *        key
      * @throws StorageException if any error occurs
      */
-    private PutType putEntry(KVEntry entry, boolean authorizationShallBeChecked)
+    protected PutType putEntry(KVEntry entry, boolean coordinatorRoleIsExpected)
             throws StorageException {
         if (!isServiceInitialized()) {
             incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
@@ -237,7 +237,7 @@ public class MovableDataAccessService extends DataAccessService
 
         switch (serviceRecentStatus) {
             case STARTED:
-                if (authorizationShallBeChecked) {
+                if (coordinatorRoleIsExpected) {
                     try {
                         checkIfKeyIsManagedByServer(entry.getKey(), Role.COORDINATOR);
                     } catch (KeyIsNotManagedByServiceException ex) {
@@ -277,11 +277,11 @@ public class MovableDataAccessService extends DataAccessService
      * Removes the respective key along with the stored value from the storage
      * 
      * @param key the key of the entry that shall be removed
-     * @param authorizationShallBeChecked if it has to be checked that the server really handles
-     *        that key
+     * @param coordinatorRoleIsExpected if it has to be checked that the server really handles that
+     *        key
      * @throws StorageException if any error occurs
      */
-    private void removeEntry(String key, boolean authorizationShallBeChecked)
+    protected void removeEntry(String key, boolean coordinatorRoleIsExpected)
             throws StorageException {
         if (!isServiceInitialized()) {
             incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
@@ -291,7 +291,7 @@ public class MovableDataAccessService extends DataAccessService
 
         switch (serviceRecentStatus) {
             case STARTED:
-                if (authorizationShallBeChecked) {
+                if (coordinatorRoleIsExpected) {
                     try {
                         checkIfKeyIsManagedByServer(key, Role.COORDINATOR);
                     } catch (KeyIsNotManagedByServiceException ex) {

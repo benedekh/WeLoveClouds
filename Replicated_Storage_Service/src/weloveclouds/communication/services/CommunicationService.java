@@ -14,6 +14,7 @@ import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.util.MessageFramesDetector;
 
@@ -28,18 +29,18 @@ public class CommunicationService implements ICommunicationService {
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
 
-    private SocketFactory socketFactory;
+    private ConnectionFactory connectionFactory;
     private Connection connectionToEndpoint;
     private Thread connectionShutdownHook;
 
     private MessageFramesDetector messageDetector;
 
     /**
-     * @param socketFactory a factory to create a socket for connection
+     * @param connectionFactory a factory to create connections
      */
-    public CommunicationService(SocketFactory socketFactory) {
+    public CommunicationService(ConnectionFactory connectionFactory) {
         this.connectionToEndpoint = new Connection.Builder().build();
-        this.socketFactory = socketFactory;
+        this.connectionFactory = connectionFactory;
         this.messageDetector = new MessageFramesDetector();
     }
 
@@ -76,8 +77,7 @@ public class CommunicationService implements ICommunicationService {
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
         LOGGER.debug(CustomStringJoiner.join(" ", "Trying to connect to", remoteServer.toString()));
-        connectionToEndpoint = new Connection.Builder().remoteServer(remoteServer)
-                .socket(socketFactory.createTcpSocketFromInfo(remoteServer)).build();
+        connectionToEndpoint = connectionFactory.createConnectionFrom(remoteServer);
 
         // create shutdown hook to automatically close the connection
         LOGGER.debug("Creating shutdown hook for connection.");
