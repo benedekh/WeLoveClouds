@@ -5,6 +5,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.models.replication.HashRangeWithRole;
 import weloveclouds.server.models.replication.Role;
 
+
 /**
  * Represents an <IP, port> and <hash-range with role> triplet, which defines respective server
  * (denoted by its <ip,port>) is responsible for which hash range with what role.
@@ -55,6 +56,7 @@ public class RingMetadataPart {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((connectionInfo == null) ? 0 : connectionInfo.hashCode());
+        result = prime * result + ((rangeWithRole == null) ? 0 : rangeWithRole.hashCode());
         return result;
     }
 
@@ -75,6 +77,13 @@ public class RingMetadataPart {
                 return false;
             }
         } else if (!connectionInfo.equals(other.connectionInfo)) {
+            return false;
+        }
+        if (rangeWithRole == null) {
+            if (other.rangeWithRole != null) {
+                return false;
+            }
+        } else if (!rangeWithRole.equals(other.rangeWithRole)) {
             return false;
         }
         return true;
