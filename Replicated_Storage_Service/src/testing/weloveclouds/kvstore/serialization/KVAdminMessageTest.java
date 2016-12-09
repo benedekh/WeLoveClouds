@@ -41,10 +41,11 @@ public class KVAdminMessageTest extends TestCase {
     @Test
     public void testKVAdminMessageSerializationAndDeserialization()
             throws DeserializationException, UnknownHostException {
-        HashRangeWithRole hashRangeWithRole1 = new HashRangeWithRole.Builder()
-                .hashRange(new HashRange.Builder().begin(HashingUtil.getHash("a"))
-                        .end(HashingUtil.getHash("b")).build())
-                .role(Role.MASTER).build();
+        HashRange removableRange = new HashRange.Builder().begin(HashingUtil.getHash("a"))
+                .end(HashingUtil.getHash("b")).build();
+
+        HashRangeWithRole hashRangeWithRole1 =
+                new HashRangeWithRole.Builder().hashRange(removableRange).role(Role.MASTER).build();
         RingMetadataPart metadataPart1 = new RingMetadataPart.Builder().connectionInfo(
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build())
                 .rangeWithRole(hashRangeWithRole1).build();
@@ -63,8 +64,8 @@ public class KVAdminMessageTest extends TestCase {
                 new HashSet<>(Arrays.asList(hashRangeWithRole1, hashRangeWithRole2)));
 
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.INITKVSERVER)
-                .ringMetadata(metadata).targetServerInfo(metadataPart1)
-                .rangesWithRoles(rangesWithRoles).build();
+                .removableRange(removableRange).ringMetadata(metadata)
+                .targetServerInfo(metadataPart1).rangesWithRoles(rangesWithRoles).build();
 
         SerializedMessage serializedMessage = adminMessageSerializer.serialize(adminMessage);
         KVAdminMessage deserializedAdminMessage =

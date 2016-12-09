@@ -1,6 +1,7 @@
 package weloveclouds.kvstore.models.messages;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.server.models.replication.HashRangesWithRoles;
@@ -13,6 +14,7 @@ import weloveclouds.server.models.replication.HashRangesWithRoles;
 public class KVAdminMessage implements IKVAdminMessage {
 
     private StatusType status;
+    private HashRange removableRange;
     private RingMetadata ringMetadata;
     private RingMetadataPart targetServerInfo;
     private HashRangesWithRoles rangesWithRoles;
@@ -20,6 +22,7 @@ public class KVAdminMessage implements IKVAdminMessage {
 
     protected KVAdminMessage(Builder builder) {
         this.status = builder.status;
+        this.removableRange = builder.removableRange;
         this.ringMetadata = builder.ringMetadata;
         this.targetServerInfo = builder.targetServerInfo;
         this.rangesWithRoles = builder.rangesWithRoles;
@@ -29,6 +32,11 @@ public class KVAdminMessage implements IKVAdminMessage {
     @Override
     public StatusType getStatus() {
         return status;
+    }
+
+    @Override
+    public HashRange getRemovableRange() {
+        return removableRange;
     }
 
     @Override
@@ -54,7 +62,8 @@ public class KVAdminMessage implements IKVAdminMessage {
     @Override
     public String toString() {
         return CustomStringJoiner.join(" ", "Message status:",
-                status == null ? null : status.toString(), ", Ring metadata:",
+                status == null ? null : status.toString(), ", Removable range: ",
+                removableRange == null ? null : removableRange.toString(), ", Ring metadata:",
                 ringMetadata == null ? null : ringMetadata.toString(), ", Target server info:",
                 targetServerInfo == null ? null : targetServerInfo.toString(),
                 ", Managed hash ranges with roles: ",
@@ -68,6 +77,7 @@ public class KVAdminMessage implements IKVAdminMessage {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((rangesWithRoles == null) ? 0 : rangesWithRoles.hashCode());
+        result = prime * result + ((removableRange == null) ? 0 : removableRange.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((ringMetadata == null) ? 0 : ringMetadata.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
@@ -92,6 +102,13 @@ public class KVAdminMessage implements IKVAdminMessage {
                 return false;
             }
         } else if (!rangesWithRoles.equals(other.rangesWithRoles)) {
+            return false;
+        }
+        if (removableRange == null) {
+            if (other.removableRange != null) {
+                return false;
+            }
+        } else if (!removableRange.equals(other.removableRange)) {
             return false;
         }
         if (responseMessage == null) {
@@ -129,6 +146,7 @@ public class KVAdminMessage implements IKVAdminMessage {
      */
     public static class Builder {
         private StatusType status;
+        private HashRange removableRange;
         private RingMetadata ringMetadata;
         private RingMetadataPart targetServerInfo;
         private HashRangesWithRoles rangesWithRoles;
@@ -136,6 +154,11 @@ public class KVAdminMessage implements IKVAdminMessage {
 
         public Builder status(StatusType status) {
             this.status = status;
+            return this;
+        }
+
+        public Builder removableRange(HashRange range) {
+            this.removableRange = range;
             return this;
         }
 
@@ -163,5 +186,7 @@ public class KVAdminMessage implements IKVAdminMessage {
             return new KVAdminMessage(this);
         }
     }
+
+
 
 }

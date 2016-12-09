@@ -1,9 +1,11 @@
 package weloveclouds.server.models.requests.kvecs;
 
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createErrorKVAdminMessage;
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createSuccessKVAdminMessage;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.models.replication.HashRangesWithRoles;
@@ -43,7 +45,7 @@ public class InitializeKVServer implements IKVECSRequest {
         dataAccessService.setRingMetadata(ringMetadata);
         dataAccessService.setManagedHashRanges(rangesManagedByServer);
         LOGGER.debug("Initialization finished successfully.");
-        return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
+        return createSuccessKVAdminMessage();
     }
 
     @Override
@@ -64,12 +66,6 @@ public class InitializeKVServer implements IKVECSRequest {
             throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
         }
         return this;
-    }
-
-    private KVAdminMessage createErrorKVAdminMessage(String errorMessage) {
-        return new KVAdminMessage.Builder()
-                .status(weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR)
-                .responseMessage(errorMessage).build();
     }
 
 }

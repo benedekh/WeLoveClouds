@@ -14,8 +14,8 @@ public interface IKVTransferMessage {
         TRANSFER_ENTRIES, /* Storage unit transfer - request */
         PUT_ENTRY, /* Put a new entry - request */
         REMOVE_ENTRY_BY_KEY, /* Remove an entry denoted by its key - request */
-        SUCCESS, /* Transfer was successful */
-        ERROR /* Transfer was unsuccessful */
+        RESPONSE_SUCCESS, /* Transfer was successful */
+        RESPONSE_ERROR /* Transfer was unsuccessful */
     }
 
     /**

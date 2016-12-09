@@ -1,8 +1,8 @@
 package weloveclouds.server.models.requests.kvecs;
 
 
-import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR;
-import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createErrorKVAdminMessage;
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createSuccessKVAdminMessage;
 
 import org.apache.log4j.Logger;
 
@@ -84,12 +84,7 @@ public class CopyDataToDestination implements IKVECSRequest {
             return createErrorKVAdminMessage(ex.getMessage());
         }
 
-        return new KVAdminMessage.Builder().status(RESPONSE_SUCCESS).build();
-    }
-
-    private KVAdminMessage createErrorKVAdminMessage(String errorMessage) {
-        return new KVAdminMessage.Builder().status(RESPONSE_ERROR).responseMessage(errorMessage)
-                .build();
+        return createSuccessKVAdminMessage();
     }
 
     @Override

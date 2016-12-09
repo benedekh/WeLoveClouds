@@ -18,7 +18,7 @@ import weloveclouds.server.store.models.MovableStorageUnits;
 public class MovableStorageUnitsDeserializer implements IDeserializer<MovableStorageUnits, String> {
 
     private static final Logger LOGGER = Logger.getLogger(MovableStorageUnitsDeserializer.class);
-    
+
     private IDeserializer<MovableStorageUnit, String> storageUnitDeserializer =
             new MovableStorageUnitDeserializer();
 

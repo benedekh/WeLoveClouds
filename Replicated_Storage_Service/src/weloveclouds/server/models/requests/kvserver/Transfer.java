@@ -38,7 +38,7 @@ public class Transfer implements IKVServerRequest {
             LOGGER.debug("Executing transfer (put) storage units request.");
             dataAccessService.putEntries(storageUnits);
             LOGGER.debug("Transfer (put) storage units request finished successfully.");
-            return new KVTransferMessage.Builder().status(StatusType.SUCCESS).build();
+            return new KVTransferMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
         } catch (StorageException ex) {
             LOGGER.error(ex);
             return createErrorKVTransferMessage(ex.getMessage());
@@ -46,7 +46,7 @@ public class Transfer implements IKVServerRequest {
     }
 
     private KVTransferMessage createErrorKVTransferMessage(String responseMessage) {
-        return new KVTransferMessage.Builder().status(StatusType.ERROR)
+        return new KVTransferMessage.Builder().status(StatusType.RESPONSE_ERROR)
                 .responseMessage(responseMessage).build();
     }
 

@@ -1,6 +1,7 @@
 package weloveclouds.server.models.requests.kvecs;
 
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createErrorKVAdminMessage;
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createSuccessKVAdminMessage;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +18,7 @@ import weloveclouds.server.services.models.DataAccessServiceStatus;
 public class StartDataAcessService implements IKVECSRequest {
 
     private static final Logger LOGGER = Logger.getLogger(StartDataAcessService.class);
-    
+
     private IMovableDataAccessService dataAccessService;
 
     public StartDataAcessService(IMovableDataAccessService dataAccessService) {
@@ -30,14 +31,13 @@ public class StartDataAcessService implements IKVECSRequest {
             LOGGER.debug("Executing start data access service request.");
             dataAccessService.setServiceStatus(DataAccessServiceStatus.STARTED);
             LOGGER.debug("Start data access service request finished susccessfully.");
-            return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
+            return createSuccessKVAdminMessage();
         } catch (UninitializedServiceException ex) {
             LOGGER.error(ex);
-            return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
-                    .responseMessage(ex.getMessage()).build();
+            return createErrorKVAdminMessage(ex.getMessage());
         }
     }
-    
+
     @Override
     public IKVECSRequest validate() throws IllegalArgumentException {
         return this;

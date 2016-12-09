@@ -1,6 +1,7 @@
 package weloveclouds.server.models.requests.kvecs;
 
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createErrorKVAdminMessage;
+
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 
 /**
@@ -18,8 +19,7 @@ public class DefaultRequest implements IKVECSRequest {
 
     @Override
     public KVAdminMessage execute() {
-        return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
-                .responseMessage(errorMessage).build();
+        return createErrorKVAdminMessage(errorMessage);
     }
 
     @Override

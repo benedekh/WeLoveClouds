@@ -1,5 +1,6 @@
 package weloveclouds.kvstore.models.messages;
 
+import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.server.models.replication.HashRangesWithRoles;
@@ -18,6 +19,7 @@ public interface IKVAdminMessage {
         UNLOCKWRITE, /* Unlock the write lock on the server - request */
         COPYDATA, /* Copy range of the data from one server to another - request */
         MOVEDATA, /* Move range of the data from one server to another - request */
+        REMOVERANGE, /* Remove range from the server - request */
         UPDATE, /* Update the metadata structure - request */
         RESPONSE_SUCCESS, /* Request was executed successfully. */
         RESPONSE_ERROR /* There was an error during the execution. */
@@ -28,6 +30,12 @@ public interface IKVAdminMessage {
      *         types associated to the message
      */
     public StatusType getStatus();
+
+    /**
+     * @return the range whose entries shall be removed from the server
+     */
+    public HashRange getRemovableRange();
+
 
     /**
      * @return the ring metadata parts (<IP, port, <range, role>>) for each server

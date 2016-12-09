@@ -36,7 +36,7 @@ public class RemoveEntry implements IKVServerRequest {
             LOGGER.debug("Executing remove entry request.");
             dataAccessService.removeEntryWithoutAuthorization(key);
             LOGGER.debug("Remove entry request finished successfully.");
-            return new KVTransferMessage.Builder().status(StatusType.SUCCESS).build();
+            return new KVTransferMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
         } catch (StorageException ex) {
             LOGGER.error(ex);
             return createErrorKVTransferMessage(ex.getMessage());
@@ -44,7 +44,7 @@ public class RemoveEntry implements IKVServerRequest {
     }
 
     private KVTransferMessage createErrorKVTransferMessage(String responseMessage) {
-        return new KVTransferMessage.Builder().status(StatusType.ERROR)
+        return new KVTransferMessage.Builder().status(StatusType.RESPONSE_ERROR)
                 .responseMessage(responseMessage).build();
     }
 

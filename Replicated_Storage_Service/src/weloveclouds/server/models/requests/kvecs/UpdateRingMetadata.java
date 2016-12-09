@@ -1,9 +1,11 @@
 package weloveclouds.server.models.requests.kvecs;
 
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createErrorKVAdminMessage;
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createSuccessKVAdminMessage;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.models.replication.HashRangesWithRoles;
@@ -43,12 +45,7 @@ public class UpdateRingMetadata implements IKVECSRequest {
         dataAccessService.setRingMetadata(ringMetadata);
         dataAccessService.setManagedHashRanges(rangesManagedByServer);
         LOGGER.debug("Update ring metadata write request finished successfully.");
-        return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
-    }
-
-    private KVAdminMessage createErrorKVAdminMessage(String responseMessage) {
-        return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
-                .responseMessage(responseMessage).build();
+        return createSuccessKVAdminMessage();
     }
 
     @Override

@@ -55,7 +55,7 @@ public class HashDeserializer implements IDeserializer<Hash, String> {
                 throw new DeserializationException(errorMessage);
             }
         }
-        
+
         return deserialized;
     }
 

@@ -1,6 +1,7 @@
 package weloveclouds.server.models.requests.kvecs;
 
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createErrorKVAdminMessage;
+import static weloveclouds.server.models.requests.kvecs.utils.KVAdminMessageFactory.createSuccessKVAdminMessage;
 
 import org.apache.log4j.Logger;
 
@@ -30,11 +31,10 @@ public class StopDataAccessService implements IKVECSRequest {
             LOGGER.debug("Executing stop data access service request.");
             dataAccessService.setServiceStatus(DataAccessServiceStatus.STOPPED);
             LOGGER.debug("Stop data access service request finished susccessfully.");
-            return new KVAdminMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
+            return createSuccessKVAdminMessage();
         } catch (UninitializedServiceException ex) {
             LOGGER.error(ex);
-            return new KVAdminMessage.Builder().status(StatusType.RESPONSE_ERROR)
-                    .responseMessage(ex.getMessage()).build();
+            return createErrorKVAdminMessage(ex.getMessage());
         }
     }
 

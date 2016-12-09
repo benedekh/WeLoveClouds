@@ -45,8 +45,8 @@ public class KVClientRequestFactory implements IRequestFactory<KVMessage, IKVCli
 
         switch (status) {
             case GET:
-                request =
-                        new Get(dataAccessService, receivedMessage.getKey(), ringMetadataSerializer);
+                request = new Get(dataAccessService, receivedMessage.getKey(),
+                        ringMetadataSerializer);
                 break;
             case PUT:
                 request = new Put(dataAccessService, receivedMessage.getKey(),

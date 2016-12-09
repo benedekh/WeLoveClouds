@@ -18,7 +18,7 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
  * 
  * @author Benedek
  */
-public class KVMessageTest extends TestCase  {
+public class KVMessageTest extends TestCase {
 
     private static IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer =
             new KVMessageDeserializer();

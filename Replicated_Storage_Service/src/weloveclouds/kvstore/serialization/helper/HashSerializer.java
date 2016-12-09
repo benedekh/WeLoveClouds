@@ -13,7 +13,7 @@ public class HashSerializer implements ISerializer<String, Hash> {
 
     public static final String SEPARATOR_INSIDE_HASH = "-ł-";
     private static final Logger LOGGER = Logger.getLogger(HashSerializer.class);
-    
+
     @Override
     public String serialize(Hash target) {
         String serialized = null;
