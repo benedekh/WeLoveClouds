@@ -3,10 +3,10 @@ package weloveclouds.ecs.models.commands.internal;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.serialization.IMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 
 /**

@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.models.messages;
+package weloveclouds.commons.kvstore.models.messages;
 
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;

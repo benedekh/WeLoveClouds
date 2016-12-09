@@ -16,8 +16,8 @@ import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
 
 import static weloveclouds.commons.status.ServerStatus.RUNNING;

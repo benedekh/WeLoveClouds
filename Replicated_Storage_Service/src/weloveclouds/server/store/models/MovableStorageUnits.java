@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import weloveclouds.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
 /**
  * Stores several {@link MovableStorageUnit}s.

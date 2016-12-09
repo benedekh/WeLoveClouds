@@ -7,15 +7,15 @@ import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.SYNCHRONIZED;
-import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.INITKVSERVER;
-import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
+import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.INITKVSERVER;
+import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 
 /**
  * Created by Benoit on 2016-11-22.

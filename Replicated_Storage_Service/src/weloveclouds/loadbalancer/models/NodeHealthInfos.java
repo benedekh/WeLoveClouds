@@ -6,39 +6,26 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * Created by Benoit on 2016-12-05.
  */
 public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
-    ServerConnectionInfo serverConnectionInfo;
-    String serverName;
-    int numberOfActiveConnections;
+    private ServerConnectionInfo serverConnectionInfo;
+    private String serverName;
+    private int numberOfActiveConnections;
 
-    public NodeHealthInfos(String serverName, ServerConnectionInfo serverConnectionInfo, int
-            numberOfActiveConnections) {
-        this.serverName = serverName;
-        this.serverConnectionInfo = serverConnectionInfo;
-        this.numberOfActiveConnections = numberOfActiveConnections;
+    private NodeHealthInfos(Builder nodeHealthInfosBuilder) {
+        this.serverName = nodeHealthInfosBuilder.serverName;
+        this.serverConnectionInfo = nodeHealthInfosBuilder.serverConnectionInfo;
+        this.numberOfActiveConnections = nodeHealthInfosBuilder.numberOfActiveConnections;
     }
 
     public ServerConnectionInfo getServerConnectionInfo() {
         return serverConnectionInfo;
     }
 
-    public void setServerConnectionInfo(ServerConnectionInfo serverConnectionInfo) {
-        this.serverConnectionInfo = serverConnectionInfo;
-    }
-
     public String getServerName() {
         return serverName;
     }
 
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
-    }
-
     public int getNumberOfActiveConnections() {
         return numberOfActiveConnections;
-    }
-
-    public void setNumberOfActiveConnections(int numberOfActiveConnections) {
-        this.numberOfActiveConnections = numberOfActiveConnections;
     }
 
     @Override
@@ -49,5 +36,30 @@ public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
             return 1;
         else
             return -1;
+    }
+
+    public static class Builder {
+        ServerConnectionInfo serverConnectionInfo;
+        String serverName;
+        int numberOfActiveConnections;
+
+        public Builder serverConnectionInfo(ServerConnectionInfo serverConnectionInfo) {
+            this.serverConnectionInfo = serverConnectionInfo;
+            return this;
+        }
+
+        public Builder numberOfActiveConnections(int numberOfActiveConnections) {
+            this.numberOfActiveConnections = numberOfActiveConnections;
+            return this;
+        }
+
+        public Builder serverName(String serverName) {
+            this.serverName = serverName;
+            return this;
+        }
+
+        public NodeHealthInfos build() {
+            return new NodeHealthInfos(this);
+        }
     }
 }

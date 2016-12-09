@@ -1,6 +1,6 @@
 package weloveclouds.communication;
 
-import weloveclouds.commons.communication.NetworkPacketResenderFactory;
+import weloveclouds.communication.services.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;

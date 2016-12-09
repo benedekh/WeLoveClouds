@@ -9,11 +9,11 @@ import junit.framework.TestCase;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtil;
-import weloveclouds.kvstore.deserialization.helper.HashRangeDeserializer;
-import weloveclouds.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.helper.HashRangeSerializer;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.kvstore.deserialization.helper.HashRangeDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.helper.HashRangeSerializer;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
 /**
  * Tests for the {@link HashRange} to verify its serialization and deserialization processes.

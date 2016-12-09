@@ -4,9 +4,9 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 
 /**

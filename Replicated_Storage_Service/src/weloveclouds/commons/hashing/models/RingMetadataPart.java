@@ -2,7 +2,7 @@ package weloveclouds.commons.hashing.models;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
 /**
  * Represents an <IP, port> and <hash-range> triplet, which defines respective server (denoted by

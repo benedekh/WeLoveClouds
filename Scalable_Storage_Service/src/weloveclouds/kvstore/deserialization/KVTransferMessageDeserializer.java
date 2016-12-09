@@ -1,17 +1,17 @@
-package weloveclouds.kvstore.deserialization;
+package weloveclouds.commons.kvstore.deserialization;
 
-import static weloveclouds.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
+import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.kvstore.deserialization.helper.MovableStorageUnitsDeserializer;
-import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.kvstore.serialization.KVTransferMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.MovableStorageUnitsDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
 /**

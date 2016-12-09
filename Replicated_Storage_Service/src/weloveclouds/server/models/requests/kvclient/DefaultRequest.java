@@ -1,7 +1,7 @@
 package weloveclouds.server.models.requests.kvclient;
 
-import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVMessage;
 
 /**
  * An unrecognized request to the data access layer.

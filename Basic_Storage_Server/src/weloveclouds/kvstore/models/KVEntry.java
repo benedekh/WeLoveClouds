@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.models;
+package weloveclouds.commons.kvstore.models;
 
 import java.io.Serializable;
 

@@ -41,9 +41,13 @@ public class StorageNode {
                 .ipAddress(serverConnectionInfo.getIpAddress())
                 .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT)
                 .build();
+        this.healthInfos = new NodeHealthInfos.Builder()
+                .serverName(id)
+                .serverConnectionInfo(serverConnectionInfo)
+                .numberOfActiveConnections(NO_CONNECTION)
+                .build();
         this.replicas = new ArrayList<>();
         this.childHashranges = new ArrayList<>();
-        this.healthInfos = new NodeHealthInfos(id, serverConnectionInfo, NO_CONNECTION);
     }
 
     public NodeHealthInfos getHealthInfos() {

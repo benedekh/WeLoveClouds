@@ -2,8 +2,8 @@ package weloveclouds.server.models.requests.kvecs;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 
 /**

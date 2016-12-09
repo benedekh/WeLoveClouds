@@ -1,7 +1,7 @@
-package weloveclouds.kvstore.deserialization.helper;
+package weloveclouds.commons.kvstore.deserialization.helper;
 
-import static weloveclouds.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_BETWEEN_ENTRIES;
-import static weloveclouds.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_INSIDE_ENTRY;
+import static weloveclouds.commons.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_BETWEEN_ENTRIES;
+import static weloveclouds.commons.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_INSIDE_ENTRY;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.utils.FileUtility;
 

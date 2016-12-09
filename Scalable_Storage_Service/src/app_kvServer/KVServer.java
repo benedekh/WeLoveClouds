@@ -10,9 +10,9 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.KVMessage;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerFactory;

@@ -19,13 +19,13 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.models.messages.KVMessage;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.configuration.annotations.ClientRequestsInterceptorPort;
 import weloveclouds.loadbalancer.exceptions.cache.UnableToFindRequestedKeyException;
 
 import static weloveclouds.commons.status.ServerStatus.*;
-import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
+import static weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
 
 /**
  * Created by Benoit on 2016-12-03.

@@ -11,13 +11,13 @@ import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.kvstore.deserialization.KVTransferMessageDeserializer;
-import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.deserialization.KVTransferMessageDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.KVTransferMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.models.configuration.KVServerPortConstants;
 
 /**

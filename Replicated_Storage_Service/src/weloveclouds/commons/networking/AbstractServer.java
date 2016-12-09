@@ -9,7 +9,7 @@ import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.status.ServerStatus;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.commons.status.ServerStatus.HALTED;
 

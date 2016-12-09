@@ -4,8 +4,8 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.IKVMessage.StatusType;
-import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.commons.kvstore.models.IKVMessage.StatusType;
+import weloveclouds.commons.kvstore.models.KVMessage;
 import weloveclouds.server.services.IDataAccessService;
 
 /**

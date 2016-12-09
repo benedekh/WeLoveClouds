@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.serialization;
+package weloveclouds.commons.kvstore.serialization;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
@@ -7,12 +7,12 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
-import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
-import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.kvstore.serialization.helper.RingMetadataPartSerializer;
+import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 /**
  * A serializer which converts a {@link KVAdminMessage} to a {@link SerializedMessage}.

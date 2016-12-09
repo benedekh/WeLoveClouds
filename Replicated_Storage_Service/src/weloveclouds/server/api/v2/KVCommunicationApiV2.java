@@ -22,7 +22,7 @@ import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.hashing.utils.HashingUtil;
-import weloveclouds.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.server.api.IKVCommunicationApi;
 import weloveclouds.server.api.v1.KVCommunicationApiV1;
 

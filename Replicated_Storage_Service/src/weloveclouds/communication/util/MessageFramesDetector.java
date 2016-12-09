@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 /**
  * Utility class which detects message frames ({@link KVMessage}, {@link KVAdminMessage},

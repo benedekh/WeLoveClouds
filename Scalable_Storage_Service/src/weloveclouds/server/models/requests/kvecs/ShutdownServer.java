@@ -2,7 +2,7 @@ package weloveclouds.server.models.requests.kvecs;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 
 /**
  * Shutdown the Server itself along with every open connection.

@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.models.commands.ClientCommand;
 import weloveclouds.client.models.commands.LogLevel;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 /**
  * Validates the arguments of the different commands ({@link ClientCommand}).

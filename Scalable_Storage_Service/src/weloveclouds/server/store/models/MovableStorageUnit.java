@@ -11,7 +11,7 @@ import java.util.Set;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtil;
-import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**

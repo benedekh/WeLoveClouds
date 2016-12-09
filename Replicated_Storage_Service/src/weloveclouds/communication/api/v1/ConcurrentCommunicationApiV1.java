@@ -2,7 +2,7 @@ package weloveclouds.communication.api.v1;
 
 import java.io.IOException;
 
-import weloveclouds.commons.communication.NetworkPacketResenderFactory;
+import weloveclouds.communication.services.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.services.IConcurrentCommunicationService;

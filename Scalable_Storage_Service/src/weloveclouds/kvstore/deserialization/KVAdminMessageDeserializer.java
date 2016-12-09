@@ -1,21 +1,21 @@
-package weloveclouds.kvstore.deserialization;
+package weloveclouds.commons.kvstore.deserialization;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
-import static weloveclouds.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
+import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
-import weloveclouds.kvstore.deserialization.helper.RingMetadataPartDeserializer;
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataPartDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link KVAdminMessage}.

@@ -1,12 +1,12 @@
 package weloveclouds.communication.util;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
-import weloveclouds.kvstore.serialization.KVMessageSerializer;
-import weloveclouds.kvstore.serialization.KVTransferMessageSerializer;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.KVMessage;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
 
 /**
  * Factory that creates regular expressions to detect the framing of the KV*Messages.

@@ -14,11 +14,11 @@ import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.hashing.utils.HashingUtil;
-import weloveclouds.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
-import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataDeserializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
 
 /**
  * Tests for the {@link RingMetadata} to verify its serialization and deserialization processes.

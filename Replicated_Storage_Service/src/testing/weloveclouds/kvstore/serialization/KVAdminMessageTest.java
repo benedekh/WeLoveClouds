@@ -15,13 +15,13 @@ import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.hashing.utils.HashingUtil;
 import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 /**
  * Tests for the {@link KVAdminMessage} to verify its serialization and deserialization processes.

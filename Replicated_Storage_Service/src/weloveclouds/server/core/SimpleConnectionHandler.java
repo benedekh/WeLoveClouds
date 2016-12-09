@@ -11,11 +11,11 @@ import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.networking.models.requests.IExecutable;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.networking.models.requests.IValidatable;
-import weloveclouds.commons.networking.models.requests.exceptions.IllegalRequestException;
+import weloveclouds.commons.exceptions.IllegalRequestException;
 
 /**
  * A handler for a client connected to the {@link Server}. It receives and interprets different
