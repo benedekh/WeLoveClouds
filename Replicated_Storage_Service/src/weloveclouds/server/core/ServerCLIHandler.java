@@ -9,7 +9,7 @@ import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.commons.cli.utils.UserInputReader;
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.exceptions.ServerSideException;
-import weloveclouds.server.models.commands.ServerCommandFactory;
+import weloveclouds.server.commands.client.ServerCommandFactory;
 import weloveclouds.server.utils.ServerUserInputParser;
 
 /**

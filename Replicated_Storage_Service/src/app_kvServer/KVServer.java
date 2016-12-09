@@ -9,9 +9,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.server.commands.client.ServerCommandFactory;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerFactory;
-import weloveclouds.server.models.commands.ServerCommandFactory;
 import weloveclouds.server.models.configuration.KVServerPortConstants;
 import weloveclouds.server.models.configuration.KVServerPortContext;
 import weloveclouds.server.services.DataAccessServiceFactory;

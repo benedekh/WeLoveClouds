@@ -2,8 +2,8 @@ package weloveclouds.server.models.configuration;
 
 import java.nio.file.Path;
 
+import weloveclouds.server.commands.client.ServerCommand;
 import weloveclouds.server.core.Server;
-import weloveclouds.server.models.commands.ServerCommand;
 import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 
