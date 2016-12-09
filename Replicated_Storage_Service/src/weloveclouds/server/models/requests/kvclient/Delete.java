@@ -9,12 +9,14 @@ import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
+import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
-import weloveclouds.server.services.DataAccessService;
-import weloveclouds.server.services.IDataAccessService;
+import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.MovableDataAccessService;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.exceptions.WriteLockIsActiveException;
@@ -22,19 +24,24 @@ import weloveclouds.server.store.exceptions.StorageException;
 
 /**
  * A delete request to remove the key and its respective value stored in the
- * {@link DataAccessService}.
+ * {@link MovableDataAccessService}.
  * 
  * @author Benoit
  */
 public class Delete implements IKVClientRequest {
+
     private static final Logger LOGGER = Logger.getLogger(Delete.class);
 
-    private IDataAccessService dataAccessService;
+    private IMovableDataAccessService dataAccessService;
     private String key;
 
-    public Delete(IDataAccessService dataAccessService, String key) {
+    private ISerializer<String, RingMetadata> ringMetadataSerializer;
+
+    public Delete(IMovableDataAccessService dataAccessService, String key,
+            ISerializer<String, RingMetadata> ringMetadataSerializer) {
         this.dataAccessService = dataAccessService;
         this.key = key;
+        this.ringMetadataSerializer = ringMetadataSerializer;
     }
 
     @Override
@@ -45,7 +52,9 @@ public class Delete implements IKVClientRequest {
             dataAccessService.removeEntry(key);
             response = createResponse(DELETE_SUCCESS, key, null);
         } catch (KeyIsNotManagedByServiceException ex) {
-            response = createResponse(SERVER_NOT_RESPONSIBLE, key, ex.getMessage());
+            RingMetadata ringMetadata = dataAccessService.getRingMetadata();
+            String ringMetadataStr = ringMetadataSerializer.serialize(ringMetadata);
+            response = createResponse(SERVER_NOT_RESPONSIBLE, key, ringMetadataStr);
         } catch (ServiceIsStoppedException ex) {
             response = createResponse(SERVER_STOPPED, key, null);
         } catch (WriteLockIsActiveException ex) {

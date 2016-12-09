@@ -1,6 +1,5 @@
 package weloveclouds.server.services.exceptions;
 
-import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
@@ -12,11 +11,8 @@ public class KeyIsNotManagedByServiceException extends StorageException {
 
     private static final long serialVersionUID = 6417515944143203526L;
 
-    /**
-     * @param serializedRingMetadata the {@link RingMetadata} serialized as a String
-     */
-    public KeyIsNotManagedByServiceException(String serializedRingMetadata) {
-        super(serializedRingMetadata);
+    public KeyIsNotManagedByServiceException() {
+        super("Key is not managed by Data Access Service.");
     }
 
 }

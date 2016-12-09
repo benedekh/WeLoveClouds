@@ -14,6 +14,7 @@ import weloveclouds.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.kvstore.serialization.KVTransferMessageSerializer;
+import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
@@ -21,7 +22,6 @@ import weloveclouds.server.models.requests.kvecs.KVECSRequestFactory;
 import weloveclouds.server.models.requests.kvecs.utils.StorageUnitsTransporterFactory;
 import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
 import weloveclouds.server.models.requests.kvserver.KVServerRequestFactory;
-import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**
@@ -42,11 +42,12 @@ public class ServerFactory {
      * @throws IOException if the server cannot be created on the referred port
      */
     public Server<KVMessage, IKVClientRequest> createServerForKVClientRequests(int port,
-            IDataAccessService dataAccessService) throws IOException {
+            IMovableDataAccessService dataAccessService) throws IOException {
         LOGGER.debug("Creating Server for KVClient requests.");
         return new Server.Builder<KVMessage, IKVClientRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
-                .requestFactory(new KVClientRequestFactory(dataAccessService))
+                .requestFactory(
+                        new KVClientRequestFactory(dataAccessService, new RingMetadataSerializer()))
                 .communicationApiFactory(new CommunicationApiFactory())
                 .messageSerializer(new KVMessageSerializer())
                 .messageDeserializer(new KVMessageDeserializer()).build();

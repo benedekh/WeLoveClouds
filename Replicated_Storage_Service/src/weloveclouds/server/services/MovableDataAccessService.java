@@ -21,8 +21,6 @@ import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.models.KVEntry;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
-import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.server.models.replication.HashRangeWithRole;
 import weloveclouds.server.models.replication.HashRangesWithRoles;
 import weloveclouds.server.models.replication.Role;
@@ -57,8 +55,6 @@ public class MovableDataAccessService extends DataAccessService
     private volatile RingMetadata ringMetadata;
     private volatile HashRangesWithRoles rangesManagedByServer;
 
-    private ISerializer<String, RingMetadata> ringMetadatSerializer = new RingMetadataSerializer();
-
     public MovableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage) {
         super(cache, persistentStorage);
         this.movablePersistentStorage = persistentStorage;
@@ -70,9 +66,10 @@ public class MovableDataAccessService extends DataAccessService
     public synchronized PutType putEntry(KVEntry entry) throws StorageException {
         return putEntry(entry, true);
     }
-    
+
     @Override
-    public synchronized PutType putEntryWithoutAuthorization(KVEntry entry) throws StorageException {
+    public synchronized PutType putEntryWithoutAuthorization(KVEntry entry)
+            throws StorageException {
         return putEntry(entry, false);
     }
 
@@ -208,6 +205,11 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
+    public synchronized RingMetadata getRingMetadata() {
+        return ringMetadata;
+    }
+
+    @Override
     public synchronized void setManagedHashRanges(HashRangesWithRoles rangesManagedByServer) {
         this.rangesManagedByServer = rangesManagedByServer;
     }
@@ -337,8 +339,7 @@ public class MovableDataAccessService extends DataAccessService
         if (rangesManagedByServer == null || !keyIsManagedByServer(key, expectedRole)) {
             LOGGER.debug(
                     CustomStringJoiner.join("", "Key (", key, ") is not managed by the server."));
-            throw new KeyIsNotManagedByServiceException(
-                    ringMetadatSerializer.serialize(ringMetadata));
+            throw new KeyIsNotManagedByServiceException();
         }
     }
 

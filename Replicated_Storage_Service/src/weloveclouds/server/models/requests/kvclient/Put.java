@@ -10,13 +10,15 @@ import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
+import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
-import weloveclouds.server.services.DataAccessService;
-import weloveclouds.server.services.IDataAccessService;
+import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.MovableDataAccessService;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.exceptions.WriteLockIsActiveException;
@@ -24,7 +26,7 @@ import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
- * A put request to store a key and a value in the {@link DataAccessService}.
+ * A put request to store a key and a value in the {@link MovableDataAccessService}.
  * 
  * @author Benoit
  */
@@ -32,14 +34,18 @@ public class Put implements IKVClientRequest {
 
     private static final Logger LOGGER = Logger.getLogger(Put.class);
 
-    private IDataAccessService dataAccessService;
+    private IMovableDataAccessService dataAccessService;
     private String key;
     private String value;
 
-    public Put(IDataAccessService dataAccessService, String key, String value) {
+    private ISerializer<String, RingMetadata> ringMetadataSerializer;
+
+    public Put(IMovableDataAccessService dataAccessService, String key, String value,
+            ISerializer<String, RingMetadata> ringMetadataSerializer) {
         this.dataAccessService = dataAccessService;
         this.key = key;
         this.value = value;
+        this.ringMetadataSerializer = ringMetadataSerializer;
     }
 
     @Override
@@ -58,7 +64,9 @@ public class Put implements IKVClientRequest {
                     break;
             }
         } catch (KeyIsNotManagedByServiceException ex) {
-            response = createResponse(SERVER_NOT_RESPONSIBLE, key, ex.getMessage());
+            RingMetadata ringMetadata = dataAccessService.getRingMetadata();
+            String ringMetadataStr = ringMetadataSerializer.serialize(ringMetadata);
+            response = createResponse(SERVER_NOT_RESPONSIBLE, key, ringMetadataStr);
         } catch (ServiceIsStoppedException ex) {
             response = createResponse(SERVER_STOPPED, key, null);
         } catch (WriteLockIsActiveException ex) {

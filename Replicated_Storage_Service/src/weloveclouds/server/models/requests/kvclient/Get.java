@@ -8,18 +8,21 @@ import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
+import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
-import weloveclouds.server.services.DataAccessService;
-import weloveclouds.server.services.IDataAccessService;
+import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.MovableDataAccessService;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
- * A get request to get the respective value for a key, stored in the {@link DataAccessService}.
+ * A get request to get the respective value for a key, stored in the
+ * {@link MovableDataAccessService}.
  * 
  * @author Benoit
  */
@@ -28,12 +31,16 @@ public class Get implements IKVClientRequest {
 
     private static final Logger LOGGER = Logger.getLogger(Get.class);
 
-    private IDataAccessService dataAccessService;
+    private IMovableDataAccessService dataAccessService;
     private String key;
 
-    public Get(IDataAccessService dataAccessService, String key) {
+    private ISerializer<String, RingMetadata> ringMetadataSerializer;
+
+    public Get(IMovableDataAccessService dataAccessService, String key,
+            ISerializer<String, RingMetadata> ringMetadataSerializer) {
         this.dataAccessService = dataAccessService;
         this.key = key;
+        this.ringMetadataSerializer = ringMetadataSerializer;
     }
 
     @Override
@@ -43,7 +50,9 @@ public class Get implements IKVClientRequest {
             LOGGER.debug(CustomStringJoiner.join(" ", "Trying to get value for key", key));
             response = createResponse(GET_SUCCESS, key, dataAccessService.getValue(key));
         } catch (KeyIsNotManagedByServiceException ex) {
-            response = createResponse(SERVER_NOT_RESPONSIBLE, key, ex.getMessage());
+            RingMetadata ringMetadata = dataAccessService.getRingMetadata();
+            String ringMetadataStr = ringMetadataSerializer.serialize(ringMetadata);
+            response = createResponse(SERVER_NOT_RESPONSIBLE, key, ringMetadataStr);
         } catch (ServiceIsStoppedException ex) {
             response = createResponse(SERVER_STOPPED, key, null);
         } catch (StorageException e) {

@@ -83,6 +83,11 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * Ring hash metadata information.
      */
     public void setRingMetadata(RingMetadata ringMetadata);
+    
+    /**
+     * @return ring hash metadata information
+     */
+    public RingMetadata getRingMetadata();
 
     /**
      * Sets the hash ranges that are managed by the data access service.
