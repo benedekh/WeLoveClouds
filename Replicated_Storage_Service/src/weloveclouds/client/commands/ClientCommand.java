@@ -1,4 +1,4 @@
-package weloveclouds.client.models.commands;
+package weloveclouds.client.commands;
 
 import org.apache.log4j.Logger;
 
@@ -6,7 +6,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 
 /**
  * Different commands which are handled by
- * {@link weloveclouds.client.models.commands.CommandFactory}.
+ * {@link weloveclouds.client.commands.CommandFactory}.
  *
  * @author Benedek
  */

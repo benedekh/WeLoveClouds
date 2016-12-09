@@ -1,4 +1,4 @@
-package weloveclouds.client.models.commands;
+package weloveclouds.client.commands;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
@@ -7,11 +7,11 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.ClientSideException;
-import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.models.messages.IKVMessage;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
 /**
  * Get command which means the client would like to query the value for a respective key.
@@ -28,17 +28,10 @@ public class Get extends AbstractKVCommunicationApiCommand {
 
     private boolean commandWasAlreadyExecuted;
 
-    /**
-     * @param arguments contains the key in the {@link #KEY_INDEX} position
-     * @param communicationApi which is used for querying the value from the server
-     * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object to
-     *        its original representation from String
-     */
-    public Get(String[] arguments, IKVCommunicationApiV2 communicationApi,
-            IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
-        super(arguments, communicationApi);
-        this.ringMetadataDeserializer = ringMetadataDeserializer;
-        this.communicationApiV2 = communicationApi;
+    protected Get(Builder builder) {
+        super(builder.arguments, builder.communicationApi);
+        this.ringMetadataDeserializer = builder.ringMetadataDeserializer;
+        this.communicationApiV2 = builder.communicationApi;
         this.commandWasAlreadyExecuted = false;
     }
 
@@ -112,6 +105,47 @@ public class Get extends AbstractKVCommunicationApiCommand {
     public ICommand validate() throws IllegalArgumentException {
         ArgumentsValidator.validateGetArguments(arguments);
         return this;
+    }
+
+    /**
+     * Builder pattern for creating a {@link Get} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private String[] arguments;
+        private IKVCommunicationApiV2 communicationApi;
+        private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
+
+        /**
+         * @param arguments contains the key in the {@link #KEY_INDEX} position
+         */
+        public Builder arguments(String[] arguments) {
+            this.arguments = arguments;
+            return this;
+        }
+
+        /**
+         * @param communicationApi which is used for querying the value from the server
+         */
+        public Builder communicationApi(IKVCommunicationApiV2 communicationApi) {
+            this.communicationApi = communicationApi;
+            return this;
+        }
+
+        /**
+         * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object
+         *        to its original representation from String
+         */
+        public Builder ringMetadataDeserializer(
+                IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
+            this.ringMetadataDeserializer = ringMetadataDeserializer;
+            return this;
+        }
+
+        public Get build() {
+            return new Get(this);
+        }
     }
 
 }
