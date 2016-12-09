@@ -1,6 +1,7 @@
 package weloveclouds.kvstore.models.messages;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.communication.models.ServerConnectionInfos;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
@@ -14,29 +15,26 @@ import weloveclouds.server.models.replication.HashRangesWithRoles;
 public class KVAdminMessage implements IKVAdminMessage {
 
     private StatusType status;
-    private HashRange removableRange;
     private RingMetadata ringMetadata;
     private RingMetadataPart targetServerInfo;
     private HashRangesWithRoles rangesWithRoles;
+    private ServerConnectionInfos replicaConnectionInfos;
+    private HashRange removableRange;
     private String responseMessage;
 
     protected KVAdminMessage(Builder builder) {
         this.status = builder.status;
-        this.removableRange = builder.removableRange;
         this.ringMetadata = builder.ringMetadata;
         this.targetServerInfo = builder.targetServerInfo;
         this.rangesWithRoles = builder.rangesWithRoles;
+        this.replicaConnectionInfos = builder.replicaConnectionInfos;
+        this.removableRange = builder.removableRange;
         this.responseMessage = builder.responseMessage;
     }
 
     @Override
     public StatusType getStatus() {
         return status;
-    }
-
-    @Override
-    public HashRange getRemovableRange() {
-        return removableRange;
     }
 
     @Override
@@ -52,6 +50,16 @@ public class KVAdminMessage implements IKVAdminMessage {
     @Override
     public HashRangesWithRoles getManagedHashRangesWithRole() {
         return rangesWithRoles;
+    }
+
+    @Override
+    public ServerConnectionInfos getReplicaConnectionInfos() {
+        return replicaConnectionInfos;
+    }
+    
+    @Override
+    public HashRange getRemovableRange() {
+        return removableRange;
     }
 
     @Override
@@ -78,6 +86,8 @@ public class KVAdminMessage implements IKVAdminMessage {
         int result = 1;
         result = prime * result + ((rangesWithRoles == null) ? 0 : rangesWithRoles.hashCode());
         result = prime * result + ((removableRange == null) ? 0 : removableRange.hashCode());
+        result = prime * result
+                + ((replicaConnectionInfos == null) ? 0 : replicaConnectionInfos.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((ringMetadata == null) ? 0 : ringMetadata.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
@@ -111,6 +121,13 @@ public class KVAdminMessage implements IKVAdminMessage {
         } else if (!removableRange.equals(other.removableRange)) {
             return false;
         }
+        if (replicaConnectionInfos == null) {
+            if (other.replicaConnectionInfos != null) {
+                return false;
+            }
+        } else if (!replicaConnectionInfos.equals(other.replicaConnectionInfos)) {
+            return false;
+        }
         if (responseMessage == null) {
             if (other.responseMessage != null) {
                 return false;
@@ -138,7 +155,6 @@ public class KVAdminMessage implements IKVAdminMessage {
         return true;
     }
 
-
     /**
      * Builder pattern for creating a {@link KVAdminMessage} instance.
      *
@@ -146,19 +162,15 @@ public class KVAdminMessage implements IKVAdminMessage {
      */
     public static class Builder {
         private StatusType status;
-        private HashRange removableRange;
         private RingMetadata ringMetadata;
         private RingMetadataPart targetServerInfo;
         private HashRangesWithRoles rangesWithRoles;
+        private ServerConnectionInfos replicaConnectionInfos;
+        private HashRange removableRange;
         private String responseMessage;
 
         public Builder status(StatusType status) {
             this.status = status;
-            return this;
-        }
-
-        public Builder removableRange(HashRange range) {
-            this.removableRange = range;
             return this;
         }
 
@@ -174,6 +186,16 @@ public class KVAdminMessage implements IKVAdminMessage {
 
         public Builder rangesWithRoles(HashRangesWithRoles rangesWithRoles) {
             this.rangesWithRoles = rangesWithRoles;
+            return this;
+        }
+
+        public Builder replicaConnectionInfos(ServerConnectionInfos replicaConnectionInfos) {
+            this.replicaConnectionInfos = replicaConnectionInfos;
+            return this;
+        }
+
+        public Builder removableRange(HashRange range) {
+            this.removableRange = range;
             return this;
         }
 

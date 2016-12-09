@@ -25,7 +25,6 @@ public class MovableStorageUnitsDeserializer implements IDeserializer<MovableSto
     @Override
     public MovableStorageUnits deserialize(String from) throws DeserializationException {
         MovableStorageUnits deserialized = null;
-        Set<MovableStorageUnit> deserializedUnits = new HashSet<>();
 
         if (from != null && !"null".equals(from)) {
             LOGGER.debug("Deserializing a MovableStorageUnits from String.");
@@ -34,6 +33,7 @@ public class MovableStorageUnitsDeserializer implements IDeserializer<MovableSto
                     from.split(MovableStorageUnitsSerializer.SEPARATOR_BETWEEN_STORAGE_UNITS);
 
             // raw fields
+            Set<MovableStorageUnit> deserializedUnits = new HashSet<>();
             for (String rawStorageUnit : rawStorageUnits) {
                 // deserialized fields
                 deserializedUnits.add(storageUnitDeserializer.deserialize(rawStorageUnit));

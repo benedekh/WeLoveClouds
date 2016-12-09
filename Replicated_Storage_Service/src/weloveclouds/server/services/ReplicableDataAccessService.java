@@ -7,13 +7,18 @@ import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 
-public class ReplicableDataAccessService extends MovableDataAccessService {
+public class ReplicableDataAccessService extends MovableDataAccessService
+        implements IReplicableDataAccessService {
 
-    private IReplicationTransferer replicationTransferer;
+    private volatile IReplicationTransferer replicationTransferer;
 
-    public ReplicableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage,
-            IReplicationTransferer replicationTransferer) {
+    public ReplicableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage) {
         super(cache, persistentStorage);
+    }
+
+    @Override
+    public synchronized void setReplicationTransferer(
+            IReplicationTransferer replicationTransferer) {
         this.replicationTransferer = replicationTransferer;
     }
 
@@ -21,7 +26,7 @@ public class ReplicableDataAccessService extends MovableDataAccessService {
     protected PutType putEntry(KVEntry entry, boolean coordinatorRoleIsExpected)
             throws StorageException {
         PutType response = super.putEntry(entry, coordinatorRoleIsExpected);
-        if (coordinatorRoleIsExpected) {
+        if (coordinatorRoleIsExpected && replicationTransferer != null) {
             replicationTransferer.putEntryOnReplicas(entry);
         }
         return response;
@@ -31,7 +36,7 @@ public class ReplicableDataAccessService extends MovableDataAccessService {
     protected void removeEntry(String key, boolean coordinatorRoleIsExpected)
             throws StorageException {
         super.removeEntry(key, coordinatorRoleIsExpected);
-        if (coordinatorRoleIsExpected) {
+        if (coordinatorRoleIsExpected && replicationTransferer != null) {
             replicationTransferer.removeKeyOnReplicas(key);
         }
     }

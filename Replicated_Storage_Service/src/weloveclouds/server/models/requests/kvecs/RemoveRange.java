@@ -11,9 +11,15 @@ import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 
+/**
+ * A remove range request to the {@link IMovableDataAccessService}, which removes those entries
+ * whose key's hash value is in the specified range.
+ * 
+ * @author Benedek
+ */
 public class RemoveRange implements IKVECSRequest {
 
-    private static final Logger LOGGER = Logger.getLogger(MoveDataToDestination.class);
+    private static final Logger LOGGER = Logger.getLogger(RemoveRange.class);
 
     private IMovableDataAccessService dataAccessService;
     private HashRange range;

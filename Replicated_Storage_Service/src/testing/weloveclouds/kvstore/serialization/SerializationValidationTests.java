@@ -17,6 +17,7 @@ public class SerializationValidationTests {
         clientSuite.addTestSuite(RingMetadataTest.class);
         clientSuite.addTestSuite(KVEntryTest.class);
         clientSuite.addTestSuite(ServerConnectionInfoTest.class);
+        clientSuite.addTestSuite(ServerConnectionInfosTest.class);
         clientSuite.addTestSuite(KVAdminMessageTest.class);
         clientSuite.addTestSuite(KVMessageTest.class);
         clientSuite.addTestSuite(KVTransferMessageTest.class);

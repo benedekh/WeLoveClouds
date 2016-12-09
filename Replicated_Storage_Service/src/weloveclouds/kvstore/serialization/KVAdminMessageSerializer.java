@@ -5,6 +5,7 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.communication.models.ServerConnectionInfos;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
@@ -15,6 +16,7 @@ import weloveclouds.kvstore.serialization.helper.HashRangesWithRolesSerializer;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
+import weloveclouds.kvstore.serialization.helper.ServerConnectionInfosSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.models.replication.HashRangesWithRoles;
 
@@ -32,12 +34,14 @@ public class KVAdminMessageSerializer
 
     private static final Logger LOGGER = Logger.getLogger(KVAdminMessageSerializer.class);
 
-    private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
     private ISerializer<String, RingMetadata> metadataSerializer = new RingMetadataSerializer();
     private ISerializer<String, RingMetadataPart> metadataPartSerializer =
             new RingMetadataPartSerializer();
     private ISerializer<String, HashRangesWithRoles> hashRangesWithRolesSerializer =
             new HashRangesWithRolesSerializer();
+    private ISerializer<String, ServerConnectionInfos> replicaConnectionInfosSerializer =
+            new ServerConnectionInfosSerializer();
+    private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
 
     @Override
     public SerializedMessage serialize(KVAdminMessage unserializedMessage) {
@@ -45,22 +49,27 @@ public class KVAdminMessageSerializer
 
         // original fields
         StatusType status = unserializedMessage.getStatus();
-        HashRange removableRange = unserializedMessage.getRemovableRange();
         RingMetadata ringMetadata = unserializedMessage.getRingMetadata();
         RingMetadataPart targetServerInfo = unserializedMessage.getTargetServerInfo();
         HashRangesWithRoles rangesWithRoles = unserializedMessage.getManagedHashRangesWithRole();
+        ServerConnectionInfos replicaConnectionInfos =
+                unserializedMessage.getReplicaConnectionInfos();
+        HashRange removableRange = unserializedMessage.getRemovableRange();
 
         // string representation
         String statusStr = status == null ? null : status.toString();
-        String removeableRangeStr = hashRangeSerializer.serialize(removableRange);
         String ringMetadataStr = metadataSerializer.serialize(ringMetadata);
         String targetServerStr = metadataPartSerializer.serialize(targetServerInfo);
         String rangesWithRolesStr = hashRangesWithRolesSerializer.serialize(rangesWithRoles);
+        String replicaConnectionInfosStr =
+                replicaConnectionInfosSerializer.serialize(replicaConnectionInfos);
+        String removeableRangeStr = hashRangeSerializer.serialize(removableRange);
         String responseMessage = unserializedMessage.getResponseMessage();
 
         // merged string representation
-        String serialized = CustomStringJoiner.join(SEPARATOR, statusStr, removeableRangeStr,
-                ringMetadataStr, targetServerStr, rangesWithRolesStr, responseMessage);
+        String serialized = CustomStringJoiner.join(SEPARATOR, statusStr, ringMetadataStr,
+                targetServerStr, rangesWithRolesStr, replicaConnectionInfosStr, removeableRangeStr,
+                responseMessage);
         String prefixed = CustomStringJoiner.join("", PREFIX, serialized);
         String postfixed = CustomStringJoiner.join("", prefixed, POSTFIX);
 

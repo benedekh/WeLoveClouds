@@ -16,7 +16,7 @@ import weloveclouds.server.models.configuration.KVServerPortConstants;
 import weloveclouds.server.models.configuration.KVServerPortContext;
 import weloveclouds.server.services.DataAccessServiceFactory;
 import weloveclouds.server.services.IDataAccessService;
-import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.IReplicableDataAccessService;
 import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
@@ -88,8 +88,8 @@ public class KVServer {
 
             KVServerPortContext portConfigurationContext = new KVServerPortContext.Builder()
                     .clientPort(kvClientPort).serverPort(kvServerPort).ecsPort(kvECSPort).build();
-            IMovableDataAccessService dataAccessService = new DataAccessServiceFactory()
-                    .createInitializedMovableDataAccessService(initializationContext);
+            IReplicableDataAccessService dataAccessService = new DataAccessServiceFactory()
+                    .createInitializedReplicableDataAccessService(initializationContext);
 
             createAndStartServers(portConfigurationContext, dataAccessService);
         } catch (Throwable ex) {
@@ -106,7 +106,7 @@ public class KVServer {
      * @throws IOException if an error occurs
      */
     private static void createAndStartServers(KVServerPortContext portConfigurationContext,
-            IMovableDataAccessService dataAccessService) throws IOException {
+            IReplicableDataAccessService dataAccessService) throws IOException {
         ServerFactory serverFactory = new ServerFactory();
         weloveclouds.server.core.KVServer kvServer = new weloveclouds.server.core.KVServer(
                 serverFactory, portConfigurationContext, dataAccessService);
@@ -176,8 +176,8 @@ public class KVServer {
                         .displacementStrategy(displacementStrategy)
                         .rootFolderPath(defaultStoragePath).build();
 
-        IMovableDataAccessService dataAccessService = new DataAccessServiceFactory()
-                .createInitializedMovableDataAccessService(initializationContext);
+        IReplicableDataAccessService dataAccessService = new DataAccessServiceFactory()
+                .createInitializedReplicableDataAccessService(initializationContext);
         try {
             KVServerPortContext portConfigurationContext = new KVServerPortContext.Builder()
                     .clientPort(port).serverPort(KVServerPortConstants.KVSERVER_REQUESTS_PORT)

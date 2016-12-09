@@ -1,5 +1,6 @@
 package weloveclouds.kvstore.models.messages;
 
+import weloveclouds.communication.models.ServerConnectionInfos;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
@@ -32,27 +33,32 @@ public interface IKVAdminMessage {
     public StatusType getStatus();
 
     /**
-     * @return the range whose entries shall be removed from the server
-     */
-    public HashRange getRemovableRange();
-
-
-    /**
      * @return the ring metadata parts (<IP, port, <range, role>>) for each server
      */
     public RingMetadata getRingMetadata();
 
     /**
-     * @return the ip+port+hash range with role in which the hash values of keys of the entries have
-     *         to be
+     * @return the IP+port of the target server to which entries denoted by the encapsulated
+     *         HashRange have to be transferred
      */
     public RingMetadataPart getTargetServerInfo();
 
     /**
-     * @return the hash ranges which are managed by the addressed server, together with the roles
-     *         the respective server has for each range
+     * @return the hash ranges which are managed by the server, together with the roles the
+     *         respective server has for each range
      */
     public HashRangesWithRoles getManagedHashRangesWithRole();
+
+    /**
+     * @return connection information about the replicas, e.g. on which IP + port are they
+     *         accessible
+     */
+    public ServerConnectionInfos getReplicaConnectionInfos();
+
+    /**
+     * @return the range whose entries shall be removed from the server
+     */
+    public HashRange getRemovableRange();
 
     /**
      * @return if the message is a response then the message text can be obtained here

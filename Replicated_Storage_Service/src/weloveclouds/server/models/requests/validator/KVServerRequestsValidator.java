@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.Set;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.communication.models.ServerConnectionInfos;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
@@ -131,11 +132,32 @@ public class KVServerRequestsValidator {
     }
 
     /**
+     * A {@link ServerConnectionInfos} is valid, if it is not null and the encapsulated
+     * {@link ServerConnectionInfo} instances are valid.
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
+    public static void validateServerConnectionInfos(ServerConnectionInfos connectionInfos)
+            throws IllegalArgumentException {
+        if (connectionInfos == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Set<ServerConnectionInfo> serverConnectionInfos =
+                connectionInfos.getServerConnectionInfos();
+        if (serverConnectionInfos == null || serverConnectionInfos.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        for (ServerConnectionInfo serverConnectionInfo : serverConnectionInfos) {
+            validateServerConnectionInfo(serverConnectionInfo);
+        }
+    }
+
+    /**
      * A {@link RingMetadataPart} is valid, if:<br>
      * (1) it is not null,<br>
      * (2) neither the underlying hash range is null,<br>
-     * (3) neither the underlying IP address is null, <br>
-     * (4) neither the underlying port is invalid (out of range [0, 65535]).
+     * (3)and the underlying {@link ServerConnectionInfo} is valid.
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
@@ -144,22 +166,8 @@ public class KVServerRequestsValidator {
         if (ringMetadataPart == null) {
             throw new IllegalArgumentException();
         }
-
         validateHashRange(ringMetadataPart.getRange());
-
-        ServerConnectionInfo connectionInfo = ringMetadataPart.getConnectionInfo();
-        if (connectionInfo == null) {
-            throw new IllegalArgumentException();
-        }
-        InetAddress ipAddress = connectionInfo.getIpAddress();
-        if (ipAddress == null) {
-            throw new IllegalArgumentException();
-        }
-
-        int port = connectionInfo.getPort();
-        if (port < NETWORK_PORT_LOWER_LIMIT || port > NETWORK_PORT_UPPER_LIMIT) {
-            throw new IllegalArgumentException();
-        }
+        validateServerConnectionInfo(ringMetadataPart.getConnectionInfo());
     }
 
     /**
@@ -186,6 +194,30 @@ public class KVServerRequestsValidator {
             if (keySet == null) {
                 throw new IllegalArgumentException();
             }
+        }
+    }
+
+    /**
+     * A {@link ServerConnectionInfo} is valid, if:<br>
+     * (1) it is not null,<br>
+     * (2) neither the underlying IP address is null, <br>
+     * (3) neither the underlying port is invalid (out of range [0, 65535]).
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
+    private static void validateServerConnectionInfo(ServerConnectionInfo connectionInfo)
+            throws IllegalArgumentException {
+        if (connectionInfo == null) {
+            throw new IllegalArgumentException();
+        }
+        InetAddress ipAddress = connectionInfo.getIpAddress();
+        if (ipAddress == null) {
+            throw new IllegalArgumentException();
+        }
+
+        int port = connectionInfo.getPort();
+        if (port < NETWORK_PORT_LOWER_LIMIT || port > NETWORK_PORT_UPPER_LIMIT) {
+            throw new IllegalArgumentException();
         }
     }
 }

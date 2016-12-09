@@ -21,7 +21,7 @@ public abstract class AbstractReplicationRequest<T> implements Runnable {
 
     private ConnectionFactory connectionFactory;
     private IConcurrentCommunicationApi communicationApi;
-    
+
     private ServerConnectionInfo connectionInfo;
     private T payload;
 
@@ -44,6 +44,9 @@ public abstract class AbstractReplicationRequest<T> implements Runnable {
 
     @Override
     public void run() {
+        logger.debug(CustomStringJoiner.join(" ", "Starting replicating (", payload.toString(),
+                ") on", connectionInfo.toString()));
+
         try (Connection connection = connectionFactory.createConnectionFrom(connectionInfo)) {
             KVTransferMessage transferMessage = createTransferMessageFrom(payload);
             SerializedMessage serializedMessage = messageSerializer.serialize(transferMessage);
@@ -58,6 +61,9 @@ public abstract class AbstractReplicationRequest<T> implements Runnable {
             logger.error(CustomStringJoiner.join(" ", "Exception (", ex.toString(),
                     ") occured while replicating on", connectionInfo.toString()));
         }
+
+        logger.debug(CustomStringJoiner.join(" ", "Replicating (", payload.toString(), ") on",
+                connectionInfo.toString(), " finished"));
     }
 
     protected abstract KVTransferMessage createTransferMessageFrom(T payload);

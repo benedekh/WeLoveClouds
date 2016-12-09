@@ -23,6 +23,8 @@ import weloveclouds.server.models.requests.kvecs.utils.StorageUnitsTransporterFa
 import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
 import weloveclouds.server.models.requests.kvserver.KVServerRequestFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.IReplicableDataAccessService;
+import weloveclouds.server.services.utils.ReplicationTransfererFactory;
 
 /**
  * Factory class which creates different {@link Server} instances, depending on the processable
@@ -80,14 +82,15 @@ public class ServerFactory {
      * @throws IOException if the server cannot be created on the referred port
      */
     public Server<KVAdminMessage, IKVECSRequest> createServerForKVECSRequests(int port,
-            IMovableDataAccessService dataAccessService) throws IOException {
-        CommunicationApiFactory communicationApiFactory = new CommunicationApiFactory();
+            IReplicableDataAccessService dataAccessService) throws IOException {
         LOGGER.debug("Creating Server for KVECS requests.");
+        CommunicationApiFactory communicationApiFactory = new CommunicationApiFactory();
         return new Server.Builder<KVAdminMessage, IKVECSRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
-                .requestFactory(new KVECSRequestFactory(dataAccessService, communicationApiFactory,
-                        new KVTransferMessageSerializer(), new KVTransferMessageDeserializer(),
-                        new StorageUnitsTransporterFactory()))
+                .requestFactory(new KVECSRequestFactory(dataAccessService,
+                        communicationApiFactory, new ReplicationTransfererFactory(),
+                        new StorageUnitsTransporterFactory(), new KVTransferMessageSerializer(),
+                        new KVTransferMessageDeserializer()))
                 .communicationApiFactory(communicationApiFactory)
                 .messageSerializer(new KVAdminMessageSerializer())
                 .messageDeserializer(new KVAdminMessageDeserializer()).build();

@@ -15,7 +15,8 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.core.requests.ICallbackRegister;
 import weloveclouds.server.core.requests.IRequestFactory;
 import weloveclouds.server.models.requests.kvecs.utils.StorageUnitsTransporterFactory;
-import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.IReplicableDataAccessService;
+import weloveclouds.server.services.utils.ReplicationTransfererFactory;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different requests. It
@@ -28,23 +29,27 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
 
     private static final Logger LOGGER = Logger.getLogger(KVECSRequestFactory.class);
 
-    private IMovableDataAccessService dataAccessService;
+    private IReplicableDataAccessService dataAccessService;
     private ICommunicationApi communicationApi;
+
     private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
+    private ReplicationTransfererFactory replicationTransfererFactory;
 
     private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
     private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
-    public KVECSRequestFactory(IMovableDataAccessService dataAccessService,
+    public KVECSRequestFactory(IReplicableDataAccessService dataAccessService,
             CommunicationApiFactory communicationApiFactory,
+            ReplicationTransfererFactory replicationTransfererFactory,
+            StorageUnitsTransporterFactory storageUnitsTransporterFactory,
             IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer,
-            StorageUnitsTransporterFactory storageUnitsTransporterFactory) {
+            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
         this.dataAccessService = dataAccessService;
         this.communicationApi = communicationApiFactory.createCommunicationApiV1();
+        this.storageUnitsTransporterFactory = storageUnitsTransporterFactory;
+        this.replicationTransfererFactory = replicationTransfererFactory;
         this.transferMessageSerializer = transferMessageSerializer;
         this.transferMessageDeserializer = transferMessageDeserializer;
-        this.storageUnitsTransporterFactory = storageUnitsTransporterFactory;
     }
 
     @Override
@@ -55,9 +60,10 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
 
         switch (status) {
             case INITKVSERVER:
-                request =
-                        new InitializeKVServer(dataAccessService, receivedMessage.getRingMetadata(),
-                                receivedMessage.getManagedHashRangesWithRole());
+                request = new InitializeKVServer(dataAccessService, replicationTransfererFactory,
+                        receivedMessage.getRingMetadata(),
+                        receivedMessage.getManagedHashRangesWithRole(),
+                        receivedMessage.getReplicaConnectionInfos());
                 break;
             case START:
                 request = new StartDataAcessService(dataAccessService);
@@ -81,10 +87,14 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
                         receivedMessage.getTargetServerInfo(), transferMessageSerializer,
                         transferMessageDeserializer, storageUnitsTransporterFactory);
                 break;
+            case REMOVERANGE:
+                request = new RemoveRange(dataAccessService, receivedMessage.getRemovableRange());
+                break;
             case UPDATE:
-                request =
-                        new UpdateRingMetadata(dataAccessService, receivedMessage.getRingMetadata(),
-                                receivedMessage.getManagedHashRangesWithRole());
+                request = new UpdateRingMetadata(dataAccessService, replicationTransfererFactory,
+                        receivedMessage.getRingMetadata(),
+                        receivedMessage.getManagedHashRangesWithRole(),
+                        receivedMessage.getReplicaConnectionInfos());
                 break;
             case SHUTDOWN:
                 request = new ShutdownServer(callbackRegister);

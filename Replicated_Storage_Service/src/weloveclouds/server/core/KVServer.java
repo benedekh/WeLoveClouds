@@ -11,7 +11,7 @@ import weloveclouds.server.models.configuration.KVServerPortContext;
 import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
-import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.IReplicableDataAccessService;
 
 /**
  * Encapsulates all three server instances which are needed for the whole KVServer functionality.
@@ -31,7 +31,7 @@ public class KVServer {
     private Server<KVAdminMessage, IKVECSRequest> kvECSRequestsServer;
 
     public KVServer(ServerFactory serverFactory, KVServerPortContext portConfiguration,
-            IMovableDataAccessService dataAccessService) throws IOException {
+            IReplicableDataAccessService dataAccessService) throws IOException {
         LOGGER.debug("Creating the servers for the different requests.");
         this.kvClientRequestsServer = serverFactory.createServerForKVClientRequests(
                 portConfiguration.getKVClientPort(), dataAccessService);

@@ -12,7 +12,7 @@ import weloveclouds.server.core.ServerFactory;
 import weloveclouds.server.models.configuration.KVServerCLIContext;
 import weloveclouds.server.models.configuration.KVServerPortContext;
 import weloveclouds.server.services.DataAccessServiceFactory;
-import weloveclouds.server.services.MovableDataAccessService;
+import weloveclouds.server.services.IReplicableDataAccessService;
 import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.utils.ArgumentsValidator;
@@ -57,8 +57,8 @@ public class Start extends AbstractServerCommand {
             DataAccessServiceInitializationContext initializationContext =
                     new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
                             .displacementStrategy(startegy).rootFolderPath(storagePath).build();
-            MovableDataAccessService dataAccessService = dataAccessServiceFactory
-                    .createInitializedMovableDataAccessService(initializationContext);
+            IReplicableDataAccessService dataAccessService = dataAccessServiceFactory
+                    .createInitializedReplicableDataAccessService(initializationContext);
 
             KVServer kvServer = new KVServer(serverFactory, portContext, dataAccessService);
             kvServer.start();
