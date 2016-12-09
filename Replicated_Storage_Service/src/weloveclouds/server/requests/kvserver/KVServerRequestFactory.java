@@ -41,6 +41,9 @@ public class KVServerRequestFactory
             case REMOVE_ENTRY_BY_KEY:
                 request = new RemoveEntry(dataAccessService, receivedMessage.getRemovableKey());
                 break;
+            case PUT_ENTRY:
+                request = new PutEntry(dataAccessService, receivedMessage.getPutableEntry());
+                break;
             default:
                 String errorMessage = "Unrecognized command for transfer message";
                 LOGGER.error(join(" ", errorMessage, receivedMessage.toString()));

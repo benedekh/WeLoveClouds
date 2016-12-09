@@ -12,6 +12,7 @@ import junit.framework.Assert;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.communication.models.ServerConnectionInfos;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
@@ -29,6 +30,7 @@ import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.server.models.configuration.KVServerPortConstants;
 import weloveclouds.server.models.replication.HashRangeWithRole;
+import weloveclouds.server.models.replication.HashRangesWithRoles;
 import weloveclouds.server.models.replication.Role;
 
 public class KVServerHandlingECSRequestTests {
@@ -54,7 +56,7 @@ public class KVServerHandlingECSRequestTests {
     @Before
     public void init() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()
-                .ipAddress(SERVER_IP_ADDRESS).port(SERVER1_KVECS_REQUEST_ACCEPTING_PORT).build();
+                .ipAddress(SERVER_IP_ADDRESS).port(30002).build();
         serverCommunication =
                 new KVCommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
         serverCommunication.connect();
@@ -127,19 +129,31 @@ public class KVServerHandlingECSRequestTests {
         RingMetadataPart part1 = new RingMetadataPart.Builder().connectionInfo(server1)
                 .rangeWithRole(rangeWithRoleForServer1).build();
 
-        ServerConnectionInfo server2 = new ServerConnectionInfo.Builder().ipAddress("localhost")
-                .port(SERVER2_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
-        HashRange rangeForServer2 = new HashRange.Builder().begin(HashingUtil.getHash("b"))
-                .end(HashingUtil.getHash("b")).build();
+        ServerConnectionInfo server2 =
+                new ServerConnectionInfo.Builder().ipAddress("localhost").port(50003).build();
         HashRangeWithRole rangeWithRoleForServer2 = new HashRangeWithRole.Builder()
-                .hashRange(rangeForServer2).role(Role.COORDINATOR).build();
+                .hashRange(rangeForServer1).role(Role.REPLICA).build();
         RingMetadataPart part2 = new RingMetadataPart.Builder().connectionInfo(server2)
                 .rangeWithRole(rangeWithRoleForServer2).build();
 
-        RingMetadata ringMetadata = new RingMetadata(new HashSet<>(Arrays.asList(part1, part2)));
+        ServerConnectionInfo server3 =
+                new ServerConnectionInfo.Builder().ipAddress("localhost").port(50005).build();
+        HashRangeWithRole rangeWithRoleForServer3 = new HashRangeWithRole.Builder()
+                .hashRange(rangeForServer1).role(Role.REPLICA).build();
+        RingMetadataPart part3 = new RingMetadataPart.Builder().connectionInfo(server3)
+                .rangeWithRole(rangeWithRoleForServer3).build();
+
+        RingMetadata ringMetadata =
+                new RingMetadata(new HashSet<>(Arrays.asList(part1, part2, part3)));
+
+        HashRangesWithRoles rangesWithRoles =
+                new HashRangesWithRoles(new HashSet<>(Arrays.asList(rangeWithRoleForServer3)));
+        ServerConnectionInfos serverConnectionInfos =
+                new ServerConnectionInfos(new HashSet<>(Arrays.asList(server2, server3)));
 
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.INITKVSERVER)
-                .ringMetadata(ringMetadata).targetServerInfo(part1).build();
+                .ringMetadata(ringMetadata).rangesWithRoles(rangesWithRoles)
+                .build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
         KVAdminMessage response =

@@ -347,20 +347,17 @@ public class MovableDataAccessService extends DataAccessService
      */
     private void checkIfRoleIsSufficient(String key, Role expectedRole)
             throws KeyIsNotManagedByServiceException {
-        String errorMessage = CustomStringJoiner.join("", "Key (", key,
-                ") does not have the expected role (", expectedRole.toString(), ").");
-
         for (HashRangeWithRole rangeWithRole : rangesManagedByServer.getRangesWithRoles()) {
-            if (rangeWithRole.getHashRange().contains(HashingUtil.getHash(key))) {
-                if (!rangeWithRole.getRole().equals(expectedRole)) {
-                    LOGGER.error(errorMessage);
-                    throw new KeyIsNotManagedByServiceException();
-                }
+            boolean containsHash = rangeWithRole.getHashRange().contains(HashingUtil.getHash(key));
+            boolean roleIsSufficient = rangeWithRole.getRole().equals(expectedRole);
+            if (containsHash && roleIsSufficient) {
+                return;
             }
         }
-
-        LOGGER.error(errorMessage);
+        LOGGER.error(CustomStringJoiner.join("", "Key (", key,
+                ") does not have the expected role (", expectedRole.toString(), ")."));
         throw new KeyIsNotManagedByServiceException();
+
     }
 
     /**

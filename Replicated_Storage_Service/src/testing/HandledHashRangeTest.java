@@ -37,9 +37,9 @@ public class HandledHashRangeTest extends TestCase {
     private static boolean isTestPutACalled = false;
     private static boolean isTestPutBCalled = false;
 
-    IKVCommunicationApiV2 serverCommunication;
-    IMessageDeserializer<KVMessage, SerializedMessage> kvmessageDeserializer;
-    IMessageSerializer<SerializedMessage, KVMessage> kvmessageSerializer;
+    private IKVCommunicationApiV2 serverCommunication;
+    private IMessageDeserializer<KVMessage, SerializedMessage> kvmessageDeserializer;
+    private IMessageSerializer<SerializedMessage, KVMessage> kvmessageSerializer;
 
     @BeforeClass
     public static void setUpBaseClass() {
