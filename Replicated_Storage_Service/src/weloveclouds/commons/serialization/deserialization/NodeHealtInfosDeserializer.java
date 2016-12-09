@@ -30,11 +30,20 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
 
     @Override
     public NodeHealthInfos deserialize(String serializedNodeHealthInfos) throws DeserializationException {
-        return new NodeHealthInfos.Builder()
-                .serverName(deserializeName(serializedNodeHealthInfos))
-                .serverConnectionInfo(deserializeServerConnectionInfo(serializedNodeHealthInfos))
-                .numberOfActiveConnections(deserializeActiveConnectionNumber(serializedNodeHealthInfos))
-                .build();
+        NodeHealthInfos nodeHealthInfos;
+
+        try {
+            nodeHealthInfos = new NodeHealthInfos.Builder()
+                    .serverName(deserializeName(serializedNodeHealthInfos))
+                    .serverConnectionInfo(deserializeServerConnectionInfo(serializedNodeHealthInfos))
+                    .numberOfActiveConnections(deserializeActiveConnectionNumber(serializedNodeHealthInfos))
+                    .build();
+        } catch (Exception e) {
+            throw new DeserializationException("Unable to deserialize node health info: " +
+                    serializedNodeHealthInfos);
+        }
+
+        return nodeHealthInfos;
     }
 
     private String deserializeName(String serializedNodeHealthInfos) throws DeserializationException {
