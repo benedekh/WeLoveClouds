@@ -181,14 +181,52 @@ public class KVServerHandlingECSRequestTests {
     }
 
     @Test
+    public void testRemoveRange() throws UnknownHostException, UnableToSendContentToServerException,
+            ConnectionClosedException, DeserializationException {
+        HashRange targetRange = new HashRange.Builder().begin(HashingUtil.getHash("b"))
+                .end(HashingUtil.getHash("b")).build();
+
+        KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.COPYDATA)
+                .removableRange(targetRange).build();
+
+        serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
+        KVAdminMessage response =
+                kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
+
+        Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
+    }
+
+    @Test
+    public void testCopyData() throws UnknownHostException, UnableToSendContentToServerException,
+            ConnectionClosedException, DeserializationException {
+        ServerConnectionInfo targetServer = new ServerConnectionInfo.Builder()
+                .ipAddress("localhost").port(SERVER1_KVSERVER_REQUEST_ACCEPTING_PORT).build();
+        HashRange targetRange = new HashRange.Builder().begin(HashingUtil.getHash("b"))
+                .end(HashingUtil.getHash("b")).build();
+        HashRangeWithRole targetRangeWithRole = new HashRangeWithRole.Builder()
+                .hashRange(targetRange).role(Role.COORDINATOR).build();
+        RingMetadataPart target = new RingMetadataPart.Builder().connectionInfo(targetServer)
+                .rangeWithRole(targetRangeWithRole).build();
+
+        KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.COPYDATA)
+                .targetServerInfo(target).build();
+
+        serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
+        KVAdminMessage response =
+                kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
+
+        Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
+    }
+
+    @Test
     public void testMoveData() throws UnknownHostException, UnableToSendContentToServerException,
             ConnectionClosedException, DeserializationException {
         ServerConnectionInfo targetServer = new ServerConnectionInfo.Builder()
                 .ipAddress("localhost").port(SERVER1_KVSERVER_REQUEST_ACCEPTING_PORT).build();
         HashRange targetRange = new HashRange.Builder().begin(HashingUtil.getHash("b"))
                 .end(HashingUtil.getHash("b")).build();
-        HashRangeWithRole targetRangeWithRole =
-                new HashRangeWithRole.Builder().hashRange(targetRange).role(Role.COORDINATOR).build();
+        HashRangeWithRole targetRangeWithRole = new HashRangeWithRole.Builder()
+                .hashRange(targetRange).role(Role.COORDINATOR).build();
         RingMetadataPart target = new RingMetadataPart.Builder().connectionInfo(targetServer)
                 .rangeWithRole(targetRangeWithRole).build();
 
@@ -213,7 +251,5 @@ public class KVServerHandlingECSRequestTests {
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
     }
-
-
 
 }

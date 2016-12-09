@@ -1,6 +1,7 @@
 package weloveclouds.server.requests.kvserver;
 
-import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
+import static weloveclouds.server.requests.kvserver.utils.KVTransferMessageFactory.createErrorKVTransferMessage;
+
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
 
 /**
@@ -18,8 +19,7 @@ public class DefaultRequest implements IKVServerRequest {
 
     @Override
     public KVTransferMessage execute() {
-        return new KVTransferMessage.Builder().status(StatusType.RESPONSE_ERROR)
-                .responseMessage(errorMessage).build();
+        return createErrorKVTransferMessage(errorMessage);
     }
 
     @Override

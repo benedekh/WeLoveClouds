@@ -86,7 +86,7 @@ public class MovableDataAccessService extends DataAccessService
             case STARTED:
             case WRITELOCK_ACTIVE:
                 try {
-                    checkIfKeyIsManagedByServer(key, Role.REPLICA);
+                    checkIfKeyIsManagedByServer(key);
                 } catch (KeyIsNotManagedByServiceException ex) {
                     incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, NOT_RESPONSIBLE);
                     throw ex;
@@ -224,7 +224,7 @@ public class MovableDataAccessService extends DataAccessService
      * 
      * @param entry that has to be put in the storage
      * @param coordinatorRoleIsExpected if it has to be checked that the server really handles that
-     *        key
+     *        key as a {@link Role#COORDINATOR}
      * @throws StorageException if any error occurs
      */
     protected PutType putEntry(KVEntry entry, boolean coordinatorRoleIsExpected)
@@ -237,15 +237,16 @@ public class MovableDataAccessService extends DataAccessService
 
         switch (serviceRecentStatus) {
             case STARTED:
-                if (coordinatorRoleIsExpected) {
-                    try {
-                        checkIfKeyIsManagedByServer(entry.getKey(), Role.COORDINATOR);
-                    } catch (KeyIsNotManagedByServiceException ex) {
-                        incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
-                        throw ex;
+                try {
+                    if (coordinatorRoleIsExpected) {
+                        checkIfKeyHasCoordinatorRole(entry.getKey());
+                    } else {
+                        checkIfKeyIsManagedByServer(entry.getKey());
                     }
+                } catch (KeyIsNotManagedByServiceException ex) {
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
+                    throw ex;
                 }
-
                 try {
                     Instant start = Instant.now();
                     PutType putType = super.putEntry(entry);
@@ -278,7 +279,7 @@ public class MovableDataAccessService extends DataAccessService
      * 
      * @param key the key of the entry that shall be removed
      * @param coordinatorRoleIsExpected if it has to be checked that the server really handles that
-     *        key
+     *        key as a {@link Role#COORDINATOR}
      * @throws StorageException if any error occurs
      */
     protected void removeEntry(String key, boolean coordinatorRoleIsExpected)
@@ -291,13 +292,15 @@ public class MovableDataAccessService extends DataAccessService
 
         switch (serviceRecentStatus) {
             case STARTED:
-                if (coordinatorRoleIsExpected) {
-                    try {
-                        checkIfKeyIsManagedByServer(key, Role.COORDINATOR);
-                    } catch (KeyIsNotManagedByServiceException ex) {
-                        incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
-                        throw ex;
+                try {
+                    if (coordinatorRoleIsExpected) {
+                        checkIfKeyHasCoordinatorRole(key);
+                    } else {
+                        checkIfKeyIsManagedByServer(key);
                     }
+                } catch (KeyIsNotManagedByServiceException ex) {
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
+                    throw ex;
                 }
 
                 try {
@@ -329,39 +332,52 @@ public class MovableDataAccessService extends DataAccessService
 
     /**
      * @param key the key whose hash value is expected to be handled by the server
-     * @param expectedRole the expected type of the role which belongs to the hash range (in which
-     *        the hash value of the key is)
      * @throws KeyIsNotManagedByServiceException if the referred key's hash value is not managed by
-     *         this server.
+     *         this server or not {@link Role#COORDINATOR} belongs to that.
      */
-    private void checkIfKeyIsManagedByServer(String key, Role expectedRole)
+    private void checkIfKeyHasCoordinatorRole(String key) throws KeyIsNotManagedByServiceException {
+        checkIfKeyIsManagedByServer(key);
+        checkIfRoleIsSufficient(key, Role.COORDINATOR);
+    }
+
+    /**
+     * Checks if the respective key has the respective role.
+     * 
+     * @throws KeyIsNotManagedByServiceException if the key does not have the respective role.
+     */
+    private void checkIfRoleIsSufficient(String key, Role expectedRole)
             throws KeyIsNotManagedByServiceException {
-        if (rangesManagedByServer == null || !keyIsManagedByServer(key, expectedRole)) {
-            LOGGER.debug(
-                    CustomStringJoiner.join("", "Key (", key, ") is not managed by the server."));
-            throw new KeyIsNotManagedByServiceException();
+        String errorMessage = CustomStringJoiner.join("", "Key (", key,
+                ") does not have the expected role (", expectedRole.toString(), ").");
+
+        for (HashRangeWithRole rangeWithRole : rangesManagedByServer.getRangesWithRoles()) {
+            if (rangeWithRole.getHashRange().contains(HashingUtil.getHash(key))) {
+                if (!rangeWithRole.getRole().equals(expectedRole)) {
+                    LOGGER.error(errorMessage);
+                    throw new KeyIsNotManagedByServiceException();
+                }
+            }
         }
+
+        LOGGER.error(errorMessage);
+        throw new KeyIsNotManagedByServiceException();
     }
 
     /**
      * @param key the key whose hash value is expected to be handled by the server
-     * @param expectedRole the expected type of the role which belongs to the hash range (in which
-     *        the hash value of the key is)
-     * @return true if the key's hash value is managed by the server and the role for that range is
-     *         the same as the expected one
+     * 
+     * @throws KeyIsNotManagedByServiceException if it is not managed by the server
      */
-    private boolean keyIsManagedByServer(String key, Role expectedRole) {
-        for (HashRangeWithRole rangeWithRole : rangesManagedByServer.getRangesWithRoles()) {
-            boolean keyIsContainedInTheRange =
-                    rangeWithRole.getHashRange().contains(HashingUtil.getHash(key));
-            boolean roleIsTheExpected = expectedRole.equals(rangeWithRole.getRole());
-            if (keyIsContainedInTheRange && roleIsTheExpected) {
-                return true;
-            } else if (keyIsContainedInTheRange && !roleIsTheExpected) {
-                return false;
+    private void checkIfKeyIsManagedByServer(String key) throws KeyIsNotManagedByServiceException {
+        if (rangesManagedByServer != null) {
+            for (HashRangeWithRole rangeWithRole : rangesManagedByServer.getRangesWithRoles()) {
+                if (rangeWithRole.getHashRange().contains(HashingUtil.getHash(key))) {
+                    return;
+                }
             }
         }
-        return false;
+        LOGGER.error(CustomStringJoiner.join("", "Key (", key, ") is not managed by the server."));
+        throw new KeyIsNotManagedByServiceException();
     }
 
 }

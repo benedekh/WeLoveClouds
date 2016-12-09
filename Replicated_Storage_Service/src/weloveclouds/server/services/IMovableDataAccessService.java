@@ -26,9 +26,8 @@ public interface IMovableDataAccessService extends IDataAccessService {
     public void putEntries(MovableStorageUnits fromStorageUnits) throws StorageException;
 
     /**
-     * Puts an entry into the persistent storage without checking either the role (@link
-     * weloveclouds.server.models.replication.Role) of this server regarding that key, or the fact
-     * that the key is managed by the server.
+     * Puts an entry into the persistent storage without checking the role (@link Role) of this
+     * server regarding that key.
      * 
      * @param entry that has to be put in the persistent storage
      * @return {@link PutType#INSERT}} if key was stored for the first time in the storage, or a
@@ -55,9 +54,8 @@ public interface IMovableDataAccessService extends IDataAccessService {
     public void removeEntries(HashRange range) throws StorageException;
 
     /**
-     * Removes an entry denoted by its key from the persistent storage without checking either the
-     * role (@link weloveclouds.server.models.replication.Role) of this server regarding that key,
-     * or the fact that the key is managed by the server.
+     * Removes an entry denoted by its key from the persistent storage without checking the role
+     * (@link Role) of this server regarding that key.
      * 
      * @param key the key of the entry that shall be removed
      * @throws StorageException if an error occurs

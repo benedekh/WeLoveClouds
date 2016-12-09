@@ -1,22 +1,24 @@
 package weloveclouds.server.requests.kvserver;
 
+import static weloveclouds.server.requests.kvserver.utils.KVTransferMessageFactory.createErrorKVTransferMessage;
+import static weloveclouds.server.requests.kvserver.utils.KVTransferMessageFactory.createSuccessKVTransferMessage;
+
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
- * A transfer request to the {@link IMovableDataAccessService}, which means the storage units shall
- * be placed in the data access service.
+ * A transfer request to the {@link IMovableDataAccessService}, which means entry denoted by its key
+ * has to be removed from the data access service.
  * 
  * @author Benedek
  */
 public class RemoveEntry implements IKVServerRequest {
 
-    private static final Logger LOGGER = Logger.getLogger(Transfer.class);
+    private static final Logger LOGGER = Logger.getLogger(RemoveEntry.class);
 
     private IMovableDataAccessService dataAccessService;
     private String key;
@@ -36,16 +38,11 @@ public class RemoveEntry implements IKVServerRequest {
             LOGGER.debug("Executing remove entry request.");
             dataAccessService.removeEntryWithoutAuthorization(key);
             LOGGER.debug("Remove entry request finished successfully.");
-            return new KVTransferMessage.Builder().status(StatusType.RESPONSE_SUCCESS).build();
+            return createSuccessKVTransferMessage();
         } catch (StorageException ex) {
             LOGGER.error(ex);
             return createErrorKVTransferMessage(ex.getMessage());
         }
-    }
-
-    private KVTransferMessage createErrorKVTransferMessage(String responseMessage) {
-        return new KVTransferMessage.Builder().status(StatusType.RESPONSE_ERROR)
-                .responseMessage(responseMessage).build();
     }
 
     @Override
