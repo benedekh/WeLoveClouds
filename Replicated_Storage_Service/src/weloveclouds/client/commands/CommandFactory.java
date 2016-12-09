@@ -1,4 +1,4 @@
-package weloveclouds.client.models.commands;
+package weloveclouds.client.commands;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
@@ -7,9 +7,9 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.cli.models.ParsedUserInput;
-import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
@@ -57,12 +57,14 @@ public class CommandFactory {
                 recognizedCommand = new Disconnect(userInput.getArguments(), communicationApi);
                 break;
             case PUT:
-                recognizedCommand = new Put(userInput.getArguments(), communicationApi,
-                        ringMetadataDeserializer);
+                recognizedCommand = new Put.Builder().arguments(userInput.getArguments())
+                        .communicationApi(communicationApi)
+                        .ringMetadataDeserializer(ringMetadataDeserializer).build();
                 break;
             case GET:
-                recognizedCommand = new Get(userInput.getArguments(), communicationApi,
-                        ringMetadataDeserializer);
+                recognizedCommand = new Get.Builder().arguments(userInput.getArguments())
+                        .communicationApi(communicationApi)
+                        .ringMetadataDeserializer(ringMetadataDeserializer).build();
                 break;
             case HELP:
                 recognizedCommand = new Help(userInput.getArguments());

@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.commands.CommandFactory;
 import weloveclouds.client.core.Client;
-import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;

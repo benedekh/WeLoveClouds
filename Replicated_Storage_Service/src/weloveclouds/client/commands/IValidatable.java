@@ -1,4 +1,4 @@
-package weloveclouds.client.models.commands;
+package weloveclouds.client.commands;
 
 /**
  * Interface for objects which can be validated.
