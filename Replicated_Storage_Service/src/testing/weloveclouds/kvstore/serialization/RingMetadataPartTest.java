@@ -39,7 +39,7 @@ public class RingMetadataPartTest extends TestCase {
         HashRangeWithRole hashRangeWithRole = new HashRangeWithRole.Builder()
                 .hashRange(
                         new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
-                .role(Role.MASTER).build();
+                .role(Role.COORDINATOR).build();
         RingMetadataPart metadataPart = new RingMetadataPart.Builder().connectionInfo(sci)
                 .rangeWithRole(hashRangeWithRole).build();
 

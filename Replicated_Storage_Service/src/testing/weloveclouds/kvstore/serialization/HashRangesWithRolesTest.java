@@ -40,7 +40,7 @@ public class HashRangesWithRolesTest extends TestCase {
         HashRangeWithRole hashRangeWithRole1 = new HashRangeWithRole.Builder()
                 .hashRange(
                         new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
-                .role(Role.MASTER).build();
+                .role(Role.COORDINATOR).build();
         HashRangeWithRole hashRangeWithRole2 = new HashRangeWithRole.Builder()
                 .hashRange(new HashRange.Builder().begin(HashingUtil.getHash("a"))
                         .end(HashingUtil.getHash("a")).build())

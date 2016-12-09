@@ -6,7 +6,5 @@ package weloveclouds.server.models.replication;
  * @author Benedek
  */
 public enum Role {
-
-    MASTER, REPLICA;
-
+    COORDINATOR, REPLICA;
 }

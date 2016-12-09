@@ -123,7 +123,7 @@ public class KVServerHandlingECSRequestTests {
         HashRange rangeForServer1 = new HashRange.Builder().begin(HashingUtil.getHash("a"))
                 .end(HashingUtil.getHash("a")).build();
         HashRangeWithRole rangeWithRoleForServer1 = new HashRangeWithRole.Builder()
-                .hashRange(rangeForServer1).role(Role.MASTER).build();
+                .hashRange(rangeForServer1).role(Role.COORDINATOR).build();
         RingMetadataPart part1 = new RingMetadataPart.Builder().connectionInfo(server1)
                 .rangeWithRole(rangeWithRoleForServer1).build();
 
@@ -132,7 +132,7 @@ public class KVServerHandlingECSRequestTests {
         HashRange rangeForServer2 = new HashRange.Builder().begin(HashingUtil.getHash("b"))
                 .end(HashingUtil.getHash("b")).build();
         HashRangeWithRole rangeWithRoleForServer2 = new HashRangeWithRole.Builder()
-                .hashRange(rangeForServer2).role(Role.MASTER).build();
+                .hashRange(rangeForServer2).role(Role.COORDINATOR).build();
         RingMetadataPart part2 = new RingMetadataPart.Builder().connectionInfo(server2)
                 .rangeWithRole(rangeWithRoleForServer2).build();
 
@@ -156,7 +156,7 @@ public class KVServerHandlingECSRequestTests {
         HashRange rangeForServer1 =
                 new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
         HashRangeWithRole rangeWithRoleForServer1 = new HashRangeWithRole.Builder()
-                .hashRange(rangeForServer1).role(Role.MASTER).build();
+                .hashRange(rangeForServer1).role(Role.COORDINATOR).build();
         RingMetadataPart part1 = new RingMetadataPart.Builder().connectionInfo(server1)
                 .rangeWithRole(rangeWithRoleForServer1).build();
 
@@ -165,7 +165,7 @@ public class KVServerHandlingECSRequestTests {
         HashRange rangeForServer2 = new HashRange.Builder().begin(HashingUtil.getHash("1"))
                 .end(HashingUtil.getHash("2")).build();
         HashRangeWithRole rangeWithRoleForServer2 = new HashRangeWithRole.Builder()
-                .hashRange(rangeForServer2).role(Role.MASTER).build();
+                .hashRange(rangeForServer2).role(Role.COORDINATOR).build();
         RingMetadataPart part2 = new RingMetadataPart.Builder().connectionInfo(server2)
                 .rangeWithRole(rangeWithRoleForServer2).build();
 
@@ -188,7 +188,7 @@ public class KVServerHandlingECSRequestTests {
         HashRange targetRange = new HashRange.Builder().begin(HashingUtil.getHash("b"))
                 .end(HashingUtil.getHash("b")).build();
         HashRangeWithRole targetRangeWithRole =
-                new HashRangeWithRole.Builder().hashRange(targetRange).role(Role.MASTER).build();
+                new HashRangeWithRole.Builder().hashRange(targetRange).role(Role.COORDINATOR).build();
         RingMetadataPart target = new RingMetadataPart.Builder().connectionInfo(targetServer)
                 .rangeWithRole(targetRangeWithRole).build();
 

@@ -73,7 +73,7 @@ public class DistributedService {
 
             // TODO set the role according to the ring topology
             HashRangeWithRole hashRangeWithRole =
-                    new HashRangeWithRole.Builder().hashRange(hashRange).role(Role.MASTER).build();
+                    new HashRangeWithRole.Builder().hashRange(hashRange).role(Role.COORDINATOR).build();
             ringMetadata.addRangeInfo(
                     new RingMetadataPart.Builder().connectionInfo(node.getServerConnectionInfo())
                             .rangeWithRole(hashRangeWithRole).build());

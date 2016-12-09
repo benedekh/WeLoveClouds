@@ -45,7 +45,7 @@ public class KVAdminMessageTest extends TestCase {
                 .end(HashingUtil.getHash("b")).build();
 
         HashRangeWithRole hashRangeWithRole1 =
-                new HashRangeWithRole.Builder().hashRange(removableRange).role(Role.MASTER).build();
+                new HashRangeWithRole.Builder().hashRange(removableRange).role(Role.COORDINATOR).build();
         RingMetadataPart metadataPart1 = new RingMetadataPart.Builder().connectionInfo(
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build())
                 .rangeWithRole(hashRangeWithRole1).build();
@@ -53,7 +53,7 @@ public class KVAdminMessageTest extends TestCase {
         HashRangeWithRole hashRangeWithRole2 = new HashRangeWithRole.Builder()
                 .hashRange(
                         new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
-                .role(Role.MASTER).build();
+                .role(Role.COORDINATOR).build();
         RingMetadataPart metadataPart2 = new RingMetadataPart.Builder().connectionInfo(
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8082).build())
                 .rangeWithRole(hashRangeWithRole2).build();

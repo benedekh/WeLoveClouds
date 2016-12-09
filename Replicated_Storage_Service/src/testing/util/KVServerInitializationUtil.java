@@ -109,7 +109,7 @@ public class KVServerInitializationUtil implements AutoCloseable {
         ServerConnectionInfo server = new ServerConnectionInfo.Builder().ipAddress("localhost")
                 .port(SERVER_KVCLIENT_PORT).build();
         HashRangeWithRole hashRangeWithRole =
-                new HashRangeWithRole.Builder().hashRange(range).role(Role.MASTER).build();
+                new HashRangeWithRole.Builder().hashRange(range).role(Role.COORDINATOR).build();
         return new RingMetadataPart.Builder().connectionInfo(server)
                 .rangeWithRole(hashRangeWithRole).build();
     }

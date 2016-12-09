@@ -35,7 +35,7 @@ public class HashRangeWithRoleTest extends TestCase {
         HashRangeWithRole hashRangeWithRole = new HashRangeWithRole.Builder()
                 .hashRange(
                         new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
-                .role(Role.MASTER).build();
+                .role(Role.COORDINATOR).build();
 
         String serializedRangeWithRole = hashRangeWithRoleSerializer.serialize(hashRangeWithRole);
         HashRangeWithRole deserializedRangeWithRole =

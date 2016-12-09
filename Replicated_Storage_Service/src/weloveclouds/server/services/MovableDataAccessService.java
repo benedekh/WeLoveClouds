@@ -239,7 +239,7 @@ public class MovableDataAccessService extends DataAccessService
             case STARTED:
                 if (authorizationShallBeChecked) {
                     try {
-                        checkIfKeyIsManagedByServer(entry.getKey(), Role.MASTER);
+                        checkIfKeyIsManagedByServer(entry.getKey(), Role.COORDINATOR);
                     } catch (KeyIsNotManagedByServiceException ex) {
                         incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
                         throw ex;
@@ -293,7 +293,7 @@ public class MovableDataAccessService extends DataAccessService
             case STARTED:
                 if (authorizationShallBeChecked) {
                     try {
-                        checkIfKeyIsManagedByServer(key, Role.MASTER);
+                        checkIfKeyIsManagedByServer(key, Role.COORDINATOR);
                     } catch (KeyIsNotManagedByServiceException ex) {
                         incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
                         throw ex;
