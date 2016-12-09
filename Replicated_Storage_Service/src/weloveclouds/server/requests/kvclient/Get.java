@@ -36,11 +36,10 @@ public class Get implements IKVClientRequest {
 
     private ISerializer<String, RingMetadata> ringMetadataSerializer;
 
-    public Get(IMovableDataAccessService dataAccessService, String key,
-            ISerializer<String, RingMetadata> ringMetadataSerializer) {
-        this.dataAccessService = dataAccessService;
-        this.key = key;
-        this.ringMetadataSerializer = ringMetadataSerializer;
+    protected Get(Builder builder) {
+        this.dataAccessService = builder.dataAccessService;
+        this.key = builder.key;
+        this.ringMetadataSerializer = builder.ringMetadataSerializer;
     }
 
     @Override
@@ -77,5 +76,36 @@ public class Get implements IKVClientRequest {
             throw new IllegalRequestException(createResponse(GET_ERROR, key, errorMessage));
         }
         return this;
+    }
+
+    /**
+     * Builder pattern for creating a {@link Get} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private IMovableDataAccessService dataAccessService;
+        private String key;
+        private ISerializer<String, RingMetadata> ringMetadataSerializer;
+
+        public Builder dataAccessService(IMovableDataAccessService dataAccessService) {
+            this.dataAccessService = dataAccessService;
+            return this;
+        }
+
+        public Builder key(String key) {
+            this.key = key;
+            return this;
+        }
+
+        public Builder ringMetadataSerializer(
+                ISerializer<String, RingMetadata> ringMetadataSerializer) {
+            this.ringMetadataSerializer = ringMetadataSerializer;
+            return this;
+        }
+
+        public Get build() {
+            return new Get(this);
+        }
     }
 }

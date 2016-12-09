@@ -19,6 +19,7 @@ import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporter;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporterFactory;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.IReplicableDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
@@ -40,29 +41,13 @@ public class MoveDataToDestination implements IKVECSRequest {
     private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
     private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
 
-    /**
-     * @param dataAccessService a reference to the data access service
-     * @param communicationApi to communicate with the target server
-     * @param targetServerInfo which contains the <IP, port> and <hash range> information about the
-     *        target server to which those entries shall be transferred whose key's are in the range
-     *        defined by this object
-     * @param transferMessageSerializer to serialize {@link KVTransferMessage} into
-     *        {@link SerializedMessage}
-     * @param transferMessageDeserializer to deserialize {@link KVTransferMessage} from
-     *        {@link SerializedMessage}
-     * @param storageUnitsTransporterFactory a factory to create {@link StorageUnitsTransporter}
-     */
-    public MoveDataToDestination(IMovableDataAccessService dataAccessService,
-            ICommunicationApi communicationApi, RingMetadataPart targetServerInfo,
-            IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer,
-            StorageUnitsTransporterFactory storageUnitsTransporterFactory) {
-        this.dataAccessService = dataAccessService;
-        this.targetServerInfo = targetServerInfo;
-        this.communicationApi = communicationApi;
-        this.transferMessageSerializer = transferMessageSerializer;
-        this.transferMessageDeserializer = transferMessageDeserializer;
-        this.storageUnitsTransporterFactory = storageUnitsTransporterFactory;
+    protected MoveDataToDestination(Builder builder) {
+        this.dataAccessService = builder.dataAccessService;
+        this.targetServerInfo = builder.targetServerInfo;
+        this.communicationApi = builder.communicationApi;
+        this.transferMessageSerializer = builder.transferMessageSerializer;
+        this.transferMessageDeserializer = builder.transferMessageDeserializer;
+        this.storageUnitsTransporterFactory = builder.storageUnitsTransporterFactory;
     }
 
     @Override
@@ -110,6 +95,79 @@ public class MoveDataToDestination implements IKVECSRequest {
             throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
         }
         return this;
+    }
+
+    /**
+     * Builder pattern for creating a {@link MoveDataToDestination} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private IReplicableDataAccessService dataAccessService;
+        private RingMetadataPart targetServerInfo;
+        private ICommunicationApi communicationApi;
+        private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
+        private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
+        private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+
+        /**
+         * @param dataAccessService a reference to the data access service
+         */
+        public Builder dataAccessService(IReplicableDataAccessService dataAccessService) {
+            this.dataAccessService = dataAccessService;
+            return this;
+        }
+
+        /**
+         * @param targetServerInfo which contains the <IP, port> and <hash range> information about
+         *        the target server to which those entries shall be transferred whose key's are in
+         *        the range defined by this object
+         */
+        public Builder targetServerInfo(RingMetadataPart targetServerInfo) {
+            this.targetServerInfo = targetServerInfo;
+            return this;
+        }
+
+        /**
+         * @param communicationApi to communicate with the target server
+         */
+        public Builder communicationApi(ICommunicationApi communicationApi) {
+            this.communicationApi = communicationApi;
+            return this;
+        }
+
+        /**
+         * @param storageUnitsTransporterFactory a factory to create {@link StorageUnitsTransporter}
+         */
+        public Builder storageUnitsTransporterFactory(
+                StorageUnitsTransporterFactory storageUnitsTransporterFactory) {
+            this.storageUnitsTransporterFactory = storageUnitsTransporterFactory;
+            return this;
+        }
+
+        /**
+         * @param transferMessageSerializer to serialize {@link KVTransferMessage} into
+         *        {@link SerializedMessage}
+         */
+        public Builder transferMessageSerializer(
+                IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer) {
+            this.transferMessageSerializer = transferMessageSerializer;
+            return this;
+        }
+
+        /**
+         * @param transferMessageDeserializer to deserialize {@link KVTransferMessage} from
+         *        {@link SerializedMessage}
+         */
+        public Builder transferMessageDeserializer(
+                IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+            this.transferMessageDeserializer = transferMessageDeserializer;
+            return this;
+        }
+
+        public MoveDataToDestination build() {
+            return new MoveDataToDestination(this);
+        }
     }
 
 }

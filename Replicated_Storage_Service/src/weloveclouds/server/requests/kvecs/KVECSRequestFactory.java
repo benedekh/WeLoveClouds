@@ -38,18 +38,13 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
     private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
     private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
-    public KVECSRequestFactory(IReplicableDataAccessService dataAccessService,
-            CommunicationApiFactory communicationApiFactory,
-            ReplicationTransfererFactory replicationTransfererFactory,
-            StorageUnitsTransporterFactory storageUnitsTransporterFactory,
-            IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
-        this.dataAccessService = dataAccessService;
-        this.communicationApi = communicationApiFactory.createCommunicationApiV1();
-        this.storageUnitsTransporterFactory = storageUnitsTransporterFactory;
-        this.replicationTransfererFactory = replicationTransfererFactory;
-        this.transferMessageSerializer = transferMessageSerializer;
-        this.transferMessageDeserializer = transferMessageDeserializer;
+    protected KVECSRequestFactory(Builder builder) {
+        this.dataAccessService = builder.dataAccessService;
+        this.communicationApi = builder.communicationApi;
+        this.storageUnitsTransporterFactory = builder.storageUnitsTransporterFactory;
+        this.replicationTransfererFactory = builder.replicationTransfererFactory;
+        this.transferMessageSerializer = builder.transferMessageSerializer;
+        this.transferMessageDeserializer = builder.transferMessageDeserializer;
     }
 
     @Override
@@ -60,10 +55,12 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
 
         switch (status) {
             case INITKVSERVER:
-                request = new InitializeKVServer(dataAccessService, replicationTransfererFactory,
-                        receivedMessage.getRingMetadata(),
-                        receivedMessage.getManagedHashRangesWithRole(),
-                        receivedMessage.getReplicaConnectionInfos());
+                request = new InitializeKVServer.Builder().dataAccessService(dataAccessService)
+                        .replicationTransfererFactory(replicationTransfererFactory)
+                        .ringMetadata(receivedMessage.getRingMetadata())
+                        .rangesManagedByServer(receivedMessage.getManagedHashRangesWithRole())
+                        .replicaConnectionInfos(receivedMessage.getReplicaConnectionInfos())
+                        .build();
                 break;
             case START:
                 request = new StartDataAcessService(dataAccessService);
@@ -78,23 +75,31 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
                 request = new UnlockWriteAccess(dataAccessService);
                 break;
             case COPYDATA:
-                request = new CopyDataToDestination(dataAccessService, communicationApi,
-                        receivedMessage.getTargetServerInfo(), transferMessageSerializer,
-                        transferMessageDeserializer, storageUnitsTransporterFactory);
+                request = new CopyDataToDestination.Builder().dataAccessService(dataAccessService)
+                        .communicationApi(communicationApi)
+                        .targetServerInfo(receivedMessage.getTargetServerInfo())
+                        .transferMessageSerializer(transferMessageSerializer)
+                        .transferMessageDeserializer(transferMessageDeserializer)
+                        .storageUnitsTransporterFactory(storageUnitsTransporterFactory).build();
                 break;
             case MOVEDATA:
-                request = new MoveDataToDestination(dataAccessService, communicationApi,
-                        receivedMessage.getTargetServerInfo(), transferMessageSerializer,
-                        transferMessageDeserializer, storageUnitsTransporterFactory);
+                request = new MoveDataToDestination.Builder().dataAccessService(dataAccessService)
+                        .communicationApi(communicationApi)
+                        .targetServerInfo(receivedMessage.getTargetServerInfo())
+                        .transferMessageSerializer(transferMessageSerializer)
+                        .transferMessageDeserializer(transferMessageDeserializer)
+                        .storageUnitsTransporterFactory(storageUnitsTransporterFactory).build();
                 break;
             case REMOVERANGE:
                 request = new RemoveRange(dataAccessService, receivedMessage.getRemovableRange());
                 break;
             case UPDATE:
-                request = new UpdateRingMetadata(dataAccessService, replicationTransfererFactory,
-                        receivedMessage.getRingMetadata(),
-                        receivedMessage.getManagedHashRangesWithRole(),
-                        receivedMessage.getReplicaConnectionInfos());
+                request = new UpdateRingMetadata.Builder().dataAccessService(dataAccessService)
+                        .replicationTransfererFactory(replicationTransfererFactory)
+                        .ringMetadata(receivedMessage.getRingMetadata())
+                        .rangesManagedByServer(receivedMessage.getManagedHashRangesWithRole())
+                        .replicaConnectionInfos(receivedMessage.getReplicaConnectionInfos())
+                        .build();
                 break;
             case SHUTDOWN:
                 request = new ShutdownServer(callbackRegister);
@@ -107,6 +112,58 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
         }
 
         return request;
+    }
+
+    /**
+     * Builder pattern for creating a {@link KVECSRequestFactory} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private IReplicableDataAccessService dataAccessService;
+        private ICommunicationApi communicationApi;
+        private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
+        private ReplicationTransfererFactory replicationTransfererFactory;
+        private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
+        private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+
+        public Builder dataAccessService(IReplicableDataAccessService dataAccessService) {
+            this.dataAccessService = dataAccessService;
+            return this;
+        }
+
+        public Builder communicationApiFactory(CommunicationApiFactory communicationApiFactory) {
+            this.communicationApi = communicationApiFactory.createCommunicationApiV1();
+            return this;
+        }
+
+        public Builder storageUnitsTransporterFactory(
+                StorageUnitsTransporterFactory storageUnitsTransporterFactory) {
+            this.storageUnitsTransporterFactory = storageUnitsTransporterFactory;
+            return this;
+        }
+
+        public Builder replicationTransfererFactory(
+                ReplicationTransfererFactory replicationTransfererFactory) {
+            this.replicationTransfererFactory = replicationTransfererFactory;
+            return this;
+        }
+
+        public Builder transferMessageSerializer(
+                IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer) {
+            this.transferMessageSerializer = transferMessageSerializer;
+            return this;
+        }
+
+        public Builder transferMessageDeserializer(
+                IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+            this.transferMessageDeserializer = transferMessageDeserializer;
+            return this;
+        }
+
+        public KVECSRequestFactory build() {
+            return new KVECSRequestFactory(this);
+        }
     }
 }
 

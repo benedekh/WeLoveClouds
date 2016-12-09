@@ -40,12 +40,11 @@ public class Put implements IKVClientRequest {
 
     private ISerializer<String, RingMetadata> ringMetadataSerializer;
 
-    public Put(IMovableDataAccessService dataAccessService, String key, String value,
-            ISerializer<String, RingMetadata> ringMetadataSerializer) {
-        this.dataAccessService = dataAccessService;
-        this.key = key;
-        this.value = value;
-        this.ringMetadataSerializer = ringMetadataSerializer;
+    protected Put(Builder builder) {
+        this.dataAccessService = builder.dataAccessService;
+        this.key = builder.key;
+        this.value = builder.value;
+        this.ringMetadataSerializer = builder.ringMetadataSerializer;
     }
 
     @Override
@@ -101,5 +100,42 @@ public class Put implements IKVClientRequest {
         }
 
         return this;
+    }
+
+    /**
+     * Builder pattern for creating a {@link Put} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private IMovableDataAccessService dataAccessService;
+        private String key;
+        private String value;
+        private ISerializer<String, RingMetadata> ringMetadataSerializer;
+
+        public Builder dataAccessService(IMovableDataAccessService dataAccessService) {
+            this.dataAccessService = dataAccessService;
+            return this;
+        }
+
+        public Builder key(String key) {
+            this.key = key;
+            return this;
+        }
+
+        public Builder value(String value) {
+            this.value = value;
+            return this;
+        }
+
+        public Builder ringMetadataSerializer(
+                ISerializer<String, RingMetadata> ringMetadataSerializer) {
+            this.ringMetadataSerializer = ringMetadataSerializer;
+            return this;
+        }
+
+        public Put build() {
+            return new Put(this);
+        }
     }
 }

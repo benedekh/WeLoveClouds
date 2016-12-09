@@ -37,11 +37,10 @@ public class Delete implements IKVClientRequest {
 
     private ISerializer<String, RingMetadata> ringMetadataSerializer;
 
-    public Delete(IMovableDataAccessService dataAccessService, String key,
-            ISerializer<String, RingMetadata> ringMetadataSerializer) {
-        this.dataAccessService = dataAccessService;
-        this.key = key;
-        this.ringMetadataSerializer = ringMetadataSerializer;
+    protected Delete(Builder builder) {
+        this.dataAccessService = builder.dataAccessService;
+        this.key = builder.key;
+        this.ringMetadataSerializer = builder.ringMetadataSerializer;
     }
 
     @Override
@@ -81,5 +80,36 @@ public class Delete implements IKVClientRequest {
 
     private KVMessage createResponse(StatusType status, String key, String value) {
         return new KVMessage.Builder().status(status).key(key).value(value).build();
+    }
+
+    /**
+     * Builder pattern for creating a {@link Delete} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private IMovableDataAccessService dataAccessService;
+        private String key;
+        private ISerializer<String, RingMetadata> ringMetadataSerializer;
+
+        public Builder dataAccessService(IMovableDataAccessService dataAccessService) {
+            this.dataAccessService = dataAccessService;
+            return this;
+        }
+
+        public Builder key(String key) {
+            this.key = key;
+            return this;
+        }
+
+        public Builder ringMetadataSerializer(
+                ISerializer<String, RingMetadata> ringMetadataSerializer) {
+            this.ringMetadataSerializer = ringMetadataSerializer;
+            return this;
+        }
+
+        public Delete build() {
+            return new Delete(this);
+        }
     }
 }

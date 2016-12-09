@@ -45,16 +45,19 @@ public class KVClientRequestFactory implements IRequestFactory<KVMessage, IKVCli
 
         switch (status) {
             case GET:
-                request = new Get(dataAccessService, receivedMessage.getKey(),
-                        ringMetadataSerializer);
+                request = new Get.Builder().dataAccessService(dataAccessService)
+                        .key(receivedMessage.getKey())
+                        .ringMetadataSerializer(ringMetadataSerializer).build();
                 break;
             case PUT:
-                request = new Put(dataAccessService, receivedMessage.getKey(),
-                        receivedMessage.getValue(), ringMetadataSerializer);
+                request = new Put.Builder().dataAccessService(dataAccessService)
+                        .key(receivedMessage.getKey()).value(receivedMessage.getValue())
+                        .ringMetadataSerializer(ringMetadataSerializer).build();
                 break;
             case DELETE:
-                request = new Delete(dataAccessService, receivedMessage.getKey(),
-                        ringMetadataSerializer);
+                request = new Delete.Builder().dataAccessService(dataAccessService)
+                        .key(receivedMessage.getKey())
+                        .ringMetadataSerializer(ringMetadataSerializer).build();
                 break;
             default:
                 String errorMessage = "Unrecognized command for KV message";

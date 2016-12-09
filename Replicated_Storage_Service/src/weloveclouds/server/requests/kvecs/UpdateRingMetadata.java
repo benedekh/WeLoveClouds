@@ -32,21 +32,12 @@ public class UpdateRingMetadata implements IKVECSRequest {
     private ServerConnectionInfos replicaConnectionInfos;
     private ReplicationTransfererFactory replicationTransfererFactory;
 
-    /**
-     * @param dataAccessService a reference to the data access service
-     * @param ringMetadata the metadata information about the ring in which the servers are placed
-     * @param rangesManagedByServer the hash ranges which are managed by this server together with
-     *        roles the server has for each range
-     */
-    public UpdateRingMetadata(IReplicableDataAccessService dataAccessService,
-            ReplicationTransfererFactory replicationTransfererFactory, RingMetadata ringMetadata,
-            HashRangesWithRoles rangesManagedByServer,
-            ServerConnectionInfos replicaConnectionInfos) {
-        this.dataAccessService = dataAccessService;
-        this.ringMetadata = ringMetadata;
-        this.rangesManagedByServer = rangesManagedByServer;
-        this.replicaConnectionInfos = replicaConnectionInfos;
-        this.replicationTransfererFactory = replicationTransfererFactory;
+    protected UpdateRingMetadata(Builder builder) {
+        this.dataAccessService = builder.dataAccessService;
+        this.ringMetadata = builder.ringMetadata;
+        this.rangesManagedByServer = builder.rangesManagedByServer;
+        this.replicaConnectionInfos = builder.replicaConnectionInfos;
+        this.replicationTransfererFactory = builder.replicationTransfererFactory;
     }
 
     @Override
@@ -93,6 +84,65 @@ public class UpdateRingMetadata implements IKVECSRequest {
             throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
         }
         return this;
+    }
+
+    /**
+     * Builder pattern for creating a {@link UpdateRingMetadata} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private IReplicableDataAccessService dataAccessService;
+        private RingMetadata ringMetadata;
+        private HashRangesWithRoles rangesManagedByServer;
+        private ServerConnectionInfos replicaConnectionInfos;
+        private ReplicationTransfererFactory replicationTransfererFactory;
+
+        /**
+         * @param dataAccessService which is used for the data access
+         */
+        public Builder dataAccessService(IReplicableDataAccessService dataAccessService) {
+            this.dataAccessService = dataAccessService;
+            return this;
+        }
+
+        /**
+         * @param ringMetadata metadata information about the server ring
+         */
+        public Builder ringMetadata(RingMetadata ringMetadata) {
+            this.ringMetadata = ringMetadata;
+            return this;
+        }
+
+        /**
+         * @param rangesManagedByServer the hash ranges which are managed by this server together
+         *        with roles the server has for each range
+         */
+        public Builder rangesManagedByServer(HashRangesWithRoles rangesManagedByServer) {
+            this.rangesManagedByServer = rangesManagedByServer;
+            return this;
+        }
+
+        /**
+         * @param replicaConnectionInfos connection information to the replica nodes
+         */
+        public Builder replicaConnectionInfos(ServerConnectionInfos replicaConnectionInfos) {
+            this.replicaConnectionInfos = replicaConnectionInfos;
+            return this;
+        }
+
+        /**
+         * @param replicationTransfererFactory a factory to create replication transferer instances
+         */
+        public Builder replicationTransfererFactory(
+                ReplicationTransfererFactory replicationTransfererFactory) {
+            this.replicationTransfererFactory = replicationTransfererFactory;
+            return this;
+        }
+
+        public UpdateRingMetadata build() {
+            return new UpdateRingMetadata(this);
+        }
     }
 
 }

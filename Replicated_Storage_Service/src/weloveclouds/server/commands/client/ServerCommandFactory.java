@@ -69,7 +69,9 @@ public class ServerCommandFactory {
                 break;
             case START:
                 recognizedCommand =
-                        new Start(arguments, serverFactory, dataAccessServiceFactory, context);
+                        new Start.Builder().arguments(arguments).serverFactory(serverFactory)
+                                .dataAccessServiceFactory(dataAccessServiceFactory)
+                                .serverCLIContext(context).build();
                 break;
             case STORAGEPATH:
                 recognizedCommand = new StoragePath(arguments, context);

@@ -87,10 +87,13 @@ public class ServerFactory {
         CommunicationApiFactory communicationApiFactory = new CommunicationApiFactory();
         return new Server.Builder<KVAdminMessage, IKVECSRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
-                .requestFactory(new KVECSRequestFactory(dataAccessService,
-                        communicationApiFactory, new ReplicationTransfererFactory(),
-                        new StorageUnitsTransporterFactory(), new KVTransferMessageSerializer(),
-                        new KVTransferMessageDeserializer()))
+                .requestFactory(new KVECSRequestFactory.Builder()
+                        .dataAccessService(dataAccessService)
+                        .communicationApiFactory(communicationApiFactory)
+                        .replicationTransfererFactory(new ReplicationTransfererFactory())
+                        .storageUnitsTransporterFactory(new StorageUnitsTransporterFactory())
+                        .transferMessageSerializer(new KVTransferMessageSerializer())
+                        .transferMessageDeserializer(new KVTransferMessageDeserializer()).build())
                 .communicationApiFactory(communicationApiFactory)
                 .messageSerializer(new KVAdminMessageSerializer())
                 .messageDeserializer(new KVAdminMessageDeserializer()).build();

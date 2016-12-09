@@ -31,17 +31,11 @@ public class Start extends AbstractServerCommand {
     private DataAccessServiceFactory dataAccessServiceFactory;
     private KVServerCLIContext context;
 
-    /**
-     * @param serverFactory factory to create every servers a KVServer need to start
-     * @param dataAccessServiceFactory factory to create a Data Access Service instance
-     * @param context contains the server parameter configuration
-     */
-    public Start(String[] arguments, ServerFactory serverFactory,
-            DataAccessServiceFactory dataAccessServiceFactory, KVServerCLIContext context) {
-        super(arguments);
-        this.serverFactory = serverFactory;
-        this.dataAccessServiceFactory = dataAccessServiceFactory;
-        this.context = context;
+    protected Start(Builder builder) {
+        super(builder.arguments);
+        this.serverFactory = builder.serverFactory;
+        this.dataAccessServiceFactory = builder.dataAccessServiceFactory;
+        this.context = builder.context;
     }
 
     @Override
@@ -80,6 +74,53 @@ public class Start extends AbstractServerCommand {
     public ICommand validate() throws IllegalArgumentException {
         ArgumentsValidator.validateStartArguments(arguments, context);
         return this;
+    }
+
+    /**
+     * Builder pattern for creating a {@link Start} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private String[] arguments;
+        private ServerFactory serverFactory;
+        private DataAccessServiceFactory dataAccessServiceFactory;
+        private KVServerCLIContext context;
+
+        public Builder arguments(String[] arguments) {
+            this.arguments = arguments;
+            return this;
+        }
+
+        /**
+         * @param serverFactory factory to create every servers a KVServer need to start
+         */
+        public Builder serverFactory(ServerFactory serverFactory) {
+            this.serverFactory = serverFactory;
+            return this;
+        }
+
+        /**
+         * @param dataAccessServiceFactory factory to create a Data Access Service instance
+         */
+        public Builder dataAccessServiceFactory(DataAccessServiceFactory dataAccessServiceFactory) {
+            this.dataAccessServiceFactory = dataAccessServiceFactory;
+            return this;
+        }
+
+        /**
+         * @param context contains the server parameter configuration
+         */
+        public Builder serverCLIContext(KVServerCLIContext context) {
+            this.context = context;
+            return this;
+        }
+
+        public Start build() {
+            return new Start(this);
+        }
+
+
     }
 
 
