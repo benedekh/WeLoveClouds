@@ -29,7 +29,7 @@ public class KVAdminMessageSerializer
         implements IMessageSerializer<SerializedMessage, KVAdminMessage> {
 
     public static final String PREFIX = "<KVADMIN>";
-    public static final String SEPARATOR = "-ŁŁ-";
+    public static final String SEPARATOR = "-ŁŁŁ-";
     public static final String POSTFIX = "</KVADMIN>";
 
     private static final Logger LOGGER = Logger.getLogger(KVAdminMessageSerializer.class);

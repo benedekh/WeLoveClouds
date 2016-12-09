@@ -12,7 +12,7 @@ import weloveclouds.kvstore.models.KVEntry;
  */
 public class KVEntrySerializer implements ISerializer<String, KVEntry> {
 
-    public static final String SEPARATOR = "-ł-";
+    public static final String SEPARATOR = "-ŁŁ-";
     private static final Logger LOGGER = Logger.getLogger(KVEntrySerializer.class);
 
     @Override

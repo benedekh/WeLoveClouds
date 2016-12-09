@@ -20,7 +20,7 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
 public class KVMessageSerializer implements IMessageSerializer<SerializedMessage, KVMessage> {
 
     public static final String PREFIX = "<KVMESSAGE>";
-    public static final String SEPARATOR = "-ŁŁ-";
+    public static final String SEPARATOR = "-ŁŁŁ-";
     public static final String POSTFIX = "</KVMESSAGE>";
 
     private static final Logger LOGGER = Logger.getLogger(KVMessageSerializer.class);

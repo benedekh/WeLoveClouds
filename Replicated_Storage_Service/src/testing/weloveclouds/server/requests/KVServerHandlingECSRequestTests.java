@@ -56,7 +56,7 @@ public class KVServerHandlingECSRequestTests {
     @Before
     public void init() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()
-                .ipAddress(SERVER_IP_ADDRESS).port(30002).build();
+                .ipAddress(SERVER_IP_ADDRESS).port(30000).build();
         serverCommunication =
                 new KVCommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
         serverCommunication.connect();
@@ -147,7 +147,7 @@ public class KVServerHandlingECSRequestTests {
                 new RingMetadata(new HashSet<>(Arrays.asList(part1, part2, part3)));
 
         HashRangesWithRoles rangesWithRoles =
-                new HashRangesWithRoles(new HashSet<>(Arrays.asList(rangeWithRoleForServer3)));
+                new HashRangesWithRoles(new HashSet<>(Arrays.asList(rangeWithRoleForServer1)));
         ServerConnectionInfos serverConnectionInfos =
                 new ServerConnectionInfos(new HashSet<>(Arrays.asList(server2, server3)));
 
