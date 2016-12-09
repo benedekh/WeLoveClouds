@@ -7,6 +7,12 @@ import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 
+/**
+ * An implementation of {@link IReplicableDataAccessService} whose underlying storage units can be
+ * replicated.
+ * 
+ * @author Benedek
+ */
 public class ReplicableDataAccessService extends MovableDataAccessService
         implements IReplicableDataAccessService {
 
@@ -37,7 +43,7 @@ public class ReplicableDataAccessService extends MovableDataAccessService
             throws StorageException {
         super.removeEntry(key, coordinatorRoleIsExpected);
         if (coordinatorRoleIsExpected && replicationTransferer != null) {
-            replicationTransferer.removeKeyOnReplicas(key);
+            replicationTransferer.removeEntryOnReplicas(key);
         }
     }
 

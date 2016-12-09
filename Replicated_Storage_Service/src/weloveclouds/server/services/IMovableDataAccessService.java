@@ -80,10 +80,10 @@ public interface IMovableDataAccessService extends IDataAccessService {
             throws UninitializedServiceException;
 
     /**
-     * Ring hash metadata information.
+     * Sets the ring hash metadata information.
      */
     public void setRingMetadata(RingMetadata ringMetadata);
-    
+
     /**
      * @return ring hash metadata information
      */

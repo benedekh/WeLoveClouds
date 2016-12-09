@@ -1,5 +1,6 @@
 package weloveclouds.server.services.utils;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,7 +11,9 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
+import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
@@ -19,6 +22,12 @@ import weloveclouds.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
+/**
+ * An implementation of a {@link IReplicationTransferer} which can replicate the requests on
+ * replicas.
+ * 
+ * @author Benedek
+ */
 public class ReplicationTransferer implements IReplicationTransferer {
 
     private static final Logger LOGGER = Logger.getLogger(ReplicationTransferer.class);
@@ -50,27 +59,43 @@ public class ReplicationTransferer implements IReplicationTransferer {
         Set<AbstractReplicationRequest<?>> replicationRequests = new HashSet<>();
 
         for (ServerConnectionInfo connectionInfo : replicaConnectionInfos) {
-            replicationRequests.add(new PutReplicationRequest(connectionInfo,
-                    concurrentCommunicationApi, connectionFactory, transferMessageSerializer,
-                    transferMessageDeserializer, entry));
+            try {
+                Connection connection = connectionFactory.createConnectionFrom(connectionInfo);
+                replicationRequests.add(new PutReplicationRequest(concurrentCommunicationApi,
+                        connection, entry, transferMessageSerializer, transferMessageDeserializer));
+            } catch (IOException ex) {
+                LOGGER.error(CustomStringJoiner.join(" ", "Exception (", ex.toString(),
+                        ") occured while replicating PUT (", entry.toString(), ") on",
+                        connectionInfo.toString()));
+            }
         }
 
         submitExecutorTasks(replicationRequests);
     }
 
     @Override
-    public void removeKeyOnReplicas(String key) {
+    public void removeEntryOnReplicas(String key) {
         Set<AbstractReplicationRequest<?>> replicationRequests = new HashSet<>();
 
         for (ServerConnectionInfo connectionInfo : replicaConnectionInfos) {
-            replicationRequests.add(new RemoveReplicationRequest(connectionInfo,
-                    concurrentCommunicationApi, connectionFactory, transferMessageSerializer,
-                    transferMessageDeserializer, key));
+            try {
+                Connection connection = connectionFactory.createConnectionFrom(connectionInfo);
+                replicationRequests.add(new DeleteReplicationRequest(concurrentCommunicationApi,
+                        connection, key, transferMessageSerializer, transferMessageDeserializer));
+            } catch (IOException ex) {
+                LOGGER.error(CustomStringJoiner.join(" ", "Exception (", ex.toString(),
+                        ") occured while replicating DELETE (", key, ") on",
+                        connectionInfo.toString()));
+            }
         }
 
         submitExecutorTasks(replicationRequests);
     }
 
+    /**
+     * Submits the respective replication requests on the {@link #executorService} and waits until
+     * all of them is completed.
+     */
     private void submitExecutorTasks(Set<AbstractReplicationRequest<?>> replicationRequests) {
         Collection<Future<?>> futures = new HashSet<>();
 
