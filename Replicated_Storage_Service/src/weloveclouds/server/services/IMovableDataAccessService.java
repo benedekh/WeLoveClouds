@@ -2,9 +2,11 @@ package weloveclouds.server.services;
 
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.models.replication.HashRangesWithRoles;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
+import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
@@ -22,6 +24,18 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * @param fromStorageUnits from where the entries will be copied
      */
     public void putEntries(MovableStorageUnits fromStorageUnits) throws StorageException;
+
+    /**
+     * Puts an entry into the persistent storage without checking either the role (@link
+     * weloveclouds.server.models.replication.Role) of this server regarding that key, or the fact
+     * that the key is managed by the server.
+     * 
+     * @param entry that has to be put in the persistent storage
+     * @return {@link PutType#INSERT}} if key was stored for the first time in the storage, or a
+     *         {@link PutType#UPDATE} if the key was already stored
+     * @throws StorageException if an error occurs
+     */
+    public PutType putEntryWithoutAuthorization(KVEntry entry) throws StorageException;
 
     /**
      * Filters those entries from the persistent storage whose keys are in the specified range.

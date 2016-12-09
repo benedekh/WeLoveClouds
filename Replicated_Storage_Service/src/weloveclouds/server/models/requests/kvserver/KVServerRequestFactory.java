@@ -35,7 +35,7 @@ public class KVServerRequestFactory
         StatusType status = receivedMessage.getStatus();
 
         switch (status) {
-            case TRANSFER:
+            case TRANSFER_ENTRIES:
                 request = new Transfer(dataAccessService, receivedMessage.getStorageUnits());
                 break;
             case REMOVE_ENTRY_BY_KEY:

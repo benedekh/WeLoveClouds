@@ -115,7 +115,7 @@ public class StorageUnitsTransporter {
             throws UnableToSendContentToServerException {
         try {
             KVTransferMessage transferMessage = new KVTransferMessage.Builder()
-                    .status(StatusType.TRANSFER).storageUnits(storageUnits).build();
+                    .status(StatusType.TRANSFER_ENTRIES).storageUnits(storageUnits).build();
             SerializedMessage serializedMessage =
                     transferMessageSerializer.serialize(transferMessage);
 

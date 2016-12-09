@@ -6,6 +6,9 @@ import static weloveclouds.kvstore.serialization.models.SerializedMessage.MESSAG
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.kvstore.deserialization.helper.KVEntryDeserializer;
+import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVMessage;
 import weloveclouds.kvstore.serialization.KVMessageSerializer;
@@ -19,13 +22,13 @@ import weloveclouds.kvstore.serialization.models.SerializedMessage;
  */
 public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, SerializedMessage> {
 
-    private static final int NUMBER_OF_MESSAGE_PARTS = 3;
-
+    private static final int NUMBER_OF_MESSAGE_PARTS = 2;
     private static final int MESSAGE_STATUS_INDEX = 0;
-    private static final int MESSAGE_KEY_INDEX = 1;
-    private static final int MESSAGE_VALUE_INDEX = 2;
+    private static final int MESSAGE_KVENTRY_INDEX = 1;
 
     private static final Logger LOGGER = Logger.getLogger(KVMessageDeserializer.class);
+
+    private IDeserializer<KVEntry, String> kvEntryDeserializer = new KVEntryDeserializer();
 
     @Override
     public KVMessage deserialize(SerializedMessage serializedMessage)
@@ -56,17 +59,15 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
         try {
             // raw fields
             String statusStr = messageParts[MESSAGE_STATUS_INDEX];
-            String keyStr = messageParts[MESSAGE_KEY_INDEX];
-            String valueStr = messageParts[MESSAGE_VALUE_INDEX];
+            String kvEntryStr = messageParts[MESSAGE_KVENTRY_INDEX];
 
             // deserialized fields
             StatusType status = StatusType.valueOf(statusStr);
-            String key = "null".equals(keyStr) ? null : keyStr;
-            String value = "null".equals(valueStr) ? null : valueStr;
+            KVEntry entry = kvEntryDeserializer.deserialize(kvEntryStr);
 
             // deserialized object
-            KVMessage deserialized =
-                    new KVMessage.Builder().status(status).key(key).value(value).build();
+            KVMessage deserialized = new KVMessage.Builder().status(status).key(entry.getKey())
+                    .value(entry.getValue()).build();
             LOGGER.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
 
             return deserialized;

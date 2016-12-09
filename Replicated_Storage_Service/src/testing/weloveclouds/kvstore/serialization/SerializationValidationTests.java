@@ -11,14 +11,15 @@ public class SerializationValidationTests {
         clientSuite.addTestSuite(HashRangeTest.class);
         clientSuite.addTestSuite(HashRangeWithRoleTest.class);
         clientSuite.addTestSuite(HashRangesWithRolesTest.class);
-        clientSuite.addTestSuite(KVAdminMessageTest.class);
-        clientSuite.addTestSuite(KVMessageTest.class);
-        clientSuite.addTestSuite(KVTransferMessageTest.class);
         clientSuite.addTestSuite(MovableStorageUnitsTest.class);
         clientSuite.addTestSuite(MovableStorageUnitTest.class);
         clientSuite.addTestSuite(RingMetadataPartTest.class);
         clientSuite.addTestSuite(RingMetadataTest.class);
+        clientSuite.addTestSuite(KVEntryTest.class);
         clientSuite.addTestSuite(ServerConnectionInfoTest.class);
+        clientSuite.addTestSuite(KVAdminMessageTest.class);
+        clientSuite.addTestSuite(KVMessageTest.class);
+        clientSuite.addTestSuite(KVTransferMessageTest.class);
         return clientSuite;
     }
 }

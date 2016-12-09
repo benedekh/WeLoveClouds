@@ -4,10 +4,12 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
+import weloveclouds.kvstore.serialization.helper.KVEntrySerializer;
 import weloveclouds.kvstore.serialization.helper.MovableStorageUnitsSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.store.models.MovableStorageUnits;
@@ -28,6 +30,7 @@ public class KVTransferMessageSerializer
 
     private ISerializer<String, MovableStorageUnits> storageUnitsSerializer =
             new MovableStorageUnitsSerializer();
+    private ISerializer<String, KVEntry> kvEntrySerializer = new KVEntrySerializer();
 
     @Override
     public SerializedMessage serialize(KVTransferMessage unserializedMessage) {
@@ -36,16 +39,18 @@ public class KVTransferMessageSerializer
         // original fields
         StatusType status = unserializedMessage.getStatus();
         MovableStorageUnits storageUnits = unserializedMessage.getStorageUnits();
+        KVEntry putableEntry = unserializedMessage.getPutableEntry();
         String removableKey = unserializedMessage.getRemovableKey();
         String responseMessage = unserializedMessage.getResponseMessage();
 
         // string representation
         String statusStr = status == null ? null : status.toString();
         String storageUnitsStr = storageUnitsSerializer.serialize(storageUnits);
+        String putableEntryStr = kvEntrySerializer.serialize(putableEntry);
 
         // merged string representation
-        String serialized =
-                join(SEPARATOR, statusStr, storageUnitsStr, removableKey, responseMessage);
+        String serialized = join(SEPARATOR, statusStr, storageUnitsStr, putableEntryStr,
+                removableKey, responseMessage);
         String prefixed = CustomStringJoiner.join("", PREFIX, serialized);
         String postfixed = CustomStringJoiner.join("", prefixed, POSTFIX);
 

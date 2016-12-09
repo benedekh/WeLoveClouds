@@ -57,7 +57,7 @@ public class KVServerRequestFromKVServerValidationTests {
     public void testSendTransferMessageWithoutMovableStorageUnitsInTheMessage()
             throws UnableToSendContentToServerException, ConnectionClosedException,
             DeserializationException {
-        KVTransferMessage message = new KVTransferMessage.Builder().status(StatusType.TRANSFER)
+        KVTransferMessage message = new KVTransferMessage.Builder().status(StatusType.TRANSFER_ENTRIES)
                 .storageUnits(null).build();
         serverCommunication.send(kvTransferMessageSerializer.serialize(message).getBytes());
 

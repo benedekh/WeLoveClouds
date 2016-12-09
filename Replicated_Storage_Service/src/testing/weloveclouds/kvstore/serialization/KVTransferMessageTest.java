@@ -12,6 +12,7 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import weloveclouds.kvstore.deserialization.IMessageDeserializer;
 import weloveclouds.kvstore.deserialization.KVTransferMessageDeserializer;
+import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.kvstore.serialization.IMessageSerializer;
@@ -50,12 +51,14 @@ public class KVTransferMessageTest extends TestCase {
         MovableStorageUnits storageUnits =
                 new MovableStorageUnits(new HashSet<>(Arrays.asList(unit1, unit2)));
 
+        KVEntry putableEntry = new KVEntry("hello", "world");
         String removableKey = "apple";
         String responseMessage = "hello world";
 
-        KVTransferMessage transferMessage = new KVTransferMessage.Builder()
-                .storageUnits(storageUnits).status(StatusType.TRANSFER).removableKey(removableKey)
-                .responseMessage(responseMessage).build();
+        KVTransferMessage transferMessage =
+                new KVTransferMessage.Builder().storageUnits(storageUnits)
+                        .status(StatusType.TRANSFER_ENTRIES).putableEntry(putableEntry)
+                        .removableKey(removableKey).responseMessage(responseMessage).build();
 
         SerializedMessage serializedMessage = transferMessageSerializer.serialize(transferMessage);
         KVTransferMessage deserializedMessage =

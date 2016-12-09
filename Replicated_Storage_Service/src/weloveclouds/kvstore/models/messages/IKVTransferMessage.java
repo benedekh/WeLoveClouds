@@ -1,5 +1,6 @@
 package weloveclouds.kvstore.models.messages;
 
+import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
 /**
@@ -10,7 +11,8 @@ import weloveclouds.server.store.models.MovableStorageUnits;
 public interface IKVTransferMessage {
 
     public enum StatusType {
-        TRANSFER, /* Storage unit transfer - request */
+        TRANSFER_ENTRIES, /* Storage unit transfer - request */
+        PUT_ENTRY, /* Put a new entry - request */
         REMOVE_ENTRY_BY_KEY, /* Remove an entry denoted by its key - request */
         SUCCESS, /* Transfer was successful */
         ERROR /* Transfer was unsuccessful */
@@ -26,6 +28,11 @@ public interface IKVTransferMessage {
      * @return the storage units
      */
     public MovableStorageUnits getStorageUnits();
+
+    /**
+     * @return the entry that shall be put in the data access service
+     */
+    public KVEntry getPutableEntry();
 
     /**
      * @return the key whose entry shall be removed

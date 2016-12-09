@@ -68,46 +68,12 @@ public class MovableDataAccessService extends DataAccessService
 
     @Override
     public synchronized PutType putEntry(KVEntry entry) throws StorageException {
-        if (!isServiceInitialized()) {
-            incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
-            LOGGER.error("Put request while the data acess service was uninitialized.");
-            throw new UninitializedServiceException();
-        }
-
-        switch (serviceRecentStatus) {
-            case STARTED:
-                try {
-                    checkIfKeyIsManagedByServer(entry.getKey(), Role.MASTER);
-                } catch (KeyIsNotManagedByServiceException ex) {
-                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
-                    throw ex;
-                }
-
-                try {
-                    Instant start = Instant.now();
-                    PutType putType = super.putEntry(entry);
-                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
-                            new Duration(start, Instant.now()));
-                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, SUCCESS);
-                    return putType;
-                } catch (StorageException ex) {
-                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
-                    throw ex;
-                }
-            case STOPPED:
-                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
-                LOGGER.error(
-                        "Put request is rejected, because the data access service is stopped.");
-                throw new ServiceIsStoppedException();
-            case WRITELOCK_ACTIVE:
-                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
-                LOGGER.error(
-                        "Put request is rejected, because write lock is active on the data access service.");
-                throw new WriteLockIsActiveException();
-            default:
-                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
-                throw new StorageException("Unrecognized service status.");
-        }
+        return putEntry(entry, true);
+    }
+    
+    @Override
+    public synchronized PutType putEntryWithoutAuthorization(KVEntry entry) throws StorageException {
+        return putEntry(entry, false);
     }
 
     @Override
@@ -249,6 +215,60 @@ public class MovableDataAccessService extends DataAccessService
     @Override
     public synchronized boolean isServiceInitialized() {
         return ringMetadata != null && rangesManagedByServer != null;
+    }
+
+    /**
+     * Puts the respective entry into the storage
+     * 
+     * @param entry that has to be put in the storage
+     * @param authorizationShallBeChecked if it has to be checked that the server really handles
+     *        that key
+     * @throws StorageException if any error occurs
+     */
+    private PutType putEntry(KVEntry entry, boolean authorizationShallBeChecked)
+            throws StorageException {
+        if (!isServiceInitialized()) {
+            incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
+            LOGGER.error("Put request while the data acess service was uninitialized.");
+            throw new UninitializedServiceException();
+        }
+
+        switch (serviceRecentStatus) {
+            case STARTED:
+                if (authorizationShallBeChecked) {
+                    try {
+                        checkIfKeyIsManagedByServer(entry.getKey(), Role.MASTER);
+                    } catch (KeyIsNotManagedByServiceException ex) {
+                        incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
+                        throw ex;
+                    }
+                }
+
+                try {
+                    Instant start = Instant.now();
+                    PutType putType = super.putEntry(entry);
+                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
+                            new Duration(start, Instant.now()));
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, SUCCESS);
+                    return putType;
+                } catch (StorageException ex) {
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
+                    throw ex;
+                }
+            case STOPPED:
+                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
+                LOGGER.error(
+                        "Put request is rejected, because the data access service is stopped.");
+                throw new ServiceIsStoppedException();
+            case WRITELOCK_ACTIVE:
+                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
+                LOGGER.error(
+                        "Put request is rejected, because write lock is active on the data access service.");
+                throw new WriteLockIsActiveException();
+            default:
+                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
+                throw new StorageException("Unrecognized service status.");
+        }
     }
 
     /**
