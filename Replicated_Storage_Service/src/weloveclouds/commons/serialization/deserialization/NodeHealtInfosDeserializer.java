@@ -27,7 +27,6 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         this.serverConnectionInfoStringDeserializer = serverConnectionInfoStringDeserializer;
     }
 
-
     @Override
     public NodeHealthInfos deserialize(String serializedNodeHealthInfos) throws DeserializationException {
         NodeHealthInfos nodeHealthInfos;

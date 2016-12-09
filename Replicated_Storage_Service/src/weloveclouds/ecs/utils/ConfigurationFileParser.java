@@ -42,16 +42,19 @@ public class ConfigurationFileParser implements IParser<List<StorageNode>, File>
         StorageNode storageNode = null;
         Pattern lineRegex = Pattern.compile("(?<name>\\w+) ?" + "(?<ip>[0-9.]+) ?" + "" +
                 "(?<port>[0-9]+)$");
-        ServerConnectionInfo storageNodeNetworkInfos;
+        ServerConnectionInfo serverConnectionInfo;
         try {
             Matcher matcher = lineRegex.matcher(line);
             if (matcher.find()) {
                 if (matcher.group("name") != null && matcher.group("ip") != null && matcher.group("port") != null) {
-                    storageNodeNetworkInfos = new ServerConnectionInfo.Builder()
+                    serverConnectionInfo = new ServerConnectionInfo.Builder()
                             .ipAddress(matcher.group("ip"))
                             .port(Integer.parseInt(matcher.group("port")))
                             .build();
-                    storageNode = new StorageNode(matcher.group("name"), storageNodeNetworkInfos);
+                    storageNode = new StorageNode.Builder()
+                            .id(matcher.group("name"))
+                            .serverConnectionInfo(serverConnectionInfo)
+                            .build();
                 }
             } else {
                 throw new InvalidConfigurationException("Unable to parse the provided configuration " +

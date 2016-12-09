@@ -3,13 +3,15 @@ package weloveclouds.commons.serialization;
 import com.google.inject.Inject;
 
 import weloveclouds.commons.serialization.models.SerializationConstants;
+import weloveclouds.ecs.models.repository.AbstractNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
 /**
  * Created by Benoit on 2016-12-08.
  */
-public class RingTopologySerializer<T> implements ISerializer<String, RingTopology<T>> {
+public class RingTopologySerializer<T extends AbstractNode> implements ISerializer<String,
+        RingTopology<T>> {
     private ISerializer<String, T> nodeSerializer;
 
     @Inject

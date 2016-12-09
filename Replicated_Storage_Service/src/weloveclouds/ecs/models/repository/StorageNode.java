@@ -16,115 +16,33 @@ import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
 /**
  * Created by Benoit on 2016-11-16.
  */
-public class StorageNode {
+public class StorageNode extends AbstractNode {
     private static final int NO_CONNECTION = 0;
 
-    private String id;
     private StorageNodeStatus metadataStatus;
     private StorageNodeStatus status;
-    private ServerConnectionInfo serverConnectionInfo;
-    private ServerConnectionInfo ecsChannelConnectionInfo;
-    private Hash hashKey;
     private HashRange previousHashRange;
     private HashRange hashRange;
     private List<StorageNode> replicas;
     private List<HashRange> childHashranges;
-    private NodeHealthInfos healthInfos;
 
-    public StorageNode(String id, ServerConnectionInfo serverConnectionInfo) {
-        this.id = id;
-        this.serverConnectionInfo = serverConnectionInfo;
+    private StorageNode(Builder storageNodeBuilder) {
         this.status = IDLE;
         this.metadataStatus = UNSYNCHRONIZED;
-        this.hashKey = HashingUtil.getHash(serverConnectionInfo.toString());
-        this.ecsChannelConnectionInfo = new ServerConnectionInfo.Builder()
-                .ipAddress(serverConnectionInfo.getIpAddress())
-                .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT)
-                .build();
-        this.healthInfos = new NodeHealthInfos.Builder()
-                .serverName(id)
-                .serverConnectionInfo(serverConnectionInfo)
-                .numberOfActiveConnections(NO_CONNECTION)
-                .build();
-        this.replicas = new ArrayList<>();
-        this.childHashranges = new ArrayList<>();
+        this.id = storageNodeBuilder.id;
+        this.serverConnectionInfo = storageNodeBuilder.serverConnectionInfo;
+        this.hashKey = storageNodeBuilder.hashKey;
+        this.hashRange = storageNodeBuilder.hashRange;
+        this.ecsChannelConnectionInfo = storageNodeBuilder.ecsChannelConnectionInfo;
+        this.healthInfos = storageNodeBuilder.healthInfos;
+        this.replicas = storageNodeBuilder.replicas;
+        this.childHashranges = storageNodeBuilder.childHashranges;
+        this.previousHashRange = storageNodeBuilder.previousHashRange;
     }
 
-    public NodeHealthInfos getHealthInfos() {
-        return healthInfos;
-    }
 
     public void updateHealthInfos(NodeHealthInfos healthInfos) {
         this.healthInfos = healthInfos;
-    }
-
-    public boolean isReadResponsibleOf(Hash hash) {
-        if (isWriteResponsibleOf(hash)) {
-            return true;
-        }
-
-        for (HashRange hashRange : childHashranges) {
-            if (hashRange.contains(hash)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isWriteResponsibleOf(Hash hash) {
-        return hashRange.contains(hash);
-    }
-
-    public void addChildHashrange(HashRange childHashRange) {
-        this.childHashranges.add(childHashRange);
-    }
-
-    public void removeChildHashrange(HashRange childHashRange) {
-        this.childHashranges.remove(childHashRange);
-    }
-
-    public List<HashRange> getChildHashranges() {
-        return childHashranges;
-    }
-
-    public void clearReplicas() {
-        this.replicas.clear();
-    }
-
-    public void addReplicas(StorageNode storageNode) {
-        replicas.add(storageNode);
-    }
-
-    public void removeReplicas(StorageNode storageNode) {
-        replicas.remove(storageNode);
-    }
-
-    public List<StorageNode> getReplicas() {
-        return new ArrayList<>(replicas);
-    }
-
-    public ServerConnectionInfo getEcsChannelConnectionInfo() {
-        return ecsChannelConnectionInfo;
-    }
-
-    public Hash getHashKey() {
-        return hashKey;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getIpAddress() {
-        return serverConnectionInfo.getIpAddress().toString();
-    }
-
-    public int getPort() {
-        return serverConnectionInfo.getPort();
-    }
-
-    public HashRange getHashRange() {
-        return hashRange;
     }
 
     public void setHashRange(HashRange hashRange) {
@@ -149,11 +67,123 @@ public class StorageNode {
         this.status = status;
     }
 
-    public ServerConnectionInfo getServerConnectionInfo() {
-        return serverConnectionInfo;
+
+    public HashRange getHashRange() {
+        return hashRange;
+    }
+
+    public List<StorageNode> getReplicas() {
+        return replicas;
+    }
+
+    public List<HashRange> getChildHashranges() {
+        return childHashranges;
+    }
+
+    public void addChildHashrange(HashRange childHashRange) {
+        this.childHashranges.add(childHashRange);
+    }
+
+    public void removeChildHashrange(HashRange childHashRange) {
+        this.childHashranges.remove(childHashRange);
+    }
+
+    public void clearReplicas() {
+        this.replicas.clear();
+    }
+
+    public void addReplicas(StorageNode node) {
+        replicas.add(node);
+    }
+
+    public void removeReplicas(StorageNode node) {
+        replicas.remove(node);
+    }
+
+    public boolean isReadResponsibleOf(Hash hash) {
+        if (isWriteResponsibleOf(hash)) {
+            return true;
+        }
+
+        for (HashRange hashRange : childHashranges) {
+            if (hashRange.contains(hash)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isWriteResponsibleOf(Hash hash) {
+        return hashRange.contains(hash);
     }
 
     public String toString() {
         return CustomStringJoiner.join(" ", "Node:" + getIpAddress() + "Status:" + status.name());
+    }
+
+    public static class Builder {
+        private String id;
+        private ServerConnectionInfo serverConnectionInfo;
+        private ServerConnectionInfo ecsChannelConnectionInfo;
+        private NodeHealthInfos healthInfos;
+        private Hash hashKey;
+        private HashRange previousHashRange;
+        private HashRange hashRange;
+        private List<StorageNode> replicas;
+        private List<HashRange> childHashranges;
+
+        public Builder() {
+            this.replicas = new ArrayList<>();
+            this.childHashranges = new ArrayList<>();
+            this.healthInfos = new NodeHealthInfos.Builder()
+                    .serverName(id)
+                    .serverConnectionInfo(serverConnectionInfo)
+                    .numberOfActiveConnections(NO_CONNECTION)
+                    .build();
+        }
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder serverConnectionInfo(ServerConnectionInfo serverConnectionInfo) {
+            this.serverConnectionInfo = serverConnectionInfo;
+            this.ecsChannelConnectionInfo = new ServerConnectionInfo.Builder()
+                    .ipAddress(serverConnectionInfo.getIpAddress())
+                    .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT)
+                    .build();
+            this.hashKey = HashingUtil.getHash(serverConnectionInfo.toString());
+            return this;
+        }
+
+        public Builder healthInfos(NodeHealthInfos nodeHealthInfos) {
+            this.healthInfos = nodeHealthInfos;
+            return this;
+        }
+
+        public Builder previousHashRange(HashRange previousHashRange) {
+            this.previousHashRange = previousHashRange;
+            return this;
+        }
+
+        public Builder hashRange(HashRange hashRange) {
+            this.hashRange = hashRange;
+            return this;
+        }
+
+        public Builder replicas(List<StorageNode> replicas) {
+            this.replicas = replicas;
+            return this;
+        }
+
+        public Builder childHashranges(List<HashRange> childHashanges) {
+            this.childHashranges = childHashanges;
+            return this;
+        }
+
+        public StorageNode build() {
+            return new StorageNode(this);
+        }
     }
 }
