@@ -20,7 +20,7 @@ public class ReplicableDataAccessService extends MovableDataAccessService {
     @Override
     protected PutType putEntry(KVEntry entry, boolean coordinatorRoleIsExpected)
             throws StorageException {
-        PutType response = super.putEntry(entry);
+        PutType response = super.putEntry(entry, coordinatorRoleIsExpected);
         if (coordinatorRoleIsExpected) {
             replicationTransferer.putEntryOnReplicas(entry);
         }
