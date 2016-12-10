@@ -11,9 +11,10 @@ import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.models.KVHearthbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_HEALTH_INFOS_GROUP;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_HEALTH_INFOS_REGEX;
 import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
+import static weloveclouds.commons.serialization.XMLPatternUtils.GROUP;
+import static weloveclouds.commons.serialization.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_HEALTH_INFOS;
 
 /**
  * Created by Benoit on 2016-12-09.
@@ -28,13 +29,12 @@ public class KVHeartbeatMessageDeserializer implements IMessageDeserializer<KVHe
 
     @Override
     public KVHearthbeatMessage deserialize(SerializedMessage serializedMessage) throws DeserializationException {
-        Matcher matcher = NODE_HEALTH_INFOS_REGEX.matcher(new String(serializedMessage.getBytes(), MESSAGE_ENCODING));
+        Matcher matcher = getRegexFromToken(NODE_HEALTH_INFOS).matcher(new String(serializedMessage.getBytes(), MESSAGE_ENCODING));
         NodeHealthInfos nodeHealthInfos = null;
 
         try {
             if (matcher.find()) {
-                nodeHealthInfos = healthInfosStringDeserializer.deserialize(matcher.group
-                        (NODE_HEALTH_INFOS_GROUP));
+                nodeHealthInfos = healthInfosStringDeserializer.deserialize(matcher.group(GROUP));
             }
         } catch (Exception e) {
             throw new DeserializationException("Unable to deserialize message: " + new String

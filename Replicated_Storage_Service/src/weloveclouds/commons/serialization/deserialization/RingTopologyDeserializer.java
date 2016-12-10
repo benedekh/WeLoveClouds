@@ -11,12 +11,10 @@ import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_END_TOKEN;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_GROUP;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_REGEX;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_START_TOKEN;
-import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES_GROUP;
-import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES_REGEX;
+import static weloveclouds.commons.serialization.XMLPatternUtils.GROUP;
+import static weloveclouds.commons.serialization.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.serialization.models.SerializationConstants.NODE;
+import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES;
 
 /**
  * Created by Benoit on 2016-12-09.
@@ -33,13 +31,13 @@ public class RingTopologyDeserializer<T extends AbstractNode> implements IDeseri
     @Override
     public RingTopology<T> deserialize(String serializedRingTopology) throws
             DeserializationException {
-        Matcher orderedNodes = ORDERED_NODES_REGEX.matcher(serializedRingTopology);
+        Matcher orderedNodes = getRegexFromToken(ORDERED_NODES).matcher(serializedRingTopology);
         List<T> nodesList = new ArrayList<>();
 
         if (orderedNodes.find()) {
-            Matcher nodeMatcher = NODE_REGEX.matcher(orderedNodes.group(ORDERED_NODES_GROUP));
+            Matcher nodeMatcher = getRegexFromToken(NODE).matcher(orderedNodes.group(GROUP));
             while (nodeMatcher.find()) {
-                nodesList.add(nodeDeserializer.deserialize(nodeMatcher.group(NODE_GROUP)));
+                nodesList.add(nodeDeserializer.deserialize(nodeMatcher.group(GROUP)));
             }
         } else {
             throw new DeserializationException("Unable to deserialize ring topology: " +

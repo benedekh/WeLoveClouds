@@ -2,38 +2,42 @@ package weloveclouds.commons.serialization;
 
 import com.google.inject.Inject;
 
-import weloveclouds.commons.serialization.models.SerializationConstants;
+import java.util.List;
+
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.serialization.models.XMLRootNode;
 import weloveclouds.ecs.models.repository.AbstractNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
+import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES;
+import static weloveclouds.commons.serialization.models.SerializationConstants.TOPOLOGY;
+
 /**
  * Created by Benoit on 2016-12-08.
  */
-public class RingTopologySerializer<T extends AbstractNode> implements ISerializer<String,
+public class RingTopologySerializer<T extends AbstractNode> implements ISerializer<AbstractXMLNode,
         RingTopology<T>> {
-    private ISerializer<String, T> nodeSerializer;
+    private ISerializer<AbstractXMLNode, T> nodeSerializer;
 
     @Inject
-    public RingTopologySerializer(ISerializer<String, T> nodeSerializer) {
+    public RingTopologySerializer(ISerializer<AbstractXMLNode, T> nodeSerializer) {
         this.nodeSerializer = nodeSerializer;
     }
 
     @Override
-    public String serialize(RingTopology<T> ringTopologyToSerialize) {
-        String serializedRingTopology = "";
+    public AbstractXMLNode serialize(RingTopology<T> ringTopologyToSerialize) {
+        return new XMLRootNode.Builder()
+                .token(TOPOLOGY)
+                .addInnerNode(serializeTopologyNodes(ringTopologyToSerialize.getNodes()))
+                .build();
+    }
 
-        try {
-            serializedRingTopology += SerializationConstants.TOPOLOGY_START_TOKEN;
-            serializedRingTopology += SerializationConstants.ORDERED_NODES_START_TOKEN;
-            for (T node : ringTopologyToSerialize.getNodes()) {
-                serializedRingTopology += nodeSerializer.serialize(node);
-            }
-            serializedRingTopology += SerializationConstants.ORDERED_NODES_END_TOKEN;
-            serializedRingTopology += SerializationConstants.TOPOLOGY_END_TOKEN;
-        } catch (Exception e) {
-            //log throw serialize exception
+    public AbstractXMLNode serializeTopologyNodes(List<T> nodes) {
+        XMLRootNode.Builder orderedNodes = new XMLRootNode.Builder().token(ORDERED_NODES);
+        for (T node : nodes) {
+            orderedNodes.addInnerNode(nodeSerializer.serialize(node));
         }
-        return serializedRingTopology;
+        return orderedNodes.build();
     }
 }

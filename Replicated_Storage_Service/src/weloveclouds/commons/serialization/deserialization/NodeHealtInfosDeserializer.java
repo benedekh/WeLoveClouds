@@ -9,12 +9,11 @@ import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
-import static weloveclouds.commons.serialization.models.SerializationConstants.ACTIVE_CONNECTIONS_GROUP;
-import static weloveclouds.commons.serialization.models.SerializationConstants.ACTIVE_NUMBER_OF_CONNECTIONS_REGEX;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NAME_GROUP;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NAME_REGEX;
-import static weloveclouds.commons.serialization.models.SerializationConstants.SERVER_CONNECTION_GROUP;
-import static weloveclouds.commons.serialization.models.SerializationConstants.SERVER_CONNECTION_INFOS_REGEX;
+import static weloveclouds.commons.serialization.XMLPatternUtils.GROUP;
+import static weloveclouds.commons.serialization.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.serialization.models.SerializationConstants.ACTIVE_CONNECTIONS;
+import static weloveclouds.commons.serialization.models.SerializationConstants.NAME;
+import static weloveclouds.commons.serialization.models.SerializationConstants.SERVER_CONNECTION;
 
 /**
  * Created by Benoit on 2016-12-09.
@@ -46,11 +45,11 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
     }
 
     private String deserializeName(String serializedNodeHealthInfos) throws DeserializationException {
-        Matcher matcher = NAME_REGEX.matcher(serializedNodeHealthInfos);
+        Matcher matcher = getRegexFromToken(NAME).matcher(serializedNodeHealthInfos);
         String deserializedName;
 
         if (matcher.find()) {
-            deserializedName = matcher.group(NAME_GROUP);
+            deserializedName = matcher.group(GROUP);
         } else {
             throw new DeserializationException("Unable to deserialize server name from node " +
                     "health infos: " + serializedNodeHealthInfos);
@@ -59,12 +58,12 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
     }
 
     private ServerConnectionInfo deserializeServerConnectionInfo(String serializedNodeHealthInfos) throws DeserializationException {
-        Matcher matcher = SERVER_CONNECTION_INFOS_REGEX.matcher(serializedNodeHealthInfos);
+        Matcher matcher = getRegexFromToken(SERVER_CONNECTION).matcher
+                (serializedNodeHealthInfos);
         ServerConnectionInfo deserializedServerConnectionInfo;
 
         if (matcher.find()) {
-            deserializedServerConnectionInfo = serverConnectionInfoStringDeserializer.deserialize
-                    (matcher.group(SERVER_CONNECTION_GROUP));
+            deserializedServerConnectionInfo = serverConnectionInfoStringDeserializer.deserialize(matcher.group(GROUP));
         } else {
             throw new DeserializationException("Unable to deserialize server connection info " +
                     "from node health infos: " + serializedNodeHealthInfos);
@@ -73,12 +72,11 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
     }
 
     private int deserializeActiveConnectionNumber(String serializedNodeHealthInfos) throws DeserializationException {
-        Matcher matcher = ACTIVE_NUMBER_OF_CONNECTIONS_REGEX.matcher(serializedNodeHealthInfos);
+        Matcher matcher = getRegexFromToken(ACTIVE_CONNECTIONS).matcher(serializedNodeHealthInfos);
         int deserializedNumberOfActiveConnections;
 
         if (matcher.find()) {
-            deserializedNumberOfActiveConnections = Integer.parseInt(matcher.group
-                    (ACTIVE_CONNECTIONS_GROUP));
+            deserializedNumberOfActiveConnections = Integer.parseInt(matcher.group(GROUP));
         } else {
             throw new DeserializationException("Unable to deserialize server connection info " +
                     "from node health infos: " + serializedNodeHealthInfos);
