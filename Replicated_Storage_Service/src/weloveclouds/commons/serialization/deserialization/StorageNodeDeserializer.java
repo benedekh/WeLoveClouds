@@ -13,8 +13,8 @@ import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
-import static weloveclouds.commons.serialization.XMLPatternUtils.GROUP;
-import static weloveclouds.commons.serialization.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 import static weloveclouds.commons.serialization.models.SerializationConstants.*;
 
 /**
@@ -56,7 +56,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
     private String deserializeNameFrom(String serializedNode) throws DeserializationException {
         Matcher matcher = getRegexFromToken(NAME).matcher(serializedNode);
         if (matcher.find()) {
-            return matcher.group(GROUP);
+            return matcher.group(XML_NODE);
         } else {
             throw new DeserializationException("Unable to deserialize server name " +
                     "from storage node: " + serializedNode);
@@ -67,7 +67,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
             DeserializationException {
         Matcher matcher = getRegexFromToken(SERVER_CONNECTION).matcher(serializedNode);
         if (matcher.find()) {
-            return serverConnectionInfoDeserializer.deserialize(matcher.group(GROUP));
+            return serverConnectionInfoDeserializer.deserialize(matcher.group(XML_NODE));
         } else {
             throw new DeserializationException("Unable to deserialize server connection info " +
                     "from storage node: " + serializedNode);
@@ -78,7 +78,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
             DeserializationException {
         Matcher matcher = getRegexFromToken(HASH_RANGE).matcher(serializedNode);
         if (matcher.find()) {
-            return hashRangeDeserializer.deserialize(matcher.group(GROUP));
+            return hashRangeDeserializer.deserialize(matcher.group(XML_NODE));
         } else {
             throw new DeserializationException("Unable to deserialize hash range " +
                     "from storage node: " + serializedNode);
@@ -89,7 +89,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
             DeserializationException {
         Matcher matcher = getRegexFromToken(NODE_HEALTH_INFOS).matcher(serializedNode);
         if (matcher.find()) {
-            return nodeHealthInfosDeserializer.deserialize(matcher.group(GROUP));
+            return nodeHealthInfosDeserializer.deserialize(matcher.group(XML_NODE));
         } else {
             throw new DeserializationException("Unable to deserialize node health infos " +
                     "from storage node: " + serializedNode);
@@ -102,9 +102,9 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
 
         if (childHashRangesMatcher.find()) {
             Matcher childHashRangeMatcher = getRegexFromToken(CHILD_HASH_RANGE).matcher
-                    (childHashRangesMatcher.group(GROUP));
+                    (childHashRangesMatcher.group(XML_NODE));
             while (childHashRangeMatcher.find()) {
-                childHashRangeList.add(hashRangeDeserializer.deserialize(childHashRangeMatcher.group(GROUP)));
+                childHashRangeList.add(hashRangeDeserializer.deserialize(childHashRangeMatcher.group(XML_NODE)));
             }
         } else {
             throw new DeserializationException("Unable to deserialize child hash range from : " +
@@ -118,9 +118,9 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         List<StorageNode> replicaList = new ArrayList<>();
 
         if (replicasMatcher.find()) {
-            Matcher replicaMatcher = getRegexFromToken(REPLICA).matcher(replicasMatcher.group(GROUP));
+            Matcher replicaMatcher = getRegexFromToken(REPLICA).matcher(replicasMatcher.group(XML_NODE));
             while (replicaMatcher.find()) {
-                String serializedReplica = replicaMatcher.group(GROUP);
+                String serializedReplica = replicaMatcher.group(XML_NODE);
                 replicaList.add(new StorageNode.Builder()
                         .serverConnectionInfo(serverConnectionInfoDeserializer.deserialize(serializedReplica))
                         .build());

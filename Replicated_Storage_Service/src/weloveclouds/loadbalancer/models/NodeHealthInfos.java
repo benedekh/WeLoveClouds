@@ -6,8 +6,8 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * Created by Benoit on 2016-12-05.
  */
 public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
-    private ServerConnectionInfo serverConnectionInfo;
     private String serverName;
+    private ServerConnectionInfo serverConnectionInfo;
     private int numberOfActiveConnections;
 
     private NodeHealthInfos(Builder nodeHealthInfosBuilder) {

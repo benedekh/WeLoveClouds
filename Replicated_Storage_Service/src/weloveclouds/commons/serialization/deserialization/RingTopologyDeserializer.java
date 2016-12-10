@@ -11,8 +11,8 @@ import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 
-import static weloveclouds.commons.serialization.XMLPatternUtils.GROUP;
-import static weloveclouds.commons.serialization.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 import static weloveclouds.commons.serialization.models.SerializationConstants.NODE;
 import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES;
 
@@ -35,9 +35,9 @@ public class RingTopologyDeserializer<T extends AbstractNode> implements IDeseri
         List<T> nodesList = new ArrayList<>();
 
         if (orderedNodes.find()) {
-            Matcher nodeMatcher = getRegexFromToken(NODE).matcher(orderedNodes.group(GROUP));
+            Matcher nodeMatcher = getRegexFromToken(NODE).matcher(orderedNodes.group(XML_NODE));
             while (nodeMatcher.find()) {
-                nodesList.add(nodeDeserializer.deserialize(nodeMatcher.group(GROUP)));
+                nodesList.add(nodeDeserializer.deserialize(nodeMatcher.group(XML_NODE)));
             }
         } else {
             throw new DeserializationException("Unable to deserialize ring topology: " +

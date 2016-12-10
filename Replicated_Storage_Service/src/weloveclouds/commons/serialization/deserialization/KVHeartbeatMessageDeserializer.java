@@ -12,8 +12,8 @@ import weloveclouds.loadbalancer.models.KVHearthbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
-import static weloveclouds.commons.serialization.XMLPatternUtils.GROUP;
-import static weloveclouds.commons.serialization.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_HEALTH_INFOS;
 
 /**
@@ -34,7 +34,7 @@ public class KVHeartbeatMessageDeserializer implements IMessageDeserializer<KVHe
 
         try {
             if (matcher.find()) {
-                nodeHealthInfos = healthInfosStringDeserializer.deserialize(matcher.group(GROUP));
+                nodeHealthInfos = healthInfosStringDeserializer.deserialize(matcher.group(XML_NODE));
             }
         } catch (Exception e) {
             throw new DeserializationException("Unable to deserialize message: " + new String

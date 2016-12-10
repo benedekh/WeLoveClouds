@@ -9,8 +9,8 @@ import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
-import static weloveclouds.commons.serialization.XMLPatternUtils.GROUP;
-import static weloveclouds.commons.serialization.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 import static weloveclouds.commons.serialization.models.SerializationConstants.ACTIVE_CONNECTIONS;
 import static weloveclouds.commons.serialization.models.SerializationConstants.NAME;
 import static weloveclouds.commons.serialization.models.SerializationConstants.SERVER_CONNECTION;
@@ -49,7 +49,7 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         String deserializedName;
 
         if (matcher.find()) {
-            deserializedName = matcher.group(GROUP);
+            deserializedName = matcher.group(XML_NODE);
         } else {
             throw new DeserializationException("Unable to deserialize server name from node " +
                     "health infos: " + serializedNodeHealthInfos);
@@ -63,7 +63,7 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         ServerConnectionInfo deserializedServerConnectionInfo;
 
         if (matcher.find()) {
-            deserializedServerConnectionInfo = serverConnectionInfoStringDeserializer.deserialize(matcher.group(GROUP));
+            deserializedServerConnectionInfo = serverConnectionInfoStringDeserializer.deserialize(matcher.group(XML_NODE));
         } else {
             throw new DeserializationException("Unable to deserialize server connection info " +
                     "from node health infos: " + serializedNodeHealthInfos);
@@ -76,7 +76,7 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         int deserializedNumberOfActiveConnections;
 
         if (matcher.find()) {
-            deserializedNumberOfActiveConnections = Integer.parseInt(matcher.group(GROUP));
+            deserializedNumberOfActiveConnections = Integer.parseInt(matcher.group(XML_NODE));
         } else {
             throw new DeserializationException("Unable to deserialize server connection info " +
                     "from node health infos: " + serializedNodeHealthInfos);
