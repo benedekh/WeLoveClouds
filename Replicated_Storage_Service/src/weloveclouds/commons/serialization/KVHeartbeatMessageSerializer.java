@@ -1,5 +1,7 @@
 package weloveclouds.commons.serialization;
 
+import com.google.inject.Inject;
+
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
@@ -15,6 +17,7 @@ import static weloveclouds.commons.serialization.models.SerializationConstants.K
 public class KVHeartbeatMessageSerializer implements IMessageSerializer<SerializedMessage, KVHearthbeatMessage> {
     private ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosStringSerializer;
 
+    @Inject
     public KVHeartbeatMessageSerializer(ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosStringSerializer) {
         this.nodeHealthInfosStringSerializer = nodeHealthInfosStringSerializer;
     }
@@ -23,7 +26,9 @@ public class KVHeartbeatMessageSerializer implements IMessageSerializer<Serializ
     public SerializedMessage serialize(KVHearthbeatMessage unserializedMessage) {
         return new SerializedMessage(new XMLRootNode.Builder()
                 .token(KVHEARTHBEAT_MESSAGE)
-                .addInnerNode(nodeHealthInfosStringSerializer.serialize(unserializedMessage.getNodeHealthInfos()))
-                .build().toString());
+                .addInnerNode(nodeHealthInfosStringSerializer
+                        .serialize(unserializedMessage.getNodeHealthInfos()))
+                .build()
+                .toString());
     }
 }
