@@ -2,12 +2,11 @@ package weloveclouds.commons.hashing.models;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
 /**
  * Represents an <IP, port> and <hash-range> triplet, which defines respective server (denoted by
  * its <ip,port>) is responsible for which hash range.
- * 
+ *
  * @author Benedek
  */
 public class RingMetadataPart {
@@ -33,23 +32,6 @@ public class RingMetadataPart {
      */
     public boolean rangeContains(Hash hash) {
         return range.contains(hash);
-    }
-
-
-    /**
-     * Converts the object to String.
-     * 
-     * @param delimiter separator character among the fields
-     * @param connectionInfoSerializer to convert the {@link ServerConnectionInfo} into a String
-     *        representation
-     * @param hashRangeSerializer to convert the {@link HashRange} into a String representation
-     */
-    public String toStringWithDelimiter(String delimiter,
-            ISerializer<String, ServerConnectionInfo> connectionInfoSerializer,
-            ISerializer<String, HashRange> hashRangeSerializer) {
-        return CustomStringJoiner.join(delimiter,
-                connectionInfoSerializer.serialize(connectionInfo),
-                hashRangeSerializer.serialize(range));
     }
 
     @Override

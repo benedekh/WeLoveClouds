@@ -1,4 +1,4 @@
-package weloveclouds.client.models.commands;
+package weloveclouds.client.commands;
 
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 

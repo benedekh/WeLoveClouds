@@ -1,14 +1,13 @@
 package weloveclouds.commons.hashing.models;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
 /**
  * Stores <IP, port> and <hash-range> triplets, which defines respective server (denoted by its
  * <ip,port>) is responsible for which hash range.
- * 
+ *
  * @author Benedek
  */
 public class RingMetadata {
@@ -32,11 +31,15 @@ public class RingMetadata {
         metadataParts.remove(info);
     }
 
+    public Set<RingMetadataPart> getMetadataParts() {
+        return Collections.unmodifiableSet(metadataParts);
+    }
+
     /**
      * Get that server's details which handles the responsible hash value.
-     * 
+     *
      * @return the range information (IP+port+range) of that server which handles the respective
-     *         hash value
+     * hash value
      */
     public RingMetadataPart findServerInfoByHash(Hash hash) {
         for (RingMetadataPart metadataPart : metadataParts) {
@@ -47,38 +50,17 @@ public class RingMetadata {
         return null;
     }
 
-    /**
-     * Converts the object to String.
-     * 
-     * @param delimiter separator character among the fields
-     * @param metadataPartSerializer to convert the {@link RingMetadataPart} into a String
-     *        representation
-     */
-    public String toStringWithDelimiter(String delimiter,
-            ISerializer<String, RingMetadataPart> metadataPartSerializer) {
-        StringBuilder sb = new StringBuilder();
-        for (RingMetadataPart metadataPart : metadataParts) {
-            sb.append(metadataPartSerializer.serialize(metadataPart));
-            sb.append(delimiter);
-        }
-        sb.setLength(sb.length() - delimiter.length());
-        return sb.toString();
-    }
-
     @Override
     public String toString() {
-        ISerializer<String, RingMetadataPart> defaultSerializer =
-                new ISerializer<String, RingMetadataPart>() {
-                    @Override
-                    public String serialize(RingMetadataPart target) {
-                        return target.toString();
-                    }
-                };
+        String delimiter = ", ";
 
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        String delimiter = ", ";
-        sb.append(toStringWithDelimiter(delimiter, defaultSerializer));
+        for (RingMetadataPart metadataPart : metadataParts) {
+            sb.append(metadataPart);
+            sb.append(delimiter);
+        }
+        sb.setLength(sb.length() - delimiter.length());
         sb.append("}");
 
         return sb.toString();

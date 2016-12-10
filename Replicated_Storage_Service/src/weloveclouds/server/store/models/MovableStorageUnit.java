@@ -96,6 +96,12 @@ public class MovableStorageUnit extends PersistedStorageUnit {
         return filtered;
     }
 
+    /**
+     * Converts the object to String.
+     * 
+     * @param betweenEntries separator character among the entries
+     * @param insideEntry separator character inside the entries
+     */
     public String toStringWithDelimiter(String betweenEntries, String insideEntry) {
         StringBuilder sb = new StringBuilder();
         for (Entry<String, String> entry : entries.entrySet()) {

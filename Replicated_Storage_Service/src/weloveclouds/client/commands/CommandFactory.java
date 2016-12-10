@@ -1,4 +1,4 @@
-package weloveclouds.client.models.commands;
+package weloveclouds.client.commands;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
@@ -10,6 +10,7 @@ import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
@@ -25,13 +26,13 @@ public class CommandFactory {
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
 
     /**
-     * @param communicationApi an instance for the communication module for those commands which
-     *        need to communicate via the network
+     * @param communicationApi         an instance for the communication module for those commands
+     *                                 which need to communicate via the network
      * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object to
-     *        its original representation from String
+     *                                 its original representation from String
      */
     public CommandFactory(IKVCommunicationApiV2 communicationApi,
-            IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
+                          IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         this.communicationApi = communicationApi;
         this.ringMetadataDeserializer = ringMetadataDeserializer;
     }
@@ -57,12 +58,14 @@ public class CommandFactory {
                 recognizedCommand = new Disconnect(userInput.getArguments(), communicationApi);
                 break;
             case PUT:
-                recognizedCommand = new Put(userInput.getArguments(), communicationApi,
-                        ringMetadataDeserializer);
+                recognizedCommand = new Put.Builder().arguments(userInput.getArguments())
+                        .communicationApi(communicationApi)
+                        .ringMetadataDeserializer(ringMetadataDeserializer).build();
                 break;
             case GET:
-                recognizedCommand = new Get(userInput.getArguments(), communicationApi,
-                        ringMetadataDeserializer);
+                recognizedCommand = new Get.Builder().arguments(userInput.getArguments())
+                        .communicationApi(communicationApi)
+                        .ringMetadataDeserializer(ringMetadataDeserializer).build();
                 break;
             case HELP:
                 recognizedCommand = new Help(userInput.getArguments());

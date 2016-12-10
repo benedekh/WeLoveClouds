@@ -29,7 +29,7 @@ public class RingTopology<T extends AbstractNode> {
     }
 
     public List<T> getNodes() {
-        return new ArrayList<T>(this.nodes);
+        return new ArrayList<>(this.nodes);
     }
 
     public int getLastPosition() {

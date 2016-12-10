@@ -1,4 +1,4 @@
-package weloveclouds.client.models.commands;
+package weloveclouds.client.commands;
 
 import java.security.InvalidParameterException;
 
@@ -8,7 +8,7 @@ import weloveclouds.commons.exceptions.ClientSideException;
 
 /**
  * Represents a command that was not recognized as a valid
- * {@link weloveclouds.client.models.commands.ClientCommand}.
+ * {@link weloveclouds.client.commands.ClientCommand}.
  *
  * @author Benoit, Hunton
  */

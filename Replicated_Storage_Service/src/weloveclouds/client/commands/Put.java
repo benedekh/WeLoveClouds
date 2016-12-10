@@ -1,4 +1,4 @@
-package weloveclouds.client.models.commands;
+package weloveclouds.client.commands;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
@@ -30,19 +30,10 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
     private boolean commandWasAlreadyExecuted;
 
-    /**
-     * @param arguments contains the key in the {@link #KEY_INDEX} position and the value is merged
-     *        into one value starting from the index {@link #VALUE_INDEX} and going until the end of
-     *        the array
-     * @param communicationApi which is used for querying the value from the server
-     * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object to
-     *        its original representation from String
-     */
-    public Put(String[] arguments, IKVCommunicationApiV2 communicationApi,
-            IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
-        super(arguments, communicationApi);
-        this.ringMetadataDeserializer = ringMetadataDeserializer;
-        this.communicationApiV2 = communicationApi;
+    protected Put(Builder builder) {
+        super(builder.arguments, builder.communicationApi);
+        this.ringMetadataDeserializer = builder.ringMetadataDeserializer;
+        this.communicationApiV2 = builder.communicationApi;
         this.commandWasAlreadyExecuted = false;
     }
 
@@ -126,5 +117,47 @@ public class Put extends AbstractKVCommunicationApiCommand {
         return this;
     }
 
+    /**
+     * Builder pattern for creating a {@link Put} instance.
+     *
+     * @author Benedek
+     */
+    public static class Builder {
+        private String[] arguments;
+        private IKVCommunicationApiV2 communicationApi;
+        private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
+
+        /**
+         * @param arguments contains the key in the {@link #KEY_INDEX} position and the value is
+         *        merged into one value starting from the index {@link #VALUE_INDEX} and going until
+         *        the end of the array
+         */
+        public Builder arguments(String[] arguments) {
+            this.arguments = arguments;
+            return this;
+        }
+
+        /**
+         * @param communicationApi which is used for querying the value from the server
+         */
+        public Builder communicationApi(IKVCommunicationApiV2 communicationApi) {
+            this.communicationApi = communicationApi;
+            return this;
+        }
+
+        /**
+         * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object
+         *        to its original representation from String
+         */
+        public Builder ringMetadataDeserializer(
+                IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
+            this.ringMetadataDeserializer = ringMetadataDeserializer;
+            return this;
+        }
+
+        public Put build() {
+            return new Put(this);
+        }
+    }
 
 }

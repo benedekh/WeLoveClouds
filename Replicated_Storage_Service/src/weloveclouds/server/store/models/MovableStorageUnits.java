@@ -4,11 +4,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
-
 /**
  * Stores several {@link MovableStorageUnit}s.
- * 
+ *
  * @author Benedek
  */
 public class MovableStorageUnits {
@@ -65,38 +63,16 @@ public class MovableStorageUnits {
         return true;
     }
 
-    /**
-     * Converts the object to String.
-     * 
-     * @param betweenStorageUnits separator character among the storage units
-     * @param storageUnitSerializer ot convert the {@link MovableStorageUnit} into a String
-     *        representation
-     */
-    public String toStringWithDelimiter(String betweenStorageUnits,
-            ISerializer<String, MovableStorageUnit> storageUnitSerializer) {
-        StringBuilder sb = new StringBuilder();
-        for (MovableStorageUnit storageUnit : storageUnits) {
-            sb.append(storageUnitSerializer.serialize(storageUnit));
-            sb.append(betweenStorageUnits);
-        }
-        sb.setLength(sb.length() - betweenStorageUnits.length());
-        return sb.toString();
-    }
-
     @Override
     public String toString() {
-        ISerializer<String, MovableStorageUnit> defaultSerializer =
-                new ISerializer<String, MovableStorageUnit>() {
-                    @Override
-                    public String serialize(MovableStorageUnit target) {
-                        return target.toString();
-                    }
-                };
-
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         String delimiter = ", ";
-        sb.append(toStringWithDelimiter(delimiter, defaultSerializer));
+        for (MovableStorageUnit storageUnit : storageUnits) {
+            sb.append(storageUnit);
+            sb.append(delimiter);
+        }
+        sb.setLength(sb.length() - delimiter.length());
         sb.append("}");
         return sb.toString();
     }

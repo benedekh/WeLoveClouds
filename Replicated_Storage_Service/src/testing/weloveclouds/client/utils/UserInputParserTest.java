@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-import weloveclouds.client.models.commands.ClientCommand;
+import weloveclouds.client.commands.ClientCommand;
 import weloveclouds.client.utils.ClientUserInputParser;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.cli.models.ParsedUserInput;

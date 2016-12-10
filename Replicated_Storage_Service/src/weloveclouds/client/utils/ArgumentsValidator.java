@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.models.commands.ClientCommand;
-import weloveclouds.client.models.commands.LogLevel;
+import weloveclouds.client.commands.ClientCommand;
+import weloveclouds.client.commands.LogLevel;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 

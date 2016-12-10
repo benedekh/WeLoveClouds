@@ -1,7 +1,12 @@
 package weloveclouds.commons.kvstore.serialization.helper;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
@@ -14,7 +19,7 @@ public class MovableStorageUnitsSerializer implements ISerializer<String, Movabl
 
     public static final String SEPARATOR_BETWEEN_STORAGE_UNITS = "-Ł-";
     private static final Logger LOGGER = Logger.getLogger(MovableStorageUnitsSerializer.class);
-    
+
     private ISerializer<String, MovableStorageUnit> storageUnitSerializer =
             new MovableStorageUnitSerializer();
 
@@ -24,8 +29,18 @@ public class MovableStorageUnitsSerializer implements ISerializer<String, Movabl
 
         if (target != null) {
             LOGGER.debug("Serializing a MovableStorageUnits.");
-            serialized = target.toStringWithDelimiter(SEPARATOR_BETWEEN_STORAGE_UNITS,
-                    storageUnitSerializer);
+            // original fields
+            Set<MovableStorageUnit> storageUnits = target.getStorageUnits();
+
+            // string representation
+            Set<String> storageUnitsStrs = new HashSet<>();
+            for (MovableStorageUnit storageUnit : storageUnits) {
+                storageUnitsStrs.add(storageUnitSerializer.serialize(storageUnit));
+            }
+
+            // merged string representation
+            serialized = CustomStringJoiner.join(SEPARATOR_BETWEEN_STORAGE_UNITS,
+                    new ArrayList<>(storageUnitsStrs));
             LOGGER.debug("Serializing a MovableStorageUnits finished.");
         }
 
