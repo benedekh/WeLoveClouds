@@ -16,8 +16,8 @@ import static weloveclouds.commons.serialization.models.SerializationConstants.T
 /**
  * Created by Benoit on 2016-12-08.
  */
-public class RingTopologySerializer<T extends AbstractNode> implements ISerializer<AbstractXMLNode,
-        RingTopology<T>> {
+public class RingTopologySerializer<T extends AbstractNode>
+        implements ISerializer<AbstractXMLNode, RingTopology<T>> {
     private ISerializer<AbstractXMLNode, T> nodeSerializer;
 
     @Inject

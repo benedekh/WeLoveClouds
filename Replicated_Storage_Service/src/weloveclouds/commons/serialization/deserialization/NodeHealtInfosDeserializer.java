@@ -34,11 +34,11 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
 
         try {
             nodeHealthInfos = new NodeHealthInfos.Builder()
-                    .serverName(deserializeName(serializedNodeHealthInfos))
+                    .serverName(deserializeNameFrom(serializedNodeHealthInfos))
                     .serverConnectionInfo(
-                            deserializeServerConnectionInfo(serializedNodeHealthInfos))
+                            deserializeServerConnectionInfoFrom(serializedNodeHealthInfos))
                     .numberOfActiveConnections(
-                            deserializeActiveConnectionNumber(serializedNodeHealthInfos))
+                            deserializeActiveConnectionNumberFrom(serializedNodeHealthInfos))
                     .build();
         } catch (Exception e) {
             throw new DeserializationException("Unable to deserialize node health info: " +
@@ -48,7 +48,7 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         return nodeHealthInfos;
     }
 
-    private String deserializeName(String serializedNodeHealthInfos)
+    private String deserializeNameFrom(String serializedNodeHealthInfos)
             throws DeserializationException {
         Matcher matcher = getRegexFromToken(NAME).matcher(serializedNodeHealthInfos);
         String deserializedName;
@@ -62,7 +62,7 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         return deserializedName;
     }
 
-    private ServerConnectionInfo deserializeServerConnectionInfo(String serializedNodeHealthInfos)
+    private ServerConnectionInfo deserializeServerConnectionInfoFrom(String serializedNodeHealthInfos)
             throws DeserializationException {
         Matcher matcher = getRegexFromToken(SERVER_CONNECTION).matcher(serializedNodeHealthInfos);
         ServerConnectionInfo deserializedServerConnectionInfo;
@@ -77,7 +77,7 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         return deserializedServerConnectionInfo;
     }
 
-    private int deserializeActiveConnectionNumber(String serializedNodeHealthInfos)
+    private int deserializeActiveConnectionNumberFrom(String serializedNodeHealthInfos)
             throws DeserializationException {
         Matcher matcher = getRegexFromToken(ACTIVE_CONNECTIONS).matcher(serializedNodeHealthInfos);
         int deserializedNumberOfActiveConnections;

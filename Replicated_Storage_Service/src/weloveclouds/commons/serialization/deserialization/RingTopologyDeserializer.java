@@ -31,11 +31,11 @@ public class RingTopologyDeserializer<T extends AbstractNode>
     @Override
     public RingTopology<T> deserialize(String serializedRingTopology) throws
             DeserializationException {
-        Matcher orderedNodes = getRegexFromToken(ORDERED_NODES).matcher(serializedRingTopology);
+        Matcher orderedNodesMatcher = getRegexFromToken(ORDERED_NODES).matcher(serializedRingTopology);
         List<T> nodesList = new ArrayList<>();
 
-        if (orderedNodes.find()) {
-            Matcher nodeMatcher = getRegexFromToken(NODE).matcher(orderedNodes.group(XML_NODE));
+        if (orderedNodesMatcher.find()) {
+            Matcher nodeMatcher = getRegexFromToken(NODE).matcher(orderedNodesMatcher.group(XML_NODE));
             while (nodeMatcher.find()) {
                 nodesList.add(nodeDeserializer.deserialize(nodeMatcher.group(XML_NODE)));
             }

@@ -42,10 +42,10 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         try {
             storageNode = new StorageNode.Builder()
                     .name(deserializeNameFrom(serializedNode))
-                    .hashRange(deserializeHashRange(serializedNode))
-                    .childHashranges(deserializeChildHashRanges(serializedNode))
-                    .replicas(deserializeReplica(serializedNode))
-                    .healthInfos(deserializeHealthInfos(serializedNode))
+                    .hashRange(deserializeHashRangeFrom(serializedNode))
+                    .childHashranges(deserializeChildHashRangesFrom(serializedNode))
+                    .replicas(deserializeReplicasFrom(serializedNode))
+                    .healthInfos(deserializeHealthInfosFrom(serializedNode))
                     .serverConnectionInfo(deserializeServerConnectionInfoFrom(serializedNode))
                     .build();
         } catch (Exception e) {
@@ -56,9 +56,9 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
     }
 
     private String deserializeNameFrom(String serializedNode) throws DeserializationException {
-        Matcher matcher = getRegexFromToken(NAME).matcher(serializedNode);
-        if (matcher.find()) {
-            return matcher.group(XML_NODE);
+        Matcher nameMatcher = getRegexFromToken(NAME).matcher(serializedNode);
+        if (nameMatcher.find()) {
+            return nameMatcher.group(XML_NODE);
         } else {
             throw new DeserializationException("Unable to deserialize server name " +
                     "from storage node: " + serializedNode);
@@ -67,46 +67,48 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
 
     private ServerConnectionInfo deserializeServerConnectionInfoFrom(String serializedNode) throws
             DeserializationException {
-        Matcher matcher = getRegexFromToken(SERVER_CONNECTION).matcher(serializedNode);
-        if (matcher.find()) {
-            return serverConnectionInfoDeserializer.deserialize(matcher.group(XML_NODE));
+        Matcher serverConnectionInfoMatcher =
+                getRegexFromToken(SERVER_CONNECTION).matcher(serializedNode);
+        if (serverConnectionInfoMatcher.find()) {
+            return serverConnectionInfoDeserializer
+                    .deserialize(serverConnectionInfoMatcher.group(XML_NODE));
         } else {
             throw new DeserializationException("Unable to deserialize server connection info " +
                     "from storage node: " + serializedNode);
         }
     }
 
-    private HashRange deserializeHashRange(String serializedNode) throws
+    private HashRange deserializeHashRangeFrom(String serializedNode) throws
             DeserializationException {
-        Matcher matcher = getRegexFromToken(HASH_RANGE).matcher(serializedNode);
-        if (matcher.find()) {
-            return hashRangeDeserializer.deserialize(matcher.group(XML_NODE));
+        Matcher hashRangeMatcher = getRegexFromToken(HASH_RANGE).matcher(serializedNode);
+        if (hashRangeMatcher.find()) {
+            return hashRangeDeserializer.deserialize(hashRangeMatcher.group(XML_NODE));
         } else {
             throw new DeserializationException("Unable to deserialize hash range " +
                     "from storage node: " + serializedNode);
         }
     }
 
-    private NodeHealthInfos deserializeHealthInfos(String serializedNode) throws
+    private NodeHealthInfos deserializeHealthInfosFrom(String serializedNode) throws
             DeserializationException {
-        Matcher matcher = getRegexFromToken(NODE_HEALTH_INFOS).matcher(serializedNode);
-        if (matcher.find()) {
-            return nodeHealthInfosDeserializer.deserialize(matcher.group(XML_NODE));
+        Matcher healthInfosMatcher = getRegexFromToken(NODE_HEALTH_INFOS).matcher(serializedNode);
+        if (healthInfosMatcher.find()) {
+            return nodeHealthInfosDeserializer.deserialize(healthInfosMatcher.group(XML_NODE));
         } else {
             throw new DeserializationException("Unable to deserialize node health infos " +
                     "from storage node: " + serializedNode);
         }
     }
 
-    private List<HashRange> deserializeChildHashRanges(String serializedNode)
+    private List<HashRange> deserializeChildHashRangesFrom(String serializedNode)
             throws DeserializationException {
-        Matcher childHashRangesMatcher = getRegexFromToken(CHILD_HASH_RANGES)
-                .matcher(serializedNode);
+        Matcher childHashRangesMatcher =
+                getRegexFromToken(CHILD_HASH_RANGES).matcher(serializedNode);
         List<HashRange> childHashRangeList = new ArrayList<>();
 
         if (childHashRangesMatcher.find()) {
-            Matcher childHashRangeMatcher = getRegexFromToken(CHILD_HASH_RANGE).matcher
-                    (childHashRangesMatcher.group(XML_NODE));
+            Matcher childHashRangeMatcher = getRegexFromToken(CHILD_HASH_RANGE)
+                    .matcher(childHashRangesMatcher.group(XML_NODE));
             while (childHashRangeMatcher.find()) {
                 childHashRangeList.add(hashRangeDeserializer
                         .deserialize(childHashRangeMatcher.group(XML_NODE)));
@@ -118,7 +120,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         return childHashRangeList;
     }
 
-    private List<StorageNode> deserializeReplica(String serializedNode)
+    private List<StorageNode> deserializeReplicasFrom(String serializedNode)
             throws DeserializationException {
         Matcher replicasMatcher = getRegexFromToken(REPLICAS).matcher(serializedNode);
         List<StorageNode> replicaList = new ArrayList<>();
