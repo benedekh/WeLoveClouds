@@ -5,22 +5,22 @@ package weloveclouds.loadbalancer.models.cache;
  */
 public class CachedKeyUsage<K> {
     private K key;
-    private Integer numberOfOperationPerformed;
+    private Integer numberOfOperationPerformedOnKey;
 
     public CachedKeyUsage(K key) {
         this.key = key;
-        this.numberOfOperationPerformed = 0;
+        this.numberOfOperationPerformedOnKey = 0;
     }
 
     public K getKey() {
         return key;
     }
 
-    public Integer getNumberOfOperationPerformed() {
-        return numberOfOperationPerformed;
+    public Integer getNumberOfOperationPerformedOnKey() {
+        return numberOfOperationPerformedOnKey;
     }
 
     public void incrementNumberOfOperationPerformed() {
-        numberOfOperationPerformed++;
+        numberOfOperationPerformedOnKey++;
     }
 }

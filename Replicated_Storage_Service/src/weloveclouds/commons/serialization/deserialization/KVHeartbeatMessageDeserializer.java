@@ -14,7 +14,7 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_HEALTH_INFOS;
+import static weloveclouds.commons.serialization.models.XMLTokens.NODE_HEALTH_INFOS;
 
 /**
  * Created by Benoit on 2016-12-09.

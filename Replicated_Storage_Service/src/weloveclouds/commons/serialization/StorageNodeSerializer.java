@@ -14,15 +14,15 @@ import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
-import static weloveclouds.commons.serialization.models.SerializationConstants.CHILD_HASH_RANGES;
-import static weloveclouds.commons.serialization.models.SerializationConstants.CHILD_HASH_RANGE;
-import static weloveclouds.commons.serialization.models.SerializationConstants.HASH_KEY;
-import static weloveclouds.commons.serialization.models.SerializationConstants.HASH_RANGE;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NAME;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE;
-import static weloveclouds.commons.serialization.models.SerializationConstants.REPLICAS;
-import static weloveclouds.commons.serialization.models.SerializationConstants.REPLICA;
-import static weloveclouds.commons.serialization.models.SerializationConstants.SERVER_CONNECTION;
+import static weloveclouds.commons.serialization.models.XMLTokens.CHILD_HASH_RANGES;
+import static weloveclouds.commons.serialization.models.XMLTokens.CHILD_HASH_RANGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.HASH_KEY;
+import static weloveclouds.commons.serialization.models.XMLTokens.HASH_RANGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.NAME;
+import static weloveclouds.commons.serialization.models.XMLTokens.NODE;
+import static weloveclouds.commons.serialization.models.XMLTokens.REPLICAS;
+import static weloveclouds.commons.serialization.models.XMLTokens.REPLICA;
+import static weloveclouds.commons.serialization.models.XMLTokens.SERVER_CONNECTION;
 
 /**
  * Created by Benoit on 2016-12-08.
@@ -58,7 +58,7 @@ public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, Stora
                         .serialize(nodeToSerialize.getHashRange())))
                 .addInnerNode(nodeHealthInfosSerializer.serialize(nodeToSerialize.getHealthInfos()))
                 .addInnerNode(serializeReplicas(nodeToSerialize.getReplicas()))
-                .addInnerNode(serializeChildHashRanges(nodeToSerialize.getChildHashranges()))
+                .addInnerNode(serializeChildHashRanges(nodeToSerialize.getChildHashRanges()))
                 .build();
     }
 

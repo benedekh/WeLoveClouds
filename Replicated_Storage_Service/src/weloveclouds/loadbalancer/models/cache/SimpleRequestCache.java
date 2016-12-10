@@ -27,12 +27,12 @@ public class SimpleRequestCache<K, V> implements ICache<K, V> {
     @Override
     public V get(K key) throws UnableToFindRequestedKeyException {
         displacementStrategy.registerGet(key);
-        return null;
+        return cache.get(key);
     }
 
     @Override
     public void put(K key, V value) {
-        if (cache.size() >= maximumCapacity && !cache.containsKey(key)) {
+        if (isFull() && !cache.containsKey(key)) {
             cache.remove(displacementStrategy.getKeyToDisplace());
         }
         cache.put(key, value);
@@ -42,5 +42,10 @@ public class SimpleRequestCache<K, V> implements ICache<K, V> {
     @Override
     public void delete(K key) {
         cache.remove(key);
+    }
+
+    @Override
+    public boolean isFull() {
+        return cache.size() >= maximumCapacity;
     }
 }

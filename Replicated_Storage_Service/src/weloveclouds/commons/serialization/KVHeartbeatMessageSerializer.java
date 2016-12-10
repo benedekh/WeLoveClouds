@@ -9,7 +9,7 @@ import weloveclouds.commons.serialization.models.XMLRootNode;
 import weloveclouds.loadbalancer.models.KVHearthbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
-import static weloveclouds.commons.serialization.models.SerializationConstants.KVHEARTHBEAT_MESSAGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.KVHEARTHBEAT_MESSAGE;
 
 /**
  * Created by Benoit on 2016-12-09.

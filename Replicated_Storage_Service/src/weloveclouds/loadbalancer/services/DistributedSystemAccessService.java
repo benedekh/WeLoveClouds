@@ -7,8 +7,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.RingMetadata;
-import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForReadingException;
-import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForWritingException;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForReadingException;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForWritingException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
@@ -29,7 +29,6 @@ public class DistributedSystemAccessService {
         } finally {
             reentrantReadWriteLock.writeLock().unlock();
         }
-
     }
 
     public void updateServiceRingMetadataWith(RingMetadata ringMetadata) {
@@ -41,18 +40,20 @@ public class DistributedSystemAccessService {
         }
     }
 
-    public StorageNode getReadServerFor(String key) throws UnableToFindResponsibleForReadingException {
+    public StorageNode getReadServerFor(String key)
+            throws UnableToFindServerResponsibleForReadingException {
         StorageNode healthiestNode = null;
         try {
             reentrantReadWriteLock.readLock().lock();
-            healthiestNode = getHealthiestNodeFrom(distributedService.getResponsibleForReadingOf(new Hash(key.getBytes())));
+            healthiestNode = getHealthiestNodeFrom(
+                    distributedService.getResponsibleForReadingOf(new Hash(key.getBytes())));
         } finally {
             reentrantReadWriteLock.readLock().unlock();
         }
         return healthiestNode;
     }
 
-    public StorageNode getWriteServerFor(String key) throws UnableToFindResponsibleForWritingException {
+    public StorageNode getWriteServerFor(String key) throws UnableToFindServerResponsibleForWritingException {
         StorageNode writeServer = null;
         try {
             reentrantReadWriteLock.readLock().lock();

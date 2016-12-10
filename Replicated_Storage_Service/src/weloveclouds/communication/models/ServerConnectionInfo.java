@@ -1,7 +1,5 @@
 package weloveclouds.communication.models;
 
-import com.sun.corba.se.spi.activation.Server;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 

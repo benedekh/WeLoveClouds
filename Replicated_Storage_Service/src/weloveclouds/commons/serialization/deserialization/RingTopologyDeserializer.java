@@ -13,8 +13,8 @@ import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationEx
 
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE;
-import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES;
+import static weloveclouds.commons.serialization.models.XMLTokens.NODE;
+import static weloveclouds.commons.serialization.models.XMLTokens.ORDERED_NODES;
 
 /**
  * Created by Benoit on 2016-12-09.
@@ -31,11 +31,13 @@ public class RingTopologyDeserializer<T extends AbstractNode>
     @Override
     public RingTopology<T> deserialize(String serializedRingTopology) throws
             DeserializationException {
-        Matcher orderedNodesMatcher = getRegexFromToken(ORDERED_NODES).matcher(serializedRingTopology);
+        Matcher orderedNodesMatcher =
+                getRegexFromToken(ORDERED_NODES).matcher(serializedRingTopology);
         List<T> nodesList = new ArrayList<>();
 
         if (orderedNodesMatcher.find()) {
-            Matcher nodeMatcher = getRegexFromToken(NODE).matcher(orderedNodesMatcher.group(XML_NODE));
+            Matcher nodeMatcher =
+                    getRegexFromToken(NODE).matcher(orderedNodesMatcher.group(XML_NODE));
             while (nodeMatcher.find()) {
                 nodesList.add(nodeDeserializer.deserialize(nodeMatcher.group(XML_NODE)));
             }

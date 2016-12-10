@@ -5,11 +5,10 @@ package weloveclouds.ecs.contexts;
  * Created by Benoit on 2016-12-03.
  */
 public class EcsExecutionContext {
-    public static final String ECS_CONFIGURATION_FILE_PROPERTIES = "environment";
-
+    private static final String ECS_CONFIGURATION_FILE_PROPERTIES = "ecsConfigurationFilePath";
 
     public static void setConfigurationFilePath(String ecsConfigurationFilePath) {
-        System.setProperty(ECS_CONFIGURATION_FILE_PROPERTIES,ecsConfigurationFilePath);
+        System.setProperty(ECS_CONFIGURATION_FILE_PROPERTIES, ecsConfigurationFilePath);
     }
 
     public static String getConfigurationFilePath() {

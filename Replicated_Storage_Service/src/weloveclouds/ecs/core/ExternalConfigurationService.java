@@ -252,11 +252,6 @@ public class ExternalConfigurationService implements Observer {
                 if (!batch.hasFailed()) {
                     distributedService.initializeWith(repository.getNodesWithStatus(INITIALIZED));
                     initializeNodesWithMetadata();
-                    System.out.println(new RingTopologySerializer<>(new StorageNodeSerializer(new
-                            ServerConnectionInfoSerializer(), new HashSerializer(), new
-                            HashRangeSerializer(), new NodeHealthInfosSerializer(new
-                            ServerConnectionInfoSerializer()))).serialize(distributedService
-                            .getTopology()));
                 } else {
                     status = EcsStatus.UNINITIALIZED;
                 }

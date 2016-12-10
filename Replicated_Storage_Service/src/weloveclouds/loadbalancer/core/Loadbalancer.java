@@ -34,5 +34,6 @@ public class Loadbalancer implements ILoadbalancer {
     public void start() {
         clientRequestHandler.start();
         healthMonitoringService.start();
+        ecsNotificationService.start();
     }
 }

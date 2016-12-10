@@ -11,9 +11,9 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.serialization.models.SerializationConstants.ACTIVE_CONNECTIONS;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NAME;
-import static weloveclouds.commons.serialization.models.SerializationConstants.SERVER_CONNECTION;
+import static weloveclouds.commons.serialization.models.XMLTokens.ACTIVE_CONNECTIONS;
+import static weloveclouds.commons.serialization.models.XMLTokens.NAME;
+import static weloveclouds.commons.serialization.models.XMLTokens.SERVER_CONNECTION;
 
 /**
  * Created by Benoit on 2016-12-09.

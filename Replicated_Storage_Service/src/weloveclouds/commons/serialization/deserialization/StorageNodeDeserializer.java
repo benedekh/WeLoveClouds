@@ -15,7 +15,7 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.serialization.models.SerializationConstants.*;
+import static weloveclouds.commons.serialization.models.XMLTokens.*;
 
 /**
  * Created by Benoit on 2016-12-09.
@@ -43,7 +43,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
             storageNode = new StorageNode.Builder()
                     .name(deserializeNameFrom(serializedNode))
                     .hashRange(deserializeHashRangeFrom(serializedNode))
-                    .childHashranges(deserializeChildHashRangesFrom(serializedNode))
+                    .childHashRanges(deserializeChildHashRangesFrom(serializedNode))
                     .replicas(deserializeReplicasFrom(serializedNode))
                     .healthInfos(deserializeHealthInfosFrom(serializedNode))
                     .serverConnectionInfo(deserializeServerConnectionInfoFrom(serializedNode))

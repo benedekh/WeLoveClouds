@@ -31,11 +31,15 @@ public class EcsNotificationService extends AbstractServer<KVAdminMessage> imple
     @Inject
     public EcsNotificationService(CommunicationApiFactory communicationApiFactory,
                                   ServerSocketFactory serverSocketFactory,
-                                  IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
-                                  IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer,
+                                  IMessageSerializer<SerializedMessage, KVAdminMessage>
+                                          messageSerializer,
+                                  IMessageDeserializer<KVAdminMessage, SerializedMessage>
+                                          messageDeserializer,
                                   @EcsNotificationServicePort int port,
-                                  DistributedSystemAccessService distributedSystemAccessService) throws IOException {
-        super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer, port);
+                                  DistributedSystemAccessService distributedSystemAccessService)
+            throws IOException {
+        super(communicationApiFactory, serverSocketFactory, messageSerializer,
+                messageDeserializer, port);
     }
 
     @Override
@@ -74,7 +78,8 @@ public class EcsNotificationService extends AbstractServer<KVAdminMessage> imple
                           Connection connection,
                           IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
                           IMessageDeserializer<KVAdminMessage, SerializedMessage>
-                                  messageDeserializer, DistributedSystemAccessService distributedSystemAccessService) {
+                                  messageDeserializer,
+                          DistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;
@@ -94,7 +99,8 @@ public class EcsNotificationService extends AbstractServer<KVAdminMessage> imple
                             .deserialize(communicationApi.receiveFrom(connection));
                     logger.debug(CustomStringJoiner.join(" ", "Message received:",
                             receivedMessage.toString()));
-                    distributedSystemAccessService.updateServiceRingMetadataWith(receivedMessage.getRingMetadata());
+                    distributedSystemAccessService
+                            .updateServiceRingMetadataWith(receivedMessage.getRingMetadata());
                     connection.kill();
                 }
             } catch (Throwable e) {

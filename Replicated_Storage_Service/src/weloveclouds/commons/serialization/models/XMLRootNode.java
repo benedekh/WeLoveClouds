@@ -10,7 +10,7 @@ import java.util.List;
 public class XMLRootNode extends AbstractXMLNode {
     private List<AbstractXMLNode> innerNodes;
 
-    public XMLRootNode(Builder xmlRootNodeBuilder) {
+    XMLRootNode(Builder xmlRootNodeBuilder) {
         super(xmlRootNodeBuilder.token);
         this.innerNodes = xmlRootNodeBuilder.innerNodes;
     }

@@ -24,7 +24,7 @@ public class StorageNode extends AbstractNode {
     private HashRange previousHashRange;
     private HashRange hashRange;
     private List<StorageNode> replicas;
-    private List<HashRange> childHashranges;
+    private List<HashRange> childHashRanges;
 
     private StorageNode(Builder storageNodeBuilder) {
         this.status = IDLE;
@@ -35,7 +35,7 @@ public class StorageNode extends AbstractNode {
         this.hashRange = storageNodeBuilder.hashRange;
         this.ecsChannelConnectionInfo = storageNodeBuilder.ecsChannelConnectionInfo;
         this.replicas = storageNodeBuilder.replicas;
-        this.childHashranges = storageNodeBuilder.childHashranges;
+        this.childHashRanges = storageNodeBuilder.childHashRanges;
         this.previousHashRange = storageNodeBuilder.previousHashRange;
 
         if (storageNodeBuilder.healthInfos == null) {
@@ -52,6 +52,10 @@ public class StorageNode extends AbstractNode {
 
     public void updateHealthInfos(NodeHealthInfos healthInfos) {
         this.healthInfos = healthInfos;
+    }
+
+    public HashRange getHashRange() {
+        return hashRange;
     }
 
     public void setHashRange(HashRange hashRange) {
@@ -76,29 +80,24 @@ public class StorageNode extends AbstractNode {
         this.status = status;
     }
 
+    public List<HashRange> getChildHashRanges() {
+        return new ArrayList<>(childHashRanges);
+    }
 
-    public HashRange getHashRange() {
-        return hashRange;
+    public void addChildHashRange(HashRange childHashRange) {
+        this.childHashRanges.add(childHashRange);
+    }
+
+    public void removeChildHashRange(HashRange childHashRange) {
+        this.childHashRanges.remove(childHashRange);
+    }
+
+    public void clearChildHashRanges() {
+        this.childHashRanges.clear();
     }
 
     public List<StorageNode> getReplicas() {
-        return replicas;
-    }
-
-    public List<HashRange> getChildHashranges() {
-        return childHashranges;
-    }
-
-    public void addChildHashrange(HashRange childHashRange) {
-        this.childHashranges.add(childHashRange);
-    }
-
-    public void removeChildHashrange(HashRange childHashRange) {
-        this.childHashranges.remove(childHashRange);
-    }
-
-    public void clearReplicas() {
-        this.replicas.clear();
+        return new ArrayList<>(replicas);
     }
 
     public void addReplicas(StorageNode node) {
@@ -109,12 +108,16 @@ public class StorageNode extends AbstractNode {
         replicas.remove(node);
     }
 
+    public void clearReplicas() {
+        this.replicas.clear();
+    }
+
     public boolean isReadResponsibleOf(Hash hash) {
         if (isWriteResponsibleOf(hash)) {
             return true;
         }
 
-        for (HashRange hashRange : childHashranges) {
+        for (HashRange hashRange : childHashRanges) {
             if (hashRange.contains(hash)) {
                 return true;
             }
@@ -139,11 +142,11 @@ public class StorageNode extends AbstractNode {
         private HashRange previousHashRange;
         private HashRange hashRange;
         private List<StorageNode> replicas;
-        private List<HashRange> childHashranges;
+        private List<HashRange> childHashRanges;
 
         public Builder() {
             this.replicas = new ArrayList<>();
-            this.childHashranges = new ArrayList<>();
+            this.childHashRanges = new ArrayList<>();
         }
 
         public Builder name(String name) {
@@ -181,8 +184,8 @@ public class StorageNode extends AbstractNode {
             return this;
         }
 
-        public Builder childHashranges(List<HashRange> childHashanges) {
-            this.childHashranges = childHashanges;
+        public Builder childHashRanges(List<HashRange> childHashRanges) {
+            this.childHashRanges = childHashRanges;
             return this;
         }
 

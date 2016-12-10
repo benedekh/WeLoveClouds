@@ -10,8 +10,8 @@ import weloveclouds.ecs.models.repository.AbstractNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
-import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES;
-import static weloveclouds.commons.serialization.models.SerializationConstants.TOPOLOGY;
+import static weloveclouds.commons.serialization.models.XMLTokens.ORDERED_NODES;
+import static weloveclouds.commons.serialization.models.XMLTokens.TOPOLOGY;
 
 /**
  * Created by Benoit on 2016-12-08.

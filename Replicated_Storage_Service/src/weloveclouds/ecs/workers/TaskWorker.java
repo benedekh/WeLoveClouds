@@ -45,7 +45,7 @@ public class TaskWorker extends Observable implements Runnable {
             try {
                 task.run();
             } catch (RetryableException e) {
-                logger.info("Task name: " + task.getId() + " Retry attempt: " + task.getNumberOfRetries() +
+                logger.info("Task id: " + task.getId() + " Retry attempt: " + task.getNumberOfRetries() +
                         " on: " + task.getMaximumNumberOfRetries() + " will retry with cause: " + e.getMessage(), e);
                 task.incrementNumberOfRetries();
             } catch (Exception e) {
@@ -58,7 +58,7 @@ public class TaskWorker extends Observable implements Runnable {
             status = FINISHED;
         } else {
             status = ERROR;
-            logger.warn("Task name: " + task.getId() + " Will not be retry, maximum number of " +
+            logger.warn("Task id: " + task.getId() + " Will not be retry, maximum number of " +
                     "retries reached");
         }
         setChanged();

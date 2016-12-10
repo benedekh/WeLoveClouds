@@ -6,8 +6,8 @@ import java.util.List;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.status.ServiceStatus;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForReadingException;
-import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindResponsibleForWritingException;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForReadingException;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForWritingException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.utils.RingMetadataHelper;
@@ -33,7 +33,7 @@ public class DistributedService {
     }
 
     public List<StorageNode> getResponsibleForReadingOf(Hash hash) throws
-            UnableToFindResponsibleForReadingException {
+            UnableToFindServerResponsibleForReadingException {
         List<StorageNode> responsibles = new ArrayList<>();
         for (StorageNode node : getParticipatingNodes()) {
             if (node.isWriteResponsibleOf(hash)) {
@@ -42,17 +42,17 @@ public class DistributedService {
                 return responsibles;
             }
         }
-        throw new UnableToFindResponsibleForReadingException(hash);
+        throw new UnableToFindServerResponsibleForReadingException(hash);
     }
 
     public StorageNode getResponsibleForWritingOf(Hash hash) throws
-            UnableToFindResponsibleForWritingException {
+            UnableToFindServerResponsibleForWritingException {
         for (StorageNode node : getParticipatingNodes()) {
             if (node.isWriteResponsibleOf(hash)) {
                 return node;
             }
         }
-        throw new UnableToFindResponsibleForWritingException(hash);
+        throw new UnableToFindServerResponsibleForWritingException(hash);
     }
 
     public ServiceStatus getStatus() {

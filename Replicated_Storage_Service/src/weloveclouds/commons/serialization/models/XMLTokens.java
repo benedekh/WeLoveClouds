@@ -3,7 +3,7 @@ package weloveclouds.commons.serialization.models;
 /**
  * Created by Benoit on 2016-12-08.
  */
-public class SerializationConstants {
+public class XMLTokens {
     public static final String ACTIVE_CONNECTIONS = "ACTIVE_CONNECTIONS";
     public static final String KVHEARTHBEAT_MESSAGE = "KVHEARTHBEAT_MESSAGE";
     public static final String TOPOLOGY = "TOPOLOGY";

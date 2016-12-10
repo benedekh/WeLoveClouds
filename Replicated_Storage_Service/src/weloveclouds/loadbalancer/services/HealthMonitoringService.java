@@ -32,12 +32,16 @@ public class HealthMonitoringService extends AbstractServer<KVHearthbeatMessage>
     @Inject
     public HealthMonitoringService(CommunicationApiFactory communicationApiFactory,
                                    ServerSocketFactory serverSocketFactory,
-                                   IMessageSerializer<SerializedMessage, KVHearthbeatMessage> messageSerializer,
-                                   IMessageDeserializer<KVHearthbeatMessage, SerializedMessage> messageDeserializer,
+                                   IMessageSerializer<SerializedMessage, KVHearthbeatMessage>
+                                           messageSerializer,
+                                   IMessageDeserializer<KVHearthbeatMessage, SerializedMessage>
+                                           messageDeserializer,
                                    @HealthMonitoringServicePort int port,
                                    DistributedSystemAccessService distributedSystemAccessService,
-                                   EcsNotificationService ecsNotificationService) throws IOException {
-        super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer, port);
+                                   EcsNotificationService ecsNotificationService)
+            throws IOException {
+        super(communicationApiFactory, serverSocketFactory, messageSerializer,
+                messageDeserializer, port);
         this.distributedSystemAccessService = distributedSystemAccessService;
         this.logger = Logger.getLogger(this.getClass());
     }
@@ -71,9 +75,11 @@ public class HealthMonitoringService extends AbstractServer<KVHearthbeatMessage>
 
         ConnectionHandler(IConcurrentCommunicationApi communicationApi,
                           Connection connection,
-                          IMessageSerializer<SerializedMessage, KVHearthbeatMessage> messageSerializer,
+                          IMessageSerializer<SerializedMessage, KVHearthbeatMessage>
+                                  messageSerializer,
                           IMessageDeserializer<KVHearthbeatMessage, SerializedMessage>
-                                  messageDeserializer, DistributedSystemAccessService distributedSystemAccessService) {
+                                  messageDeserializer, DistributedSystemAccessService
+                                  distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;

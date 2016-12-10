@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import weloveclouds.loadbalancer.models.cache.CachedKeyUsage;
 
@@ -20,23 +21,29 @@ public class PopularityBasedDisplacementStrategy<K> implements IDisplacementStra
     private static final int FIRST = 0;
     private final List<CachedKeyUsage<K>> sortedCachedKeyUsage;
     private final Map<K, CachedKeyUsage<K>> keyUsage;
-    ScheduledExecutorService keyOrderingTask;
+    private ReentrantReadWriteLock reentrantReadWriteLock;
+    private ScheduledExecutorService keyOrderingTask;
 
     public PopularityBasedDisplacementStrategy(int maximumCapacity, int
             timeBetweenKeyOrderingInSec) {
-        keyOrderingTask = Executors.newScheduledThreadPool(1);
-        keyUsage = new LinkedHashMap<>(maximumCapacity);
-        sortedCachedKeyUsage = new ArrayList<>();
-        keyOrderingTask.scheduleAtFixedRate(new Runnable() {
+        this.reentrantReadWriteLock = new ReentrantReadWriteLock();
+        this.keyOrderingTask = Executors.newScheduledThreadPool(1);
+        this.keyUsage = new LinkedHashMap<>(maximumCapacity);
+        this.sortedCachedKeyUsage = new ArrayList<>();
+        this.keyOrderingTask.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                synchronized (sortedCachedKeyUsage) {
+                try {
+                    reentrantReadWriteLock.writeLock().lock();
                     Collections.sort(sortedCachedKeyUsage, new Comparator<CachedKeyUsage<K>>() {
                         @Override
                         public int compare(CachedKeyUsage<K> o1, CachedKeyUsage<K> o2) {
-                            return o1.getNumberOfOperationPerformed().compareTo(o2.getNumberOfOperationPerformed());
+                            return o1.getNumberOfOperationPerformedOnKey().compareTo(o2.getNumberOfOperationPerformedOnKey());
                         }
                     });
+                } finally {
+                    reentrantReadWriteLock.writeLock().unlock();
+
                 }
             }
         }, 0, timeBetweenKeyOrderingInSec, TimeUnit.SECONDS);
@@ -45,10 +52,13 @@ public class PopularityBasedDisplacementStrategy<K> implements IDisplacementStra
     @Override
     public K getKeyToDisplace() {
         K leastUsedKey;
-        synchronized (sortedCachedKeyUsage) {
+        try {
+            reentrantReadWriteLock.writeLock().lock();
             leastUsedKey = sortedCachedKeyUsage.remove(FIRST).getKey();
+            keyUsage.remove(leastUsedKey);
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
         }
-        keyUsage.remove(leastUsedKey);
         return leastUsedKey;
     }
 
@@ -61,8 +71,11 @@ public class PopularityBasedDisplacementStrategy<K> implements IDisplacementStra
             cachedKeyUsage = new CachedKeyUsage<>(key);
             cachedKeyUsage.incrementNumberOfOperationPerformed();
             keyUsage.put(key, cachedKeyUsage);
-            synchronized (sortedCachedKeyUsage) {
+            try {
+                reentrantReadWriteLock.writeLock().lock();
                 sortedCachedKeyUsage.add(cachedKeyUsage);
+            } finally {
+                reentrantReadWriteLock.writeLock().unlock();
             }
         }
     }
