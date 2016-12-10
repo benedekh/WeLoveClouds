@@ -19,8 +19,8 @@ public class KVHeartbeatMessageSerializer implements
     private ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosSerializer;
 
     @Inject
-    public KVHeartbeatMessageSerializer(ISerializer<AbstractXMLNode,
-            NodeHealthInfos> nodeHealthInfosSerializer) {
+    public KVHeartbeatMessageSerializer(ISerializer<AbstractXMLNode, NodeHealthInfos>
+                                                nodeHealthInfosSerializer) {
         this.nodeHealthInfosSerializer = nodeHealthInfosSerializer;
     }
 
@@ -28,8 +28,8 @@ public class KVHeartbeatMessageSerializer implements
     public SerializedMessage serialize(KVHearthbeatMessage unserializedMessage) {
         return new SerializedMessage(new XMLRootNode.Builder()
                 .token(KVHEARTHBEAT_MESSAGE)
-                .addInnerNode(nodeHealthInfosSerializer.serialize(
-                        unserializedMessage.getNodeHealthInfos()))
+                .addInnerNode(nodeHealthInfosSerializer
+                        .serialize(unserializedMessage.getNodeHealthInfos()))
                 .build()
                 .toString());
     }

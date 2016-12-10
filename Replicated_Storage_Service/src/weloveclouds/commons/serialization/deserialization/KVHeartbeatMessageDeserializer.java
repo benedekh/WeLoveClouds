@@ -19,17 +19,21 @@ import static weloveclouds.commons.serialization.models.SerializationConstants.N
 /**
  * Created by Benoit on 2016-12-09.
  */
-public class KVHeartbeatMessageDeserializer implements IMessageDeserializer<KVHearthbeatMessage, SerializedMessage> {
+public class KVHeartbeatMessageDeserializer implements
+        IMessageDeserializer<KVHearthbeatMessage, SerializedMessage> {
     private IDeserializer<NodeHealthInfos, String> healthInfosStringDeserializer;
 
     @Inject
-    public KVHeartbeatMessageDeserializer(IDeserializer<NodeHealthInfos, String> healthInfosStringDeserializer) {
+    public KVHeartbeatMessageDeserializer(IDeserializer<NodeHealthInfos, String>
+                                                  healthInfosStringDeserializer) {
         this.healthInfosStringDeserializer = healthInfosStringDeserializer;
     }
 
     @Override
-    public KVHearthbeatMessage deserialize(SerializedMessage serializedMessage) throws DeserializationException {
-        Matcher matcher = getRegexFromToken(NODE_HEALTH_INFOS).matcher(new String(serializedMessage.getBytes(), MESSAGE_ENCODING));
+    public KVHearthbeatMessage deserialize(SerializedMessage serializedMessage)
+            throws DeserializationException {
+        Matcher matcher = getRegexFromToken(NODE_HEALTH_INFOS)
+                .matcher(new String(serializedMessage.getBytes(), MESSAGE_ENCODING));
         NodeHealthInfos nodeHealthInfos = null;
 
         try {
@@ -45,6 +49,6 @@ public class KVHeartbeatMessageDeserializer implements IMessageDeserializer<KVHe
 
     @Override
     public KVHearthbeatMessage deserialize(byte[] serializedMessage) throws DeserializationException {
-        return null;
+        return deserialize(new SerializedMessage(new String(serializedMessage, MESSAGE_ENCODING)));
     }
 }
