@@ -26,7 +26,8 @@ public abstract class AbstractConnectionHandler<M>
 
     private ConnectionHandlerShutdownHook shutdownHook;
 
-    public AbstractConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection connection,
+    public AbstractConnectionHandler(IConcurrentCommunicationApi communicationApi,
+                                     Connection connection,
                                      IMessageSerializer<SerializedMessage, M> messageSerializer,
                                      IMessageDeserializer<M, SerializedMessage> messageDeserializer) {
         this.communicationApi = communicationApi;

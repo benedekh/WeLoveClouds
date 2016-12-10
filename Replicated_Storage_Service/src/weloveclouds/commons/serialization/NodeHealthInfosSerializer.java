@@ -21,7 +21,8 @@ public class NodeHealthInfosSerializer implements ISerializer<AbstractXMLNode, N
     private ISerializer<String, ServerConnectionInfo> serverConnectionInfoISerializer;
 
     @Inject
-    public NodeHealthInfosSerializer(ISerializer<String, ServerConnectionInfo> serverConnectionInfoISerializer) {
+    public NodeHealthInfosSerializer(ISerializer<String, ServerConnectionInfo>
+                                             serverConnectionInfoISerializer) {
         this.serverConnectionInfoISerializer = serverConnectionInfoISerializer;
     }
 
@@ -30,9 +31,10 @@ public class NodeHealthInfosSerializer implements ISerializer<AbstractXMLNode, N
         return new XMLRootNode.Builder()
                 .token(NODE_HEALTH_INFOS)
                 .addInnerNode(new XMLNode(NAME, nodeHealthInfosToSerialize.getServerName()))
-                .addInnerNode(new XMLNode(SERVER_CONNECTION, serverConnectionInfoISerializer.serialize(nodeHealthInfosToSerialize
-                        .getServerConnectionInfo())))
-                .addInnerNode(new XMLNode(ACTIVE_CONNECTIONS, String.valueOf(nodeHealthInfosToSerialize.getNumberOfActiveConnections())))
+                .addInnerNode(new XMLNode(SERVER_CONNECTION, serverConnectionInfoISerializer
+                        .serialize(nodeHealthInfosToSerialize.getServerConnectionInfo())))
+                .addInnerNode(new XMLNode(ACTIVE_CONNECTIONS,
+                        String.valueOf(nodeHealthInfosToSerialize.getNumberOfActiveConnections())))
                 .build();
     }
 }

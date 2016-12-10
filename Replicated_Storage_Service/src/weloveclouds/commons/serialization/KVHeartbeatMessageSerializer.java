@@ -14,20 +14,22 @@ import static weloveclouds.commons.serialization.models.SerializationConstants.K
 /**
  * Created by Benoit on 2016-12-09.
  */
-public class KVHeartbeatMessageSerializer implements IMessageSerializer<SerializedMessage, KVHearthbeatMessage> {
-    private ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosStringSerializer;
+public class KVHeartbeatMessageSerializer implements
+        IMessageSerializer<SerializedMessage, KVHearthbeatMessage> {
+    private ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosSerializer;
 
     @Inject
-    public KVHeartbeatMessageSerializer(ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosStringSerializer) {
-        this.nodeHealthInfosStringSerializer = nodeHealthInfosStringSerializer;
+    public KVHeartbeatMessageSerializer(ISerializer<AbstractXMLNode,
+            NodeHealthInfos> nodeHealthInfosSerializer) {
+        this.nodeHealthInfosSerializer = nodeHealthInfosSerializer;
     }
 
     @Override
     public SerializedMessage serialize(KVHearthbeatMessage unserializedMessage) {
         return new SerializedMessage(new XMLRootNode.Builder()
                 .token(KVHEARTHBEAT_MESSAGE)
-                .addInnerNode(nodeHealthInfosStringSerializer
-                        .serialize(unserializedMessage.getNodeHealthInfos()))
+                .addInnerNode(nodeHealthInfosSerializer.serialize(
+                        unserializedMessage.getNodeHealthInfos()))
                 .build()
                 .toString());
     }
