@@ -12,6 +12,10 @@ import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.PUT
 import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.REMOVE_COMMAND_NAME;
 import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.SUCCESS;
 
+import java.util.Set;
+
+import javax.management.relation.Role;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -21,9 +25,6 @@ import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.utils.HashingUtil;
 import weloveclouds.kvstore.models.KVEntry;
-import weloveclouds.server.models.replication.HashRangeWithRole;
-import weloveclouds.server.models.replication.HashRangesWithRoles;
-import weloveclouds.server.models.replication.Role;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
@@ -53,7 +54,8 @@ public class MovableDataAccessService extends DataAccessService
     private volatile DataAccessServiceStatus serviceRecentStatus;
 
     private volatile RingMetadata ringMetadata;
-    private volatile HashRangesWithRoles rangesManagedByServer;
+    private volatile Set<HashRange> readRanges;
+    private volatile HashRange writeRange;
 
     public MovableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage) {
         super(cache, persistentStorage);
@@ -86,7 +88,7 @@ public class MovableDataAccessService extends DataAccessService
             case STARTED:
             case WRITELOCK_ACTIVE:
                 try {
-                    checkIfKeyIsManagedByServer(key);
+                    checkIfServiceHasReadPrivilegeFor(key);
                 } catch (KeyIsNotManagedByServiceException ex) {
                     incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, NOT_RESPONSIBLE);
                     throw ex;
@@ -210,13 +212,14 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public synchronized void setManagedHashRanges(HashRangesWithRoles rangesManagedByServer) {
-        this.rangesManagedByServer = rangesManagedByServer;
+    public synchronized void setManagedHashRanges(Set<HashRange> readRanges, HashRange writeRange) {
+        this.readRanges = readRanges;
+        this.writeRange = writeRange;
     }
 
     @Override
     public synchronized boolean isServiceInitialized() {
-        return ringMetadata != null && rangesManagedByServer != null;
+        return ringMetadata != null && readRanges != null;
     }
 
     /**
@@ -239,9 +242,9 @@ public class MovableDataAccessService extends DataAccessService
             case STARTED:
                 try {
                     if (coordinatorRoleIsExpected) {
-                        checkIfKeyHasCoordinatorRole(entry.getKey());
+                        checkIfServiceHasWritePrivilegeFor(entry.getKey());
                     } else {
-                        checkIfKeyIsManagedByServer(entry.getKey());
+                        checkIfServiceHasReadPrivilegeFor(entry.getKey());
                     }
                 } catch (KeyIsNotManagedByServiceException ex) {
                     incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
@@ -294,9 +297,9 @@ public class MovableDataAccessService extends DataAccessService
             case STARTED:
                 try {
                     if (coordinatorRoleIsExpected) {
-                        checkIfKeyHasCoordinatorRole(key);
+                        checkIfServiceHasWritePrivilegeFor(key);
                     } else {
-                        checkIfKeyIsManagedByServer(key);
+                        checkIfServiceHasReadPrivilegeFor(key);
                     }
                 } catch (KeyIsNotManagedByServiceException ex) {
                     incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
@@ -331,49 +334,33 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     /**
-     * @param key the key whose hash value is expected to be handled by the server
-     * @throws KeyIsNotManagedByServiceException if the referred key's hash value is not managed by
-     *         this server or not {@link Role#COORDINATOR} belongs to that.
+     * @throws KeyIsNotManagedByServiceException if for the referred key's hash value the service
+     *         does not have a WRITE privilege
      */
-    private void checkIfKeyHasCoordinatorRole(String key) throws KeyIsNotManagedByServiceException {
-        checkIfKeyIsManagedByServer(key);
-        checkIfRoleIsSufficient(key, Role.COORDINATOR);
-    }
-
-    /**
-     * Checks if the respective key has the respective role.
-     * 
-     * @throws KeyIsNotManagedByServiceException if the key does not have the respective role.
-     */
-    private void checkIfRoleIsSufficient(String key, Role expectedRole)
+    private void checkIfServiceHasWritePrivilegeFor(String key)
             throws KeyIsNotManagedByServiceException {
-        for (HashRangeWithRole rangeWithRole : rangesManagedByServer.getRangesWithRoles()) {
-            boolean containsHash = rangeWithRole.getHashRange().contains(HashingUtil.getHash(key));
-            boolean roleIsSufficient = rangeWithRole.getRole().equals(expectedRole);
-            if (containsHash && roleIsSufficient) {
-                return;
-            }
+        if (writeRange == null || !writeRange.contains(HashingUtil.getHash(key))) {
+            LOGGER.error(CustomStringJoiner.join("",
+                    "Service does not have WRITE privilege for key (", key, ")."));
+            throw new KeyIsNotManagedByServiceException();
         }
-        LOGGER.error(CustomStringJoiner.join("", "Key (", key,
-                ") does not have the expected role (", expectedRole.toString(), ")."));
-        throw new KeyIsNotManagedByServiceException();
-
     }
 
     /**
-     * @param key the key whose hash value is expected to be handled by the server
-     * 
-     * @throws KeyIsNotManagedByServiceException if it is not managed by the server
+     * @throws KeyIsNotManagedByServiceException if for the referred key's hash value the service
+     *         does not have a READ privilege
      */
-    private void checkIfKeyIsManagedByServer(String key) throws KeyIsNotManagedByServiceException {
-        if (rangesManagedByServer != null) {
-            for (HashRangeWithRole rangeWithRole : rangesManagedByServer.getRangesWithRoles()) {
-                if (rangeWithRole.getHashRange().contains(HashingUtil.getHash(key))) {
+    private void checkIfServiceHasReadPrivilegeFor(String key)
+            throws KeyIsNotManagedByServiceException {
+        if (readRanges != null) {
+            for (HashRange range : readRanges) {
+                if (range.contains(HashingUtil.getHash(key))) {
                     return;
                 }
             }
         }
-        LOGGER.error(CustomStringJoiner.join("", "Key (", key, ") is not managed by the server."));
+        LOGGER.error(CustomStringJoiner.join("", "Service does not have WRITE privilege for key (",
+                key, ")."));
         throw new KeyIsNotManagedByServiceException();
     }
 

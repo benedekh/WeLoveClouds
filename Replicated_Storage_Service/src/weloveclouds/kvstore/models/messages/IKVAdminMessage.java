@@ -4,7 +4,6 @@ import weloveclouds.communication.models.ServerConnectionInfos;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.server.models.replication.HashRangesWithRoles;
 
 /**
  * Represents an administrative message between the ECS and the KVServer.
@@ -42,12 +41,6 @@ public interface IKVAdminMessage {
      *         HashRange have to be transferred
      */
     public RingMetadataPart getTargetServerInfo();
-
-    /**
-     * @return the hash ranges which are managed by the server, together with the roles the
-     *         respective server has for each range
-     */
-    public HashRangesWithRoles getManagedHashRangesWithRole();
 
     /**
      * @return connection information about the replicas, e.g. on which IP + port are they

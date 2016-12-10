@@ -11,7 +11,6 @@ import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.deserialization.helper.HashRangeDeserializer;
-import weloveclouds.kvstore.deserialization.helper.HashRangesWithRolesDeserializer;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataPartDeserializer;
@@ -21,7 +20,6 @@ import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.models.replication.HashRangesWithRoles;
 
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link KVAdminMessage}.
@@ -31,14 +29,13 @@ import weloveclouds.server.models.replication.HashRangesWithRoles;
 public class KVAdminMessageDeserializer
         implements IMessageDeserializer<KVAdminMessage, SerializedMessage> {
 
-    private static final int NUMBER_OF_MESSAGE_PARTS = 7;
+    private static final int NUMBER_OF_MESSAGE_PARTS = 6;
     private static final int MESSAGE_STATUS_INDEX = 0;
     private static final int MESSAGE_RING_METADATA_INDEX = 1;
     private static final int MESSAGE_TARGET_SERVER_INFO_INDEX = 2;
-    private static final int MESSAGE_RANGES_WITH_ROLES_INDEX = 3;
-    private static final int MESSAGE_REPLICA_CONNECTION_INFOS_INDEX = 4;
-    private static final int MESSAGE_REMOVABLE_RANGE_INDEX = 5;
-    private static final int MESSAGE_RESPONSE_MESSAGE_INDEX = 6;
+    private static final int MESSAGE_REPLICA_CONNECTION_INFOS_INDEX = 3;
+    private static final int MESSAGE_REMOVABLE_RANGE_INDEX = 4;
+    private static final int MESSAGE_RESPONSE_MESSAGE_INDEX = 5;
 
     private static final Logger LOGGER = Logger.getLogger(KVAdminMessageDeserializer.class);
 
@@ -48,8 +45,6 @@ public class KVAdminMessageDeserializer
             new RingMetadataDeserializer();
     private IDeserializer<RingMetadataPart, String> metadataPartDeserializer =
             new RingMetadataPartDeserializer();
-    private IDeserializer<HashRangesWithRoles, String> hashRangesWithRolesDeserializer =
-            new HashRangesWithRolesDeserializer();
     private IDeserializer<ServerConnectionInfos, String> replicaConnectionInfosDeserializer =
             new ServerConnectionInfosDeserializer();
 
@@ -84,7 +79,6 @@ public class KVAdminMessageDeserializer
             String statusStr = messageParts[MESSAGE_STATUS_INDEX];
             String ringMetadataStr = messageParts[MESSAGE_RING_METADATA_INDEX];
             String targetServerInfoStr = messageParts[MESSAGE_TARGET_SERVER_INFO_INDEX];
-            String rangesWithRolesStr = messageParts[MESSAGE_RANGES_WITH_ROLES_INDEX];
             String replicaConnectionInfosStr = messageParts[MESSAGE_REPLICA_CONNECTION_INFOS_INDEX];
             String removableRangeStr = messageParts[MESSAGE_REMOVABLE_RANGE_INDEX];
             String responseMessageStr = messageParts[MESSAGE_RESPONSE_MESSAGE_INDEX];
@@ -94,8 +88,6 @@ public class KVAdminMessageDeserializer
             RingMetadata ringMetadata = metadataDeserializer.deserialize(ringMetadataStr);
             RingMetadataPart targetServerInfo =
                     metadataPartDeserializer.deserialize(targetServerInfoStr);
-            HashRangesWithRoles rangesWithRoles =
-                    hashRangesWithRolesDeserializer.deserialize(rangesWithRolesStr);
             HashRange removableRange = removableRangeDeserializer.deserialize(removableRangeStr);
             ServerConnectionInfos replicaConnectionInfos =
                     replicaConnectionInfosDeserializer.deserialize(replicaConnectionInfosStr);
@@ -104,8 +96,8 @@ public class KVAdminMessageDeserializer
             // deserialized object
             KVAdminMessage deserialized = new KVAdminMessage.Builder().status(status)
                     .ringMetadata(ringMetadata).targetServerInfo(targetServerInfo)
-                    .rangesWithRoles(rangesWithRoles).replicaConnectionInfos(replicaConnectionInfos)
-                    .removableRange(removableRange).responseMessage(responseMessage).build();
+                    .replicaConnectionInfos(replicaConnectionInfos).removableRange(removableRange)
+                    .responseMessage(responseMessage).build();
 
             LOGGER.debug(join(" ", "Deserialized KVAdminMessage is:", deserialized.toString()));
             return deserialized;

@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Stores <IP, port> and <hash-range with roles> triplets, which defines respective server (denoted
- * by its <ip,port>) is responsible for which hash range with what role.
+ * Stores <IP, port> and <hash-ranges> triplets, which defines respective server (denoted by its
+ * <ip,port>) is responsible for which hash range with what role.
  * 
  * @author Benedek
  */

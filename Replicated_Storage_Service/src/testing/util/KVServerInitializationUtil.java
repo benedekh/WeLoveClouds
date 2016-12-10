@@ -8,6 +8,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
+import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -20,8 +21,6 @@ import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
-import weloveclouds.server.models.replication.HashRangeWithRole;
-import weloveclouds.server.models.replication.Role;
 
 public class KVServerInitializationUtil implements AutoCloseable {
 
@@ -108,10 +107,10 @@ public class KVServerInitializationUtil implements AutoCloseable {
     private RingMetadataPart createRingMetadataPart(HashRange range) throws IOException {
         ServerConnectionInfo server = new ServerConnectionInfo.Builder().ipAddress("localhost")
                 .port(SERVER_KVCLIENT_PORT).build();
-        HashRangeWithRole hashRangeWithRole =
-                new HashRangeWithRole.Builder().hashRange(range).role(Role.COORDINATOR).build();
-        return new RingMetadataPart.Builder().connectionInfo(server)
-                .rangeWithRole(hashRangeWithRole).build();
+
+        HashRanges readRanges = new HashRanges(new HashSet<>(Arrays.asList(range)));
+        return new RingMetadataPart.Builder().connectionInfo(server).readRanges(readRanges)
+                .writeRange(range).build();
     }
 
 

@@ -4,8 +4,9 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.hashing.models.HashRange;
+import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.server.models.replication.HashRangeWithRole;
 
 /**
  * A serializer which converts a {@link RingMetadataPart} to a {@link String}.
@@ -19,8 +20,8 @@ public class RingMetadataPartSerializer implements ISerializer<String, RingMetad
 
     private ISerializer<String, ServerConnectionInfo> connectionInfoSerializer =
             new ServerConnectionInfoSerializer();
-    private ISerializer<String, HashRangeWithRole> hashRangeWithRoleSerializer =
-            new HashRangeWithRoleSerializer();
+    private ISerializer<String, HashRanges> hashRangesSerializer = new HashRangesSerializer();
+    private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
 
     @Override
     public String serialize(RingMetadataPart target) {
@@ -30,15 +31,17 @@ public class RingMetadataPartSerializer implements ISerializer<String, RingMetad
             LOGGER.debug("Serializing a RingMetadataPart.");
             // original fields
             ServerConnectionInfo connectionInfo = target.getConnectionInfo();
-            HashRangeWithRole hashRangeWithRole = target.getRangeWithRole();
+            HashRanges readRanges = target.getReadRanges();
+            HashRange writeRange = target.getWriteRange();
 
             // string representation
             String connectionInfoStr = connectionInfoSerializer.serialize(connectionInfo);
-            String hashRangeWithRoleStr = hashRangeWithRoleSerializer.serialize(hashRangeWithRole);
+            String readRangesStr = hashRangesSerializer.serialize(readRanges);
+            String writeRangeStr = hashRangeSerializer.serialize(writeRange);
 
             // merged string representation
-            serialized =
-                    CustomStringJoiner.join(SEPARATOR, connectionInfoStr, hashRangeWithRoleStr);
+            serialized = CustomStringJoiner.join(SEPARATOR, connectionInfoStr, readRangesStr,
+                    writeRangeStr);
             LOGGER.debug("Serializing a RingMetadataPart finished.");
         }
 

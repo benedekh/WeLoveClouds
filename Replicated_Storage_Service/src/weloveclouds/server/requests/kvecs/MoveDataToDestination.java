@@ -54,7 +54,7 @@ public class MoveDataToDestination implements IKVECSRequest {
     public KVAdminMessage execute() {
         try {
             LOGGER.debug("Executing move data request.");
-            HashRange hashRange = targetServerInfo.getRange();
+            HashRange hashRange = targetServerInfo.getWriteRange();
             MovableStorageUnits filteredEntries = dataAccessService.filterEntries(hashRange);
 
             if (!filteredEntries.getStorageUnits().isEmpty()) {

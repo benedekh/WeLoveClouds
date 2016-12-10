@@ -2,53 +2,50 @@ package weloveclouds.hashing.models;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.server.models.replication.HashRangeWithRole;
-import weloveclouds.server.models.replication.Role;
 
 
 /**
- * Represents an <IP, port> and <hash-range with role> triplet, which defines respective server
- * (denoted by its <ip,port>) is responsible for which hash range with what role.
+ * Represents an <IP, port> and ranges for which it has READ and WRITE privilege, which defines
+ * respective server (denoted by its <ip,port>) is responsible for which hash range with what role.
  * 
  * @author Benedek
  */
 public class RingMetadataPart {
 
     private ServerConnectionInfo connectionInfo;
-    private HashRangeWithRole rangeWithRole;
+    private HashRanges readRanges;
+    private HashRange writeRange;
 
     protected RingMetadataPart(Builder builder) {
         this.connectionInfo = builder.connectionInfo;
-        this.rangeWithRole = builder.rangeWithRole;
+        this.readRanges = builder.readRanges;
+        this.writeRange = builder.writeRange;
     }
 
     public ServerConnectionInfo getConnectionInfo() {
         return connectionInfo;
     }
 
-    public HashRange getRange() {
-        return rangeWithRole.getHashRange();
+    public HashRange getWriteRange() {
+        return writeRange;
     }
 
-    public Role getRole() {
-        return rangeWithRole.getRole();
-    }
-
-    public HashRangeWithRole getRangeWithRole() {
-        return rangeWithRole;
+    public HashRanges getReadRanges() {
+        return readRanges;
     }
 
     /**
-     * @return true if the range contains the referred hash
+     * @return true if the write range contains the referred hash
      */
     public boolean rangeContains(Hash hash) {
-        return rangeWithRole.getHashRange().contains(hash);
+        return writeRange.contains(hash);
     }
 
     @Override
     public String toString() {
         return CustomStringJoiner.join("", "{", "Connection info: ", connectionInfo.toString(),
-                ", Range with role: ", rangeWithRole.toString(), "}");
+                ", Write range: ", writeRange == null ? null : writeRange.toString(),
+                ", Read ranges: ", readRanges == null ? null : readRanges.toString(), "}");
     }
 
     @Override
@@ -56,7 +53,8 @@ public class RingMetadataPart {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((connectionInfo == null) ? 0 : connectionInfo.hashCode());
-        result = prime * result + ((rangeWithRole == null) ? 0 : rangeWithRole.hashCode());
+        result = prime * result + ((readRanges == null) ? 0 : readRanges.hashCode());
+        result = prime * result + ((writeRange == null) ? 0 : writeRange.hashCode());
         return result;
     }
 
@@ -79,11 +77,18 @@ public class RingMetadataPart {
         } else if (!connectionInfo.equals(other.connectionInfo)) {
             return false;
         }
-        if (rangeWithRole == null) {
-            if (other.rangeWithRole != null) {
+        if (readRanges == null) {
+            if (other.readRanges != null) {
                 return false;
             }
-        } else if (!rangeWithRole.equals(other.rangeWithRole)) {
+        } else if (!readRanges.equals(other.readRanges)) {
+            return false;
+        }
+        if (writeRange == null) {
+            if (other.writeRange != null) {
+                return false;
+            }
+        } else if (!writeRange.equals(other.writeRange)) {
             return false;
         }
         return true;
@@ -96,15 +101,21 @@ public class RingMetadataPart {
      */
     public static class Builder {
         private ServerConnectionInfo connectionInfo;
-        private HashRangeWithRole rangeWithRole;
+        private HashRanges readRanges;
+        private HashRange writeRange;
 
         public Builder connectionInfo(ServerConnectionInfo connectionInfo) {
             this.connectionInfo = connectionInfo;
             return this;
         }
 
-        public Builder rangeWithRole(HashRangeWithRole rangeWithRole) {
-            this.rangeWithRole = rangeWithRole;
+        public Builder readRanges(HashRanges readRanges) {
+            this.readRanges = readRanges;
+            return this;
+        }
+
+        public Builder writeRange(HashRange writeRange) {
+            this.writeRange = writeRange;
             return this;
         }
 

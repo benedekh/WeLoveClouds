@@ -9,8 +9,7 @@ public class SerializationValidationTests {
         TestSuite clientSuite = new TestSuite("Replicated Storage Service SerializationTest-Suite");
         clientSuite.addTestSuite(HashTest.class);
         clientSuite.addTestSuite(HashRangeTest.class);
-        clientSuite.addTestSuite(HashRangeWithRoleTest.class);
-        clientSuite.addTestSuite(HashRangesWithRolesTest.class);
+        clientSuite.addTestSuite(HashRangesTest.class);
         clientSuite.addTestSuite(MovableStorageUnitsTest.class);
         clientSuite.addTestSuite(MovableStorageUnitTest.class);
         clientSuite.addTestSuite(RingMetadataPartTest.class);

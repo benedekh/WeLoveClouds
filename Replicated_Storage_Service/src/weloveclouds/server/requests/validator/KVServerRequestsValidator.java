@@ -6,12 +6,11 @@ import java.util.Set;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.models.ServerConnectionInfos;
 import weloveclouds.hashing.models.HashRange;
+import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.models.replication.HashRangeWithRole;
-import weloveclouds.server.models.replication.HashRangesWithRoles;
 import weloveclouds.server.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.requests.kvserver.IKVServerRequest;
@@ -65,38 +64,23 @@ public class KVServerRequestsValidator {
     }
 
     /**
-     * A {@link HashRangesWithRoles} is valid, if it is not null and the encapsulated
-     * {@link HashRangeWithRole} instances are valid.
+     * A {@link HashRanges} is valid, if it is not null and the encapsulated {@link HashRange}
+     * instances are valid.
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
-    public static void validateHashRangesWithRoles(HashRangesWithRoles hashRangesWithRoles)
-            throws IllegalArgumentException {
-        if (hashRangesWithRoles == null) {
+    public static void validateHashRanges(HashRanges hashRanges) throws IllegalArgumentException {
+        if (hashRanges == null) {
             throw new IllegalArgumentException();
         }
 
-        Set<HashRangeWithRole> rangesWithRoles = hashRangesWithRoles.getRangesWithRoles();
-        if (rangesWithRoles == null || rangesWithRoles.isEmpty()) {
+        Set<HashRange> ranges = hashRanges.getHashRanges();
+        if (ranges == null || ranges.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        for (HashRangeWithRole rangeWithRole : rangesWithRoles) {
-            validateHashRangeWithRole(rangeWithRole);
+        for (HashRange range : ranges) {
+            validateHashRange(range);
         }
-    }
-
-    /**
-     * A {@link HashRangeWithRole} is valid, if neither it, nor its role is not null and the
-     * encapsulated {@link HashRange} is valid.
-     * 
-     * @throws IllegalArgumentException if a validation error occurs
-     */
-    public static void validateHashRangeWithRole(HashRangeWithRole hashRangeWithRole)
-            throws IllegalArgumentException {
-        if (hashRangeWithRole == null || hashRangeWithRole.getRole() == null) {
-            throw new IllegalArgumentException();
-        }
-        validateHashRange(hashRangeWithRole.getHashRange());
     }
 
     /**
@@ -166,7 +150,7 @@ public class KVServerRequestsValidator {
         if (ringMetadataPart == null) {
             throw new IllegalArgumentException();
         }
-        validateHashRange(ringMetadataPart.getRange());
+        validateHashRange(ringMetadataPart.getWriteRange());
         validateServerConnectionInfo(ringMetadataPart.getConnectionInfo());
     }
 

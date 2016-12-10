@@ -6,10 +6,11 @@ import static weloveclouds.server.requests.kvecs.utils.KVAdminMessageFactory.cre
 import org.apache.log4j.Logger;
 
 import weloveclouds.communication.models.ServerConnectionInfos;
+import weloveclouds.hashing.models.HashRange;
+import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
-import weloveclouds.server.models.replication.HashRangesWithRoles;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IReplicableDataAccessService;
 import weloveclouds.server.services.utils.IReplicationTransferer;
@@ -27,7 +28,8 @@ public class UpdateRingMetadata implements IKVECSRequest {
 
     private IReplicableDataAccessService dataAccessService;
     private RingMetadata ringMetadata;
-    private HashRangesWithRoles rangesManagedByServer;
+    private HashRanges readRanges;
+    private HashRange writeRange;
 
     private ServerConnectionInfos replicaConnectionInfos;
     private ReplicationTransfererFactory replicationTransfererFactory;
@@ -35,7 +37,8 @@ public class UpdateRingMetadata implements IKVECSRequest {
     protected UpdateRingMetadata(Builder builder) {
         this.dataAccessService = builder.dataAccessService;
         this.ringMetadata = builder.ringMetadata;
-        this.rangesManagedByServer = builder.rangesManagedByServer;
+        this.readRanges = builder.readRanges;
+        this.writeRange = builder.writeRange;
         this.replicaConnectionInfos = builder.replicaConnectionInfos;
         this.replicationTransfererFactory = builder.replicationTransfererFactory;
     }
@@ -44,7 +47,7 @@ public class UpdateRingMetadata implements IKVECSRequest {
     public KVAdminMessage execute() {
         LOGGER.debug("Executing update ring metadata request.");
         dataAccessService.setRingMetadata(ringMetadata);
-        dataAccessService.setManagedHashRanges(rangesManagedByServer);
+        dataAccessService.setManagedHashRanges(readRanges.getHashRanges(), writeRange);
 
         IReplicationTransferer replicationTransferer = null;
         if (replicaConnectionInfos != null) {
@@ -76,10 +79,9 @@ public class UpdateRingMetadata implements IKVECSRequest {
             throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
         }
         try {
-
-            KVServerRequestsValidator.validateHashRangesWithRoles(rangesManagedByServer);
+            KVServerRequestsValidator.validateHashRanges(readRanges);
         } catch (IllegalArgumentException ex) {
-            String errorMessage = "Hash range with roles is invalid.";
+            String errorMessage = "Read ranges are invalid.";
             LOGGER.error(errorMessage);
             throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
         }
@@ -94,7 +96,8 @@ public class UpdateRingMetadata implements IKVECSRequest {
     public static class Builder {
         private IReplicableDataAccessService dataAccessService;
         private RingMetadata ringMetadata;
-        private HashRangesWithRoles rangesManagedByServer;
+        private HashRanges readRanges;
+        private HashRange writeRange;
         private ServerConnectionInfos replicaConnectionInfos;
         private ReplicationTransfererFactory replicationTransfererFactory;
 
@@ -115,11 +118,18 @@ public class UpdateRingMetadata implements IKVECSRequest {
         }
 
         /**
-         * @param rangesManagedByServer the hash ranges which are managed by this server together
-         *        with roles the server has for each range
+         * @param readRanges {@link HashRange} ranges for which the server has READ privilege
          */
-        public Builder rangesManagedByServer(HashRangesWithRoles rangesManagedByServer) {
-            this.rangesManagedByServer = rangesManagedByServer;
+        public Builder readRanges(HashRanges readRanges) {
+            this.readRanges = readRanges;
+            return this;
+        }
+
+        /**
+         * @param readRanges {@link HashRange} range for which the server has WRITE privilege
+         */
+        public Builder writeRange(HashRange writeRange) {
+            this.writeRange = writeRange;
             return this;
         }
 

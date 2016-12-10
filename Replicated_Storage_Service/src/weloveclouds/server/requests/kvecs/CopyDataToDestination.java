@@ -53,7 +53,7 @@ public class CopyDataToDestination implements IKVECSRequest {
     public KVAdminMessage execute() {
         try {
             LOGGER.debug("Executing copy data request.");
-            HashRange hashRange = targetServerInfo.getRange();
+            HashRange hashRange = targetServerInfo.getWriteRange();
             MovableStorageUnits filteredEntries = dataAccessService.filterEntries(hashRange);
 
             if (!filteredEntries.getStorageUnits().isEmpty()) {

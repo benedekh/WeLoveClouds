@@ -58,7 +58,8 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
                 request = new InitializeKVServer.Builder().dataAccessService(dataAccessService)
                         .replicationTransfererFactory(replicationTransfererFactory)
                         .ringMetadata(receivedMessage.getRingMetadata())
-                        .rangesManagedByServer(receivedMessage.getManagedHashRangesWithRole())
+                        .readRanges(receivedMessage.getTargetServerInfo().getReadRanges())
+                        .writeRange(receivedMessage.getTargetServerInfo().getWriteRange())
                         .replicaConnectionInfos(receivedMessage.getReplicaConnectionInfos())
                         .build();
                 break;
@@ -97,7 +98,8 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
                 request = new UpdateRingMetadata.Builder().dataAccessService(dataAccessService)
                         .replicationTransfererFactory(replicationTransfererFactory)
                         .ringMetadata(receivedMessage.getRingMetadata())
-                        .rangesManagedByServer(receivedMessage.getManagedHashRangesWithRole())
+                        .readRanges(receivedMessage.getTargetServerInfo().getReadRanges())
+                        .writeRange(receivedMessage.getTargetServerInfo().getWriteRange())
                         .replicaConnectionInfos(receivedMessage.getReplicaConnectionInfos())
                         .build();
                 break;

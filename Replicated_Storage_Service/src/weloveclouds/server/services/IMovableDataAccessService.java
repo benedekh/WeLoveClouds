@@ -1,9 +1,10 @@
 package weloveclouds.server.services;
 
+import java.util.Set;
+
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.models.KVEntry;
-import weloveclouds.server.models.replication.HashRangesWithRoles;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.PutType;
@@ -89,8 +90,11 @@ public interface IMovableDataAccessService extends IDataAccessService {
 
     /**
      * Sets the hash ranges that are managed by the data access service.
+     * 
+     * @param readRanges {@link HashRange} ranges for which the server has READ privilege
+     * @param writeRange {@link HashRange} range for which the server has WRITE privilege
      */
-    public void setManagedHashRanges(HashRangesWithRoles rangesManagedByServer);
+    public void setManagedHashRanges(Set<HashRange> readRanges, HashRange writeRange);
 
     /**
      * @return true if the data access service is initialized, false otherwise

@@ -5,7 +5,6 @@ import weloveclouds.communication.models.ServerConnectionInfos;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.server.models.replication.HashRangesWithRoles;
 
 /**
  * Represents an administrative message between the ECS and the KVServer.
@@ -17,7 +16,6 @@ public class KVAdminMessage implements IKVAdminMessage {
     private StatusType status;
     private RingMetadata ringMetadata;
     private RingMetadataPart targetServerInfo;
-    private HashRangesWithRoles rangesWithRoles;
     private ServerConnectionInfos replicaConnectionInfos;
     private HashRange removableRange;
     private String responseMessage;
@@ -26,7 +24,6 @@ public class KVAdminMessage implements IKVAdminMessage {
         this.status = builder.status;
         this.ringMetadata = builder.ringMetadata;
         this.targetServerInfo = builder.targetServerInfo;
-        this.rangesWithRoles = builder.rangesWithRoles;
         this.replicaConnectionInfos = builder.replicaConnectionInfos;
         this.removableRange = builder.removableRange;
         this.responseMessage = builder.responseMessage;
@@ -48,15 +45,10 @@ public class KVAdminMessage implements IKVAdminMessage {
     }
 
     @Override
-    public HashRangesWithRoles getManagedHashRangesWithRole() {
-        return rangesWithRoles;
-    }
-
-    @Override
     public ServerConnectionInfos getReplicaConnectionInfos() {
         return replicaConnectionInfos;
     }
-    
+
     @Override
     public HashRange getRemovableRange() {
         return removableRange;
@@ -74,8 +66,6 @@ public class KVAdminMessage implements IKVAdminMessage {
                 removableRange == null ? null : removableRange.toString(), ", Ring metadata:",
                 ringMetadata == null ? null : ringMetadata.toString(), ", Target server info:",
                 targetServerInfo == null ? null : targetServerInfo.toString(),
-                ", Managed hash ranges with roles: ",
-                rangesWithRoles == null ? null : rangesWithRoles.toString(),
                 ",  Response message: ",
                 responseMessage == null ? null : responseMessage.toString());
     }
@@ -84,7 +74,6 @@ public class KVAdminMessage implements IKVAdminMessage {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((rangesWithRoles == null) ? 0 : rangesWithRoles.hashCode());
         result = prime * result + ((removableRange == null) ? 0 : removableRange.hashCode());
         result = prime * result
                 + ((replicaConnectionInfos == null) ? 0 : replicaConnectionInfos.hashCode());
@@ -107,13 +96,6 @@ public class KVAdminMessage implements IKVAdminMessage {
             return false;
         }
         KVAdminMessage other = (KVAdminMessage) obj;
-        if (rangesWithRoles == null) {
-            if (other.rangesWithRoles != null) {
-                return false;
-            }
-        } else if (!rangesWithRoles.equals(other.rangesWithRoles)) {
-            return false;
-        }
         if (removableRange == null) {
             if (other.removableRange != null) {
                 return false;
@@ -164,7 +146,6 @@ public class KVAdminMessage implements IKVAdminMessage {
         private StatusType status;
         private RingMetadata ringMetadata;
         private RingMetadataPart targetServerInfo;
-        private HashRangesWithRoles rangesWithRoles;
         private ServerConnectionInfos replicaConnectionInfos;
         private HashRange removableRange;
         private String responseMessage;
@@ -181,11 +162,6 @@ public class KVAdminMessage implements IKVAdminMessage {
 
         public Builder targetServerInfo(RingMetadataPart targetServerInfo) {
             this.targetServerInfo = targetServerInfo;
-            return this;
-        }
-
-        public Builder rangesWithRoles(HashRangesWithRoles rangesWithRoles) {
-            this.rangesWithRoles = rangesWithRoles;
             return this;
         }
 
@@ -208,7 +184,4 @@ public class KVAdminMessage implements IKVAdminMessage {
             return new KVAdminMessage(this);
         }
     }
-
-
-
 }
