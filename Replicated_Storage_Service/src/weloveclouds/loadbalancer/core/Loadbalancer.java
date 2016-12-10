@@ -15,16 +15,13 @@ import weloveclouds.loadbalancer.services.HealthMonitoringService;
 public class Loadbalancer implements ILoadbalancer {
     private ClientRequestInterceptorService clientRequestHandler;
     private HealthMonitoringService healthMonitoringService;
-    private DistributedSystemAccessService distributedSystemAccessService;
     private EcsNotificationService ecsNotificationService;
 
     @Inject
     public Loadbalancer(ClientRequestInterceptorService clientRequestHandler,
-                        DistributedSystemAccessService distributedSystemAccessService,
                         HealthMonitoringService healthMonitoringService,
                         EcsNotificationService ecsNotificationService) {
         this.clientRequestHandler = clientRequestHandler;
-        this.distributedSystemAccessService = distributedSystemAccessService;
         this.healthMonitoringService = healthMonitoringService;
         this.ecsNotificationService = ecsNotificationService;
     }
