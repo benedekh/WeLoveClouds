@@ -19,8 +19,8 @@ import static weloveclouds.commons.serialization.models.SerializationConstants.O
 /**
  * Created by Benoit on 2016-12-09.
  */
-public class RingTopologyDeserializer<T extends AbstractNode> implements IDeserializer<RingTopology<T>,
-        String> {
+public class RingTopologyDeserializer<T extends AbstractNode>
+        implements IDeserializer<RingTopology<T>, String> {
     private IDeserializer<T, String> nodeDeserializer;
 
     @Inject

@@ -26,9 +26,11 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
     IDeserializer<NodeHealthInfos, String> nodeHealthInfosDeserializer;
 
     @Inject
-    public StorageNodeDeserializer(IDeserializer<ServerConnectionInfo, String> serverConnectionInfoDeserializer,
+    public StorageNodeDeserializer(IDeserializer<ServerConnectionInfo, String>
+                                           serverConnectionInfoDeserializer,
                                    IDeserializer<HashRange, String> hashRangeDeserializer,
-                                   IDeserializer<NodeHealthInfos, String> nodeHealthInfosDeserializer) {
+                                   IDeserializer<NodeHealthInfos, String>
+                                           nodeHealthInfosDeserializer) {
         this.serverConnectionInfoDeserializer = serverConnectionInfoDeserializer;
         this.hashRangeDeserializer = hashRangeDeserializer;
         this.nodeHealthInfosDeserializer = nodeHealthInfosDeserializer;
@@ -39,7 +41,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         StorageNode storageNode;
         try {
             storageNode = new StorageNode.Builder()
-                    .id(deserializeNameFrom(serializedNode))
+                    .name(deserializeNameFrom(serializedNode))
                     .hashRange(deserializeHashRange(serializedNode))
                     .childHashranges(deserializeChildHashRanges(serializedNode))
                     .replicas(deserializeReplica(serializedNode))
@@ -96,15 +98,18 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         }
     }
 
-    private List<HashRange> deserializeChildHashRanges(String serializedNode) throws DeserializationException {
-        Matcher childHashRangesMatcher = getRegexFromToken(CHILD_HASH_RANGES).matcher(serializedNode);
+    private List<HashRange> deserializeChildHashRanges(String serializedNode)
+            throws DeserializationException {
+        Matcher childHashRangesMatcher = getRegexFromToken(CHILD_HASH_RANGES)
+                .matcher(serializedNode);
         List<HashRange> childHashRangeList = new ArrayList<>();
 
         if (childHashRangesMatcher.find()) {
             Matcher childHashRangeMatcher = getRegexFromToken(CHILD_HASH_RANGE).matcher
                     (childHashRangesMatcher.group(XML_NODE));
             while (childHashRangeMatcher.find()) {
-                childHashRangeList.add(hashRangeDeserializer.deserialize(childHashRangeMatcher.group(XML_NODE)));
+                childHashRangeList.add(hashRangeDeserializer
+                        .deserialize(childHashRangeMatcher.group(XML_NODE)));
             }
         } else {
             throw new DeserializationException("Unable to deserialize child hash range from : " +
@@ -113,16 +118,19 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         return childHashRangeList;
     }
 
-    private List<StorageNode> deserializeReplica(String serializedNode) throws DeserializationException {
+    private List<StorageNode> deserializeReplica(String serializedNode)
+            throws DeserializationException {
         Matcher replicasMatcher = getRegexFromToken(REPLICAS).matcher(serializedNode);
         List<StorageNode> replicaList = new ArrayList<>();
 
         if (replicasMatcher.find()) {
-            Matcher replicaMatcher = getRegexFromToken(REPLICA).matcher(replicasMatcher.group(XML_NODE));
+            Matcher replicaMatcher = getRegexFromToken(REPLICA)
+                    .matcher(replicasMatcher.group(XML_NODE));
             while (replicaMatcher.find()) {
                 String serializedReplica = replicaMatcher.group(XML_NODE);
                 replicaList.add(new StorageNode.Builder()
-                        .serverConnectionInfo(serverConnectionInfoDeserializer.deserialize(serializedReplica))
+                        .serverConnectionInfo(serverConnectionInfoDeserializer
+                                .deserialize(serializedReplica))
                         .build());
             }
         } else {

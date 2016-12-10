@@ -86,7 +86,7 @@ public abstract class AbstractRetryableTask {
         } catch (Exception e) {
             numberOfAttempt++;
             if (numberOfAttempt < maxNumberOfRetries) {
-                throw new RetryableException("Task id: " + id + " Retry attempt: " + numberOfAttempt +
+                throw new RetryableException("Task name: " + id + " Retry attempt: " + numberOfAttempt +
                         " on: " + maxNumberOfRetries + " will retry with cause: " + e.getMessage(), e);
             } else {
                 runFailCommand();
@@ -97,7 +97,7 @@ public abstract class AbstractRetryableTask {
     }
 
     public String toString() {
-        return CustomStringJoiner.join(" ", Arrays.asList("Task id:", id, "Command:", command
+        return CustomStringJoiner.join(" ", Arrays.asList("Task name:", id, "Command:", command
                 .toString(), "Status:", status.name()));
     }
 }

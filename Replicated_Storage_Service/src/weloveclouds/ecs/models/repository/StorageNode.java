@@ -29,7 +29,7 @@ public class StorageNode extends AbstractNode {
     private StorageNode(Builder storageNodeBuilder) {
         this.status = IDLE;
         this.metadataStatus = UNSYNCHRONIZED;
-        this.id = storageNodeBuilder.id;
+        this.name = storageNodeBuilder.name;
         this.serverConnectionInfo = storageNodeBuilder.serverConnectionInfo;
         this.hashKey = storageNodeBuilder.hashKey;
         this.hashRange = storageNodeBuilder.hashRange;
@@ -40,7 +40,7 @@ public class StorageNode extends AbstractNode {
 
         if (storageNodeBuilder.healthInfos == null) {
             this.healthInfos = new NodeHealthInfos.Builder()
-                    .serverName(id)
+                    .serverName(name)
                     .serverConnectionInfo(serverConnectionInfo)
                     .numberOfActiveConnections(NO_CONNECTION)
                     .build();
@@ -131,7 +131,7 @@ public class StorageNode extends AbstractNode {
     }
 
     public static class Builder {
-        private String id;
+        private String name;
         private ServerConnectionInfo serverConnectionInfo;
         private ServerConnectionInfo ecsChannelConnectionInfo;
         private NodeHealthInfos healthInfos;
@@ -146,8 +146,8 @@ public class StorageNode extends AbstractNode {
             this.childHashranges = new ArrayList<>();
         }
 
-        public Builder id(String id) {
-            this.id = id;
+        public Builder name(String name) {
+            this.name = name;
             return this;
         }
 

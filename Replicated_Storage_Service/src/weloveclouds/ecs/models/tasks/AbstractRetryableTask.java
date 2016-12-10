@@ -124,7 +124,7 @@ public abstract class AbstractRetryableTask {
     }
 
     public String toString() {
-        return CustomStringJoiner.join(" ", Arrays.asList("Task id:", id, "Command:", command
+        return CustomStringJoiner.join(" ", Arrays.asList("Task name:", id, "Command:", command
                 .toString(), "Status:", status.name()));
     }
 }

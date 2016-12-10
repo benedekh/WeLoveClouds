@@ -1,7 +1,5 @@
 package weloveclouds.ecs.models.repository;
 
-import java.util.List;
-
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
@@ -10,18 +8,18 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
  * Created by Benoit on 2016-12-09.
  */
 public abstract class AbstractNode {
-    protected String id;
+    protected String name;
     protected ServerConnectionInfo serverConnectionInfo;
     protected ServerConnectionInfo ecsChannelConnectionInfo;
     protected NodeHealthInfos healthInfos;
     protected Hash hashKey;
 
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public ServerConnectionInfo getServerConnectionInfo() {

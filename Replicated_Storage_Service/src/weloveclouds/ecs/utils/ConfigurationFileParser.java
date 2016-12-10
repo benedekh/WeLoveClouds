@@ -52,7 +52,7 @@ public class ConfigurationFileParser implements IParser<List<StorageNode>, File>
                             .port(Integer.parseInt(matcher.group("port")))
                             .build();
                     storageNode = new StorageNode.Builder()
-                            .id(matcher.group("name"))
+                            .name(matcher.group("name"))
                             .serverConnectionInfo(serverConnectionInfo)
                             .build();
                 }

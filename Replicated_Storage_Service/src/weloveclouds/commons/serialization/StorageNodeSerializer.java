@@ -49,7 +49,7 @@ public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, Stora
     @Override
     public AbstractXMLNode serialize(StorageNode nodeToSerialize) {
         return new XMLRootNode.Builder().token(NODE)
-                .addInnerNode(new XMLNode(NAME, nodeToSerialize.getId()))
+                .addInnerNode(new XMLNode(NAME, nodeToSerialize.getName()))
                 .addInnerNode(new XMLNode(SERVER_CONNECTION, serverConnectionInfoISerializer
                         .serialize(nodeToSerialize.getServerConnectionInfo())))
                 .addInnerNode(new XMLNode(HASH_KEY, hashSerializer
