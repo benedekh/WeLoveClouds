@@ -11,7 +11,6 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.commons.serialization.models.SerializationConstants.CHILD_HASH_RANGES_GROUP;
@@ -22,14 +21,8 @@ import static weloveclouds.commons.serialization.models.SerializationConstants.H
 import static weloveclouds.commons.serialization.models.SerializationConstants.HASH_RANGE_REGEX;
 import static weloveclouds.commons.serialization.models.SerializationConstants.NAME_GROUP;
 import static weloveclouds.commons.serialization.models.SerializationConstants.NAME_REGEX;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_END_TOKEN;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_GROUP;
 import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_HEALTH_INFOS_GROUP;
 import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_HEALTH_INFOS_REGEX;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_REGEX;
-import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_START_TOKEN;
-import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES_GROUP;
-import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES_REGEX;
 import static weloveclouds.commons.serialization.models.SerializationConstants.REPLICAS_GROUP;
 import static weloveclouds.commons.serialization.models.SerializationConstants.REPLICAS_REGEX;
 import static weloveclouds.commons.serialization.models.SerializationConstants.REPLICA_GROUP;
@@ -61,15 +54,16 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
             storageNode = new StorageNode.Builder()
                     .id(deserializeNameFrom(serializedNode))
                     .hashRange(deserializeHashRange(serializedNode))
-                    .childHashranges(null)
-                    .replicas(null)
+                    .childHashranges(deserializeChildHashRanges(serializedNode))
+                    .replicas(deserializeReplica(serializedNode))
                     .healthInfos(deserializeHealthInfos(serializedNode))
                     .serverConnectionInfo(deserializeServerConnectionInfoFrom(serializedNode))
                     .build();
         } catch (Exception e) {
-            //throw log
+            throw new DeserializationException("Unable to deserialize storage node from: " +
+                    serializedNode + " With cause: " + e.getMessage());
         }
-        return null;
+        return storageNode;
     }
 
     private String deserializeNameFrom(String serializedNode) throws DeserializationException {
@@ -121,14 +115,9 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         List<HashRange> childHashRangeList = new ArrayList<>();
 
         if (childHashRangesMatcher.find()) {
-            String childHashRanges = childHashRangesMatcher.group(CHILD_HASH_RANGES_GROUP);
-            Matcher childHashRangeMatcher = CHILD_HASH_RANGE_REGEX.matcher(childHashRanges);
-
-            while (childHashRangeMatcher.matches()) {
-                String serializedChildHashRange = childHashRangeMatcher.group(CHILD_HASH_RANGE_GROUP);
-                childHashRangeList.add(hashRangeDeserializer.deserialize(serializedChildHashRange));
-                childHashRanges = childHashRanges.replace(serializedChildHashRange, "");
-                childHashRangeMatcher = CHILD_HASH_RANGE_REGEX.matcher(childHashRanges);
+            Matcher childHashRangeMatcher = CHILD_HASH_RANGE_REGEX.matcher(childHashRangesMatcher.group(CHILD_HASH_RANGES_GROUP));
+            while (childHashRangeMatcher.find()) {
+                childHashRangeList.add(hashRangeDeserializer.deserialize(childHashRangeMatcher.group(CHILD_HASH_RANGE_GROUP)));
             }
         } else {
             throw new DeserializationException("Unable to deserialize child hash range from : " +
@@ -137,19 +126,17 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         return childHashRangeList;
     }
 
-    private List<ServerConnectionInfo> deserializeReplica(String serializedNode) throws DeserializationException{
+    private List<StorageNode> deserializeReplica(String serializedNode) throws DeserializationException {
         Matcher replicasMatcher = REPLICAS_REGEX.matcher(serializedNode);
-        List<ServerConnectionInfo> replicaList = new ArrayList<>();
+        List<StorageNode> replicaList = new ArrayList<>();
 
         if (replicasMatcher.find()) {
-            String replicas = replicasMatcher.group(REPLICAS_GROUP);
-            Matcher replicaMatcher = REPLICA_REGEX.matcher(replicas);
-
-            while (replicaMatcher.matches()) {
+            Matcher replicaMatcher = REPLICA_REGEX.matcher(replicasMatcher.group(REPLICAS_GROUP));
+            while (replicaMatcher.find()) {
                 String serializedReplica = replicaMatcher.group(REPLICA_GROUP);
-                replicaList.add(serverConnectionInfoDeserializer.deserialize(serializedReplica));
-                replicas = replicas.replace(serializedReplica, "");
-                replicaMatcher = REPLICA_REGEX.matcher(replicas);
+                replicaList.add(new StorageNode.Builder()
+                        .serverConnectionInfo(serverConnectionInfoDeserializer.deserialize(serializedReplica))
+                        .build());
             }
         } else {
             throw new DeserializationException("Unable to deserialize replica from : " +

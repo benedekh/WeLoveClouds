@@ -11,8 +11,10 @@ import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 
+import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_END_TOKEN;
 import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_GROUP;
 import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_REGEX;
+import static weloveclouds.commons.serialization.models.SerializationConstants.NODE_START_TOKEN;
 import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES_GROUP;
 import static weloveclouds.commons.serialization.models.SerializationConstants.ORDERED_NODES_REGEX;
 
@@ -33,25 +35,17 @@ public class RingTopologyDeserializer<T extends AbstractNode> implements IDeseri
             DeserializationException {
         Matcher orderedNodes = ORDERED_NODES_REGEX.matcher(serializedRingTopology);
         List<T> nodesList = new ArrayList<>();
-        RingTopology<T> ringTopology;
 
         if (orderedNodes.find()) {
-            String nodes = orderedNodes.group(ORDERED_NODES_GROUP);
-            Matcher nodeMatcher = NODE_REGEX.matcher(nodes);
-
-            while (nodeMatcher.matches()) {
-                String serializedNode = nodeMatcher.group(NODE_GROUP);
-                nodesList.add(nodeDeserializer.deserialize(serializedNode));
-                nodes = nodes.replace(serializedNode, "");
-                nodeMatcher = NODE_REGEX.matcher(nodes);
+            Matcher nodeMatcher = NODE_REGEX.matcher(orderedNodes.group(ORDERED_NODES_GROUP));
+            while (nodeMatcher.find()) {
+                nodesList.add(nodeDeserializer.deserialize(nodeMatcher.group(NODE_GROUP)));
             }
-
-            ringTopology = new RingTopology<>(nodesList);
         } else {
             throw new DeserializationException("Unable to deserialize ring topology: " +
                     serializedRingTopology);
         }
-        return ringTopology;
+        return new RingTopology<>(nodesList);
     }
 
 

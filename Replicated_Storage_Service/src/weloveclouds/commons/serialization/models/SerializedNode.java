@@ -61,6 +61,11 @@ public class SerializedNode {
         private String serializedChildHashRanges;
         private String serializedHealthInfos;
 
+        public Builder() {
+            this.serializedReplicas = "";
+            this.serializedChildHashRanges = "";
+        }
+
         public Builder serializedName(String serializedName) {
             this.serializedName = serializedName;
             return this;

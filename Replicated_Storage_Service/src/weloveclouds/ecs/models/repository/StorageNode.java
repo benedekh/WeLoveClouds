@@ -34,10 +34,19 @@ public class StorageNode extends AbstractNode {
         this.hashKey = storageNodeBuilder.hashKey;
         this.hashRange = storageNodeBuilder.hashRange;
         this.ecsChannelConnectionInfo = storageNodeBuilder.ecsChannelConnectionInfo;
-        this.healthInfos = storageNodeBuilder.healthInfos;
         this.replicas = storageNodeBuilder.replicas;
         this.childHashranges = storageNodeBuilder.childHashranges;
         this.previousHashRange = storageNodeBuilder.previousHashRange;
+
+        if (storageNodeBuilder.healthInfos == null) {
+            this.healthInfos = new NodeHealthInfos.Builder()
+                    .serverName(id)
+                    .serverConnectionInfo(serverConnectionInfo)
+                    .numberOfActiveConnections(NO_CONNECTION)
+                    .build();
+        } else {
+            this.healthInfos = storageNodeBuilder.healthInfos;
+        }
     }
 
 
@@ -135,11 +144,6 @@ public class StorageNode extends AbstractNode {
         public Builder() {
             this.replicas = new ArrayList<>();
             this.childHashranges = new ArrayList<>();
-            this.healthInfos = new NodeHealthInfos.Builder()
-                    .serverName(id)
-                    .serverConnectionInfo(serverConnectionInfo)
-                    .numberOfActiveConnections(NO_CONNECTION)
-                    .build();
         }
 
         public Builder id(String id) {

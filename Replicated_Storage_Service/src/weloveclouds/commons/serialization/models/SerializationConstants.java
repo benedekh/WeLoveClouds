@@ -26,8 +26,8 @@ public class SerializationConstants {
     public static final String HASH_RANGE_END_TOKEN = "</HASH_RANGE>";
     public static final String CHILD_HASH_RANGES_START_TOKEN = "<CHILD_HASH_RANGES>";
     public static final String CHILD_HASH_RANGES_END_TOKEN = "</CHILD_HASH_RANGES>";
-    public static final String CHILD_HASH_RANGE_START_TOKEN = "<CHILD_HASH_RANGES>";
-    public static final String CHILD_HASH_RANGE_END_TOKEN = "</CHILD_HASH_RANGES>";
+    public static final String CHILD_HASH_RANGE_START_TOKEN = "<CHILD_HASH_RANGE>";
+    public static final String CHILD_HASH_RANGE_END_TOKEN = "</CHILD_HASH_RANGE>";
     public static final String NODE_HEALTH_INFOS_START_TOKEN = "<HEALTH_INFOS>";
     public static final String NODE_HEALTH_INFOS_END_TOKEN = "</HEALTH_INFOS>";
     public static final String REPLICAS_START_TOKEN = "<REPLICAS>";
@@ -50,31 +50,26 @@ public class SerializationConstants {
 
 
     public static final Pattern NODE_HEALTH_INFOS_REGEX = Pattern.compile
-            (NODE_HEALTH_INFOS_START_TOKEN + "(?<nodeHealthInfos>.+)" + NODE_HEALTH_INFOS_END_TOKEN);
+            (NODE_HEALTH_INFOS_START_TOKEN + "(?<nodeHealthInfos>.+?)" + NODE_HEALTH_INFOS_END_TOKEN);
     public static final Pattern SERVER_CONNECTION_INFOS_REGEX = Pattern.compile
-            (SERVER_CONNECTION_START_TOKEN + "(?<serverConnection>.+)" + SERVER_CONNECTION_END_TOKEN);
+            (SERVER_CONNECTION_START_TOKEN + "(?<serverConnection>.+?)" + SERVER_CONNECTION_END_TOKEN);
     public static final Pattern NAME_REGEX = Pattern.compile
-            (NAME_START_TOKEN + "(?<name>.+)" + NAME_END_TOKEN);
+            (NAME_START_TOKEN + "(?<name>.+?)" + NAME_END_TOKEN);
     public static final Pattern ACTIVE_NUMBER_OF_CONNECTIONS_REGEX = Pattern.compile
-            (ACTIVE_CONNECTIONS_START_TOKEN + "(?<activeConnections>.+)" +
-                    ACTIVE_CONNECTIONS_END_TOKEN);
+            (ACTIVE_CONNECTIONS_START_TOKEN + "(?<activeConnections>.+?)" + ACTIVE_CONNECTIONS_END_TOKEN);
     public static final Pattern ORDERED_NODES_REGEX = Pattern.compile
             (ORDERED_NODES_START_TOKEN + "(?<orderedNodes>.+)" + ORDERED_NODES_END_TOKEN);
     public static final Pattern NODE_REGEX = Pattern.compile
-            ("^" + NODE_START_TOKEN + "(?<node>((?!NODE).)*)" + NODE_END_TOKEN + ".*");
+            (NODE_START_TOKEN + "(?<node>.+?)" + NODE_END_TOKEN);
     public static final Pattern HASH_RANGE_REGEX = Pattern.compile
-            (HASH_RANGE_START_TOKEN + "(?<hashRange>.+)" + HASH_RANGE_END_TOKEN);
+            (HASH_RANGE_START_TOKEN + "(?<hashRange>.+?)" + HASH_RANGE_END_TOKEN);
     public static final Pattern CHILD_HASH_RANGES_REGEX = Pattern.compile
-            (CHILD_HASH_RANGES_START_TOKEN + "(?<childHashRanges>.+)" +
-                    CHILD_HASH_RANGES_END_TOKEN);
+            (CHILD_HASH_RANGES_START_TOKEN + "(?<childHashRanges>.+?)" + CHILD_HASH_RANGES_END_TOKEN);
     public static final Pattern CHILD_HASH_RANGE_REGEX = Pattern.compile
-            ("^" + CHILD_HASH_RANGE_START_TOKEN + "(?<childHashRange>.+)" +
-                    CHILD_HASH_RANGE_END_TOKEN + ".*");
+            (CHILD_HASH_RANGE_START_TOKEN + "(?<childHashRange>.+?)" + CHILD_HASH_RANGE_END_TOKEN);
     public static final Pattern REPLICAS_REGEX = Pattern.compile
-            (REPLICAS_START_TOKEN + "(?<replicas>.+)" +
-                    REPLICAS_END_TOKEN);
+            (REPLICAS_START_TOKEN + "(?<replicas>.+?)" + REPLICAS_END_TOKEN);
     public static final Pattern REPLICA_REGEX = Pattern.compile
-            ("^" + REPLICA_START_TOKEN + "(?<replica>.+)" +
-                    REPLICA_END_TOKEN + ".*");
+            (REPLICA_START_TOKEN + "(?<replica>.+?)" + REPLICA_END_TOKEN);
 
 }
