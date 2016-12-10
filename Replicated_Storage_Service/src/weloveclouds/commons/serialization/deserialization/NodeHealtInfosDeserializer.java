@@ -35,8 +35,10 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         try {
             nodeHealthInfos = new NodeHealthInfos.Builder()
                     .serverName(deserializeName(serializedNodeHealthInfos))
-                    .serverConnectionInfo(deserializeServerConnectionInfo(serializedNodeHealthInfos))
-                    .numberOfActiveConnections(deserializeActiveConnectionNumber(serializedNodeHealthInfos))
+                    .serverConnectionInfo(
+                            deserializeServerConnectionInfo(serializedNodeHealthInfos))
+                    .numberOfActiveConnections(
+                            deserializeActiveConnectionNumber(serializedNodeHealthInfos))
                     .build();
         } catch (Exception e) {
             throw new DeserializationException("Unable to deserialize node health info: " +
@@ -62,8 +64,7 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
 
     private ServerConnectionInfo deserializeServerConnectionInfo(String serializedNodeHealthInfos)
             throws DeserializationException {
-        Matcher matcher = getRegexFromToken(SERVER_CONNECTION).matcher
-                (serializedNodeHealthInfos);
+        Matcher matcher = getRegexFromToken(SERVER_CONNECTION).matcher(serializedNodeHealthInfos);
         ServerConnectionInfo deserializedServerConnectionInfo;
 
         if (matcher.find()) {
