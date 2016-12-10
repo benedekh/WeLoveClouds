@@ -22,12 +22,14 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
     IDeserializer<ServerConnectionInfo, String> serverConnectionInfoStringDeserializer;
 
     @Inject
-    public NodeHealtInfosDeserializer(IDeserializer<ServerConnectionInfo, String> serverConnectionInfoStringDeserializer) {
+    public NodeHealtInfosDeserializer(IDeserializer<ServerConnectionInfo, String>
+                                              serverConnectionInfoStringDeserializer) {
         this.serverConnectionInfoStringDeserializer = serverConnectionInfoStringDeserializer;
     }
 
     @Override
-    public NodeHealthInfos deserialize(String serializedNodeHealthInfos) throws DeserializationException {
+    public NodeHealthInfos deserialize(String serializedNodeHealthInfos)
+            throws DeserializationException {
         NodeHealthInfos nodeHealthInfos;
 
         try {
@@ -44,7 +46,8 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         return nodeHealthInfos;
     }
 
-    private String deserializeName(String serializedNodeHealthInfos) throws DeserializationException {
+    private String deserializeName(String serializedNodeHealthInfos)
+            throws DeserializationException {
         Matcher matcher = getRegexFromToken(NAME).matcher(serializedNodeHealthInfos);
         String deserializedName;
 
@@ -57,13 +60,15 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         return deserializedName;
     }
 
-    private ServerConnectionInfo deserializeServerConnectionInfo(String serializedNodeHealthInfos) throws DeserializationException {
+    private ServerConnectionInfo deserializeServerConnectionInfo(String serializedNodeHealthInfos)
+            throws DeserializationException {
         Matcher matcher = getRegexFromToken(SERVER_CONNECTION).matcher
                 (serializedNodeHealthInfos);
         ServerConnectionInfo deserializedServerConnectionInfo;
 
         if (matcher.find()) {
-            deserializedServerConnectionInfo = serverConnectionInfoStringDeserializer.deserialize(matcher.group(XML_NODE));
+            deserializedServerConnectionInfo = serverConnectionInfoStringDeserializer
+                    .deserialize(matcher.group(XML_NODE));
         } else {
             throw new DeserializationException("Unable to deserialize server connection info " +
                     "from node health infos: " + serializedNodeHealthInfos);
@@ -71,7 +76,8 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
         return deserializedServerConnectionInfo;
     }
 
-    private int deserializeActiveConnectionNumber(String serializedNodeHealthInfos) throws DeserializationException {
+    private int deserializeActiveConnectionNumber(String serializedNodeHealthInfos)
+            throws DeserializationException {
         Matcher matcher = getRegexFromToken(ACTIVE_CONNECTIONS).matcher(serializedNodeHealthInfos);
         int deserializedNumberOfActiveConnections;
 

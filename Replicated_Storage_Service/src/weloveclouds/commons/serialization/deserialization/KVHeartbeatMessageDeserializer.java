@@ -38,7 +38,8 @@ public class KVHeartbeatMessageDeserializer implements
 
         try {
             if (matcher.find()) {
-                nodeHealthInfos = healthInfosStringDeserializer.deserialize(matcher.group(XML_NODE));
+                nodeHealthInfos = healthInfosStringDeserializer
+                        .deserialize(matcher.group(XML_NODE));
             }
         } catch (Exception e) {
             throw new DeserializationException("Unable to deserialize message: " + new String
@@ -48,7 +49,8 @@ public class KVHeartbeatMessageDeserializer implements
     }
 
     @Override
-    public KVHearthbeatMessage deserialize(byte[] serializedMessage) throws DeserializationException {
+    public KVHearthbeatMessage deserialize(byte[] serializedMessage)
+            throws DeserializationException {
         return deserialize(new SerializedMessage(new String(serializedMessage, MESSAGE_ENCODING)));
     }
 }
