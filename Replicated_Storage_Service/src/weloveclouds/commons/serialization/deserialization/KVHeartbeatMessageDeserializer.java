@@ -21,12 +21,12 @@ import static weloveclouds.commons.serialization.models.XMLTokens.NODE_HEALTH_IN
  */
 public class KVHeartbeatMessageDeserializer implements
         IMessageDeserializer<KVHearthbeatMessage, SerializedMessage> {
-    private IDeserializer<NodeHealthInfos, String> healthInfosStringDeserializer;
+    private IDeserializer<NodeHealthInfos, String> healthInfosDeserializer;
 
     @Inject
     public KVHeartbeatMessageDeserializer(IDeserializer<NodeHealthInfos, String>
-                                                  healthInfosStringDeserializer) {
-        this.healthInfosStringDeserializer = healthInfosStringDeserializer;
+                                                  healthInfosDeserializer) {
+        this.healthInfosDeserializer = healthInfosDeserializer;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class KVHeartbeatMessageDeserializer implements
 
         try {
             if (matcher.find()) {
-                nodeHealthInfos = healthInfosStringDeserializer
+                nodeHealthInfos = healthInfosDeserializer
                         .deserialize(matcher.group(XML_NODE));
             }
         } catch (Exception e) {
