@@ -9,7 +9,7 @@ import weloveclouds.commons.serialization.models.XMLRootNode;
 import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
-import static weloveclouds.commons.serialization.models.XMLTokens.KVHEARTHBEAT_MESSAGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.KVHEARTBEAT_MESSAGE;
 
 /**
  * Created by Benoit on 2016-12-09.
@@ -27,7 +27,7 @@ public class KVHeartbeatMessageSerializer implements
     @Override
     public SerializedMessage serialize(KVHeartbeatMessage unserializedMessage) {
         return new SerializedMessage(new XMLRootNode.Builder()
-                .token(KVHEARTHBEAT_MESSAGE)
+                .token(KVHEARTBEAT_MESSAGE)
                 .addInnerNode(nodeHealthInfosSerializer
                         .serialize(unserializedMessage.getNodeHealthInfos()))
                 .build()

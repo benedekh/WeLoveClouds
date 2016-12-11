@@ -5,7 +5,7 @@ package weloveclouds.commons.serialization.models;
  */
 public class XMLTokens {
     public static final String ACTIVE_CONNECTIONS = "ACTIVE_CONNECTIONS";
-    public static final String KVHEARTHBEAT_MESSAGE = "KVHEARTHBEAT_MESSAGE";
+    public static final String KVHEARTBEAT_MESSAGE = "KVHEARTBEAT_MESSAGE";
     public static final String TOPOLOGY = "TOPOLOGY";
     public static final String ORDERED_NODES = "ORDERED_NODES";
     public static final String NODE = "NODE";
