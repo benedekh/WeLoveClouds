@@ -1,7 +1,7 @@
 package weloveclouds.client.utils;
 
+import weloveclouds.client.commands.ClientCommand;
 import weloveclouds.commons.cli.utils.AbstractUserInputParser;
-import weloveclouds.client.models.commands.ClientCommand;
 
 /**
  * Created by Benoit on 2016-11-20.
