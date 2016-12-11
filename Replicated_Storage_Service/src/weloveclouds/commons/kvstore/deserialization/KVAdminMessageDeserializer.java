@@ -16,13 +16,13 @@ import weloveclouds.commons.kvstore.deserialization.helper.HashRangeDeserializer
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataPartDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfosSetDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.deserialization.helper.ServerConnectionInfosSetDeserializer;
 
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link KVAdminMessage}.

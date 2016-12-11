@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.deserialization.helper;
+package weloveclouds.commons.kvstore.deserialization.helper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,9 +7,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.deserialization.helper.HashRangeDeserializer;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.kvstore.serialization.helper.HashRangesSetSerializer;
+import weloveclouds.commons.kvstore.serialization.helper.HashRangesSetSerializer;
 
 /**
  * A deserializer which converts a {@link Set<HashRange>} to a {@link String}.

@@ -10,7 +10,6 @@ import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataPartSerializer;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.deserialization.helper.HashRangesSetDeserializer;
 
 /**
  * A deserializer which converts a {@link RingMetadataPart} to a {@link String}.

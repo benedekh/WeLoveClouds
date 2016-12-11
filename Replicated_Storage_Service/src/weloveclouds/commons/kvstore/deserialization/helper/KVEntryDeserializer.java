@@ -1,12 +1,11 @@
-package weloveclouds.kvstore.deserialization.helper;
+package weloveclouds.commons.kvstore.deserialization.helper;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.kvstore.serialization.helper.KVEntrySerializer;
+import weloveclouds.commons.kvstore.serialization.helper.KVEntrySerializer;
 
 /**
  * A deserializer which converts a {@link KVEntry} to a {@link String}.

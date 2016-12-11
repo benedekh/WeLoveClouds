@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.deserialization.helper;
+package weloveclouds.commons.kvstore.deserialization.helper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,10 +6,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfoDeserializer;
+import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfosSetSerializer;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.serialization.helper.ServerConnectionInfosSetSerializer;
 
 /**
  * A deserializer which converts a {@link Set<ServerConnectionInfo>} to a {@link String}.

@@ -8,10 +8,10 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.KVEntryDeserializer;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
-import weloveclouds.kvstore.deserialization.helper.KVEntryDeserializer;
-import weloveclouds.kvstore.serialization.helper.KVEntrySerializer;
+import weloveclouds.commons.kvstore.serialization.helper.KVEntrySerializer;
 
 /**
  * Tests for the {@link KVEntry} to verify its serialization and deserialization processes.

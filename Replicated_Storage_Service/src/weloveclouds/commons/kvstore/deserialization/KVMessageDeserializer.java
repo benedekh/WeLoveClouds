@@ -8,13 +8,13 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.KVEntryDeserializer;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.kvstore.deserialization.helper.KVEntryDeserializer;
 
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link KVMessage}.

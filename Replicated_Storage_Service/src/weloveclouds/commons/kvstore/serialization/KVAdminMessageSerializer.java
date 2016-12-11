@@ -14,10 +14,10 @@ import weloveclouds.commons.kvstore.serialization.helper.HashRangeSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataPartSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
+import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfosSetSerializer;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.serialization.helper.ServerConnectionInfosSetSerializer;
 
 /**
  * A serializer which converts a {@link KVAdminMessage} to a {@link SerializedMessage}.

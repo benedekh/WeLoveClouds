@@ -8,7 +8,6 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.serialization.helper.HashRangesSetSerializer;
 
 /**
  * A serializer which converts a {@link RingMetadataPart} to a {@link String}.
