@@ -38,9 +38,8 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
 
     @Override
     public StorageNode deserialize(String serializedNode) throws DeserializationException {
-        StorageNode storageNode;
         try {
-            storageNode = new StorageNode.Builder()
+            return new StorageNode.Builder()
                     .name(deserializeNameFrom(serializedNode))
                     .hashRange(deserializeHashRangeFrom(serializedNode))
                     .childHashRanges(deserializeChildHashRangesFrom(serializedNode))
@@ -52,7 +51,6 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
             throw new DeserializationException("Unable to deserialize storage node from: " +
                     serializedNode + " With cause: " + e.getMessage());
         }
-        return storageNode;
     }
 
     private String deserializeNameFrom(String serializedNode) throws DeserializationException {
