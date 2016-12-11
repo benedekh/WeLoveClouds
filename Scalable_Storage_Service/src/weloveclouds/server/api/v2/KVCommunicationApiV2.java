@@ -8,11 +8,11 @@ import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.hashing.utils.HashingUtil;
-import weloveclouds.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
 /**

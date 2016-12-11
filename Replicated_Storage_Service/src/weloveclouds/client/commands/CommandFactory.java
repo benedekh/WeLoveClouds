@@ -7,9 +7,10 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.cli.models.ParsedUserInput;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It
@@ -25,13 +26,13 @@ public class CommandFactory {
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
 
     /**
-     * @param communicationApi an instance for the communication module for those commands which
-     *        need to communicate via the network
+     * @param communicationApi         an instance for the communication module for those commands
+     *                                 which need to communicate via the network
      * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object to
-     *        its original representation from String
+     *                                 its original representation from String
      */
     public CommandFactory(IKVCommunicationApiV2 communicationApi,
-            IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
+                          IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         this.communicationApi = communicationApi;
         this.ringMetadataDeserializer = ringMetadataDeserializer;
     }

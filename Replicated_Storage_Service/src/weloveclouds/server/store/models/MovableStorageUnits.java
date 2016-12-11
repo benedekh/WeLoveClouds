@@ -6,7 +6,7 @@ import java.util.Set;
 
 /**
  * Stores several {@link MovableStorageUnit}s.
- * 
+ *
  * @author Benedek
  */
 public class MovableStorageUnits {

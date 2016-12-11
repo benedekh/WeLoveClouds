@@ -1,9 +1,9 @@
-package weloveclouds.hashing.models;
+package weloveclouds.commons.hashing.models;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import weloveclouds.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
 /**
  * Stores <IP, port> and <hash-range> triplets, which defines respective server (denoted by its

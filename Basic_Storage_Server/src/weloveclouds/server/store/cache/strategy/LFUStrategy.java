@@ -9,7 +9,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.models.KeyFrequency;
+import weloveclouds.commons.kvstore.models.KeyFrequency;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**

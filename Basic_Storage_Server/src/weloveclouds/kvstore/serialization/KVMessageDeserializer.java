@@ -1,13 +1,13 @@
-package weloveclouds.kvstore.serialization;
+package weloveclouds.commons.kvstore.serialization;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.IKVMessage.StatusType;
-import weloveclouds.kvstore.models.KVMessage;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
+import weloveclouds.commons.kvstore.models.IKVMessage.StatusType;
+import weloveclouds.commons.kvstore.models.KVMessage;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.models.SerializedKVMessage;
 
 /**
  * An exact deserializer which converts a {@link SerializedKVMessage} to a {@link KVMessage}.

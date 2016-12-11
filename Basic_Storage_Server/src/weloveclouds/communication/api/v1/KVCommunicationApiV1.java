@@ -12,14 +12,14 @@ import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
-import weloveclouds.kvstore.models.IKVMessage;
-import weloveclouds.kvstore.models.IKVMessage.StatusType;
-import weloveclouds.kvstore.models.KVMessage;
-import weloveclouds.kvstore.serialization.IMessageDeserializer;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.KVMessageDeserializer;
-import weloveclouds.kvstore.serialization.KVMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
+import weloveclouds.commons.kvstore.models.IKVMessage;
+import weloveclouds.commons.kvstore.models.IKVMessage.StatusType;
+import weloveclouds.commons.kvstore.models.KVMessage;
+import weloveclouds.commons.kvstore.serialization.IMessageDeserializer;
+import weloveclouds.commons.kvstore.serialization.IMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.KVMessageDeserializer;
+import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.models.SerializedKVMessage;
 
 /**
  * First version implementation of the Key-value store communication API. Simply forwards the method

@@ -1,4 +1,4 @@
-package weloveclouds.server.core.requests;
+package weloveclouds.commons.networking.models.requests;
 
 /**
  * Common abstraction for the different request factories.

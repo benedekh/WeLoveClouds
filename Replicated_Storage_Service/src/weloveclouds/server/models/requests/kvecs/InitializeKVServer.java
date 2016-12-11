@@ -2,11 +2,11 @@ package weloveclouds.server.models.requests.kvecs;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 
@@ -66,7 +66,7 @@ public class InitializeKVServer implements IKVECSRequest {
 
     private KVAdminMessage createErrorKVAdminMessage(String errorMessage) {
         return new KVAdminMessage.Builder()
-                .status(weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR)
+                .status(weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR)
                 .responseMessage(errorMessage).build();
     }
 

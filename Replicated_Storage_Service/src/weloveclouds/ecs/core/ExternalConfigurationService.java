@@ -1,5 +1,7 @@
 package weloveclouds.ecs.core;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -13,6 +15,7 @@ import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.monitoring.statsd.IStatsdClient;
 import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
+import weloveclouds.ecs.contexts.EcsExecutionContext;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;
 import weloveclouds.ecs.exceptions.ServiceBootstrapException;
@@ -27,11 +30,17 @@ import weloveclouds.ecs.models.tasks.EcsBatchFactory;
 import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
 import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
 import weloveclouds.ecs.models.topology.RingTopology;
+import weloveclouds.commons.serialization.NodeHealthInfosSerializer;
+import weloveclouds.commons.serialization.RingTopologySerializer;
+import weloveclouds.commons.serialization.StorageNodeSerializer;
 import weloveclouds.ecs.services.ITaskService;
-import weloveclouds.ecs.utils.ListUtils;
+import weloveclouds.commons.utils.ListUtils;
 import weloveclouds.ecs.utils.RingMetadataHelper;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.kvstore.serialization.helper.HashRangeSerializer;
+import weloveclouds.commons.kvstore.serialization.helper.HashSerializer;
+import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 
 
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;
@@ -64,11 +73,14 @@ public class ExternalConfigurationService implements Observer {
     private EcsBatchFactory ecsBatchFactory;
     private DistributedService distributedService;
 
-    public ExternalConfigurationService(Builder externalConfigurationServiceBuilder) throws ServiceBootstrapException {
-        this.taskService = externalConfigurationServiceBuilder.taskService;
-        this.ecsRepositoryFactory = externalConfigurationServiceBuilder.ecsRepositoryFactory;
-        this.configurationFilePath = externalConfigurationServiceBuilder.configurationFilePath;
-        this.ecsBatchFactory = externalConfigurationServiceBuilder.ecsBatchFactory;
+    @Inject
+    public ExternalConfigurationService(ITaskService taskService,
+                                        EcsRepositoryFactory ecsRepositoryFactory,
+                                        EcsBatchFactory ecsBatchFactory) throws ServiceBootstrapException {
+        this.taskService = taskService;
+        this.ecsRepositoryFactory = ecsRepositoryFactory;
+        this.configurationFilePath = EcsExecutionContext.getConfigurationFilePath();
+        this.ecsBatchFactory = ecsBatchFactory;
         INITIAL_HASHRANGE = new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE)
                 .build();
         bootstrapConfiguration();
@@ -270,37 +282,6 @@ public class ExternalConfigurationService implements Observer {
             UserOutputWriter.getInstance().appendToLine(message);
         } catch (IOException ex) {
             //Log
-        }
-    }
-
-    public static class Builder {
-        private String configurationFilePath;
-        private EcsRepositoryFactory ecsRepositoryFactory;
-        private ITaskService taskService;
-        private EcsBatchFactory ecsBatchFactory;
-
-        public Builder taskService(ITaskService taskService) {
-            this.taskService = taskService;
-            return this;
-        }
-
-        public Builder ecsRepositoryFactory(EcsRepositoryFactory ecsRepositoryFactory) {
-            this.ecsRepositoryFactory = ecsRepositoryFactory;
-            return this;
-        }
-
-        public Builder ecsBatchFactory(EcsBatchFactory ecsBatchFactory) {
-            this.ecsBatchFactory = ecsBatchFactory;
-            return this;
-        }
-
-        public Builder configurationFilePath(String configurationFilePath) {
-            this.configurationFilePath = configurationFilePath;
-            return this;
-        }
-
-        public ExternalConfigurationService build() throws ServiceBootstrapException {
-            return new ExternalConfigurationService(this);
         }
     }
 }

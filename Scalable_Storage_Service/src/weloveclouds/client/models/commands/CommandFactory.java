@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It

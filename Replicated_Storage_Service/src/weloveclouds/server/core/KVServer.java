@@ -4,13 +4,8 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.server.models.configuration.KVServerPortContext;
-import weloveclouds.server.models.requests.kvclient.IKVClientRequest;
-import weloveclouds.server.models.requests.kvecs.IKVECSRequest;
-import weloveclouds.server.models.requests.kvserver.IKVServerRequest;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**
@@ -19,19 +14,19 @@ import weloveclouds.server.services.IMovableDataAccessService;
  * One server to serve requests coming from the KVClients.<br>
  * One server to serve requests coming from other KVServers.<br>
  * One server to serve requests coming from the KVECS.
- * 
+ *
  * @author Benedek
  */
 public class KVServer {
 
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
-    private Server<KVMessage, IKVClientRequest> kvClientRequestsServer;
-    private Server<KVTransferMessage, IKVServerRequest> kvServerRequestsServer;
-    private Server<KVAdminMessage, IKVECSRequest> kvECSRequestsServer;
+    private AbstractServer<?> kvClientRequestsServer;
+    private AbstractServer<?> kvServerRequestsServer;
+    private AbstractServer<?> kvECSRequestsServer;
 
     public KVServer(ServerFactory serverFactory, KVServerPortContext portConfiguration,
-            IMovableDataAccessService dataAccessService) throws IOException {
+                    IMovableDataAccessService dataAccessService) throws IOException {
         LOGGER.debug("Creating the servers for the different requests.");
         this.kvClientRequestsServer = serverFactory.createServerForKVClientRequests(
                 portConfiguration.getKVClientPort(), dataAccessService);

@@ -9,10 +9,10 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.kvstore.models.KVMessage;
-import weloveclouds.kvstore.serialization.IMessageDeserializer;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedKVMessage;
+import weloveclouds.commons.kvstore.models.KVMessage;
+import weloveclouds.commons.kvstore.serialization.IMessageDeserializer;
+import weloveclouds.commons.kvstore.serialization.IMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.models.SerializedKVMessage;
 import weloveclouds.server.models.requests.RequestFactory;
 
 /**

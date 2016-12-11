@@ -1,5 +1,7 @@
 package weloveclouds.ecs.models.commands.client;
 
+import com.google.inject.Inject;
+
 import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.ecs.api.IKVEcsApi;
 
@@ -10,6 +12,7 @@ import weloveclouds.ecs.api.IKVEcsApi;
 public class EcsClientCommandFactory {
     IKVEcsApi externalConfigurationServiceApi;
 
+    @Inject
     public EcsClientCommandFactory(IKVEcsApi externalConfigurationServiceApi) {
         this.externalConfigurationServiceApi = externalConfigurationServiceApi;
     }

@@ -1,6 +1,6 @@
-package weloveclouds.kvstore.serialization;
+package weloveclouds.commons.kvstore.serialization;
 
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 
 /**
  * A deserializer that can convert from type E to T, or from byte[] to T

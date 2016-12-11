@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.serialization.exceptions;
+package weloveclouds.commons.kvstore.deserialization.exceptions;
 
 /**
  * An exception which occured during deserialization.

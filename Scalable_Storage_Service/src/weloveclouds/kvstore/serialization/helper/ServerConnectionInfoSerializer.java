@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.serialization.helper;
+package weloveclouds.commons.kvstore.serialization.helper;
 
 import org.apache.log4j.Logger;
 

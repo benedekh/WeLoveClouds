@@ -8,14 +8,14 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.core.requests.IExecutable;
-import weloveclouds.server.core.requests.IRequestFactory;
-import weloveclouds.server.core.requests.IValidatable;
-import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.commons.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.commons.kvstore.serialization.IMessageSerializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.networking.models.requests.IExecutable;
+import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.networking.models.requests.IValidatable;
+import weloveclouds.commons.networking.exceptions.IllegalRequestException;
 
 /**
  * A handler for a client connected to the {@link Server}. It receives and interprets different
