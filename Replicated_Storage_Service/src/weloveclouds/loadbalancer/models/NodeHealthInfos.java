@@ -10,7 +10,7 @@ public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
     private ServerConnectionInfo serverConnectionInfo;
     private int numberOfActiveConnections;
 
-    private NodeHealthInfos(Builder nodeHealthInfosBuilder) {
+    protected NodeHealthInfos(Builder nodeHealthInfosBuilder) {
         this.serverName = nodeHealthInfosBuilder.serverName;
         this.serverConnectionInfo = nodeHealthInfosBuilder.serverConnectionInfo;
         this.numberOfActiveConnections = nodeHealthInfosBuilder.numberOfActiveConnections;
@@ -39,9 +39,9 @@ public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
     }
 
     public static class Builder {
-        ServerConnectionInfo serverConnectionInfo;
-        String serverName;
-        int numberOfActiveConnections;
+        private ServerConnectionInfo serverConnectionInfo;
+        private String serverName;
+        private int numberOfActiveConnections;
 
         public Builder serverConnectionInfo(ServerConnectionInfo serverConnectionInfo) {
             this.serverConnectionInfo = serverConnectionInfo;

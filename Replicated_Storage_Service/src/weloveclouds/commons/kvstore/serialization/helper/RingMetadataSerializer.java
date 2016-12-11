@@ -7,7 +7,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.hashing.models.RingMetadata;
-import weloveclouds.commons.hashing.models.RingMetadataPart;;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.client.utils.CustomStringJoiner;
 
 

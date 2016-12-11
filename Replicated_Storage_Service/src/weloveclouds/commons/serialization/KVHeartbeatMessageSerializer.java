@@ -6,7 +6,7 @@ import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
-import weloveclouds.loadbalancer.models.KVHearthbeatMessage;
+import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.commons.serialization.models.XMLTokens.KVHEARTHBEAT_MESSAGE;
@@ -15,7 +15,7 @@ import static weloveclouds.commons.serialization.models.XMLTokens.KVHEARTHBEAT_M
  * Created by Benoit on 2016-12-09.
  */
 public class KVHeartbeatMessageSerializer implements
-        IMessageSerializer<SerializedMessage, KVHearthbeatMessage> {
+        IMessageSerializer<SerializedMessage, KVHeartbeatMessage> {
     private ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosSerializer;
 
     @Inject
@@ -25,7 +25,7 @@ public class KVHeartbeatMessageSerializer implements
     }
 
     @Override
-    public SerializedMessage serialize(KVHearthbeatMessage unserializedMessage) {
+    public SerializedMessage serialize(KVHeartbeatMessage unserializedMessage) {
         return new SerializedMessage(new XMLRootNode.Builder()
                 .token(KVHEARTHBEAT_MESSAGE)
                 .addInnerNode(nodeHealthInfosSerializer

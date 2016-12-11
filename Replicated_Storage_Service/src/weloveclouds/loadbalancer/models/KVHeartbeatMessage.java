@@ -3,10 +3,10 @@ package weloveclouds.loadbalancer.models;
 /**
  * Created by Benoit on 2016-12-05.
  */
-public class KVHearthbeatMessage {
+public class KVHeartbeatMessage {
     private NodeHealthInfos serverHealthInfos;
 
-    public KVHearthbeatMessage(NodeHealthInfos serverHealthInfos) {
+    public KVHeartbeatMessage(NodeHealthInfos serverHealthInfos) {
         this.serverHealthInfos = serverHealthInfos;
     }
 
