@@ -26,7 +26,7 @@ import weloveclouds.loadbalancer.services.ICacheService;
 /**
  * Created by Benoit on 2016-12-04.
  */
-public class LoadbalancerModule extends AbstractModule {
+public class LoadBalancerModule extends AbstractModule {
 
     @Provides
     public IMessageSerializer<SerializedMessage, KVMessage> getClientMessageSerializer() {

@@ -2,23 +2,20 @@ package weloveclouds.loadbalancer.core;
 
 import com.google.inject.Inject;
 
-import org.joda.time.Duration;
-
 import weloveclouds.loadbalancer.services.ClientRequestInterceptorService;
-import weloveclouds.loadbalancer.services.DistributedSystemAccessService;
 import weloveclouds.loadbalancer.services.EcsNotificationService;
 import weloveclouds.loadbalancer.services.HealthMonitoringService;
 
 /**
  * Created by Benoit on 2016-12-03.
  */
-public class Loadbalancer implements ILoadbalancer {
+public class LoadBalancer implements ILoadBalancer {
     private ClientRequestInterceptorService clientRequestHandler;
     private HealthMonitoringService healthMonitoringService;
     private EcsNotificationService ecsNotificationService;
 
     @Inject
-    public Loadbalancer(ClientRequestInterceptorService clientRequestHandler,
+    public LoadBalancer(ClientRequestInterceptorService clientRequestHandler,
                         HealthMonitoringService healthMonitoringService,
                         EcsNotificationService ecsNotificationService) {
         this.clientRequestHandler = clientRequestHandler;
