@@ -1,7 +1,5 @@
 package weloveclouds.kvstore.deserialization.helper;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +38,7 @@ public class HashRangesDeserializer implements IDeserializer<HashRanges, String>
 
             // deserialized object
             deserialized = new HashRanges(ranges);
-            LOGGER.debug(join(" ", "Deserialized HashRanges is:", deserialized.toString()));
+            LOGGER.debug("Deserializing a HashRanges from String finished.");
         }
 
         return deserialized;

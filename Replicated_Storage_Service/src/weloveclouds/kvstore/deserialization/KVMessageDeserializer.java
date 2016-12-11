@@ -50,10 +50,8 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
 
         // length check
         if (messageParts.length != NUMBER_OF_MESSAGE_PARTS) {
-            String errorMessage = CustomStringJoiner.join("", "Message must consist of exactly ",
-                    String.valueOf(NUMBER_OF_MESSAGE_PARTS), " parts.");
-            LOGGER.debug(errorMessage);
-            throw new DeserializationException(errorMessage);
+            throw new DeserializationException(CustomStringJoiner.join("", "Message must consist of exactly ",
+                    String.valueOf(NUMBER_OF_MESSAGE_PARTS), " parts."));
         }
 
         try {

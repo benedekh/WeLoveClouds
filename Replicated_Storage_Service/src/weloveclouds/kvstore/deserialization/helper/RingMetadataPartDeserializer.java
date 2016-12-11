@@ -1,7 +1,5 @@
 package weloveclouds.kvstore.deserialization.helper;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -42,11 +40,9 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
 
             // length check
             if (parts.length != NUMBER_OF_RING_METADATA_PART_PARTS) {
-                String errorMessage =
+                throw new DeserializationException(
                         CustomStringJoiner.join("", "Ring metadata part must consist of exactly ",
-                                String.valueOf(NUMBER_OF_RING_METADATA_PART_PARTS), " parts.");
-                LOGGER.debug(errorMessage);
-                throw new DeserializationException(errorMessage);
+                                String.valueOf(NUMBER_OF_RING_METADATA_PART_PARTS), " parts."));
             }
 
             // raw fields
@@ -63,7 +59,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
             // deserialized object
             deserialized = new RingMetadataPart.Builder().connectionInfo(connectionInfo)
                     .readRanges(readRanges).writeRange(writeRange).build();
-            LOGGER.debug(join(" ", "Deserialized metadata part is:", deserialized.toString()));
+            LOGGER.debug("Deserializing a RingMetadataPart from String finished.");
         }
 
         return deserialized;

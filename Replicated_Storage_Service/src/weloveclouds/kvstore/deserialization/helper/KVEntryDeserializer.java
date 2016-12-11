@@ -1,7 +1,5 @@
 package weloveclouds.kvstore.deserialization.helper;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -33,11 +31,9 @@ public class KVEntryDeserializer implements IDeserializer<KVEntry, String> {
 
             // length check
             if (parts.length != NUMBER_OF_KVENTRY_PARTS) {
-                String errorMessage =
+                throw new DeserializationException(
                         CustomStringJoiner.join("", "KVEntry must consist of exactly ",
-                                String.valueOf(NUMBER_OF_KVENTRY_PARTS), " parts.");
-                LOGGER.debug(errorMessage);
-                throw new DeserializationException(errorMessage);
+                                String.valueOf(NUMBER_OF_KVENTRY_PARTS), " parts."));
             }
 
             // raw fields
@@ -50,7 +46,7 @@ public class KVEntryDeserializer implements IDeserializer<KVEntry, String> {
 
             // deserialized object
             deserialized = new KVEntry(key, value);
-            LOGGER.debug(join(" ", "Deserialized KVEntry is:", deserialized.toString()));
+            LOGGER.debug("Deserializing a KVEntry from String finished.");
         }
 
         return deserialized;

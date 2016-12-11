@@ -1,7 +1,5 @@
 package weloveclouds.kvstore.deserialization.helper;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
@@ -37,11 +35,9 @@ public class ServerConnectionInfoDeserializer
 
             // length check
             if (parts.length != NUMBER_OF_CONNECTION_INFO_PARTS) {
-                String errorMessage =
+                throw new DeserializationException(
                         CustomStringJoiner.join("", "Connection info must consist of exactly ",
-                                String.valueOf(NUMBER_OF_CONNECTION_INFO_PARTS), " parts.");
-                LOGGER.debug(errorMessage);
-                throw new DeserializationException(errorMessage);
+                                String.valueOf(NUMBER_OF_CONNECTION_INFO_PARTS), " parts."));
             }
 
             // raw fields
@@ -55,18 +51,13 @@ public class ServerConnectionInfoDeserializer
                 // deserialized object
                 deserialized =
                         new ServerConnectionInfo.Builder().ipAddress(ipAddress).port(port).build();
-                LOGGER.debug(
-                        join(" ", "Deserialized connection info is:", deserialized.toString()));
+                LOGGER.debug("Deserializing a ServerConnectionInfo from String finished.");
             } catch (NumberFormatException ex) {
-                String errorMessage =
-                        CustomStringJoiner.join(": ", "Port is NaN", parts[PORT_INDEX]);
-                LOGGER.error(errorMessage);
-                throw new DeserializationException(errorMessage);
+                throw new DeserializationException(
+                        CustomStringJoiner.join(": ", "Port is NaN", parts[PORT_INDEX]));
             } catch (UnknownHostException ex) {
-                String errorMessage = CustomStringJoiner.join(": ",
-                        "Host referred by IP address is unknown", ipAddress);
-                LOGGER.error(errorMessage);
-                throw new DeserializationException(errorMessage);
+                throw new DeserializationException(CustomStringJoiner.join(": ",
+                        "Host referred by IP address is unknown", ipAddress));
             }
         }
         return deserialized;
