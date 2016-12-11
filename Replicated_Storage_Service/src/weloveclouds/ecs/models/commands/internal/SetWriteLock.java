@@ -23,7 +23,7 @@ import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RE
  */
 public class SetWriteLock extends AbstractEcsNetworkCommand {
 
-    public SetWriteLock(Builder setWriteLockBuilder) {
+    protected SetWriteLock(Builder setWriteLockBuilder) {
         this.communicationApi = setWriteLockBuilder.communicationApi;
         this.targetedNode = setWriteLockBuilder.targetedNode;
         this.messageSerializer = setWriteLockBuilder.messageSerializer;

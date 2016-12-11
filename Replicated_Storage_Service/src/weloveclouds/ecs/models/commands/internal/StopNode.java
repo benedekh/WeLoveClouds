@@ -24,7 +24,7 @@ import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
  */
 public class StopNode extends AbstractEcsNetworkCommand {
 
-    public StopNode(Builder stopNodeBuilder) {
+    protected StopNode(Builder stopNodeBuilder) {
         this.communicationApi = stopNodeBuilder.communicationApi;
         this.targetedNode = stopNodeBuilder.targetedNode;
         this.messageSerializer = stopNodeBuilder.messageSerializer;

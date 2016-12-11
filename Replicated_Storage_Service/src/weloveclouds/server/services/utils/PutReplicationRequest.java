@@ -14,7 +14,7 @@ import weloveclouds.kvstore.models.messages.KVTransferMessage;
 public class PutReplicationRequest
         extends AbstractReplicationRequest<KVEntry, PutReplicationRequest.Builder> {
 
-    public PutReplicationRequest(Builder builder) {
+    protected PutReplicationRequest(Builder builder) {
         super(builder);
     }
 

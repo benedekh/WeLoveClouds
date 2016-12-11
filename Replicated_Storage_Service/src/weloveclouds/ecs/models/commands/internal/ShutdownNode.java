@@ -23,7 +23,7 @@ import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
  */
 public class ShutdownNode extends AbstractEcsNetworkCommand {
 
-    public ShutdownNode(Builder shutDownBuilder) {
+    protected ShutdownNode(Builder shutDownBuilder) {
         this.communicationApi = shutDownBuilder.communicationApi;
         this.targetedNode = shutDownBuilder.targetedNode;
         this.messageSerializer = shutDownBuilder.messageSerializer;

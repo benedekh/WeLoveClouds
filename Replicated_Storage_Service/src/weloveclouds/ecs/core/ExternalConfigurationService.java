@@ -64,7 +64,7 @@ public class ExternalConfigurationService implements Observer {
     private EcsBatchFactory ecsBatchFactory;
     private DistributedService distributedService;
 
-    public ExternalConfigurationService(Builder externalConfigurationServiceBuilder) throws ServiceBootstrapException {
+    protected ExternalConfigurationService(Builder externalConfigurationServiceBuilder) throws ServiceBootstrapException {
         this.taskService = externalConfigurationServiceBuilder.taskService;
         this.ecsRepositoryFactory = externalConfigurationServiceBuilder.ecsRepositoryFactory;
         this.configurationFilePath = externalConfigurationServiceBuilder.configurationFilePath;

@@ -23,7 +23,7 @@ import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
  */
 public class StartNode extends AbstractEcsNetworkCommand {
 
-    public StartNode(Builder startNodeBuilder) {
+    protected StartNode(Builder startNodeBuilder) {
         this.communicationApi = startNodeBuilder.communicationApi;
         this.targetedNode = startNodeBuilder.targetedNode;
         this.messageSerializer = startNodeBuilder.messageSerializer;
