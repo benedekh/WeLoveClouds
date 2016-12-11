@@ -69,6 +69,7 @@ public class DistributedService {
                     ringTopology.getNumberOfNodes(), node.getHashKey(), previousRange);
             node.setHashRange(hashRange);
 
+            // TODO Can you add a TODO, cause I'll have to modify this to add the range again
             ringMetadata.addRangeInfo(new RingMetadataPart.Builder()
                     .connectionInfo(node.getServerConnectionInfo()).build());
 
