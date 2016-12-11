@@ -1,7 +1,5 @@
 package weloveclouds.kvstore.serialization;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -41,7 +39,7 @@ public class KVAdminMessageSerializer
 
     @Override
     public SerializedMessage serialize(KVAdminMessage unserializedMessage) {
-        LOGGER.debug(join(" ", "Serializing message:", unserializedMessage.toString()));
+        LOGGER.debug("Serializing KVAdminMessage.");
 
         // original fields
         StatusType status = unserializedMessage.getStatus();
@@ -63,11 +61,10 @@ public class KVAdminMessageSerializer
         // merged string representation
         String serialized = CustomStringJoiner.join(SEPARATOR, statusStr, ringMetadataStr,
                 targetServerStr, replicaConnectionInfosStr, removeableRangeStr, responseMessage);
-        String prefixed = CustomStringJoiner.join("", PREFIX, serialized);
-        String postfixed = CustomStringJoiner.join("", prefixed, POSTFIX);
+        String infixed = CustomStringJoiner.join("", PREFIX, serialized, POSTFIX);
 
-        LOGGER.debug(join(" ", "Serialized message:", postfixed));
-        return new SerializedMessage(postfixed);
+        LOGGER.debug("KVAdminMessage serialization finished.");
+        return new SerializedMessage(infixed);
     }
 
 }

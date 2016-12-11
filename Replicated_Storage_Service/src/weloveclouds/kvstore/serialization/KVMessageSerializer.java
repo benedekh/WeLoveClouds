@@ -29,7 +29,7 @@ public class KVMessageSerializer implements IMessageSerializer<SerializedMessage
 
     @Override
     public SerializedMessage serialize(KVMessage unserializedMessage) {
-        LOGGER.debug(join(" ", "Serializing message:", unserializedMessage.toString()));
+        LOGGER.debug("Serializing KVMessage.");
 
         // original fields
         StatusType status = unserializedMessage.getStatus();
@@ -41,10 +41,9 @@ public class KVMessageSerializer implements IMessageSerializer<SerializedMessage
 
         // merged string representation
         String serialized = join(SEPARATOR, statusStr, kvEntryStr);
-        String prefixed = CustomStringJoiner.join("", PREFIX, serialized);
-        String postfixed = CustomStringJoiner.join("", prefixed, POSTFIX);
+        String infixed = CustomStringJoiner.join("", PREFIX, serialized, POSTFIX);
 
-        LOGGER.debug(join(" ", "Serialized message:", postfixed));
-        return new SerializedMessage(postfixed);
+        LOGGER.debug("KVMessage serialization finished.");
+        return new SerializedMessage(infixed);
     }
 }

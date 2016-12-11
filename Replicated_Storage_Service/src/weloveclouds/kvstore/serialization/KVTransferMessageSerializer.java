@@ -34,7 +34,7 @@ public class KVTransferMessageSerializer
 
     @Override
     public SerializedMessage serialize(KVTransferMessage unserializedMessage) {
-        LOGGER.debug("Serializing transfer message.");
+        LOGGER.debug("Serializing KVTransferMessage.");
 
         // original fields
         StatusType status = unserializedMessage.getStatus();
@@ -51,11 +51,10 @@ public class KVTransferMessageSerializer
         // merged string representation
         String serialized = join(SEPARATOR, statusStr, storageUnitsStr, putableEntryStr,
                 removableKey, responseMessage);
-        String prefixed = CustomStringJoiner.join("", PREFIX, serialized);
-        String postfixed = CustomStringJoiner.join("", prefixed, POSTFIX);
+        String infixed = CustomStringJoiner.join("", PREFIX, serialized, POSTFIX);
 
-        LOGGER.debug("Transfer message serialization finished.");
-        return new SerializedMessage(postfixed);
+        LOGGER.debug("KVTransferMessage serialization finished.");
+        return new SerializedMessage(infixed);
     }
 
 }
