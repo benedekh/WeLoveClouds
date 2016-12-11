@@ -1,8 +1,8 @@
-package weloveclouds.kvstore.serialization.helper;
+package weloveclouds.commons.kvstore.serialization.helper;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.Hash;
 
 /**
  * A serializer which converts a {@link Hash} to a {@link String}.

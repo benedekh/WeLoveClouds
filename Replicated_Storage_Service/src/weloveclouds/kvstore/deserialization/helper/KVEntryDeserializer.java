@@ -3,8 +3,9 @@ package weloveclouds.kvstore.deserialization.helper;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.models.KVEntry;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.kvstore.serialization.helper.KVEntrySerializer;
 
 /**

@@ -7,11 +7,11 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.exceptions.IllegalRequestException;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IReplicableDataAccessService;
 import weloveclouds.server.services.utils.IReplicationTransferer;

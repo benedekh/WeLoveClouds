@@ -11,15 +11,15 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.deserialization.KVTransferMessageDeserializer;
-import weloveclouds.kvstore.models.KVEntry;
-import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.KVTransferMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.deserialization.KVTransferMessageDeserializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.utils.FileUtility;
 

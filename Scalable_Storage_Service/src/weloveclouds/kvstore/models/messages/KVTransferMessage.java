@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.models.messages;
+package weloveclouds.commons.kvstore.models.messages;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.server.store.models.MovableStorageUnits;

@@ -3,10 +3,12 @@ package weloveclouds.ecs.models.topology;
 import java.util.ArrayList;
 import java.util.List;
 
+import weloveclouds.ecs.models.repository.AbstractNode;
+
 /**
  * Created by Benoit on 2016-11-23.
  */
-public class RingTopology<T> {
+public class RingTopology<T extends AbstractNode> {
     private static final int FIRST_NODE_INDEX = 0;
     List<T> nodes;
 
@@ -27,7 +29,7 @@ public class RingTopology<T> {
     }
 
     public List<T> getNodes() {
-        return new ArrayList<T>(this.nodes);
+        return new ArrayList<>(this.nodes);
     }
 
     public int getLastPosition() {

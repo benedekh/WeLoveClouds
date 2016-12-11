@@ -5,8 +5,10 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.helper.HashRangeDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.serialization.helper.HashRangesSetSerializer;
 
 /**

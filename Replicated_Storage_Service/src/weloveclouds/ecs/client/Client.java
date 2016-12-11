@@ -1,5 +1,7 @@
 package weloveclouds.ecs.client;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -21,6 +23,7 @@ public class Client {
     private EcsClientCommandFactory ecsCommandFactory;
     private InputStream inputStream;
 
+    @Inject
     public Client(InputStream inputStream, EcsClientCommandFactory ecsCommandFactory) {
         this.inputStream = inputStream;
         this.ecsCommandFactory = ecsCommandFactory;

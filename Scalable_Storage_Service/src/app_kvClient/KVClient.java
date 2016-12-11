@@ -11,7 +11,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.server.utils.LogSetup;
 
 /**

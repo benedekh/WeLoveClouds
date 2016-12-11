@@ -7,9 +7,9 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.ssh.SecureShellServiceFactory;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
-import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
+import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
 
 /**
  * Created by Benoit on 2016-11-23.

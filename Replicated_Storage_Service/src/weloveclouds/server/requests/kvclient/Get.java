@@ -1,18 +1,18 @@
 package weloveclouds.server.requests.kvclient;
 
-import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_ERROR;
-import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
-import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_NOT_RESPONSIBLE;
-import static weloveclouds.kvstore.models.messages.IKVMessage.StatusType.SERVER_STOPPED;
+import static weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType.GET_ERROR;
+import static weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
+import static weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType.SERVER_NOT_RESPONSIBLE;
+import static weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType.SERVER_STOPPED;
 import static weloveclouds.server.requests.kvclient.utils.KVMessageFactory.createKVMessage;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
-import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.commons.exceptions.IllegalRequestException;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.models.messages.KVMessage;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.MovableDataAccessService;

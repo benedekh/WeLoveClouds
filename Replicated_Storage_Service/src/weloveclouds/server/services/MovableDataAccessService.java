@@ -21,10 +21,10 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.utils.HashingUtil;
-import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;

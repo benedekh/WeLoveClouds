@@ -1,11 +1,11 @@
 package weloveclouds.server.requests.kvecs.utils;
 
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 /**
  * A factory to create a {@link StorageUnitsTransporter} instance.

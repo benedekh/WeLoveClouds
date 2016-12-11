@@ -1,6 +1,6 @@
 package weloveclouds.communication;
 
-import weloveclouds.commons.communication.NetworkPacketResenderFactory;
+import weloveclouds.communication.services.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
@@ -12,7 +12,7 @@ import weloveclouds.communication.services.ConcurrentCommunicationService;
 /**
  * Factory for creating {@link ICommunicationApiV1} and {@link IConcurrentCommunicationApi}
  * instances which are used for communication.
- * 
+ *
  * @author Benoit
  */
 public class CommunicationApiFactory {
@@ -27,5 +27,4 @@ public class CommunicationApiFactory {
         return new ConcurrentCommunicationApiV1(new ConcurrentCommunicationService(),
                 new NetworkPacketResenderFactory());
     }
-
 }

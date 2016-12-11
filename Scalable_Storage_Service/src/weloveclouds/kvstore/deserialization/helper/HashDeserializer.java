@@ -1,13 +1,13 @@
-package weloveclouds.kvstore.deserialization.helper;
+package weloveclouds.commons.kvstore.deserialization.helper;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.helper.HashSerializer;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.helper.HashSerializer;
 
 /**
  * A deserializer which converts a {@link Hash} to a {@link String}.

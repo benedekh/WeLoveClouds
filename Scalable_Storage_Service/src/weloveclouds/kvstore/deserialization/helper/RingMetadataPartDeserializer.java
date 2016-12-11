@@ -1,4 +1,4 @@
-package weloveclouds.kvstore.deserialization.helper;
+package weloveclouds.commons.kvstore.deserialization.helper;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
@@ -6,10 +6,10 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.helper.RingMetadataPartSerializer;
 
 /**
  * A deserializer which converts a {@link RingMetadataPart} to a {@link String}.

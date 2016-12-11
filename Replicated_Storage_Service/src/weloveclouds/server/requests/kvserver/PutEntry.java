@@ -5,9 +5,9 @@ import static weloveclouds.server.requests.kvserver.utils.KVTransferMessageFacto
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.KVEntry;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.commons.exceptions.IllegalRequestException;
+import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 

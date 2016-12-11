@@ -3,9 +3,9 @@ package weloveclouds.ecs.models.repository;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.utils.HashingUtil;
 
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
 

@@ -8,15 +8,15 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.exceptions.IllegalRequestException;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.communication.api.ICommunicationApi;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporter;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporterFactory;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;

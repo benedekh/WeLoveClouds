@@ -1,6 +1,6 @@
 package weloveclouds.server.api;
 
-import weloveclouds.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 
 /**
  * API for the Key-value store commands from the client side.

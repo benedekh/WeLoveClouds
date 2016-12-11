@@ -1,15 +1,15 @@
-package weloveclouds.kvstore.serialization;
+package weloveclouds.commons.kvstore.serialization;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
-import weloveclouds.kvstore.serialization.helper.MovableStorageUnitsSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.kvstore.serialization.helper.MovableStorageUnitsSerializer;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.store.models.MovableStorageUnits;
 
 /**

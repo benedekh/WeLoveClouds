@@ -4,12 +4,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import weloveclouds.ecs.models.commands.client.Stop;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
 
 /**
  * Created by Benoit on 2016-11-21.

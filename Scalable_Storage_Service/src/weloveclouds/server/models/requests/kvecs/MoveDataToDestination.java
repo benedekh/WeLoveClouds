@@ -10,16 +10,16 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.serialization.IMessageSerializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.networking.exceptions.IllegalRequestException;
 import weloveclouds.server.models.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
@@ -100,7 +100,7 @@ public class MoveDataToDestination implements IKVECSRequest {
         }
 
         return new KVAdminMessage.Builder()
-                .status(weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS)
+                .status(weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS)
                 .build();
     }
 
@@ -167,7 +167,7 @@ public class MoveDataToDestination implements IKVECSRequest {
 
     private KVAdminMessage createErrorKVAdminMessage(String errorMessage) {
         return new KVAdminMessage.Builder()
-                .status(weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR)
+                .status(weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR)
                 .responseMessage(errorMessage).build();
     }
 

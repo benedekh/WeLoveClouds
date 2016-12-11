@@ -2,9 +2,9 @@ package weloveclouds.server.services;
 
 import java.util.Set;
 
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.PutType;

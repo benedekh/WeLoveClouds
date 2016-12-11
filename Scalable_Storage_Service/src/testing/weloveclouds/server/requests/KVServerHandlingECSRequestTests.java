@@ -14,19 +14,19 @@ import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.hashing.utils.HashingUtil;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
-import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.serialization.IMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 public class KVServerHandlingECSRequestTests {
 

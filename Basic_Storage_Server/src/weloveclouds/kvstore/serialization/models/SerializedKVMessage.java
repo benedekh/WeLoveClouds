@@ -1,9 +1,9 @@
-package weloveclouds.kvstore.serialization.models;
+package weloveclouds.commons.kvstore.serialization.models;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import weloveclouds.kvstore.models.KVMessage;
+import weloveclouds.commons.kvstore.models.KVMessage;
 
 /**
  * Represents a byte[] of a serialized {@link KVMessage}.

@@ -7,11 +7,12 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.ClientSideException;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.kvstore.models.messages.IKVMessage;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+
 
 /**
  * Get command which means the client would like to query the value for a respective key.
@@ -135,7 +136,7 @@ public class Get extends AbstractKVCommunicationApiCommand {
 
         /**
          * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object
-         *        to its original representation from String
+         *                                 to its original representation from String
          */
         public Builder ringMetadataDeserializer(
                 IDeserializer<RingMetadata, String> ringMetadataDeserializer) {

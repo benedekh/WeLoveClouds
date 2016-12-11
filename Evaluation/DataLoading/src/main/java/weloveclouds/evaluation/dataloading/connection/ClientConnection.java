@@ -6,10 +6,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.kvstore.models.messages.IKVMessage;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 
 public class ClientConnection {
 

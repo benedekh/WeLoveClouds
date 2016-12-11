@@ -1,7 +1,7 @@
 package weloveclouds.ecs.models.tasks.details;
 
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadata;
 
 /**
  * Created by Benoit on 2016-11-30.

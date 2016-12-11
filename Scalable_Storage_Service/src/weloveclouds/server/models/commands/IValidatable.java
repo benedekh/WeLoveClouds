@@ -6,6 +6,6 @@ package weloveclouds.server.models.commands;
  *
  * @author Benoit
  */
-public interface IValidatable extends weloveclouds.server.core.requests.IValidatable<ICommand> {
+public interface IValidatable extends weloveclouds.commons.networking.models.requests.IValidatable<ICommand> {
 
 }

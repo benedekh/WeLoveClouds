@@ -2,14 +2,14 @@ package weloveclouds.server.services.utils;
 
 import java.util.Set;
 
-import weloveclouds.commons.communication.NetworkPacketResenderFactory;
+import weloveclouds.commons.kvstore.deserialization.KVTransferMessageDeserializer;
+import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.v1.ConcurrentCommunicationApiV1;
 import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.ConcurrentCommunicationService;
-import weloveclouds.kvstore.deserialization.KVTransferMessageDeserializer;
-import weloveclouds.kvstore.serialization.KVTransferMessageSerializer;
+import weloveclouds.communication.services.NetworkPacketResenderFactory;
 
 /**
  * A factory to create {@link ReplicationTransferer} instances.

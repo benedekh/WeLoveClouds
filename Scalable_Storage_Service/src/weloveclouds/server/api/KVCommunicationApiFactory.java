@@ -1,8 +1,8 @@
 package weloveclouds.server.api;
 
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
-import weloveclouds.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
+import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
 /**

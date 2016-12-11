@@ -50,6 +50,6 @@ public abstract class AbstractBatchTasks<T> extends Observable {
     public abstract void taskExecutionFinishedCallback();
 
     public String toString() {
-        return CustomStringJoiner.join(" ", "Batch id:", id, "Purpose:", batchPurpose.toString());
+        return CustomStringJoiner.join(" ", "Batch name:", id, "Purpose:", batchPurpose.toString());
     }
 }

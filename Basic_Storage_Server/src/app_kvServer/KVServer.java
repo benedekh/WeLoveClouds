@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.kvstore.serialization.KVMessageDeserializer;
-import weloveclouds.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.KVMessageDeserializer;
+import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerSocketFactory;

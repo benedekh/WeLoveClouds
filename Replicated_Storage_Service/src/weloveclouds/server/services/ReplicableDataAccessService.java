@@ -1,6 +1,6 @@
 package weloveclouds.server.services;
 
-import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.services.utils.IReplicationTransferer;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.MovablePersistentStorage;

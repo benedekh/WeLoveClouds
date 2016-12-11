@@ -27,7 +27,7 @@ public abstract class AbstractBatchTasks<T> extends Observable {
         return batchPurpose;
     }
 
-    public boolean hasFailed(){
+    public boolean hasFailed() {
         return getFailedTasks().containsAll(getTasks());
     }
 

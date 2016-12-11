@@ -7,8 +7,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
+import weloveclouds.commons.exceptions.IllegalRequestException;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;

@@ -5,7 +5,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.MovableStorageUnitDeserializer;
 import weloveclouds.kvstore.serialization.helper.MovableStorageUnitsSetSerializer;
 import weloveclouds.server.store.models.MovableStorageUnit;
 

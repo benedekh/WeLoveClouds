@@ -13,14 +13,14 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
-import weloveclouds.kvstore.models.messages.IKVMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.KVMessageSerializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVMessage;
+import weloveclouds.commons.kvstore.serialization.IMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
 /**

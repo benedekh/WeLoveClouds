@@ -3,15 +3,20 @@ package weloveclouds.ecs.models.services;
 import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
 import static weloveclouds.commons.status.ServiceStatus.UNINITIALIZED;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.status.ServiceStatus;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForReadingException;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForWritingException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.utils.RingMetadataHelper;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;
 
 /**
  * Created by Benoit on 2016-11-30.
@@ -27,6 +32,29 @@ public class DistributedService {
         this.status = UNINITIALIZED;
     }
 
+    public List<StorageNode> getResponsibleForReadingOf(Hash hash) throws
+            UnableToFindServerResponsibleForReadingException {
+        List<StorageNode> responsibles = new ArrayList<>();
+        for (StorageNode node : getParticipatingNodes()) {
+            if (node.isWriteResponsibleOf(hash)) {
+                responsibles.add(node);
+                responsibles.addAll(node.getReplicas());
+                return responsibles;
+            }
+        }
+        throw new UnableToFindServerResponsibleForReadingException(hash);
+    }
+
+    public StorageNode getResponsibleForWritingOf(Hash hash) throws
+            UnableToFindServerResponsibleForWritingException {
+        for (StorageNode node : getParticipatingNodes()) {
+            if (node.isWriteResponsibleOf(hash)) {
+                return node;
+            }
+        }
+        throw new UnableToFindServerResponsibleForWritingException(hash);
+    }
+
     public ServiceStatus getStatus() {
         return status;
     }
@@ -39,12 +67,28 @@ public class DistributedService {
         return ringMetadata;
     }
 
+    public void updateRingMetadataWith(RingMetadata ringMetadata) {
+        this.ringMetadata = ringMetadata;
+    }
+
     public RingTopology<StorageNode> getTopology() {
         return this.topology;
     }
 
     public List<StorageNode> getParticipatingNodes() {
         return this.topology.getNodes();
+    }
+
+    public StorageNode getNodeFrom(ServerConnectionInfo serverConnectionInfo) {
+        StorageNode storageNode = null;
+
+        for (StorageNode node : getParticipatingNodes()) {
+            if (node.getServerConnectionInfo().equals(serverConnectionInfo)) {
+                storageNode = node;
+                break;
+            }
+        }
+        return storageNode;
     }
 
     public void updateTopologyWith(RingTopology newTopology) {

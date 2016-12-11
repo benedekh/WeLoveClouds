@@ -1,6 +1,6 @@
 package weloveclouds.server.services.utils;
 
-import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.KVEntry;
 
 
 /**

@@ -2,7 +2,7 @@ package weloveclouds.server.requests.kvecs;
 
 import static weloveclouds.server.requests.kvecs.utils.KVAdminMessageFactory.createErrorKVAdminMessage;
 
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 
 /**
  * An unrecognized request to the data access layer.

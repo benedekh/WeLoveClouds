@@ -2,7 +2,8 @@ package weloveclouds.server.requests.kvserver;
 
 import static weloveclouds.server.requests.kvserver.utils.KVTransferMessageFactory.createErrorKVTransferMessage;
 
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+
 
 /**
  * An unrecognized request to the data access layer.

@@ -9,12 +9,12 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.kvstore.deserialization.IMessageDeserializer;
-import weloveclouds.kvstore.serialization.IMessageSerializer;
-import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.core.requests.IExecutable;
-import weloveclouds.server.core.requests.IRequestFactory;
-import weloveclouds.server.core.requests.IValidatable;
+import weloveclouds.commons.kvstore.deserialization.IMessageDeserializer;
+import weloveclouds.commons.kvstore.serialization.IMessageSerializer;
+import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.networking.models.requests.IExecutable;
+import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.networking.models.requests.IValidatable;
 
 /**
  * A Server instance which accepts messages over the network and can handle multiple clients

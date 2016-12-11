@@ -1,8 +1,8 @@
 package weloveclouds.server.requests.kvserver.utils;
 
 
-import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 
 /**
  * A factory to create {@link KVTransferMessage} instances.

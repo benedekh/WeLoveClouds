@@ -2,8 +2,8 @@ package weloveclouds.server.services.utils;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
-import weloveclouds.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 
 /**
  * Represents a DELETE replication request that shall be executed on the replicas.

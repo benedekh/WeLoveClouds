@@ -5,8 +5,10 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfoDeserializer;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.ServerConnectionInfosSetSerializer;
 
 /**

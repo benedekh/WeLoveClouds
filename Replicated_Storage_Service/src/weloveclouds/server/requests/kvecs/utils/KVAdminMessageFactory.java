@@ -1,9 +1,9 @@
 package weloveclouds.server.requests.kvecs.utils;
 
-import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR;
-import static weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
+import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_ERROR;
+import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 
-import weloveclouds.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 
 /**
  * A factory to create {@link KVAdminMessage} instances.

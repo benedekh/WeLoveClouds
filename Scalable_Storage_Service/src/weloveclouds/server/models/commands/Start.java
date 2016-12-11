@@ -6,9 +6,9 @@ import java.nio.file.Path;
 import org.apache.log4j.Logger;
 
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.kvstore.deserialization.KVMessageDeserializer;
-import weloveclouds.kvstore.models.messages.KVMessage;
-import weloveclouds.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
+import weloveclouds.commons.kvstore.models.messages.KVMessage;
+import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerSocketFactory;
 import weloveclouds.server.models.ServerCLIConfigurationContext;

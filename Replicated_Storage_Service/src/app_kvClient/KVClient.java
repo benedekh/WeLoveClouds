@@ -9,10 +9,10 @@ import weloveclouds.client.commands.CommandFactory;
 import weloveclouds.client.core.Client;
 import weloveclouds.client.utils.ArgumentsValidator;
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.server.models.configuration.KVServerPortConstants;
 import weloveclouds.server.utils.LogSetup;
 
@@ -86,5 +86,4 @@ public class KVClient {
                     DEFAULT_LOG_PATH, "due to an error:", ex.getMessage()));
         }
     }
-
 }

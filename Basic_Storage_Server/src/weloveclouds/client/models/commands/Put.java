@@ -9,7 +9,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.client.utils.PutCommandUtils;
 import weloveclouds.communication.api.v1.IKVCommunicationApi;
 import weloveclouds.communication.exceptions.ClientSideException;
-import weloveclouds.kvstore.models.IKVMessage;
+import weloveclouds.commons.kvstore.models.IKVMessage;
 
 /**
  * Put command which means the client would like to send a key along with a value to the server.

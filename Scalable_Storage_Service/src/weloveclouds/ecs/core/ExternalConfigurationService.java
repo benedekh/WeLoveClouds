@@ -34,10 +34,10 @@ import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.ListUtils;
 import weloveclouds.ecs.utils.RingMetadataHelper;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
 
 
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;

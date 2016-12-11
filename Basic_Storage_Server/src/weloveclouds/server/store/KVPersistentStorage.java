@@ -21,7 +21,7 @@ import java.util.Observable;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;

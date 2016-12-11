@@ -1,9 +1,9 @@
-package weloveclouds.hashing.models;
+package weloveclouds.commons.hashing.models;
 
 import java.math.BigInteger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
 /**
  * The following properties should be held for the range:<br>

@@ -5,20 +5,21 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataPartDeserializer;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.kvstore.serialization.helper.RingMetadataPartSerializer;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.hashing.models.Hash;
-import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.RingMetadataPart;
-import weloveclouds.hashing.utils.HashingUtil;
-import weloveclouds.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.kvstore.deserialization.helper.RingMetadataPartDeserializer;
-import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.helper.ISerializer;
-import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
+
 
 /**
  * Tests for the {@link RingMetadataPart} to verify its serialization and deserialization processes.

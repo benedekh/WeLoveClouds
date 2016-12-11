@@ -3,7 +3,7 @@ package weloveclouds.server.services;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.store.PutType;

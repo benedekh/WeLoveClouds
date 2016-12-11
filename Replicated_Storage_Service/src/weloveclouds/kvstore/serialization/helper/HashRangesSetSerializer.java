@@ -7,7 +7,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.kvstore.serialization.helper.HashRangeSerializer;
+import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
 /**
  * A serializer which converts a {@link Set<HashRange>} to a {@link String}.

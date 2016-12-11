@@ -1,6 +1,8 @@
 package weloveclouds.ecs.models.commands.internal;
 
 
+import com.google.inject.Inject;
+
 import java.util.Arrays;
 
 import weloveclouds.communication.CommunicationApiFactory;
@@ -8,9 +10,9 @@ import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.ssh.SecureShellServiceFactory;
-import weloveclouds.hashing.models.RingMetadata;
-import weloveclouds.kvstore.deserialization.KVAdminMessageDeserializer;
-import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
+import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
 
 /**
  * Created by Benoit on 2016-11-23.
@@ -20,6 +22,7 @@ public class EcsInternalCommandFactory {
     private CommunicationApiFactory communicationApiFactory;
     private SecureShellServiceFactory secureShellServiceFactory;
 
+    @Inject
     public EcsInternalCommandFactory(CommunicationApiFactory communicationApiFactory,
                                      SecureShellServiceFactory secureShellServiceFactory) {
         this.communicationApiFactory = communicationApiFactory;
