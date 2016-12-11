@@ -14,10 +14,10 @@ import weloveclouds.hashing.models.HashRange;
  * 
  * @author Benedek
  */
-public class SetOfHashRangesSerializer implements ISerializer<String, Set<HashRange>> {
+public class HashRangesSetSerializer implements ISerializer<String, Set<HashRange>> {
 
     public static final String SEPARATOR = "-łŁ-";
-    private static final Logger LOGGER = Logger.getLogger(SetOfHashRangesSerializer.class);
+    private static final Logger LOGGER = Logger.getLogger(HashRangesSetSerializer.class);
 
     private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
 

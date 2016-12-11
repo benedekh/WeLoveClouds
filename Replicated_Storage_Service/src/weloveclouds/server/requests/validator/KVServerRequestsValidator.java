@@ -13,7 +13,6 @@ import weloveclouds.server.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.requests.kvserver.IKVServerRequest;
 import weloveclouds.server.store.models.MovableStorageUnit;
-import weloveclouds.server.store.models.MovableStorageUnits;
 
 /**
  * Validates different objects which are used in the requests ({@link IKVClientRequest},
@@ -143,25 +142,20 @@ public class KVServerRequestsValidator {
     }
 
     /**
-     * A MovableStorageUnits object is valid, if: <br>
-     * (1) it is not null,<br>
-     * (2) neither underlying stored movable storage unit is null, <br>
+     * MovableStorageUnits are valid, if: <br>
+     * (1) its set is not null,<br>
+     * (2) neither underlying stored movable storages units are null, <br>
      * (3) neither keys stored in the respective movable storage unit is null.
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
-    public static void validateMovableStorageUnits(MovableStorageUnits storageUnits)
+    public static void validateMovableStorageUnits(Set<MovableStorageUnit> storageUnits)
             throws IllegalArgumentException {
         if (storageUnits == null) {
             throw new IllegalArgumentException();
         }
 
-        Set<MovableStorageUnit> movableStorageUnits = storageUnits.getStorageUnits();
-        if (movableStorageUnits == null) {
-            throw new IllegalArgumentException();
-        }
-
-        for (MovableStorageUnit storageUnit : movableStorageUnits) {
+        for (MovableStorageUnit storageUnit : storageUnits) {
             Set<String> keySet = storageUnit.getKeys();
             if (keySet == null) {
                 throw new IllegalArgumentException();

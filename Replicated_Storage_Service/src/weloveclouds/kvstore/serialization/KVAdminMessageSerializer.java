@@ -15,7 +15,7 @@ import weloveclouds.kvstore.serialization.helper.HashRangeSerializer;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
-import weloveclouds.kvstore.serialization.helper.SetOfServerConnectionInfosSerializer;
+import weloveclouds.kvstore.serialization.helper.ServerConnectionInfosSetSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 /**
@@ -36,7 +36,7 @@ public class KVAdminMessageSerializer
     private ISerializer<String, RingMetadataPart> metadataPartSerializer =
             new RingMetadataPartSerializer();
     private ISerializer<String, Set<ServerConnectionInfo>> replicaConnectionInfosSerializer =
-            new SetOfServerConnectionInfosSerializer();
+            new ServerConnectionInfosSetSerializer();
     private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
 
     @Override

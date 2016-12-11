@@ -16,7 +16,7 @@ import weloveclouds.kvstore.deserialization.helper.HashRangeDeserializer;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataPartDeserializer;
-import weloveclouds.kvstore.deserialization.helper.SetOfServerConnectionInfosDeserializer;
+import weloveclouds.kvstore.deserialization.helper.ServerConnectionInfosSetDeserializer;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
@@ -48,7 +48,7 @@ public class KVAdminMessageDeserializer
     private IDeserializer<RingMetadataPart, String> metadataPartDeserializer =
             new RingMetadataPartDeserializer();
     private IDeserializer<Set<ServerConnectionInfo>, String> replicaConnectionInfosDeserializer =
-            new SetOfServerConnectionInfosDeserializer();
+            new ServerConnectionInfosSetDeserializer();
 
     @Override
     public KVAdminMessage deserialize(SerializedMessage serializedMessage)

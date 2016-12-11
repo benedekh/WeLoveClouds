@@ -13,10 +13,10 @@ import junit.framework.TestCase;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.utils.HashingUtil;
-import weloveclouds.kvstore.deserialization.helper.SetOfHashRangesDeserializer;
+import weloveclouds.kvstore.deserialization.helper.HashRangesSetDeserializer;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.helper.SetOfHashRangesSerializer;
+import weloveclouds.kvstore.serialization.helper.HashRangesSetSerializer;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.server.utils.SetToStringUtility;
 
@@ -25,12 +25,12 @@ import weloveclouds.server.utils.SetToStringUtility;
  * 
  * @author Benedek
  */
-public class HashRangesTest extends TestCase {
+public class HashRangesSetTest extends TestCase {
 
     private static final IDeserializer<Set<HashRange>, String> hashRangesDeserializer =
-            new SetOfHashRangesDeserializer();
+            new HashRangesSetDeserializer();
     private static final ISerializer<String, Set<HashRange>> hashRangesSerializer =
-            new SetOfHashRangesSerializer();
+            new HashRangesSetSerializer();
 
     @Test
     public void testHashRangeSerializationAndDeserialization()

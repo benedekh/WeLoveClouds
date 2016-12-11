@@ -9,7 +9,7 @@ import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
-import weloveclouds.server.store.models.MovableStorageUnits;
+import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
  * A common interface to those {@link IDataAccessService} implementations whose underlying storage
@@ -24,7 +24,7 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * 
      * @param fromStorageUnits from where the entries will be copied
      */
-    public void putEntries(MovableStorageUnits fromStorageUnits) throws StorageException;
+    public void putEntries(Set<MovableStorageUnit> fromStorageUnits) throws StorageException;
 
     /**
      * Puts an entry into the persistent storage without checking the role (@link Role) of this
@@ -44,7 +44,7 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * @return the storage units of those entries whose keys are in the given range
      * @throws StorageException if the service was not initialized yet
      */
-    public MovableStorageUnits filterEntries(HashRange range) throws UninitializedServiceException;
+    public Set<MovableStorageUnit> filterEntries(HashRange range) throws UninitializedServiceException;
 
     /**
      * Removes those entries from the persistent storage whose keys are in the specified range.

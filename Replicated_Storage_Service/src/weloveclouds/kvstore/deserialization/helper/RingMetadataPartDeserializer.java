@@ -28,7 +28,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
     private IDeserializer<ServerConnectionInfo, String> connectionInfoDeserializer =
             new ServerConnectionInfoDeserializer();
     private IDeserializer<Set<HashRange>, String> hashRangesDeserializer =
-            new SetOfHashRangesDeserializer();
+            new HashRangesSetDeserializer();
     private IDeserializer<HashRange, String> hashRangeDeserializer = new HashRangeDeserializer();
 
     @Override

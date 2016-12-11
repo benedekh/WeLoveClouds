@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,7 +28,6 @@ import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.server.models.configuration.KVServerPortConstants;
 import weloveclouds.server.store.models.MovableStorageUnit;
-import weloveclouds.server.store.models.MovableStorageUnits;
 import weloveclouds.server.utils.FileUtility;
 
 /**
@@ -87,8 +87,7 @@ public class KVServerRequestFromKVServerValidationTests {
         keyval2.put("orange", "banana");
         MovableStorageUnit unit2 = new MovableStorageUnit(keyval2, FileUtility.createDummyPath());
 
-        MovableStorageUnits storageUnits =
-                new MovableStorageUnits(new HashSet<>(Arrays.asList(unit1, unit2)));
+        Set<MovableStorageUnit> storageUnits = new HashSet<>(Arrays.asList(unit1, unit2));
 
         KVTransferMessage message = new KVTransferMessage.Builder()
                 .status(StatusType.TRANSFER_ENTRIES).storageUnits(storageUnits).build();

@@ -2,6 +2,8 @@ package weloveclouds.kvstore.serialization;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -10,9 +12,9 @@ import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.KVEntrySerializer;
-import weloveclouds.kvstore.serialization.helper.MovableStorageUnitsSerializer;
+import weloveclouds.kvstore.serialization.helper.MovableStorageUnitsSetSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.store.models.MovableStorageUnits;
+import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
  * A serializer which converts a {@link KVTransferMessage} to a {@link SerializedMessage}.
@@ -28,8 +30,8 @@ public class KVTransferMessageSerializer
 
     private static final Logger LOGGER = Logger.getLogger(KVTransferMessageSerializer.class);
 
-    private ISerializer<String, MovableStorageUnits> storageUnitsSerializer =
-            new MovableStorageUnitsSerializer();
+    private ISerializer<String, Set<MovableStorageUnit>> storageUnitsSerializer =
+            new MovableStorageUnitsSetSerializer();
     private ISerializer<String, KVEntry> kvEntrySerializer = new KVEntrySerializer();
 
     @Override
@@ -38,7 +40,7 @@ public class KVTransferMessageSerializer
 
         // original fields
         StatusType status = unserializedMessage.getStatus();
-        MovableStorageUnits storageUnits = unserializedMessage.getStorageUnits();
+        Set<MovableStorageUnit> storageUnits = unserializedMessage.getStorageUnits();
         KVEntry putableEntry = unserializedMessage.getPutableEntry();
         String removableKey = unserializedMessage.getRemovableKey();
         String responseMessage = unserializedMessage.getResponseMessage();

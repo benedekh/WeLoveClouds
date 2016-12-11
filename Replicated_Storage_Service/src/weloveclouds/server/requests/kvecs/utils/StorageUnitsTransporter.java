@@ -17,7 +17,6 @@ import weloveclouds.kvstore.serialization.IMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.store.models.MovableStorageUnit;
-import weloveclouds.server.store.models.MovableStorageUnits;
 import weloveclouds.server.store.models.PersistedStorageUnit;
 
 /**
@@ -88,11 +87,11 @@ public class StorageUnitsTransporter {
             toBeTransferred.add(strageUnitToBeMoved);
 
             if (toBeTransferred.size() == NUMBER_OF_STORAGE_UNITS_TO_BE_TRANSFERRED_AT_ONCE) {
-                transferBunchOverTheNetwork(new MovableStorageUnits(toBeTransferred));
+                transferBunchOverTheNetwork(toBeTransferred);
                 toBeTransferred.clear();
             }
         }
-        transferBunchOverTheNetwork(new MovableStorageUnits(toBeTransferred));
+        transferBunchOverTheNetwork(toBeTransferred);
     }
 
     /**
@@ -100,7 +99,7 @@ public class StorageUnitsTransporter {
      * 
      * @throws UnableToSendContentToServerException if an error occurs
      */
-    private void transferBunchOverTheNetwork(MovableStorageUnits storageUnits)
+    private void transferBunchOverTheNetwork(Set<MovableStorageUnit> storageUnits)
             throws UnableToSendContentToServerException {
         try {
             KVTransferMessage transferMessage = new KVTransferMessage.Builder()

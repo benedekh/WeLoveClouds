@@ -11,10 +11,10 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.kvstore.deserialization.helper.SetOfServerConnectionInfosDeserializer;
+import weloveclouds.kvstore.deserialization.helper.ServerConnectionInfosSetDeserializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
-import weloveclouds.kvstore.serialization.helper.SetOfServerConnectionInfosSerializer;
+import weloveclouds.kvstore.serialization.helper.ServerConnectionInfosSetSerializer;
 import weloveclouds.server.utils.SetToStringUtility;
 
 /**
@@ -23,12 +23,12 @@ import weloveclouds.server.utils.SetToStringUtility;
  * 
  * @author Benedek
  */
-public class ServerConnectionInfosTest extends TestCase {
+public class ServerConnectionInfosSetTest extends TestCase {
 
     private static final IDeserializer<Set<ServerConnectionInfo>, String> connectionInfosDeserializer =
-            new SetOfServerConnectionInfosDeserializer();
+            new ServerConnectionInfosSetDeserializer();
     private static final ISerializer<String, Set<ServerConnectionInfo>> connectionInfosSerializer =
-            new SetOfServerConnectionInfosSerializer();
+            new ServerConnectionInfosSetSerializer();
 
     @Test
     public void testServerConnectionInfoSerializationAndDeserialization()

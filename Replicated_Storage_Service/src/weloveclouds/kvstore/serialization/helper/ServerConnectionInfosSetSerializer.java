@@ -14,12 +14,11 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * 
  * @author Benedek
  */
-public class SetOfServerConnectionInfosSerializer
+public class ServerConnectionInfosSetSerializer
         implements ISerializer<String, Set<ServerConnectionInfo>> {
 
     public static final String SEPARATOR = "-Ł-";
-    private static final Logger LOGGER =
-            Logger.getLogger(SetOfServerConnectionInfosSerializer.class);
+    private static final Logger LOGGER = Logger.getLogger(ServerConnectionInfosSetSerializer.class);
 
     private ISerializer<String, ServerConnectionInfo> serverConnectionInfoSerializer =
             new ServerConnectionInfoSerializer();

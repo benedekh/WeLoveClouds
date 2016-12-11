@@ -4,6 +4,8 @@ package weloveclouds.server.requests.kvecs;
 import static weloveclouds.server.requests.kvecs.utils.KVAdminMessageFactory.createErrorKVAdminMessage;
 import static weloveclouds.server.requests.kvecs.utils.KVAdminMessageFactory.createSuccessKVAdminMessage;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.communication.api.ICommunicationApi;
@@ -21,7 +23,7 @@ import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.IReplicableDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
-import weloveclouds.server.store.models.MovableStorageUnits;
+import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
  * A data move request to the {@link IMovableDataAccessService}, which moves a range of the data
@@ -55,14 +57,14 @@ public class MoveDataToDestination implements IKVECSRequest {
         try {
             LOGGER.debug("Executing move data request.");
             HashRange hashRange = targetServerInfo.getWriteRange();
-            MovableStorageUnits filteredEntries = dataAccessService.filterEntries(hashRange);
+            Set<MovableStorageUnit> filteredEntries = dataAccessService.filterEntries(hashRange);
 
-            if (!filteredEntries.getStorageUnits().isEmpty()) {
+            if (!filteredEntries.isEmpty()) {
                 StorageUnitsTransporter storageUnitsTransporter =
                         storageUnitsTransporterFactory.createStorageUnitsTransporter(
                                 communicationApi, targetServerInfo.getConnectionInfo(),
                                 transferMessageSerializer, transferMessageDeserializer);
-                storageUnitsTransporter.transferStorageUnits(filteredEntries.getStorageUnits());
+                storageUnitsTransporter.transferStorageUnits(filteredEntries);
                 removeStorageUnitsInRangeFromDataStore(hashRange);
                 LOGGER.debug("Move data request finished successfully.");
             }

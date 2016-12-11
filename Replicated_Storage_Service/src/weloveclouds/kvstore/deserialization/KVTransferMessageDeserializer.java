@@ -2,19 +2,21 @@ package weloveclouds.kvstore.deserialization;
 
 import static weloveclouds.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.deserialization.helper.KVEntryDeserializer;
-import weloveclouds.kvstore.deserialization.helper.MovableStorageUnitsDeserializer;
+import weloveclouds.kvstore.deserialization.helper.MovableStorageUnitsSetDeserializer;
 import weloveclouds.kvstore.models.KVEntry;
 import weloveclouds.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.kvstore.serialization.KVTransferMessageSerializer;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
-import weloveclouds.server.store.models.MovableStorageUnits;
+import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link KVTransferMessage}.
@@ -33,8 +35,8 @@ public class KVTransferMessageDeserializer
 
     private static final Logger LOGGER = Logger.getLogger(KVTransferMessageDeserializer.class);
 
-    private IDeserializer<MovableStorageUnits, String> storageUnitsDeserializer =
-            new MovableStorageUnitsDeserializer();
+    private IDeserializer<Set<MovableStorageUnit>, String> storageUnitsDeserializer =
+            new MovableStorageUnitsSetDeserializer();
 
     private IDeserializer<KVEntry, String> kvEntryDeserializer = new KVEntryDeserializer();
 
@@ -74,7 +76,7 @@ public class KVTransferMessageDeserializer
 
             // deserialized fields
             StatusType status = StatusType.valueOf(statusStr);
-            MovableStorageUnits storageUnits =
+            Set<MovableStorageUnit> storageUnits =
                     storageUnitsDeserializer.deserialize(storageUnitsStr);
             KVEntry putableEntry = kvEntryDeserializer.deserialize(putableEntryStr);
             String removableKey = "null".equals(removableKeyStr) ? null : removableKeyStr;

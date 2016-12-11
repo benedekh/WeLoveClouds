@@ -7,16 +7,16 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.helper.SetOfHashRangesSerializer;
+import weloveclouds.kvstore.serialization.helper.HashRangesSetSerializer;
 
 /**
  * A deserializer which converts a {@link Set<HashRange>} to a {@link String}.
  * 
  * @author Benedek
  */
-public class SetOfHashRangesDeserializer implements IDeserializer<Set<HashRange>, String> {
+public class HashRangesSetDeserializer implements IDeserializer<Set<HashRange>, String> {
 
-    private static final Logger LOGGER = Logger.getLogger(SetOfHashRangesDeserializer.class);
+    private static final Logger LOGGER = Logger.getLogger(HashRangesSetDeserializer.class);
 
     private IDeserializer<HashRange, String> hashRangeDeserializer = new HashRangeDeserializer();
 
@@ -27,7 +27,7 @@ public class SetOfHashRangesDeserializer implements IDeserializer<Set<HashRange>
         if (from != null && !"null".equals(from)) {
             LOGGER.debug("Deserializing a Set<HashRange> from String.");
             // raw message split
-            String[] parts = from.split(SetOfHashRangesSerializer.SEPARATOR);
+            String[] parts = from.split(HashRangesSetSerializer.SEPARATOR);
 
             // deserialized object
             deserialized = new HashSet<>();

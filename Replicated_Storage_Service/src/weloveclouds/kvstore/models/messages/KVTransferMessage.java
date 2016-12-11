@@ -1,8 +1,11 @@
 package weloveclouds.kvstore.models.messages;
 
+import java.util.Set;
+
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.kvstore.models.KVEntry;
-import weloveclouds.server.store.models.MovableStorageUnits;
+import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.utils.SetToStringUtility;
 
 /**
  * Represents a message which transfers storage units between KVServers.
@@ -13,7 +16,7 @@ public class KVTransferMessage implements IKVTransferMessage {
 
     private StatusType status;
 
-    private MovableStorageUnits storageUnits;
+    private Set<MovableStorageUnit> storageUnits;
     private KVEntry putableEntry;
     private String removableKey;
     private String responseMessage;
@@ -32,7 +35,7 @@ public class KVTransferMessage implements IKVTransferMessage {
     }
 
     @Override
-    public MovableStorageUnits getStorageUnits() {
+    public Set<MovableStorageUnit> getStorageUnits() {
         return storageUnits;
     }
 
@@ -113,7 +116,7 @@ public class KVTransferMessage implements IKVTransferMessage {
     public String toString() {
         return CustomStringJoiner.join(" ", "Message status:",
                 status == null ? null : status.toString(), ", Storage units:",
-                storageUnits == null ? null : storageUnits.toString(), ", Putable entry: ",
+                SetToStringUtility.toString(storageUnits), ", Putable entry: ",
                 putableEntry == null ? null : putableEntry.toString(), ", Removable key: ",
                 removableKey, ", Response message: ", responseMessage);
     }
@@ -125,7 +128,7 @@ public class KVTransferMessage implements IKVTransferMessage {
      */
     public static class Builder {
         private StatusType status;
-        private MovableStorageUnits storageUnits;
+        private Set<MovableStorageUnit> storageUnits;
         private KVEntry putableEntry;
         private String removableKey;
         private String responseMessage;
@@ -135,7 +138,7 @@ public class KVTransferMessage implements IKVTransferMessage {
             return this;
         }
 
-        public Builder storageUnits(MovableStorageUnits storageUnits) {
+        public Builder storageUnits(Set<MovableStorageUnit> storageUnits) {
             this.storageUnits = storageUnits;
             return this;
         }

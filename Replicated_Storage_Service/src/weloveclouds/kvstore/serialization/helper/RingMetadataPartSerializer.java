@@ -22,7 +22,7 @@ public class RingMetadataPartSerializer implements ISerializer<String, RingMetad
     private ISerializer<String, ServerConnectionInfo> connectionInfoSerializer =
             new ServerConnectionInfoSerializer();
     private ISerializer<String, Set<HashRange>> hashRangesSerializer =
-            new SetOfHashRangesSerializer();
+            new HashRangesSetSerializer();
     private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
 
     @Override

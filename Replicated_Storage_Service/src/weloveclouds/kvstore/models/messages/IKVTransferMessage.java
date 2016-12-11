@@ -1,7 +1,9 @@
 package weloveclouds.kvstore.models.messages;
 
+import java.util.Set;
+
 import weloveclouds.kvstore.models.KVEntry;
-import weloveclouds.server.store.models.MovableStorageUnits;
+import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
  * Represents a message which transfers storage units between KVServers.
@@ -27,7 +29,7 @@ public interface IKVTransferMessage {
     /**
      * @return the storage units
      */
-    public MovableStorageUnits getStorageUnits();
+    public Set<MovableStorageUnit> getStorageUnits();
 
     /**
      * @return the entry that shall be put in the data access service

@@ -7,18 +7,18 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
-import weloveclouds.kvstore.serialization.helper.SetOfServerConnectionInfosSerializer;
+import weloveclouds.kvstore.serialization.helper.ServerConnectionInfosSetSerializer;
 
 /**
  * A deserializer which converts a {@link Set<ServerConnectionInfo>} to a {@link String}.
  * 
  * @author Benedek
  */
-public class SetOfServerConnectionInfosDeserializer
+public class ServerConnectionInfosSetDeserializer
         implements IDeserializer<Set<ServerConnectionInfo>, String> {
 
     private static final Logger LOGGER =
-            Logger.getLogger(SetOfServerConnectionInfosDeserializer.class);
+            Logger.getLogger(ServerConnectionInfosSetDeserializer.class);
 
     private IDeserializer<ServerConnectionInfo, String> connectionInfoDeserializer =
             new ServerConnectionInfoDeserializer();
@@ -30,7 +30,7 @@ public class SetOfServerConnectionInfosDeserializer
         if (from != null && !"null".equals(from)) {
             LOGGER.debug("Deserializing a Set<ServerConnectionInfo> from String.");
             // raw message split
-            String[] rawStorageUnits = from.split(SetOfServerConnectionInfosSerializer.SEPARATOR);
+            String[] rawStorageUnits = from.split(ServerConnectionInfosSetSerializer.SEPARATOR);
 
             // deserialized object
             deserialized = new HashSet<>();

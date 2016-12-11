@@ -35,7 +35,7 @@ import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
-import weloveclouds.server.store.models.MovableStorageUnits;
+import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
  * An implementation of {@link IMovableDataAccessService} whose underlying storage units can be
@@ -127,7 +127,7 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public synchronized void putEntries(MovableStorageUnits fromStorageUnits)
+    public synchronized void putEntries(Set<MovableStorageUnit> fromStorageUnits)
             throws StorageException {
         if (!isServiceInitialized()) {
             LOGGER.error("Put entries request while the data acess service was uninitialized.");
@@ -140,7 +140,7 @@ public class MovableDataAccessService extends DataAccessService
     }
 
     @Override
-    public synchronized MovableStorageUnits filterEntries(HashRange range)
+    public synchronized Set<MovableStorageUnit> filterEntries(HashRange range)
             throws UninitializedServiceException {
         if (!isServiceInitialized()) {
             LOGGER.error("Filter entries request while the data acess service was uninitialized.");
