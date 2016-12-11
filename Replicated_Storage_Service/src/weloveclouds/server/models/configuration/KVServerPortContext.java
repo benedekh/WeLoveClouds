@@ -20,7 +20,7 @@ public class KVServerPortContext {
         this.kvECSPort = 0;
     }
 
-    private KVServerPortContext(Builder builder) {
+    protected KVServerPortContext(Builder builder) {
         this.kvClientPort = builder.kvClientPort;
         this.kvServerPort = builder.kvServerPort;
         this.kvECSPort = builder.kvECSPort;

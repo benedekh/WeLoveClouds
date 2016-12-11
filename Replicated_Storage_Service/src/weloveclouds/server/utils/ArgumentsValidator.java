@@ -11,7 +11,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.commands.LogLevel;
-import weloveclouds.server.models.commands.ServerCommand;
+import weloveclouds.server.commands.client.ServerCommand;
 import weloveclouds.server.models.configuration.KVServerCLIContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;

@@ -16,8 +16,8 @@ import weloveclouds.commons.hashing.models.HashRange;
  */
 public class HashingUtil {
 
-    public static List<HashRange> divideHashRangeIntoEqualSubranges(HashRange hashRange, int
-            numberOfSubRanges) {
+    public static List<HashRange> divideHashRangeIntoEqualSubranges(HashRange hashRange,
+            int numberOfSubRanges) {
         List<HashRange> subRanges = new ArrayList<>();
         BigInteger rangeIntensity = hashRange.getEndValue().subtract(hashRange.getStartValue());
         BigInteger subRangeIntensity = rangeIntensity.divide(BigInteger.valueOf(numberOfSubRanges));
@@ -25,19 +25,17 @@ public class HashingUtil {
         for (BigInteger i = hashRange.getStartValue(); isSmallerThan(i, hashRange.getEndValue()); i
                 .add(subRangeIntensity)) {
             byte[] subRangeStart = i.toByteArray();
-            byte[] subRangeEnd = i.add(subRangeIntensity.subtract(BigInteger.valueOf(1)))
-                    .toByteArray();
-            subRanges.add(new HashRange.Builder()
-                    .begin(new Hash(subRangeStart))
-                    .end(new Hash(subRangeEnd))
-                    .build());
+            byte[] subRangeEnd =
+                    i.add(subRangeIntensity.subtract(BigInteger.valueOf(1))).toByteArray();
+            subRanges.add(new HashRange.Builder().begin(new Hash(subRangeStart))
+                    .end(new Hash(subRangeEnd)).build());
         }
         return subRanges;
     }
 
     /**
      * @return MD5 hash representation of the parameter String or null if the algorithm is not
-     * available
+     *         available
      */
     public static Hash getHash(String input) {
         Hash hash = null;

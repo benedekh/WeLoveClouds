@@ -1,9 +1,15 @@
 package weloveclouds.ecs.models.services;
 
+import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
+import static weloveclouds.commons.status.ServiceStatus.UNINITIALIZED;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.status.ServiceStatus;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForReadingException;
@@ -11,12 +17,6 @@ import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsib
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.utils.RingMetadataHelper;
-import weloveclouds.commons.hashing.models.HashRange;
-import weloveclouds.commons.hashing.models.RingMetadata;
-import weloveclouds.commons.hashing.models.RingMetadataPart;
-
-import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
-import static weloveclouds.commons.status.ServiceStatus.UNINITIALIZED;
 
 /**
  * Created by Benoit on 2016-11-30.
@@ -113,8 +113,9 @@ public class DistributedService {
                     ringTopology.getNumberOfNodes(), node.getHashKey(), previousRange);
             node.setHashRange(hashRange);
 
-            ringMetadata.addRangeInfo(new RingMetadataPart.Builder().connectionInfo(node
-                    .getServerConnectionInfo()).range(hashRange).build());
+            // TODO Can you add a TODO, cause I'll have to modify this to add the range again
+            ringMetadata.addRangeInfo(new RingMetadataPart.Builder()
+                    .connectionInfo(node.getServerConnectionInfo()).build());
 
             previousRange = hashRange;
         }

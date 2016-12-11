@@ -22,7 +22,7 @@ import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.Statu
 public class UpdateMetadata extends AbstractEcsNetworkCommand {
     private RingMetadata ringMetadata;
 
-    public UpdateMetadata(Builder updateMetadataBuider) {
+    protected UpdateMetadata(Builder updateMetadataBuider) {
         this.communicationApi = updateMetadataBuider.communicationApi;
         this.ringMetadata = updateMetadataBuider.ringMetadata;
         this.targetedNode = updateMetadataBuider.targetedNode;

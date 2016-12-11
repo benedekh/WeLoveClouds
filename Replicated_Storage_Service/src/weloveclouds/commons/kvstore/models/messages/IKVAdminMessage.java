@@ -1,7 +1,11 @@
 package weloveclouds.commons.kvstore.models.messages;
 
+import java.util.Set;
+
+import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * Represents an administrative message between the ECS and the KVServer.
@@ -15,7 +19,9 @@ public interface IKVAdminMessage {
         SHUTDOWN, /* Shut down the server - request */
         LOCKWRITE, /* Lock the write operation on the server - request */
         UNLOCKWRITE, /* Unlock the write lock on the server - request */
+        COPYDATA, /* Copy range of the data from one server to another - request */
         MOVEDATA, /* Move range of the data from one server to another - request */
+        REMOVERANGE, /* Remove range from the server - request */
         UPDATE, /* Update the metadata structure - request */
         RESPONSE_SUCCESS, /* Request was executed successfully. */
         RESPONSE_ERROR, /* There was an error during the execution. */
@@ -29,14 +35,26 @@ public interface IKVAdminMessage {
     public StatusType getStatus();
 
     /**
-     * @return the ring metadata parts (<IP, port, range>) for each server
+     * @return the ring metadata parts (<IP, port, <range, role>>) for each server
      */
     public RingMetadata getRingMetadata();
 
     /**
-     * @return the ip+port+hash range in which the hash values of keys of the entries have to be
+     * @return the IP+port of the target server to which entries denoted by the encapsulated
+     *         HashRange have to be transferred
      */
     public RingMetadataPart getTargetServerInfo();
+
+    /**
+     * @return connection information about the replicas, e.g. on which IP + port are they
+     *         accessible
+     */
+    public Set<ServerConnectionInfo> getReplicaConnectionInfos();
+
+    /**
+     * @return the range whose entries shall be removed from the server
+     */
+    public HashRange getRemovableRange();
 
     /**
      * @return if the message is a response then the message text can be obtained here

@@ -14,6 +14,7 @@ import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
+import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
 import weloveclouds.commons.serialization.IMessageDeserializer;
@@ -50,7 +51,8 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      */
     public KVCommunicationApiV1(String address, int port) {
         this.serverCommunication = new CommunicationApiV1(
-                new CommunicationService(new SocketFactory()), new NetworkPacketResenderFactory());
+                new CommunicationService(new ConnectionFactory(new SocketFactory())),
+                new NetworkPacketResenderFactory());
 
         this.address = address;
         this.port = port;

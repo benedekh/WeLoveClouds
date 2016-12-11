@@ -1,7 +1,5 @@
 package weloveclouds.commons.kvstore.deserialization.helper;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -37,11 +35,9 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
 
             // length check
             if (parts.length != NUMBER_OF_HASH_RANGE_PARTS) {
-                String errorMessage =
+                throw new DeserializationException(
                         CustomStringJoiner.join("", "Hash range must consist of exactly ",
-                                String.valueOf(NUMBER_OF_HASH_RANGE_PARTS), " parts.");
-                LOGGER.debug(errorMessage);
-                throw new DeserializationException(errorMessage);
+                                String.valueOf(NUMBER_OF_HASH_RANGE_PARTS), " parts."));
             }
 
             // raw fields
@@ -54,7 +50,7 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
 
             // deserialized object
             deserialized = new HashRange.Builder().begin(startHash).end(endHash).build();
-            LOGGER.debug(join(" ", "Deserialized hash range is:", deserialized.toString()));
+            LOGGER.debug("Deserializing a HashRange from String finished.");
         }
 
         return deserialized;

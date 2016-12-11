@@ -28,9 +28,8 @@ public class AllTests {
         }
     }
 
-
     public static Test suite() {
-        TestSuite clientSuite = new TestSuite("Scalable Storage ServerTest-Suite");
+        TestSuite clientSuite = new TestSuite("Replicated Storage ServerTest-Suite");
         clientSuite.addTestSuite(ConnectionTest.class);
         clientSuite.addTestSuite(InteractionTest.class);
         clientSuite.addTestSuite(HandledHashRangeTest.class);

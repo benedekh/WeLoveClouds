@@ -1,7 +1,5 @@
 package weloveclouds.commons.kvstore.deserialization.helper;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
@@ -30,10 +28,9 @@ public class HashDeserializer implements IDeserializer<Hash, String> {
 
             // length check
             if (parts.length != NUMBER_OF_HASH_PARTS) {
-                String errorMessage = CustomStringJoiner.join("", "Hash must consist of exactly ",
-                        String.valueOf(NUMBER_OF_HASH_PARTS), " parts.");
-                LOGGER.debug(errorMessage);
-                throw new DeserializationException(errorMessage);
+                throw new DeserializationException(
+                        CustomStringJoiner.join("", "Hash must consist of exactly ",
+                                String.valueOf(NUMBER_OF_HASH_PARTS), " parts."));
             }
 
             int i = 0;
@@ -46,16 +43,14 @@ public class HashDeserializer implements IDeserializer<Hash, String> {
 
                 // deserialized object
                 deserialized = new Hash(hash);
-                LOGGER.debug(join(" ", "Deserialized hash is:", deserialized.toString()));
+                LOGGER.debug("Deserializing a Hash from String finished.");
             } catch (NumberFormatException ex) {
-                String errorMessage =
+                throw new DeserializationException(
                         CustomStringJoiner.join("", "Deserialized hash byte segment at index ",
-                                String.valueOf(i), " is not a byte: ", parts[i]);
-                LOGGER.debug(errorMessage);
-                throw new DeserializationException(errorMessage);
+                                String.valueOf(i), " is not a byte: ", parts[i]));
             }
         }
-        
+
         return deserialized;
     }
 

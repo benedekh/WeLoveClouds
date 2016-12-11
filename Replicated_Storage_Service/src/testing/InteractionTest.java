@@ -1,10 +1,10 @@
 package testing;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-
-
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.server.api.IKVServerApi;
@@ -15,6 +15,7 @@ public class InteractionTest extends TestCase {
 
     private IKVServerApi kvClient;
 
+    @Before
     public void setUp() {
         kvClient = new KVCommunicationApiV1("localhost", 50000);
         try {
@@ -23,10 +24,10 @@ public class InteractionTest extends TestCase {
         }
     }
 
+    @After
     public void tearDown() {
         kvClient.disconnect();
     }
-
 
     @Test
     public void testPut() {
@@ -131,7 +132,5 @@ public class InteractionTest extends TestCase {
 
         assertTrue(ex == null && response.getStatus() == StatusType.GET_ERROR);
     }
-
-
 
 }

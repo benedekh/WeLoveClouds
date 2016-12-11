@@ -5,21 +5,22 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.KVTransferMessageDeserializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
-import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.server.store.models.MovableStorageUnit;
-import weloveclouds.server.store.models.MovableStorageUnits;
 import weloveclouds.server.utils.FileUtility;
 
 /**
@@ -47,11 +48,16 @@ public class KVTransferMessageTest extends TestCase {
         keyval2.put("orange", "banana");
         MovableStorageUnit unit2 = new MovableStorageUnit(keyval2, FileUtility.createDummyPath());
 
-        MovableStorageUnits storageUnits =
-                new MovableStorageUnits(new HashSet<>(Arrays.asList(unit1, unit2)));
+        Set<MovableStorageUnit> storageUnits = new HashSet<>(Arrays.asList(unit1, unit2));
 
-        KVTransferMessage transferMessage = new KVTransferMessage.Builder()
-                .storageUnits(storageUnits).status(StatusType.TRANSFER).build();
+        KVEntry putableEntry = new KVEntry("hello", "world");
+        String removableKey = "apple";
+        String responseMessage = "hello world";
+
+        KVTransferMessage transferMessage =
+                new KVTransferMessage.Builder().storageUnits(storageUnits)
+                        .status(StatusType.TRANSFER_ENTRIES).putableEntry(putableEntry)
+                        .removableKey(removableKey).responseMessage(responseMessage).build();
 
         SerializedMessage serializedMessage = transferMessageSerializer.serialize(transferMessage);
         KVTransferMessage deserializedMessage =

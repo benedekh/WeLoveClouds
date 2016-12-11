@@ -14,7 +14,6 @@ import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
-import weloveclouds.server.store.models.MovableStorageUnits;
 import weloveclouds.server.store.models.PersistedStorageUnit;
 import weloveclouds.server.utils.FileUtility;
 
@@ -37,10 +36,10 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * 
      * @param fromStorageUnits from where the entries will be copied
      */
-    public void putEntries(MovableStorageUnits fromStorageUnits) throws StorageException {
+    public void putEntries(Set<MovableStorageUnit> fromStorageUnits) throws StorageException {
         LOGGER.debug("Putting storage units from parameter data structure started.");
 
-        for (MovableStorageUnit storageUnit : fromStorageUnits.getStorageUnits()) {
+        for (MovableStorageUnit storageUnit : fromStorageUnits) {
             Path path = FileUtility.generateUniqueFilePath(rootPath, FILE_EXTENSION);
             storageUnit.setPath(path);
             storageUnit.save();
@@ -63,7 +62,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @return the storage units of those entries whose keys are in the given range
      * @throws StorageException if an error occurs
      */
-    public MovableStorageUnits filterEntries(HashRange range) {
+    public Set<MovableStorageUnit> filterEntries(HashRange range) {
         LOGGER.debug(
                 CustomStringJoiner.join(" ", "Filtering storage units according to range filter (",
                         range.toString(), ") started."));
@@ -77,7 +76,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
 
         LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(toBeCopied.size()),
                 " storage units are filtered."));
-        return new MovableStorageUnits(toBeCopied);
+        return toBeCopied;
     }
 
     /**

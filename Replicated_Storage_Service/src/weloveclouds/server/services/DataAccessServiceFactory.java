@@ -35,8 +35,24 @@ public class DataAccessServiceFactory {
      */
     public MovableDataAccessService createInitializedMovableDataAccessService(
             DataAccessServiceInitializationContext initializationContext) {
-        LOGGER.debug("Creating an initialized DataAccessService.");
+        LOGGER.debug("Creating an initialized MovableDataAccessService.");
         return new MovableDataAccessService(
+                new KVCache(initializationContext.getCacheSize(),
+                        initializationContext.getDisplacementStrategy()),
+                new MovablePersistentStorage(initializationContext.getStorageRootFolderPath()));
+    }
+
+    /**
+     * @param initializationContext the parameters for the initialization
+     * @param replicationTransferer helper class which transfers the replication requests to the
+     *        replicas
+     * 
+     * @return a {@link ReplicableDataAccessService} which is already initialized by the parameters
+     */
+    public ReplicableDataAccessService createInitializedReplicableDataAccessService(
+            DataAccessServiceInitializationContext initializationContext) {
+        LOGGER.debug("Creating an initialized ReplicableDataAccessService.");
+        return new ReplicableDataAccessService(
                 new KVCache(initializationContext.getCacheSize(),
                         initializationContext.getDisplacementStrategy()),
                 new MovablePersistentStorage(initializationContext.getStorageRootFolderPath()));

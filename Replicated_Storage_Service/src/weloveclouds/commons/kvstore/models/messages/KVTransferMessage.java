@@ -1,7 +1,11 @@
 package weloveclouds.commons.kvstore.models.messages;
 
+import java.util.Set;
+
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.server.store.models.MovableStorageUnits;
+import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.utils.SetToStringUtility;
 
 /**
  * Represents a message which transfers storage units between KVServers.
@@ -12,12 +16,16 @@ public class KVTransferMessage implements IKVTransferMessage {
 
     private StatusType status;
 
-    private MovableStorageUnits storageUnits;
+    private Set<MovableStorageUnit> storageUnits;
+    private KVEntry putableEntry;
+    private String removableKey;
     private String responseMessage;
 
     protected KVTransferMessage(Builder builder) {
         this.status = builder.status;
         this.storageUnits = builder.storageUnits;
+        this.putableEntry = builder.putableEntry;
+        this.removableKey = builder.removableKey;
         this.responseMessage = builder.responseMessage;
     }
 
@@ -27,8 +35,18 @@ public class KVTransferMessage implements IKVTransferMessage {
     }
 
     @Override
-    public MovableStorageUnits getStorageUnits() {
+    public Set<MovableStorageUnit> getStorageUnits() {
         return storageUnits;
+    }
+
+    @Override
+    public KVEntry getPutableEntry() {
+        return putableEntry;
+    }
+
+    @Override
+    public String getRemovableKey() {
+        return removableKey;
     }
 
     @Override
@@ -40,6 +58,8 @@ public class KVTransferMessage implements IKVTransferMessage {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((putableEntry == null) ? 0 : putableEntry.hashCode());
+        result = prime * result + ((removableKey == null) ? 0 : removableKey.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result + ((storageUnits == null) ? 0 : storageUnits.hashCode());
@@ -58,6 +78,20 @@ public class KVTransferMessage implements IKVTransferMessage {
             return false;
         }
         KVTransferMessage other = (KVTransferMessage) obj;
+        if (putableEntry == null) {
+            if (other.putableEntry != null) {
+                return false;
+            }
+        } else if (!putableEntry.equals(other.putableEntry)) {
+            return false;
+        }
+        if (removableKey == null) {
+            if (other.removableKey != null) {
+                return false;
+            }
+        } else if (!removableKey.equals(other.removableKey)) {
+            return false;
+        }
         if (responseMessage == null) {
             if (other.responseMessage != null) {
                 return false;
@@ -82,8 +116,9 @@ public class KVTransferMessage implements IKVTransferMessage {
     public String toString() {
         return CustomStringJoiner.join(" ", "Message status:",
                 status == null ? null : status.toString(), ", Storage units:",
-                storageUnits == null ? null : storageUnits.toString(), ", Response message: ",
-                responseMessage == null ? null : responseMessage.toString());
+                SetToStringUtility.toString(storageUnits), ", Putable entry: ",
+                putableEntry == null ? null : putableEntry.toString(), ", Removable key: ",
+                removableKey, ", Response message: ", responseMessage);
     }
 
     /**
@@ -93,7 +128,9 @@ public class KVTransferMessage implements IKVTransferMessage {
      */
     public static class Builder {
         private StatusType status;
-        private MovableStorageUnits storageUnits;
+        private Set<MovableStorageUnit> storageUnits;
+        private KVEntry putableEntry;
+        private String removableKey;
         private String responseMessage;
 
         public Builder status(StatusType status) {
@@ -101,8 +138,18 @@ public class KVTransferMessage implements IKVTransferMessage {
             return this;
         }
 
-        public Builder storageUnits(MovableStorageUnits storageUnits) {
+        public Builder storageUnits(Set<MovableStorageUnit> storageUnits) {
             this.storageUnits = storageUnits;
+            return this;
+        }
+
+        public Builder putableEntry(KVEntry putableEntry) {
+            this.putableEntry = putableEntry;
+            return this;
+        }
+
+        public Builder removableKey(String removableKey) {
+            this.removableKey = removableKey;
             return this;
         }
 

@@ -1,11 +1,13 @@
 package weloveclouds.commons.kvstore.serialization.helper;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * A serializer which converts a {@link RingMetadataPart} to a {@link String}.
@@ -19,6 +21,8 @@ public class RingMetadataPartSerializer implements ISerializer<String, RingMetad
 
     private ISerializer<String, ServerConnectionInfo> connectionInfoSerializer =
             new ServerConnectionInfoSerializer();
+    private ISerializer<String, Set<HashRange>> hashRangesSerializer =
+            new HashRangesSetSerializer();
     private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
 
     @Override
@@ -29,14 +33,17 @@ public class RingMetadataPartSerializer implements ISerializer<String, RingMetad
             LOGGER.debug("Serializing a RingMetadataPart.");
             // original fields
             ServerConnectionInfo connectionInfo = target.getConnectionInfo();
-            HashRange hashRange = target.getRange();
+            Set<HashRange> readRanges = target.getReadRanges();
+            HashRange writeRange = target.getWriteRange();
 
             // string representation
             String connectionInfoStr = connectionInfoSerializer.serialize(connectionInfo);
-            String hashRangeStr = hashRangeSerializer.serialize(hashRange);
+            String readRangesStr = hashRangesSerializer.serialize(readRanges);
+            String writeRangeStr = hashRangeSerializer.serialize(writeRange);
 
             // merged string representation
-            serialized = CustomStringJoiner.join(SEPARATOR, connectionInfoStr, hashRangeStr);
+            serialized = CustomStringJoiner.join(SEPARATOR, connectionInfoStr, readRangesStr,
+                    writeRangeStr);
             LOGGER.debug("Serializing a RingMetadataPart finished.");
         }
 

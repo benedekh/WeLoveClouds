@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Stores <IP, port> and <hash-range> triplets, which defines respective server (denoted by its
- * <ip,port>) is responsible for which hash range.
- *
+ * Stores <IP, port> and <hash-ranges> triplets, which defines respective server (denoted by its
+ * <ip,port>) is responsible for which hash range with what role.
+ * 
  * @author Benedek
  */
 public class RingMetadata {
@@ -39,7 +39,7 @@ public class RingMetadata {
      * Get that server's details which handles the responsible hash value.
      *
      * @return the range information (IP+port+range) of that server which handles the respective
-     * hash value
+     *         hash value
      */
     public RingMetadataPart findServerInfoByHash(Hash hash) {
         for (RingMetadataPart metadataPart : metadataParts) {

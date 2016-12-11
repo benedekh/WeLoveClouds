@@ -106,7 +106,9 @@ public class KVServerInitializationUtil implements AutoCloseable {
     private RingMetadataPart createRingMetadataPart(HashRange range) throws IOException {
         ServerConnectionInfo server = new ServerConnectionInfo.Builder().ipAddress("localhost")
                 .port(SERVER_KVCLIENT_PORT).build();
-        return new RingMetadataPart.Builder().connectionInfo(server).range(range).build();
+
+        return new RingMetadataPart.Builder().connectionInfo(server)
+                .readRanges(new HashSet<>(Arrays.asList(range))).writeRange(range).build();
     }
 
 

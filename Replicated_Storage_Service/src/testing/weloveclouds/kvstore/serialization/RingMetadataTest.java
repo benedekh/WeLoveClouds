@@ -3,6 +3,7 @@ package testing.weloveclouds.kvstore.serialization;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -35,19 +36,20 @@ public class RingMetadataTest extends TestCase {
     @Test
     public void testMovableStorageUnitSerializationAndDeserialization()
             throws DeserializationException, UnknownHostException {
+        HashRange range1 =
+                new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
+        HashRange writeRange = new HashRange.Builder().begin(HashingUtil.getHash("a"))
+                .end(HashingUtil.getHash("a")).build();
+        Set<HashRange> readRanges = new HashSet<>(Arrays.asList(range1, writeRange));
+        RingMetadataPart metadataPart1 =
+                new RingMetadataPart.Builder()
+                        .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost")
+                                .port(8080).build())
+                        .readRanges(readRanges).writeRange(writeRange).build();
 
-        RingMetadataPart metadataPart1 = new RingMetadataPart.Builder()
-                .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080)
-                        .build())
-                .range(new HashRange.Builder().begin(HashingUtil.getHash("a"))
-                        .end(HashingUtil.getHash("b")).build())
-                .build();
-
-        RingMetadataPart metadataPart2 = new RingMetadataPart.Builder()
-                .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost").port(8082)
-                        .build())
-                .range(new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build())
-                .build();
+        RingMetadataPart metadataPart2 = new RingMetadataPart.Builder().connectionInfo(
+                new ServerConnectionInfo.Builder().ipAddress("localhost").port(8082).build())
+                .readRanges(readRanges).build();
 
         RingMetadata metadata =
                 new RingMetadata(new HashSet<>(Arrays.asList(metadataPart1, metadataPart2)));

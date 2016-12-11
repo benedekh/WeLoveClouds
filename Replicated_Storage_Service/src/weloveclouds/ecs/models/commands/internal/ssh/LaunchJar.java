@@ -17,7 +17,7 @@ public class LaunchJar extends AbstractRemoteCommand {
     private String jarFilePath;
     private ISecureShellService secureShellService;
 
-    public LaunchJar(Builder commandBuilder) {
+    protected LaunchJar(Builder commandBuilder) {
         super(COMMAND, commandBuilder.arguments, commandBuilder.targetedNode);
         this.secureShellService = commandBuilder.secureShellService;
         this.jarFilePath = commandBuilder.jarFilePath;

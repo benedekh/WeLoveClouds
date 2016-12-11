@@ -1,11 +1,15 @@
 package weloveclouds.server.services;
 
+import java.util.Set;
+
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
+import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
-import weloveclouds.server.store.models.MovableStorageUnits;
+import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
  * A common interface to those {@link IDataAccessService} implementations whose underlying storage
@@ -20,7 +24,18 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * 
      * @param fromStorageUnits from where the entries will be copied
      */
-    public void putEntries(MovableStorageUnits fromStorageUnits) throws StorageException;
+    public void putEntries(Set<MovableStorageUnit> fromStorageUnits) throws StorageException;
+
+    /**
+     * Puts an entry into the persistent storage without checking the role (@link Role) of this
+     * server regarding that key.
+     * 
+     * @param entry that has to be put in the persistent storage
+     * @return {@link PutType#INSERT}} if key was stored for the first time in the storage, or a
+     *         {@link PutType#UPDATE} if the key was already stored
+     * @throws StorageException if an error occurs
+     */
+    public PutType putEntryWithoutAuthorization(KVEntry entry) throws StorageException;
 
     /**
      * Filters those entries from the persistent storage whose keys are in the specified range.
@@ -29,7 +44,7 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * @return the storage units of those entries whose keys are in the given range
      * @throws StorageException if the service was not initialized yet
      */
-    public MovableStorageUnits filterEntries(HashRange range) throws UninitializedServiceException;
+    public Set<MovableStorageUnit> filterEntries(HashRange range) throws UninitializedServiceException;
 
     /**
      * Removes those entries from the persistent storage whose keys are in the specified range.
@@ -38,6 +53,15 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * @throws StorageException if an error occurs
      */
     public void removeEntries(HashRange range) throws StorageException;
+
+    /**
+     * Removes an entry denoted by its key from the persistent storage without checking the role
+     * (@link Role) of this server regarding that key.
+     * 
+     * @param key the key of the entry that shall be removed
+     * @throws StorageException if an error occurs
+     */
+    public void removeEntryWithoutAuthorization(String key) throws StorageException;
 
     /**
      * Merges those storage units which are not full yet.
@@ -55,16 +79,22 @@ public interface IMovableDataAccessService extends IDataAccessService {
             throws UninitializedServiceException;
 
     /**
-     * Ring hash metadata information.
+     * Sets the ring hash metadata information.
      */
     public void setRingMetadata(RingMetadata ringMetadata);
 
     /**
-     * Sets the hash range that is managed by the data access service.
-     * 
-     * @param range
+     * @return ring hash metadata information
      */
-    public void setManagedHashRange(HashRange rangeManagedByServer);
+    public RingMetadata getRingMetadata();
+
+    /**
+     * Sets the hash ranges that are managed by the data access service.
+     * 
+     * @param readRanges {@link HashRange} ranges for which the server has READ privilege
+     * @param writeRange {@link HashRange} range for which the server has WRITE privilege
+     */
+    public void setManagedHashRanges(Set<HashRange> readRanges, HashRange writeRange);
 
     /**
      * @return true if the data access service is initialized, false otherwise

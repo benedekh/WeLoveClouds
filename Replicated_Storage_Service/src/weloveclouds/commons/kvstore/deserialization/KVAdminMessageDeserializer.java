@@ -3,20 +3,26 @@ package weloveclouds.commons.kvstore.deserialization;
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.helper.HashRangeDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataPartDeserializer;
+import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfosSetDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
-import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link KVAdminMessage}.
@@ -26,19 +32,24 @@ import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 public class KVAdminMessageDeserializer
         implements IMessageDeserializer<KVAdminMessage, SerializedMessage> {
 
-    private static final int NUMBER_OF_MESSAGE_PARTS = 4;
-
+    private static final int NUMBER_OF_MESSAGE_PARTS = 6;
     private static final int MESSAGE_STATUS_INDEX = 0;
     private static final int MESSAGE_RING_METADATA_INDEX = 1;
     private static final int MESSAGE_TARGET_SERVER_INFO_INDEX = 2;
-    private static final int MESSAGE_RESPONSE_MESSAGE_INDEX = 3;
+    private static final int MESSAGE_REPLICA_CONNECTION_INFOS_INDEX = 3;
+    private static final int MESSAGE_REMOVABLE_RANGE_INDEX = 4;
+    private static final int MESSAGE_RESPONSE_MESSAGE_INDEX = 5;
 
     private static final Logger LOGGER = Logger.getLogger(KVAdminMessageDeserializer.class);
 
+    private IDeserializer<HashRange, String> removableRangeDeserializer =
+            new HashRangeDeserializer();
     private IDeserializer<RingMetadata, String> metadataDeserializer =
             new RingMetadataDeserializer();
     private IDeserializer<RingMetadataPart, String> metadataPartDeserializer =
-            new RingMetadataPartDeserializer();;
+            new RingMetadataPartDeserializer();
+    private IDeserializer<Set<ServerConnectionInfo>, String> replicaConnectionInfosDeserializer =
+            new ServerConnectionInfosSetDeserializer();
 
     @Override
     public KVAdminMessage deserialize(SerializedMessage serializedMessage)
@@ -60,10 +71,9 @@ public class KVAdminMessageDeserializer
 
         // length check
         if (messageParts.length != NUMBER_OF_MESSAGE_PARTS) {
-            String errorMessage = CustomStringJoiner.join("", "Message must consist of exactly ",
-                    String.valueOf(NUMBER_OF_MESSAGE_PARTS), " parts.");
-            LOGGER.debug(errorMessage);
-            throw new DeserializationException(errorMessage);
+            throw new DeserializationException(
+                    CustomStringJoiner.join("", "Message must consist of exactly ",
+                            String.valueOf(NUMBER_OF_MESSAGE_PARTS), " parts."));
         }
 
         try {
@@ -71,6 +81,8 @@ public class KVAdminMessageDeserializer
             String statusStr = messageParts[MESSAGE_STATUS_INDEX];
             String ringMetadataStr = messageParts[MESSAGE_RING_METADATA_INDEX];
             String targetServerInfoStr = messageParts[MESSAGE_TARGET_SERVER_INFO_INDEX];
+            String replicaConnectionInfosStr = messageParts[MESSAGE_REPLICA_CONNECTION_INFOS_INDEX];
+            String removableRangeStr = messageParts[MESSAGE_REMOVABLE_RANGE_INDEX];
             String responseMessageStr = messageParts[MESSAGE_RESPONSE_MESSAGE_INDEX];
 
             // deserialized fields
@@ -78,11 +90,15 @@ public class KVAdminMessageDeserializer
             RingMetadata ringMetadata = metadataDeserializer.deserialize(ringMetadataStr);
             RingMetadataPart targetServerInfo =
                     metadataPartDeserializer.deserialize(targetServerInfoStr);
+            HashRange removableRange = removableRangeDeserializer.deserialize(removableRangeStr);
+            Set<ServerConnectionInfo> replicaConnectionInfos =
+                    replicaConnectionInfosDeserializer.deserialize(replicaConnectionInfosStr);
             String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;
 
             // deserialized object
             KVAdminMessage deserialized = new KVAdminMessage.Builder().status(status)
                     .ringMetadata(ringMetadata).targetServerInfo(targetServerInfo)
+                    .replicaConnectionInfos(replicaConnectionInfos).removableRange(removableRange)
                     .responseMessage(responseMessage).build();
 
             LOGGER.debug(join(" ", "Deserialized KVAdminMessage is:", deserialized.toString()));

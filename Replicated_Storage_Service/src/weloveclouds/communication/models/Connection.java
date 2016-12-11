@@ -11,7 +11,8 @@ import java.net.Socket;
  *
  * @author Benoit, Benedek
  */
-public class Connection {
+public class Connection implements AutoCloseable {
+
     private ServerConnectionInfo remoteServer;
     private Socket socket;
 
@@ -60,6 +61,11 @@ public class Connection {
     }
 
     @Override
+    public void close() throws IOException {
+        kill();
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -97,8 +103,6 @@ public class Connection {
         return true;
     }
 
-
-
     /**
      * Builder pattern for creating a {@link Connection} instance.
      *
@@ -122,4 +126,5 @@ public class Connection {
             return new Connection(this);
         }
     }
+
 }

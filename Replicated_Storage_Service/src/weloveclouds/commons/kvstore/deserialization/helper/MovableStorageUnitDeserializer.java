@@ -43,11 +43,9 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
 
                 // length check
                 if (rawEntryParts.length != NUMBER_OF_ENTRY_PARTS) {
-                    String errorMessage =
+                    throw new DeserializationException(
                             CustomStringJoiner.join("", "KVEntry must consist of exactly ",
-                                    String.valueOf(NUMBER_OF_ENTRY_PARTS), " parts.");
-                    LOGGER.debug(errorMessage);
-                    throw new DeserializationException(errorMessage);
+                                    String.valueOf(NUMBER_OF_ENTRY_PARTS), " parts."));
                 }
 
                 // raw fields

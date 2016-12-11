@@ -1,48 +1,5 @@
 package weloveclouds.ecs.core;
 
-import com.google.inject.Inject;
-
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
-import weloveclouds.commons.cli.utils.UserOutputWriter;
-import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.commons.monitoring.statsd.IStatsdClient;
-import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
-import weloveclouds.ecs.contexts.EcsExecutionContext;
-import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
-import weloveclouds.ecs.exceptions.InvalidConfigurationException;
-import weloveclouds.ecs.exceptions.ServiceBootstrapException;
-import weloveclouds.ecs.models.repository.EcsRepository;
-import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
-import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.ecs.models.repository.StorageNodeStatus;
-import weloveclouds.ecs.models.services.DistributedService;
-import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
-import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
-import weloveclouds.ecs.models.tasks.EcsBatchFactory;
-import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
-import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
-import weloveclouds.ecs.models.topology.RingTopology;
-import weloveclouds.commons.serialization.NodeHealthInfosSerializer;
-import weloveclouds.commons.serialization.RingTopologySerializer;
-import weloveclouds.commons.serialization.StorageNodeSerializer;
-import weloveclouds.ecs.services.ITaskService;
-import weloveclouds.commons.utils.ListUtils;
-import weloveclouds.ecs.utils.RingMetadataHelper;
-import weloveclouds.commons.hashing.models.Hash;
-import weloveclouds.commons.hashing.models.HashRange;
-import weloveclouds.commons.kvstore.serialization.helper.HashRangeSerializer;
-import weloveclouds.commons.kvstore.serialization.helper.HashSerializer;
-import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
-
-
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.INITIALIZING_SERVICE;
 import static weloveclouds.ecs.core.EcsStatus.REMOVING_NODE;
@@ -54,6 +11,42 @@ import static weloveclouds.ecs.models.repository.StorageNodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.REMOVED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.RUNNING;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+import org.apache.log4j.Logger;
+
+import com.google.inject.Inject;
+
+import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.cli.utils.UserOutputWriter;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.monitoring.statsd.IStatsdClient;
+import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
+import weloveclouds.commons.utils.ListUtils;
+import weloveclouds.ecs.contexts.EcsExecutionContext;
+import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
+import weloveclouds.ecs.exceptions.InvalidConfigurationException;
+import weloveclouds.ecs.exceptions.ServiceBootstrapException;
+import weloveclouds.ecs.models.repository.EcsRepository;
+import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
+import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.models.repository.StorageNodeStatus;
+import weloveclouds.ecs.models.services.DistributedService;
+import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
+import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
+import weloveclouds.ecs.models.tasks.EcsBatchFactory;
+import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
+import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
+import weloveclouds.ecs.models.topology.RingTopology;
+import weloveclouds.ecs.services.ITaskService;
+import weloveclouds.ecs.utils.RingMetadataHelper;
 
 
 /**

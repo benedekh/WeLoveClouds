@@ -1,8 +1,14 @@
 package weloveclouds.commons.kvstore.models.messages;
 
+import java.util.Set;
+
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.server.utils.SetToStringUtility;
+
 
 /**
  * Represents an administrative message between the ECS and the KVServer.
@@ -14,12 +20,16 @@ public class KVAdminMessage implements IKVAdminMessage {
     private StatusType status;
     private RingMetadata ringMetadata;
     private RingMetadataPart targetServerInfo;
+    private Set<ServerConnectionInfo> replicaConnectionInfos;
+    private HashRange removableRange;
     private String responseMessage;
 
     protected KVAdminMessage(Builder builder) {
         this.status = builder.status;
         this.ringMetadata = builder.ringMetadata;
         this.targetServerInfo = builder.targetServerInfo;
+        this.replicaConnectionInfos = builder.replicaConnectionInfos;
+        this.removableRange = builder.removableRange;
         this.responseMessage = builder.responseMessage;
     }
 
@@ -39,6 +49,16 @@ public class KVAdminMessage implements IKVAdminMessage {
     }
 
     @Override
+    public Set<ServerConnectionInfo> getReplicaConnectionInfos() {
+        return replicaConnectionInfos;
+    }
+
+    @Override
+    public HashRange getRemovableRange() {
+        return removableRange;
+    }
+
+    @Override
     public String getResponseMessage() {
         return responseMessage;
     }
@@ -46,10 +66,12 @@ public class KVAdminMessage implements IKVAdminMessage {
     @Override
     public String toString() {
         return CustomStringJoiner.join(" ", "Message status:",
-                status == null ? null : status.toString(), ", Ring metadata:",
+                status == null ? null : status.toString(), ", Removable range: ",
+                removableRange == null ? null : removableRange.toString(), ", Ring metadata:",
                 ringMetadata == null ? null : ringMetadata.toString(), ", Target server info:",
                 targetServerInfo == null ? null : targetServerInfo.toString(),
-                ", Response message: ",
+                ", Replica connection infos:", SetToStringUtility.toString(replicaConnectionInfos),
+                ",  Response message: ",
                 responseMessage == null ? null : responseMessage.toString());
     }
 
@@ -57,6 +79,9 @@ public class KVAdminMessage implements IKVAdminMessage {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((removableRange == null) ? 0 : removableRange.hashCode());
+        result = prime * result
+                + ((replicaConnectionInfos == null) ? 0 : replicaConnectionInfos.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((ringMetadata == null) ? 0 : ringMetadata.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
@@ -76,6 +101,20 @@ public class KVAdminMessage implements IKVAdminMessage {
             return false;
         }
         KVAdminMessage other = (KVAdminMessage) obj;
+        if (removableRange == null) {
+            if (other.removableRange != null) {
+                return false;
+            }
+        } else if (!removableRange.equals(other.removableRange)) {
+            return false;
+        }
+        if (replicaConnectionInfos == null) {
+            if (other.replicaConnectionInfos != null) {
+                return false;
+            }
+        } else if (!replicaConnectionInfos.equals(other.replicaConnectionInfos)) {
+            return false;
+        }
         if (responseMessage == null) {
             if (other.responseMessage != null) {
                 return false;
@@ -112,6 +151,8 @@ public class KVAdminMessage implements IKVAdminMessage {
         private StatusType status;
         private RingMetadata ringMetadata;
         private RingMetadataPart targetServerInfo;
+        private Set<ServerConnectionInfo> replicaConnectionInfos;
+        private HashRange removableRange;
         private String responseMessage;
 
         public Builder status(StatusType status) {
@@ -129,6 +170,16 @@ public class KVAdminMessage implements IKVAdminMessage {
             return this;
         }
 
+        public Builder replicaConnectionInfos(Set<ServerConnectionInfo> replicaConnectionInfos) {
+            this.replicaConnectionInfos = replicaConnectionInfos;
+            return this;
+        }
+
+        public Builder removableRange(HashRange range) {
+            this.removableRange = range;
+            return this;
+        }
+
         public Builder responseMessage(String message) {
             this.responseMessage = message;
             return this;
@@ -138,5 +189,4 @@ public class KVAdminMessage implements IKVAdminMessage {
             return new KVAdminMessage(this);
         }
     }
-
 }
