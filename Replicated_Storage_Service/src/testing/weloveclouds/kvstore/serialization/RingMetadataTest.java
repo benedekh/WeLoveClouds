@@ -3,6 +3,7 @@ package testing.weloveclouds.kvstore.serialization;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -11,7 +12,6 @@ import junit.framework.TestCase;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -40,7 +40,7 @@ public class RingMetadataTest extends TestCase {
                 new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
         HashRange writeRange = new HashRange.Builder().begin(HashingUtil.getHash("a"))
                 .end(HashingUtil.getHash("a")).build();
-        HashRanges readRanges = new HashRanges(new HashSet<>(Arrays.asList(range1, writeRange)));
+        Set<HashRange> readRanges = new HashSet<>(Arrays.asList(range1, writeRange));
         RingMetadataPart metadataPart1 =
                 new RingMetadataPart.Builder()
                         .connectionInfo(new ServerConnectionInfo.Builder().ipAddress("localhost")

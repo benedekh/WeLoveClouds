@@ -8,39 +8,37 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.communication.models.ServerConnectionInfos;
 
 /**
- * A serializer which converts a {@link ServerConnectionInfos} to a {@link String}.
+ * A serializer which converts a {@link Set<ServerConnectionInfo>} to a {@link String}.
  * 
  * @author Benedek
  */
-public class ServerConnectionInfosSerializer implements ISerializer<String, ServerConnectionInfos> {
+public class SetOfServerConnectionInfosSerializer
+        implements ISerializer<String, Set<ServerConnectionInfo>> {
 
     public static final String SEPARATOR = "-Ł-";
-    private static final Logger LOGGER = Logger.getLogger(ServerConnectionInfosSerializer.class);
+    private static final Logger LOGGER =
+            Logger.getLogger(SetOfServerConnectionInfosSerializer.class);
 
     private ISerializer<String, ServerConnectionInfo> serverConnectionInfoSerializer =
             new ServerConnectionInfoSerializer();
 
     @Override
-    public String serialize(ServerConnectionInfos target) {
+    public String serialize(Set<ServerConnectionInfo> target) {
         String serialized = null;
 
         if (target != null) {
-            LOGGER.debug("Serializing a ServerConnectionInfos.");
-            // original fields
-            Set<ServerConnectionInfo> connectionInfos = target.getServerConnectionInfos();
-
+            LOGGER.debug("Serializing a Set<ServerConnectionInfo>.");
             // string representation
             Set<String> connectionInfoStrs = new HashSet<>();
-            for (ServerConnectionInfo connectionInfo : connectionInfos) {
+            for (ServerConnectionInfo connectionInfo : target) {
                 connectionInfoStrs.add(serverConnectionInfoSerializer.serialize(connectionInfo));
             }
 
             // merged string representation
             serialized = CustomStringJoiner.join(SEPARATOR, new ArrayList<>(connectionInfoStrs));
-            LOGGER.debug("Serializing a ServerConnectionInfos finished.");
+            LOGGER.debug("Serializing a Set<ServerConnectionInfo> finished.");
         }
 
         return serialized;

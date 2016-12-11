@@ -1,6 +1,8 @@
 package weloveclouds.kvstore.models.messages;
 
-import weloveclouds.communication.models.ServerConnectionInfos;
+import java.util.Set;
+
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
@@ -46,7 +48,7 @@ public interface IKVAdminMessage {
      * @return connection information about the replicas, e.g. on which IP + port are they
      *         accessible
      */
-    public ServerConnectionInfos getReplicaConnectionInfos();
+    public Set<ServerConnectionInfo> getReplicaConnectionInfos();
 
     /**
      * @return the range whose entries shall be removed from the server

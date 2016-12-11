@@ -8,7 +8,6 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -108,9 +107,8 @@ public class KVServerInitializationUtil implements AutoCloseable {
         ServerConnectionInfo server = new ServerConnectionInfo.Builder().ipAddress("localhost")
                 .port(SERVER_KVCLIENT_PORT).build();
 
-        HashRanges readRanges = new HashRanges(new HashSet<>(Arrays.asList(range)));
-        return new RingMetadataPart.Builder().connectionInfo(server).readRanges(readRanges)
-                .writeRange(range).build();
+        return new RingMetadataPart.Builder().connectionInfo(server)
+                .readRanges(new HashSet<>(Arrays.asList(range))).writeRange(range).build();
     }
 
 

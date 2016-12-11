@@ -3,10 +3,12 @@ package weloveclouds.kvstore.deserialization;
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 import static weloveclouds.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.models.ServerConnectionInfos;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
@@ -14,7 +16,7 @@ import weloveclouds.kvstore.deserialization.helper.HashRangeDeserializer;
 import weloveclouds.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataDeserializer;
 import weloveclouds.kvstore.deserialization.helper.RingMetadataPartDeserializer;
-import weloveclouds.kvstore.deserialization.helper.ServerConnectionInfosDeserializer;
+import weloveclouds.kvstore.deserialization.helper.SetOfServerConnectionInfosDeserializer;
 import weloveclouds.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.kvstore.serialization.KVAdminMessageSerializer;
@@ -45,8 +47,8 @@ public class KVAdminMessageDeserializer
             new RingMetadataDeserializer();
     private IDeserializer<RingMetadataPart, String> metadataPartDeserializer =
             new RingMetadataPartDeserializer();
-    private IDeserializer<ServerConnectionInfos, String> replicaConnectionInfosDeserializer =
-            new ServerConnectionInfosDeserializer();
+    private IDeserializer<Set<ServerConnectionInfo>, String> replicaConnectionInfosDeserializer =
+            new SetOfServerConnectionInfosDeserializer();
 
     @Override
     public KVAdminMessage deserialize(SerializedMessage serializedMessage)
@@ -88,7 +90,7 @@ public class KVAdminMessageDeserializer
             RingMetadataPart targetServerInfo =
                     metadataPartDeserializer.deserialize(targetServerInfoStr);
             HashRange removableRange = removableRangeDeserializer.deserialize(removableRangeStr);
-            ServerConnectionInfos replicaConnectionInfos =
+            Set<ServerConnectionInfo> replicaConnectionInfos =
                     replicaConnectionInfosDeserializer.deserialize(replicaConnectionInfosStr);
             String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;
 

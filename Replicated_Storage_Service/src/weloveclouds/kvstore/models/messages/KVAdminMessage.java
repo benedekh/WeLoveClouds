@@ -1,10 +1,13 @@
 package weloveclouds.kvstore.models.messages;
 
+import java.util.Set;
+
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.models.ServerConnectionInfos;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
+import weloveclouds.server.utils.SetToStringUtility;
 
 /**
  * Represents an administrative message between the ECS and the KVServer.
@@ -16,7 +19,7 @@ public class KVAdminMessage implements IKVAdminMessage {
     private StatusType status;
     private RingMetadata ringMetadata;
     private RingMetadataPart targetServerInfo;
-    private ServerConnectionInfos replicaConnectionInfos;
+    private Set<ServerConnectionInfo> replicaConnectionInfos;
     private HashRange removableRange;
     private String responseMessage;
 
@@ -45,7 +48,7 @@ public class KVAdminMessage implements IKVAdminMessage {
     }
 
     @Override
-    public ServerConnectionInfos getReplicaConnectionInfos() {
+    public Set<ServerConnectionInfo> getReplicaConnectionInfos() {
         return replicaConnectionInfos;
     }
 
@@ -66,6 +69,7 @@ public class KVAdminMessage implements IKVAdminMessage {
                 removableRange == null ? null : removableRange.toString(), ", Ring metadata:",
                 ringMetadata == null ? null : ringMetadata.toString(), ", Target server info:",
                 targetServerInfo == null ? null : targetServerInfo.toString(),
+                ", Replica connection infos:", SetToStringUtility.toString(replicaConnectionInfos),
                 ",  Response message: ",
                 responseMessage == null ? null : responseMessage.toString());
     }
@@ -146,7 +150,7 @@ public class KVAdminMessage implements IKVAdminMessage {
         private StatusType status;
         private RingMetadata ringMetadata;
         private RingMetadataPart targetServerInfo;
-        private ServerConnectionInfos replicaConnectionInfos;
+        private Set<ServerConnectionInfo> replicaConnectionInfos;
         private HashRange removableRange;
         private String responseMessage;
 
@@ -165,7 +169,7 @@ public class KVAdminMessage implements IKVAdminMessage {
             return this;
         }
 
-        public Builder replicaConnectionInfos(ServerConnectionInfos replicaConnectionInfos) {
+        public Builder replicaConnectionInfos(Set<ServerConnectionInfo> replicaConnectionInfos) {
             this.replicaConnectionInfos = replicaConnectionInfos;
             return this;
         }

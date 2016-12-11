@@ -1,9 +1,11 @@
 package weloveclouds.kvstore.serialization;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.communication.models.ServerConnectionInfos;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
@@ -13,7 +15,7 @@ import weloveclouds.kvstore.serialization.helper.HashRangeSerializer;
 import weloveclouds.kvstore.serialization.helper.ISerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
 import weloveclouds.kvstore.serialization.helper.RingMetadataSerializer;
-import weloveclouds.kvstore.serialization.helper.ServerConnectionInfosSerializer;
+import weloveclouds.kvstore.serialization.helper.SetOfServerConnectionInfosSerializer;
 import weloveclouds.kvstore.serialization.models.SerializedMessage;
 
 /**
@@ -33,8 +35,8 @@ public class KVAdminMessageSerializer
     private ISerializer<String, RingMetadata> metadataSerializer = new RingMetadataSerializer();
     private ISerializer<String, RingMetadataPart> metadataPartSerializer =
             new RingMetadataPartSerializer();
-    private ISerializer<String, ServerConnectionInfos> replicaConnectionInfosSerializer =
-            new ServerConnectionInfosSerializer();
+    private ISerializer<String, Set<ServerConnectionInfo>> replicaConnectionInfosSerializer =
+            new SetOfServerConnectionInfosSerializer();
     private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
 
     @Override
@@ -45,7 +47,7 @@ public class KVAdminMessageSerializer
         StatusType status = unserializedMessage.getStatus();
         RingMetadata ringMetadata = unserializedMessage.getRingMetadata();
         RingMetadataPart targetServerInfo = unserializedMessage.getTargetServerInfo();
-        ServerConnectionInfos replicaConnectionInfos =
+        Set<ServerConnectionInfo> replicaConnectionInfos =
                 unserializedMessage.getReplicaConnectionInfos();
         HashRange removableRange = unserializedMessage.getRemovableRange();
 

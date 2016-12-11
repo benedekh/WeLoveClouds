@@ -1,11 +1,12 @@
 package weloveclouds.kvstore.deserialization.helper;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.serialization.exceptions.DeserializationException;
 import weloveclouds.kvstore.serialization.helper.RingMetadataPartSerializer;
@@ -26,7 +27,8 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
 
     private IDeserializer<ServerConnectionInfo, String> connectionInfoDeserializer =
             new ServerConnectionInfoDeserializer();
-    private IDeserializer<HashRanges, String> hashRangesDeserializer = new HashRangesDeserializer();
+    private IDeserializer<Set<HashRange>, String> hashRangesDeserializer =
+            new SetOfHashRangesDeserializer();
     private IDeserializer<HashRange, String> hashRangeDeserializer = new HashRangeDeserializer();
 
     @Override
@@ -53,7 +55,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
             // deserialized fields
             ServerConnectionInfo connectionInfo =
                     connectionInfoDeserializer.deserialize(connectionInfoStr);
-            HashRanges readRanges = hashRangesDeserializer.deserialize(readRangesStr);
+            Set<HashRange> readRanges = hashRangesDeserializer.deserialize(readRangesStr);
             HashRange writeRange = hashRangeDeserializer.deserialize(writeRangeStr);
 
             // deserialized object

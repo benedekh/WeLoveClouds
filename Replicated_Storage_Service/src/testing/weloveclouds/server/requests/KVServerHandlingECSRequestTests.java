@@ -3,6 +3,7 @@ package testing.weloveclouds.server.requests;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,10 +13,8 @@ import junit.framework.Assert;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.communication.models.ServerConnectionInfos;
 import weloveclouds.hashing.models.Hash;
 import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.hashing.utils.HashingUtil;
@@ -122,7 +121,7 @@ public class KVServerHandlingECSRequestTests {
                 .port(SERVER1_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
         HashRange range1 = new HashRange.Builder().begin(HashingUtil.getHash("a"))
                 .end(HashingUtil.getHash("a")).build();
-        HashRanges readRanges = new HashRanges(new HashSet<>(Arrays.asList(range1)));
+        Set<HashRange> readRanges = new HashSet<>(Arrays.asList(range1));
         RingMetadataPart part1 = new RingMetadataPart.Builder().connectionInfo(server1)
                 .readRanges(readRanges).writeRange(range1).build();
 
@@ -138,8 +137,8 @@ public class KVServerHandlingECSRequestTests {
 
         RingMetadata ringMetadata =
                 new RingMetadata(new HashSet<>(Arrays.asList(part1, part2, part3)));
-        ServerConnectionInfos serverConnectionInfos =
-                new ServerConnectionInfos(new HashSet<>(Arrays.asList(server2, server3)));
+        Set<ServerConnectionInfo> serverConnectionInfos =
+                new HashSet<>(Arrays.asList(server2, server3));
 
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.INITKVSERVER)
                 .ringMetadata(ringMetadata).build();

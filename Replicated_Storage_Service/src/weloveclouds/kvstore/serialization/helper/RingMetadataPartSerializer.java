@@ -1,11 +1,12 @@
 package weloveclouds.kvstore.serialization.helper;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadataPart;
 
 /**
@@ -20,7 +21,8 @@ public class RingMetadataPartSerializer implements ISerializer<String, RingMetad
 
     private ISerializer<String, ServerConnectionInfo> connectionInfoSerializer =
             new ServerConnectionInfoSerializer();
-    private ISerializer<String, HashRanges> hashRangesSerializer = new HashRangesSerializer();
+    private ISerializer<String, Set<HashRange>> hashRangesSerializer =
+            new SetOfHashRangesSerializer();
     private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
 
     @Override
@@ -31,7 +33,7 @@ public class RingMetadataPartSerializer implements ISerializer<String, RingMetad
             LOGGER.debug("Serializing a RingMetadataPart.");
             // original fields
             ServerConnectionInfo connectionInfo = target.getConnectionInfo();
-            HashRanges readRanges = target.getReadRanges();
+            Set<HashRange> readRanges = target.getReadRanges();
             HashRange writeRange = target.getWriteRange();
 
             // string representation

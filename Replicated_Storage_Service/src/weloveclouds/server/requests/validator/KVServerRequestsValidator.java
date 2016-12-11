@@ -4,9 +4,7 @@ import java.net.InetAddress;
 import java.util.Set;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.communication.models.ServerConnectionInfos;
 import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.hashing.models.RingMetadataPart;
 import weloveclouds.kvstore.models.KVEntry;
@@ -64,21 +62,17 @@ public class KVServerRequestsValidator {
     }
 
     /**
-     * A {@link HashRanges} is valid, if it is not null and the encapsulated {@link HashRange}
-     * instances are valid.
+     * HashRanges are valid, if its set is not null and the encapsulated {@link HashRange} instances
+     * are valid.
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
-    public static void validateHashRanges(HashRanges hashRanges) throws IllegalArgumentException {
-        if (hashRanges == null) {
+    public static void validateHashRanges(Set<HashRange> hashRanges)
+            throws IllegalArgumentException {
+        if (hashRanges == null || hashRanges.isEmpty()) {
             throw new IllegalArgumentException();
         }
-
-        Set<HashRange> ranges = hashRanges.getHashRanges();
-        if (ranges == null || ranges.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-        for (HashRange range : ranges) {
+        for (HashRange range : hashRanges) {
             validateHashRange(range);
         }
     }
@@ -116,23 +110,17 @@ public class KVServerRequestsValidator {
     }
 
     /**
-     * A {@link ServerConnectionInfos} is valid, if it is not null and the encapsulated
+     * ServerConnectionInfos are valid, if its set is not null and the encapsulated
      * {@link ServerConnectionInfo} instances are valid.
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
-    public static void validateServerConnectionInfos(ServerConnectionInfos connectionInfos)
+    public static void validateServerConnectionInfos(Set<ServerConnectionInfo> connectionInfos)
             throws IllegalArgumentException {
-        if (connectionInfos == null) {
+        if (connectionInfos == null || connectionInfos.isEmpty()) {
             throw new IllegalArgumentException();
         }
-
-        Set<ServerConnectionInfo> serverConnectionInfos =
-                connectionInfos.getServerConnectionInfos();
-        if (serverConnectionInfos == null || serverConnectionInfos.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-        for (ServerConnectionInfo serverConnectionInfo : serverConnectionInfos) {
+        for (ServerConnectionInfo serverConnectionInfo : connectionInfos) {
             validateServerConnectionInfo(serverConnectionInfo);
         }
     }

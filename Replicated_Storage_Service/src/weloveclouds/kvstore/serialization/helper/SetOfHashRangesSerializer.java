@@ -8,38 +8,34 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.HashRanges;
 
 /**
- * A serializer which converts a {@link HashRangesSerializer} to a {@link String}.
+ * A serializer which converts a {@link Set<HashRange>} to a {@link String}.
  * 
  * @author Benedek
  */
-public class HashRangesSerializer implements ISerializer<String, HashRanges> {
+public class SetOfHashRangesSerializer implements ISerializer<String, Set<HashRange>> {
 
     public static final String SEPARATOR = "-łŁ-";
-    private static final Logger LOGGER = Logger.getLogger(HashRangesSerializer.class);
+    private static final Logger LOGGER = Logger.getLogger(SetOfHashRangesSerializer.class);
 
     private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
 
     @Override
-    public String serialize(HashRanges target) {
+    public String serialize(Set<HashRange> target) {
         String serialized = null;
 
         if (target != null) {
-            LOGGER.debug("Serializing a HashRanges.");
-            // original fields
-            Set<HashRange> ranges = target.getHashRanges();
-
+            LOGGER.debug("Serializing a Set<HashRange>.");
             // string representation
             Set<String> rangesStrs = new HashSet<>();
-            for (HashRange range : ranges) {
+            for (HashRange range : target) {
                 rangesStrs.add(hashRangeSerializer.serialize(range));
             }
 
             // merged string representation
             serialized = CustomStringJoiner.join(SEPARATOR, new ArrayList<>(rangesStrs));
-            LOGGER.debug("Serializing a HashRanges finished.");
+            LOGGER.debug("Serializing a Set<HashRange> finished.");
         }
 
         return serialized;

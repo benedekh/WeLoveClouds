@@ -3,11 +3,12 @@ package weloveclouds.server.requests.kvecs;
 import static weloveclouds.server.requests.kvecs.utils.KVAdminMessageFactory.createErrorKVAdminMessage;
 import static weloveclouds.server.requests.kvecs.utils.KVAdminMessageFactory.createSuccessKVAdminMessage;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
-import weloveclouds.communication.models.ServerConnectionInfos;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.hashing.models.HashRange;
-import weloveclouds.hashing.models.HashRanges;
 import weloveclouds.hashing.models.RingMetadata;
 import weloveclouds.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.core.requests.exceptions.IllegalRequestException;
@@ -28,10 +29,10 @@ public class UpdateRingMetadata implements IKVECSRequest {
 
     private IReplicableDataAccessService dataAccessService;
     private RingMetadata ringMetadata;
-    private HashRanges readRanges;
+    private Set<HashRange> readRanges;
     private HashRange writeRange;
 
-    private ServerConnectionInfos replicaConnectionInfos;
+    private Set<ServerConnectionInfo> replicaConnectionInfos;
     private ReplicationTransfererFactory replicationTransfererFactory;
 
     protected UpdateRingMetadata(Builder builder) {
@@ -47,12 +48,12 @@ public class UpdateRingMetadata implements IKVECSRequest {
     public KVAdminMessage execute() {
         LOGGER.debug("Executing update ring metadata request.");
         dataAccessService.setRingMetadata(ringMetadata);
-        dataAccessService.setManagedHashRanges(readRanges.getHashRanges(), writeRange);
+        dataAccessService.setManagedHashRanges(readRanges, writeRange);
 
         IReplicationTransferer replicationTransferer = null;
         if (replicaConnectionInfos != null) {
             replicationTransferer = replicationTransfererFactory
-                    .createReplicationTransferer(replicaConnectionInfos.getServerConnectionInfos());
+                    .createReplicationTransferer(replicaConnectionInfos);
         }
         dataAccessService.setReplicationTransferer(replicationTransferer);
 
@@ -96,9 +97,9 @@ public class UpdateRingMetadata implements IKVECSRequest {
     public static class Builder {
         private IReplicableDataAccessService dataAccessService;
         private RingMetadata ringMetadata;
-        private HashRanges readRanges;
+        private Set<HashRange> readRanges;
         private HashRange writeRange;
-        private ServerConnectionInfos replicaConnectionInfos;
+        private Set<ServerConnectionInfo> replicaConnectionInfos;
         private ReplicationTransfererFactory replicationTransfererFactory;
 
         /**
@@ -120,7 +121,7 @@ public class UpdateRingMetadata implements IKVECSRequest {
         /**
          * @param readRanges {@link HashRange} ranges for which the server has READ privilege
          */
-        public Builder readRanges(HashRanges readRanges) {
+        public Builder readRanges(Set<HashRange> readRanges) {
             this.readRanges = readRanges;
             return this;
         }
@@ -136,7 +137,7 @@ public class UpdateRingMetadata implements IKVECSRequest {
         /**
          * @param replicaConnectionInfos connection information to the replica nodes
          */
-        public Builder replicaConnectionInfos(ServerConnectionInfos replicaConnectionInfos) {
+        public Builder replicaConnectionInfos(Set<ServerConnectionInfo> replicaConnectionInfos) {
             this.replicaConnectionInfos = replicaConnectionInfos;
             return this;
         }

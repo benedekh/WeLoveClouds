@@ -1,7 +1,10 @@
 package weloveclouds.hashing.models;
 
+import java.util.Set;
+
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.server.utils.SetToStringUtility;
 
 
 /**
@@ -13,7 +16,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 public class RingMetadataPart {
 
     private ServerConnectionInfo connectionInfo;
-    private HashRanges readRanges;
+    private Set<HashRange> readRanges;
     private HashRange writeRange;
 
     protected RingMetadataPart(Builder builder) {
@@ -30,7 +33,7 @@ public class RingMetadataPart {
         return writeRange;
     }
 
-    public HashRanges getReadRanges() {
+    public Set<HashRange> getReadRanges() {
         return readRanges;
     }
 
@@ -45,7 +48,7 @@ public class RingMetadataPart {
     public String toString() {
         return CustomStringJoiner.join("", "{", "Connection info: ", connectionInfo.toString(),
                 ", Write range: ", writeRange == null ? null : writeRange.toString(),
-                ", Read ranges: ", readRanges == null ? null : readRanges.toString(), "}");
+                ", Read ranges: ", SetToStringUtility.toString(readRanges), "}");
     }
 
     @Override
@@ -101,7 +104,7 @@ public class RingMetadataPart {
      */
     public static class Builder {
         private ServerConnectionInfo connectionInfo;
-        private HashRanges readRanges;
+        private Set<HashRange> readRanges;
         private HashRange writeRange;
 
         public Builder connectionInfo(ServerConnectionInfo connectionInfo) {
@@ -109,7 +112,7 @@ public class RingMetadataPart {
             return this;
         }
 
-        public Builder readRanges(HashRanges readRanges) {
+        public Builder readRanges(Set<HashRange> readRanges) {
             this.readRanges = readRanges;
             return this;
         }
