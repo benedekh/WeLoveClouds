@@ -34,18 +34,18 @@ public class KVHeartbeatMessageDeserializer implements
             throws DeserializationException {
         Matcher matcher = getRegexFromToken(NODE_HEALTH_INFOS)
                 .matcher(new String(serializedMessage.getBytes(), MESSAGE_ENCODING));
-        NodeHealthInfos nodeHealthInfos = null;
 
         try {
             if (matcher.find()) {
-                nodeHealthInfos = healthInfosDeserializer
-                        .deserialize(matcher.group(XML_NODE));
+                return new KVHearthbeatMessage(healthInfosDeserializer
+                        .deserialize(matcher.group(XML_NODE)));
+            } else {
+                throw new DeserializationException("Unable to deserialize message: " + new String
+                        (serializedMessage.getBytes(), MESSAGE_ENCODING));
             }
         } catch (Exception e) {
-            throw new DeserializationException("Unable to deserialize message: " + new String
-                    (serializedMessage.getBytes(), MESSAGE_ENCODING));
+            throw new DeserializationException(e.getMessage());
         }
-        return new KVHearthbeatMessage(nodeHealthInfos);
     }
 
     @Override
