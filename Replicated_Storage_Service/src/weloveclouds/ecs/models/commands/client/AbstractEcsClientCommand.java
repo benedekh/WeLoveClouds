@@ -1,5 +1,7 @@
 package weloveclouds.ecs.models.commands.client;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 
@@ -8,9 +10,12 @@ import weloveclouds.ecs.models.commands.AbstractCommand;
  */
 public abstract class AbstractEcsClientCommand extends AbstractCommand<String> implements weloveclouds.ecs.models.commands.IValidatable {
     protected IKVEcsApi externalCommunicationServiceApi;
-
+    private Logger LOGGER = Logger.getLogger(AbstractEcsClientCommand.class);
+    
     public AbstractEcsClientCommand(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {
+        //Logger.debug("adding API arg");
         this.externalCommunicationServiceApi = externalCommunicationServiceApi;
+        
         this.addArguments(arguments);
     }
 }

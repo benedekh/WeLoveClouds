@@ -1,28 +1,33 @@
 package weloveclouds.ecs.models.commands.client;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.client.utils.HelpMessageGenerator;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.ecs.api.IKVEcsApi;
-import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.commands.ICommand;
 
 /**
  * Returned when an invalid command is parsed
- * 
+ * Created by Hunton on 2016-12-08
  * @author Benoit, hb
  */
 public class DefaultCommand extends AbstractEcsClientCommand{
+    //logger for debugging this, the program crashes instead of executing the generate help message
+    private static Logger LOGGER = Logger.getLogger(DefaultCommand.class);
 
     public DefaultCommand(IKVEcsApi externalConfigurationServiceApi, String[] arguments) {
-        //Passing null probably isn't a good idea.
         super(externalConfigurationServiceApi, arguments);
+        LOGGER.debug("Default command super constructor called successfully.");
     }
 
     @Override
     public void execute() throws ClientSideException {
+        LOGGER.debug("Default command execute() executing");
         throw new ClientSideException(CustomStringJoiner.join(" ", "Unable to find command.",
                 HelpMessageGenerator.generateHelpMessage()));
+        
         
     }
 
@@ -35,7 +40,7 @@ public class DefaultCommand extends AbstractEcsClientCommand{
     @Override
     public ICommand validate() throws IllegalArgumentException {
         //nothing to validate
-        return null;
+        return this;
     }
 
 }

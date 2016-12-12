@@ -6,10 +6,8 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.models.commands.CommandFactory;
 import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.ecs.api.IKVEcsApi;
-import weloveclouds.ecs.models.commands.AbstractCommand;
 
 
 /**
@@ -47,11 +45,9 @@ public class EcsClientCommandFactory {
                 recognizedCommand = new RemoveNode(externalConfigurationServiceApi, userInput.getArguments());
                 break;
             default:
-                LOGGER.info(join(" ", "Unrecognized command:"));
-                /*Default command doesn't actually need access to the API, I've just put it in here because
-                if the super class doesn't get one it crashes*/
                 recognizedCommand = new DefaultCommand(externalConfigurationServiceApi, userInput.getArguments());
                 break;
+                
         }
         return recognizedCommand;
     }
