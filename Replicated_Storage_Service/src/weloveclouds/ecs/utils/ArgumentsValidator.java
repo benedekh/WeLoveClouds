@@ -26,6 +26,12 @@ public class ArgumentsValidator {
         }
     }
     
+    public static void validateQuitArguments(List<String> arguments) throws IllegalArgumentException{
+        if(!isNullOrEmpty(arguments)){
+            throw new IllegalArgumentException("Quit command doesn't accept any arguments.");
+        }
+    }
+    
     public static void validateHelpArguments(List<String> arguments) throws IllegalArgumentException{
         if(!isNullOrEmpty(arguments)){
             throw new IllegalArgumentException("Help command doesn't accept any arguments.");
