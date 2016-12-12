@@ -35,14 +35,16 @@ public class Quit extends AbstractEcsClientCommand{
             LOGGER.info("Executing quit command");
             userOutputWriter.writeLine(APPLICATION_EXIT_MESSAGE);
             LOGGER.debug(APPLICATION_EXIT_MESSAGE);
+            /*
             try{
                 externalCommunicationServiceApi.shutDown();
             } catch(Exception e){
                 userOutputWriter.writeLine("Shutdown of storage service failed!");
                 LOGGER.debug("Shutdown failed");
                 LOGGER.error(e.getMessage());
-            }
-            System.exit(0);//good exit, use 0
+            }*/
+            //brutish solution, not particularly safe.
+            System.exit(0);
         }catch (IOException ioe){
             LOGGER.error(ioe);
             throw new ClientSideException(ioe.getMessage(), ioe);
