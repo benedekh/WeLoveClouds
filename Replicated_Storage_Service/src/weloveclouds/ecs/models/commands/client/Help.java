@@ -8,19 +8,24 @@ import weloveclouds.ecs.models.commands.ICommand;
 import weloveclouds.ecs.utils.HelpMessageGenerator;
 import weloveclouds.ecs.utils.ArgumentsValidator;
 
+/**
+ * 
+ * @author hb
+ *
+ */
 public class Help extends AbstractEcsClientCommand{
     
     //TODO: It may be a good idea to put a logger here
 
     public Help(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {
         super(externalCommunicationServiceApi, arguments);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
     public ICommand validate() throws IllegalArgumentException {
-        // TODO add help arguments to args validator
-        return null;
+        //arguments referring to the attribute of the super class
+        ArgumentsValidator.validateHelpArguments(arguments);
+        return this;
     }
 
     @Override
@@ -35,7 +40,7 @@ public class Help extends AbstractEcsClientCommand{
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
+        //No point
         return null;
     }
     

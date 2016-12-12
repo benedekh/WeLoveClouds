@@ -23,6 +23,12 @@ public class ArgumentsValidator {
             throw new IllegalArgumentException("Start command doesn't accept any arguments.");
         }
     }
+    
+    public static void validateHelpArguments(List<String> arguments) throws IllegalArgumentException{
+        if(!isNullOrEmpty(arguments)){
+            throw new IllegalArgumentException("Help command doesn't accept any arguments.");
+        }
+    }
 
     public static void validateStopArguments(List<String> arguments) throws
             IllegalArgumentException {
