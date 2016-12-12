@@ -4,9 +4,9 @@ import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.models.commands.ICommand;
 
-public class Quit extends AbstractEcsClientCommand{
+public class Help extends AbstractEcsClientCommand{
 
-    public Quit(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {
+    public Help(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {
         super(externalCommunicationServiceApi, arguments);
         // TODO Auto-generated constructor stub
     }
@@ -28,5 +28,6 @@ public class Quit extends AbstractEcsClientCommand{
         // TODO Auto-generated method stub
         return null;
     }
+    
 
 }

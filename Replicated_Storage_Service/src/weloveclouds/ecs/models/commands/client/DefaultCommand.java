@@ -14,20 +14,18 @@ import weloveclouds.ecs.models.commands.ICommand;
  * @author Benoit, hb
  */
 public class DefaultCommand extends AbstractEcsClientCommand{
-    //logger for debugging this, the program crashes instead of executing the generate help message
-    private static Logger LOGGER = Logger.getLogger(DefaultCommand.class);
+    //logger for debugging
+    //private static Logger LOGGER = Logger.getLogger(DefaultCommand.class);
 
     public DefaultCommand(IKVEcsApi externalConfigurationServiceApi, String[] arguments) {
         super(externalConfigurationServiceApi, arguments);
-        LOGGER.debug("Default command super constructor called successfully.");
+        //LOGGER.debug("Default command super constructor called successfully.");
     }
 
     @Override
     public void execute() throws ClientSideException {
-        LOGGER.debug("Default command execute() executing");
-        throw new ClientSideException(CustomStringJoiner.join(" ", "Unable to find command.",
-                HelpMessageGenerator.generateHelpMessage()));
-        
+        //LOGGER.debug("Default command execute() executing");
+        throw new ClientSideException(CustomStringJoiner.join(" ", "Unable to find command."));
         
     }
 
