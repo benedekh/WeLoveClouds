@@ -38,7 +38,7 @@ public class Quit extends AbstractEcsClientCommand{
             try{
                 externalCommunicationServiceApi.shutDown();
             } catch(Exception e){
-                userOutputWriter.writeLine("Shutdown of ECS failed!");
+                userOutputWriter.writeLine("Shutdown of storage service failed!");
                 LOGGER.debug("Shutdown failed");
                 LOGGER.error(e.getMessage());
             }
