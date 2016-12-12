@@ -4,14 +4,14 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
-import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
-import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
 
 /**
  * Tests for the {@link KVMessage} to verify its serialization and deserialization processes.

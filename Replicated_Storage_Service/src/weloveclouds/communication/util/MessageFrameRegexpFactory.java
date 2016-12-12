@@ -4,9 +4,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
-import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
-import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
+import weloveclouds.commons.serialization.models.XMLTokens;
 
 /**
  * Factory that creates regular expressions to detect the framing of the KV*Messages.
@@ -19,22 +17,24 @@ public class MessageFrameRegexpFactory {
      * @return a regular expression that detects the framing of a {@link KVMessage}
      */
     public static String createKVMessageRegexp() {
-        return createRegexp(KVMessageSerializer.PREFIX, KVMessageSerializer.POSTFIX);
+        return createRegexp(createOpeningTag(XMLTokens.KVMESSAGE),
+                createClosingTag(XMLTokens.KVMESSAGE));
     }
 
     /**
      * @return a regular expression that detects the framing of a {@link KVAdminMessage}
      */
     public static String createKVAdminMessageRegexp() {
-        return createRegexp(KVAdminMessageSerializer.PREFIX, KVAdminMessageSerializer.POSTFIX);
+        return createRegexp(createOpeningTag(XMLTokens.KVADMIN_MESSAGE),
+                createClosingTag(XMLTokens.KVADMIN_MESSAGE));
     }
 
     /**
      * @return a regular expression that detects the framing of a {@link KVTransferMessage}
      */
     public static String createKVTransferMessageRegexp() {
-        return createRegexp(KVTransferMessageSerializer.PREFIX,
-                KVTransferMessageSerializer.POSTFIX);
+        return createRegexp(createOpeningTag(XMLTokens.KVTRANSFER_MESSAGE),
+                createClosingTag(XMLTokens.KVTRANSFER_MESSAGE));
     }
 
     /**
@@ -43,6 +43,14 @@ public class MessageFrameRegexpFactory {
      */
     private static String createRegexp(String prefix, String postfix) {
         return CustomStringJoiner.join(".*?", prefix, postfix);
+    }
+
+    private static String createOpeningTag(String tag) {
+        return CustomStringJoiner.join("", "<", tag, ">");
+    }
+
+    private static String createClosingTag(String tag) {
+        return CustomStringJoiner.join("", "</", tag, ">");
     }
 
 }

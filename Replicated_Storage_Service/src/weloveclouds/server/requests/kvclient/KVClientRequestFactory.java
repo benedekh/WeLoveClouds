@@ -10,6 +10,7 @@ import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**
@@ -24,10 +25,10 @@ public class KVClientRequestFactory implements IRequestFactory<KVMessage, IKVCli
     private static final Logger LOGGER = Logger.getLogger(Put.class);
 
     private IMovableDataAccessService dataAccessService;
-    private ISerializer<String, RingMetadata> ringMetadataSerializer;
+    private ISerializer<AbstractXMLNode, RingMetadata> ringMetadataSerializer;
 
     public KVClientRequestFactory(IMovableDataAccessService dataAccessService,
-            ISerializer<String, RingMetadata> ringMetadataSerializer) {
+            ISerializer<AbstractXMLNode, RingMetadata> ringMetadataSerializer) {
         this.dataAccessService = dataAccessService;
         this.ringMetadataSerializer = ringMetadataSerializer;
     }

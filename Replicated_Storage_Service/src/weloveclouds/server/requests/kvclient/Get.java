@@ -13,6 +13,7 @@ import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.MovableDataAccessService;
@@ -34,7 +35,7 @@ public class Get implements IKVClientRequest {
     private IMovableDataAccessService dataAccessService;
     private String key;
 
-    private ISerializer<String, RingMetadata> ringMetadataSerializer;
+    private ISerializer<AbstractXMLNode, RingMetadata> ringMetadataSerializer;
 
     protected Get(Builder builder) {
         this.dataAccessService = builder.dataAccessService;
@@ -50,7 +51,7 @@ public class Get implements IKVClientRequest {
             response = createKVMessage(GET_SUCCESS, key, dataAccessService.getValue(key));
         } catch (KeyIsNotManagedByServiceException ex) {
             RingMetadata ringMetadata = dataAccessService.getRingMetadata();
-            String ringMetadataStr = ringMetadataSerializer.serialize(ringMetadata);
+            String ringMetadataStr = ringMetadataSerializer.serialize(ringMetadata).toString();
             response = createKVMessage(SERVER_NOT_RESPONSIBLE, key, ringMetadataStr);
         } catch (ServiceIsStoppedException ex) {
             response = createKVMessage(SERVER_STOPPED, key, null);
@@ -82,7 +83,7 @@ public class Get implements IKVClientRequest {
     public static class Builder {
         private IMovableDataAccessService dataAccessService;
         private String key;
-        private ISerializer<String, RingMetadata> ringMetadataSerializer;
+        private ISerializer<AbstractXMLNode, RingMetadata> ringMetadataSerializer;
 
         public Builder dataAccessService(IMovableDataAccessService dataAccessService) {
             this.dataAccessService = dataAccessService;
@@ -95,7 +96,7 @@ public class Get implements IKVClientRequest {
         }
 
         public Builder ringMetadataSerializer(
-                ISerializer<String, RingMetadata> ringMetadataSerializer) {
+                ISerializer<AbstractXMLNode, RingMetadata> ringMetadataSerializer) {
             this.ringMetadataSerializer = ringMetadataSerializer;
             return this;
         }
