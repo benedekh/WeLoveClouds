@@ -1,10 +1,16 @@
 package weloveclouds.ecs.models.commands.client;
 
+import java.io.IOException;
+
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.models.commands.ICommand;
+import weloveclouds.ecs.utils.HelpMessageGenerator;
+import weloveclouds.ecs.utils.ArgumentsValidator;
 
 public class Help extends AbstractEcsClientCommand{
+    
+    //TODO: It may be a good idea to put a logger here
 
     public Help(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {
         super(externalCommunicationServiceApi, arguments);
@@ -13,13 +19,17 @@ public class Help extends AbstractEcsClientCommand{
 
     @Override
     public ICommand validate() throws IllegalArgumentException {
-        // TODO Auto-generated method stub
+        // TODO add help arguments to args validator
         return null;
     }
 
     @Override
     public void execute() throws ClientSideException {
-        // TODO Auto-generated method stub
+        try{
+            userOutputWriter.writeLine(HelpMessageGenerator.generateHelpMessage());
+        }catch(IOException ioe){
+            throw new ClientSideException(ioe.getMessage(), ioe);
+        }
         
     }
 

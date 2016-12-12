@@ -44,6 +44,9 @@ public class EcsClientCommandFactory {
             case REMOVE_NODE:
                 recognizedCommand = new RemoveNode(externalConfigurationServiceApi, userInput.getArguments());
                 break;
+            case HELP:
+                recognizedCommand = new Help(externalConfigurationServiceApi, userInput.getArguments());
+                break;
             default:
                 recognizedCommand = new DefaultCommand(externalConfigurationServiceApi, userInput.getArguments());
                 break;
