@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.commons.hashing.models.RingMetadata;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.serialization.IDeserializer;
 
 
 /**

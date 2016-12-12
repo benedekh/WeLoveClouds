@@ -12,7 +12,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;

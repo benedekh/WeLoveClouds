@@ -1,4 +1,4 @@
-package weloveclouds.commons.kvstore.deserialization.helper;
+package weloveclouds.commons.serialization;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 

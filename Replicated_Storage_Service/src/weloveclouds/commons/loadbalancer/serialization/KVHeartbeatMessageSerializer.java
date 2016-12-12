@@ -1,9 +1,10 @@
-package weloveclouds.commons.serialization;
+package weloveclouds.commons.loadbalancer.serialization;
 
 import com.google.inject.Inject;
 
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
 import weloveclouds.loadbalancer.models.KVHeartbeatMessage;

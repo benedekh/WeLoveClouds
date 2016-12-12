@@ -1,12 +1,12 @@
-package weloveclouds.commons.serialization.deserialization;
+package weloveclouds.commons.loadbalancer.deserialization;
 
 import com.google.inject.Inject;
 
 import java.util.regex.Matcher;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;

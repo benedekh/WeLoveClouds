@@ -12,9 +12,9 @@ import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtil;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.HashRangeDeserializer;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.serialization.helper.HashRangeSerializer;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLTokens;
 

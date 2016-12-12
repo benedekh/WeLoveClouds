@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**

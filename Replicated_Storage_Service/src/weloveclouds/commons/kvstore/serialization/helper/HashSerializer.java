@@ -1,6 +1,7 @@
 package weloveclouds.commons.kvstore.serialization.helper;
 
 import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.serialization.ISerializer;
 
 /**
  * A serializer which converts a {@link Hash} to a {@link String}.

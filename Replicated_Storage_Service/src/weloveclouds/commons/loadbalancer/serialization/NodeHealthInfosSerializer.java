@@ -1,12 +1,12 @@
-package weloveclouds.commons.serialization;
+package weloveclouds.commons.loadbalancer.serialization;
 
 import com.google.inject.Inject;
 
+import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.commons.serialization.models.XMLTokens.ACTIVE_CONNECTIONS;

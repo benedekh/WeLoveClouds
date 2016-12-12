@@ -11,6 +11,7 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.serialization.IDeserializer;
 
 /**
  * A deserializer which converts a {@link String} to a {@link HashRange}.

@@ -4,6 +4,7 @@ import static weloveclouds.commons.serialization.models.XMLTokens.CONNECTION_INF
 import static weloveclouds.commons.serialization.models.XMLTokens.IP_ADDRESS;
 import static weloveclouds.commons.serialization.models.XMLTokens.PORT;
 
+import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;

@@ -5,6 +5,7 @@ import static weloveclouds.commons.serialization.models.XMLTokens.KV_ENTRY;
 import static weloveclouds.commons.serialization.models.XMLTokens.VALUE;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;

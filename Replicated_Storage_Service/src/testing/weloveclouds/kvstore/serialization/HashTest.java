@@ -9,10 +9,10 @@ import junit.framework.TestCase;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.utils.HashingUtil;
 import weloveclouds.commons.kvstore.deserialization.helper.HashDeserializer;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.helper.HashSerializer;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.serialization.ISerializer;
 
 /**
  * Tests for the {@link Hash} to verify its serialization and deserialization processes.

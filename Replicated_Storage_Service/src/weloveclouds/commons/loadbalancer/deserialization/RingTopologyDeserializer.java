@@ -1,4 +1,4 @@
-package weloveclouds.commons.serialization.deserialization;
+package weloveclouds.commons.loadbalancer.deserialization;
 
 import com.google.inject.Inject;
 
@@ -8,8 +8,8 @@ import java.util.regex.Matcher;
 
 import weloveclouds.ecs.models.repository.AbstractNode;
 import weloveclouds.ecs.models.topology.RingTopology;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.serialization.IDeserializer;
 
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;

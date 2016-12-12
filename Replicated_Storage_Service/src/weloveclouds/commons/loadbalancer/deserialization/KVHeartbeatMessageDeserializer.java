@@ -1,11 +1,11 @@
-package weloveclouds.commons.serialization.deserialization;
+package weloveclouds.commons.loadbalancer.deserialization;
 
 import com.google.inject.Inject;
 
 import java.util.regex.Matcher;
 
+import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.models.KVHeartbeatMessage;

@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**

@@ -6,6 +6,7 @@ import static weloveclouds.commons.serialization.models.XMLTokens.STORAGE_UNIT;
 import java.util.Map.Entry;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;

@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.serialization.IDeserializer;
 
 /**
  * A deserializer which converts a {@link KVEntry} to a {@link String}.

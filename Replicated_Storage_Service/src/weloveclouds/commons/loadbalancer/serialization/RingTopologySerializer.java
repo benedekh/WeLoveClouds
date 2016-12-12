@@ -1,14 +1,14 @@
-package weloveclouds.commons.serialization;
+package weloveclouds.commons.loadbalancer.serialization;
 
 import com.google.inject.Inject;
 
 import java.util.List;
 
+import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
 import weloveclouds.ecs.models.repository.AbstractNode;
 import weloveclouds.ecs.models.topology.RingTopology;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 
 import static weloveclouds.commons.serialization.models.XMLTokens.ORDERED_NODES;
 import static weloveclouds.commons.serialization.models.XMLTokens.TOPOLOGY;

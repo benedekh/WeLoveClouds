@@ -3,6 +3,7 @@ package weloveclouds.commons.kvstore.serialization.helper;
 import static weloveclouds.commons.serialization.models.XMLTokens.*;
 
 import weloveclouds.commons.hashing.models.HashRange;
+import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;

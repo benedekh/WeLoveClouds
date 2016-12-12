@@ -11,7 +11,8 @@ import java.util.regex.Matcher;
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.serialization.IDeserializer;;
 
 /**
  * A deserializer which converts a {@link RingMetadata} to a {@link String}.

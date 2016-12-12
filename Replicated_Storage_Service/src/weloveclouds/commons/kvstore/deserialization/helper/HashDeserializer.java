@@ -6,6 +6,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.helper.HashSerializer;
+import weloveclouds.commons.serialization.IDeserializer;
 
 /**
  * A deserializer which converts a {@link Hash} to a {@link String}.
