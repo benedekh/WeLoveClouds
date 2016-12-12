@@ -1,8 +1,17 @@
 package weloveclouds.commons.kvstore.deserialization;
 
 import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
+import static weloveclouds.commons.serialization.models.XMLTokens.KVTRANSFER_MESSAGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.PUTABLE_ENTRY;
+import static weloveclouds.commons.serialization.models.XMLTokens.REMOVABLE_KEY;
+import static weloveclouds.commons.serialization.models.XMLTokens.RESPONSE_MESSAGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
+import static weloveclouds.commons.serialization.models.XMLTokens.STORAGE_UNITS;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
@@ -14,7 +23,6 @@ import weloveclouds.commons.kvstore.deserialization.helper.MovableStorageUnitsSe
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.server.store.models.MovableStorageUnit;
@@ -27,18 +35,10 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 public class KVTransferMessageDeserializer
         implements IMessageDeserializer<KVTransferMessage, SerializedMessage> {
 
-    private static final int NUMBER_OF_MESSAGE_PARTS = 5;
-    private static final int MESSAGE_STATUS_INDEX = 0;
-    private static final int MESSAGE_STORAGE_UNITS_INDEX = 1;
-    private static final int MESSAGE_PUTABLE_ENTRY_INDEX = 2;
-    private static final int MESSAGE_REMOVABLE_KEY_INDEX = 3;
-    private static final int MESSAGE_RESPONSE_MESSAGE_INDEX = 4;
-
     private static final Logger LOGGER = Logger.getLogger(KVTransferMessageDeserializer.class);
 
     private IDeserializer<Set<MovableStorageUnit>, String> storageUnitsDeserializer =
             new MovableStorageUnitsSetDeserializer();
-
     private IDeserializer<KVEntry, String> kvEntryDeserializer = new KVEntryDeserializer();
 
     @Override
@@ -50,49 +50,74 @@ public class KVTransferMessageDeserializer
     @Override
     public KVTransferMessage deserialize(byte[] serializedMessage) throws DeserializationException {
         LOGGER.debug("Deserializing KVTransferMessage from byte[].");
-
-        // remove prefix and postfix
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
-        serializedMessageStr = serializedMessageStr.replace(KVTransferMessageSerializer.PREFIX, "");
-        serializedMessageStr =
-                serializedMessageStr.replace(KVTransferMessageSerializer.POSTFIX, "");
-
-        // raw message split
-        String[] messageParts = serializedMessageStr.split(KVTransferMessageSerializer.SEPARATOR);
-
-        // length check
-        if (messageParts.length != NUMBER_OF_MESSAGE_PARTS) {
-            throw new DeserializationException(
-                    CustomStringJoiner.join("", "Message must consist of exactly ",
-                            String.valueOf(NUMBER_OF_MESSAGE_PARTS), " parts."));
-        }
 
         try {
-            // raw fields
-            String statusStr = messageParts[MESSAGE_STATUS_INDEX];
-            String storageUnitsStr = messageParts[MESSAGE_STORAGE_UNITS_INDEX];
-            String putableEntryStr = messageParts[MESSAGE_PUTABLE_ENTRY_INDEX];
-            String removableKeyStr = messageParts[MESSAGE_REMOVABLE_KEY_INDEX];
-            String responseMessageStr = messageParts[MESSAGE_RESPONSE_MESSAGE_INDEX];
+            Matcher transferMessageMatcher =
+                    getRegexFromToken(KVTRANSFER_MESSAGE).matcher(serializedMessageStr);
+            if (transferMessageMatcher.find()) {
+                String serializedTransferMessage = transferMessageMatcher.group(XML_NODE);
 
-            // deserialized fields
-            StatusType status = StatusType.valueOf(statusStr);
-            Set<MovableStorageUnit> storageUnits =
-                    storageUnitsDeserializer.deserialize(storageUnitsStr);
-            KVEntry putableEntry = kvEntryDeserializer.deserialize(putableEntryStr);
-            String removableKey = "null".equals(removableKeyStr) ? null : removableKeyStr;
-            String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;
+                KVTransferMessage deserialized = new KVTransferMessage.Builder()
+                        .status(deserializeStatus(serializedTransferMessage))
+                        .storageUnits(deserializeStorageUnits(serializedTransferMessage))
+                        .putableEntry(deserializePutableEntry(serializedTransferMessage))
+                        .removableKey(deserializeString(serializedTransferMessage, REMOVABLE_KEY))
+                        .responseMessage(
+                                deserializeString(serializedTransferMessage, RESPONSE_MESSAGE))
+                        .build();
 
-            // deserialized object
-            KVTransferMessage deserialized = new KVTransferMessage.Builder().status(status)
-                    .storageUnits(storageUnits).putableEntry(putableEntry)
-                    .removableKey(removableKey).responseMessage(responseMessage).build();
+                LOGGER.debug("KVTransferMessage deserialization finished.");
+                return deserialized;
+            } else {
+                throw new DeserializationException(CustomStringJoiner.join("",
+                        "Unable to extract KVTransferMessage from:", serializedMessageStr));
+            }
+        } catch (Exception ex) {
+            throw new DeserializationException(ex.getMessage());
+        }
+    }
 
-            LOGGER.debug("KVTransferMessage deserialization finished.");
-            return deserialized;
-        } catch (IllegalArgumentException ex) {
-            LOGGER.error(ex);
-            throw new DeserializationException("StatusType is not recognized.");
+    private StatusType deserializeStatus(String from) throws DeserializationException {
+        Matcher statusMatcher = getRegexFromToken(STATUS).matcher(from);
+        if (statusMatcher.find()) {
+            String statusStr = statusMatcher.group(XML_NODE);
+            try {
+                return StatusType.valueOf(statusStr);
+            } catch (IllegalArgumentException ex) {
+                throw new DeserializationException("StatusType is not recognized.");
+            }
+        } else {
+            throw new DeserializationException(
+                    CustomStringJoiner.join("", "Unable to extract status from:", from));
+        }
+    }
+
+    private KVEntry deserializePutableEntry(String from) throws DeserializationException {
+        Matcher entryMatcher = getRegexFromToken(PUTABLE_ENTRY).matcher(from);
+        if (entryMatcher.find()) {
+            return kvEntryDeserializer.deserialize(entryMatcher.group(XML_NODE));
+        } else {
+            return null;
+        }
+    }
+
+    private String deserializeString(String from, String token) throws DeserializationException {
+        Matcher stringMatcher = getRegexFromToken(token).matcher(from);
+        if (stringMatcher.find()) {
+            return stringMatcher.group(XML_NODE);
+        } else {
+            return null;
+        }
+    }
+
+    private Set<MovableStorageUnit> deserializeStorageUnits(String from)
+            throws DeserializationException {
+        Matcher storageUnitsMatcher = getRegexFromToken(STORAGE_UNITS).matcher(from);
+        if (storageUnitsMatcher.find()) {
+            return storageUnitsDeserializer.deserialize(storageUnitsMatcher.group(XML_NODE));
+        } else {
+            return null;
         }
     }
 

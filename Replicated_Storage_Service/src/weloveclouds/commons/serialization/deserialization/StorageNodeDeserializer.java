@@ -66,7 +66,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
     private ServerConnectionInfo deserializeServerConnectionInfoFrom(String serializedNode) throws
             DeserializationException {
         Matcher serverConnectionInfoMatcher =
-                getRegexFromToken(SERVER_CONNECTION).matcher(serializedNode);
+                getRegexFromToken(CONNECTION_INFOS).matcher(serializedNode);
         if (serverConnectionInfoMatcher.find()) {
             return serverConnectionInfoDeserializer
                     .deserialize(serverConnectionInfoMatcher.group(XML_NODE));

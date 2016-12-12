@@ -12,7 +12,7 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import static weloveclouds.commons.serialization.models.XMLTokens.ACTIVE_CONNECTIONS;
 import static weloveclouds.commons.serialization.models.XMLTokens.NAME;
 import static weloveclouds.commons.serialization.models.XMLTokens.NODE_HEALTH_INFOS;
-import static weloveclouds.commons.serialization.models.XMLTokens.SERVER_CONNECTION;
+import static weloveclouds.commons.serialization.models.XMLTokens.CONNECTION_INFOS;
 
 /**
  * Created by Benoit on 2016-12-08.
@@ -31,7 +31,7 @@ public class NodeHealthInfosSerializer implements ISerializer<AbstractXMLNode, N
         return new XMLRootNode.Builder()
                 .token(NODE_HEALTH_INFOS)
                 .addInnerNode(new XMLNode(NAME, nodeHealthInfosToSerialize.getServerName()))
-                .addInnerNode(new XMLNode(SERVER_CONNECTION, serverConnectionInfoISerializer
+                .addInnerNode(new XMLNode(CONNECTION_INFOS, serverConnectionInfoISerializer
                         .serialize(nodeHealthInfosToSerialize.getServerConnectionInfo())))
                 .addInnerNode(new XMLNode(ACTIVE_CONNECTIONS,
                         String.valueOf(nodeHealthInfosToSerialize.getNumberOfActiveConnections())))

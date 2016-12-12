@@ -1,44 +1,27 @@
-package testing.weloveclouds.kvstore.serialization;
+package weloveclouds.commons.kvstore.serialization.helper;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import org.junit.Test;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-import testing.weloveclouds.kvstore.serialization.utils.OuterTagRemover;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.hashing.utils.HashingUtil;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataDeserializer;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
-import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
-import weloveclouds.commons.serialization.models.AbstractXMLNode;
-import weloveclouds.commons.serialization.models.XMLTokens;
+import weloveclouds.commons.serialization.utils.XMLPatternUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
-/**
- * Tests for the {@link RingMetadata} to verify its serialization and deserialization processes.
- * 
- * @author Benedek
- */
-public class RingMetadataTest extends TestCase {
-
-    private static final IDeserializer<RingMetadata, String> metadataDeserializer =
-            new RingMetadataDeserializer();
-    private static final ISerializer<AbstractXMLNode, RingMetadata> metadataSerializer =
-            new RingMetadataSerializer();
+public class A {
 
     @Test
-    public void testMovableStorageUnitSerializationAndDeserialization()
-            throws DeserializationException, UnknownHostException {
+    public void test() throws DeserializationException, IOException {
         HashRange range1 =
                 new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
         HashRange writeRange = new HashRange.Builder().begin(HashingUtil.getHash("a"))
@@ -54,15 +37,21 @@ public class RingMetadataTest extends TestCase {
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8082).build())
                 .readRanges(readRanges).build();
 
-        RingMetadata metadata =
+        RingMetadata s =
                 new RingMetadata(new HashSet<>(Arrays.asList(metadataPart1, metadataPart2)));
 
-        String serializedMetadata = OuterTagRemover.removeOuterTag(
-                metadataSerializer.serialize(metadata).toString(), XMLTokens.RING_METADATA);
-        RingMetadata deserializedMetadata = metadataDeserializer.deserialize(serializedMetadata);
+        RingMetadataSerializer a = new RingMetadataSerializer();
+        String serialized = a.serialize(s).toString();
 
-        Assert.assertEquals(metadata.toString(), deserializedMetadata.toString());
-        Assert.assertEquals(metadata, deserializedMetadata);
+        Matcher matcher = XMLPatternUtils.getRegexFromToken("RING_METADATA").matcher(serialized);
+        matcher.find();
+        String group = matcher.group(XMLPatternUtils.XML_NODE);
+
+        RingMetadataDeserializer b = new RingMetadataDeserializer();
+        RingMetadata c = b.deserialize(group);
+        System.out.println(c);
+        System.out.println(s.equals(c));
+
     }
 
 }

@@ -1,50 +1,38 @@
 package weloveclouds.commons.kvstore.serialization.helper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
+import static weloveclouds.commons.serialization.models.XMLTokens.RING_METADATA;
+import static weloveclouds.commons.serialization.models.XMLTokens.RING_METADATA_PART;
 
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.serialization.models.XMLNode;
+import weloveclouds.commons.serialization.models.XMLRootNode;
+import weloveclouds.commons.serialization.models.XMLRootNode.Builder;
 
 
 /**
- * A serializer which converts a {@link RingMetadata} to a {@link String}.
+ * A serializer which converts a {@link RingMetadata} to a {@link AbstractXMLNode}.
  * 
  * @author Benedek
  */
-public class RingMetadataSerializer implements ISerializer<String, RingMetadata> {
+public class RingMetadataSerializer implements ISerializer<AbstractXMLNode, RingMetadata> {
 
-    public static final String SEPARATOR = "-łł-";
-    private static final Logger LOGGER = Logger.getLogger(RingMetadata.class);
-
-    private ISerializer<String, RingMetadataPart> metadataPartSerializer =
+    private ISerializer<AbstractXMLNode, RingMetadataPart> metadataPartSerializer =
             new RingMetadataPartSerializer();
 
     @Override
-    public String serialize(RingMetadata target) {
-        String serialized = null;
+    public AbstractXMLNode serialize(RingMetadata target) {
+        Builder builder = new XMLRootNode.Builder().token(RING_METADATA);
 
         if (target != null) {
-            LOGGER.debug("Serializing a RingMetadata.");
-            // original fields
-            Set<RingMetadataPart> metadataParts = target.getMetadataParts();
-
-            // string representation
-            Set<String> metadataPartsStrs = new HashSet<>();
-            for (RingMetadataPart metadataPart : metadataParts) {
-                metadataPartsStrs.add(metadataPartSerializer.serialize(metadataPart));
+            for (RingMetadataPart metadataPart : target.getMetadataParts()) {
+                builder.addInnerNode(new XMLNode(RING_METADATA_PART,
+                        metadataPartSerializer.serialize(metadataPart).toString()));
             }
-
-            // merged string representation
-            serialized = CustomStringJoiner.join(SEPARATOR, new ArrayList<>(metadataPartsStrs));
-            LOGGER.debug("Serializing a RingMetadata finished.");
         }
 
-        return serialized;
+        return builder.build();
     }
 
 }

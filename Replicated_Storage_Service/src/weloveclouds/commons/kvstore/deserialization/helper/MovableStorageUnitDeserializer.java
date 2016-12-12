@@ -1,16 +1,16 @@
 package weloveclouds.commons.kvstore.deserialization.helper;
 
-import static weloveclouds.commons.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_BETWEEN_ENTRIES;
-import static weloveclouds.commons.kvstore.serialization.helper.MovableStorageUnitSerializer.SEPARATOR_INSIDE_ENTRY;
+import static weloveclouds.commons.serialization.models.XMLTokens.KV_ENTRY;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
+import java.util.regex.Matcher;
 
 import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.utils.FileUtility;
 
@@ -21,51 +21,34 @@ import weloveclouds.server.utils.FileUtility;
  */
 public class MovableStorageUnitDeserializer implements IDeserializer<MovableStorageUnit, String> {
 
-    private static final int NUMBER_OF_ENTRY_PARTS = 2;
-
-    private static final int KEY_INDEX = 0;
-    private static final int VALUE_INDEX = 1;
-
-    private static final Logger LOGGER = Logger.getLogger(MovableStorageUnitDeserializer.class);
+    private IDeserializer<KVEntry, String> kvEntryDeserializer = new KVEntryDeserializer();
 
     @Override
     public MovableStorageUnit deserialize(String from) throws DeserializationException {
         MovableStorageUnit deserialized = null;
 
         if (from != null && !"null".equals(from)) {
-            LOGGER.debug("Deserializing a MovableStorageUnit from String.");
-            // raw message split
-            String[] entries = from.split(SEPARATOR_BETWEEN_ENTRIES);
+            try {
+                Map<String, String> deserializedEntries = new HashMap<>();
 
-            Map<String, String> deserializedEntries = new HashMap<>();
-            for (String rawEntry : entries) {
-                String[] rawEntryParts = rawEntry.split(SEPARATOR_INSIDE_ENTRY);
-
-                // length check
-                if (rawEntryParts.length != NUMBER_OF_ENTRY_PARTS) {
-                    throw new DeserializationException(
-                            CustomStringJoiner.join("", "KVEntry must consist of exactly ",
-                                    String.valueOf(NUMBER_OF_ENTRY_PARTS), " parts."));
+                Matcher entriesMatcher = getRegexFromToken(KV_ENTRY).matcher(from);
+                while (entriesMatcher.find()) {
+                    KVEntry deserializedEntry =
+                            kvEntryDeserializer.deserialize(entriesMatcher.group(XML_NODE));
+                    deserializedEntries.put(deserializedEntry.getKey(),
+                            deserializedEntry.getValue());
                 }
 
-                // raw fields
-                String key = rawEntryParts[KEY_INDEX];
-                String value = rawEntryParts[VALUE_INDEX];
+                if (deserializedEntries.isEmpty()) {
+                    throw new DeserializationException(CustomStringJoiner.join("",
+                            "Unable to extract storage unit entries from:", from));
+                }
 
-                // deserialized fields
-                deserializedEntries.put(key, value);
-            }
-
-            // deserialized object
-            try {
                 deserialized =
                         new MovableStorageUnit(deserializedEntries, FileUtility.createDummyPath());
-            } catch (IOException ex) {
-                LOGGER.error(ex);
-                throw new DeserializationException(
-                        "Error during creating the deserialized MovableStorageUnit instance.");
+            } catch (Exception ex) {
+                new DeserializationException(ex.getMessage());
             }
-            LOGGER.debug("Deserializing a MovableStorageUnit from String finished.");
         }
 
         return deserialized;

@@ -2,6 +2,13 @@ package weloveclouds.commons.kvstore.deserialization;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
+import static weloveclouds.commons.serialization.models.XMLTokens.KVMESSAGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.KV_ENTRY;
+import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
+
+import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
@@ -12,7 +19,6 @@ import weloveclouds.commons.kvstore.deserialization.helper.KVEntryDeserializer;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
-import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 
@@ -22,10 +28,6 @@ import weloveclouds.commons.serialization.IMessageDeserializer;
  * @author Benoit
  */
 public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, SerializedMessage> {
-
-    private static final int NUMBER_OF_MESSAGE_PARTS = 2;
-    private static final int MESSAGE_STATUS_INDEX = 0;
-    private static final int MESSAGE_KVENTRY_INDEX = 1;
 
     private static final Logger LOGGER = Logger.getLogger(KVMessageDeserializer.class);
 
@@ -40,40 +42,50 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
     @Override
     public KVMessage deserialize(byte[] serializedMessage) throws DeserializationException {
         LOGGER.debug("Deserializing KVMessage from byte[].");
-
-        // remove prefix and postfix
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
-        serializedMessageStr = serializedMessageStr.replace(KVMessageSerializer.PREFIX, "");
-        serializedMessageStr = serializedMessageStr.replace(KVMessageSerializer.POSTFIX, "");
-
-        // raw message split
-        String[] messageParts = serializedMessageStr.split(KVMessageSerializer.SEPARATOR);
-
-        // length check
-        if (messageParts.length != NUMBER_OF_MESSAGE_PARTS) {
-            throw new DeserializationException(
-                    CustomStringJoiner.join("", "Message must consist of exactly ",
-                            String.valueOf(NUMBER_OF_MESSAGE_PARTS), " parts."));
-        }
 
         try {
-            // raw fields
-            String statusStr = messageParts[MESSAGE_STATUS_INDEX];
-            String kvEntryStr = messageParts[MESSAGE_KVENTRY_INDEX];
+            Matcher kvMessageMatcher = getRegexFromToken(KVMESSAGE).matcher(serializedMessageStr);
+            if (kvMessageMatcher.find()) {
+                String serializedKVMessage = kvMessageMatcher.group(XML_NODE);
+                KVEntry entry = deserializeKVEntry(serializedKVMessage);
+                KVMessage deserialized =
+                        new KVMessage.Builder().status(deserializeStatus(serializedKVMessage))
+                                .key(entry.getKey()).value(entry.getValue()).build();
 
-            // deserialized fields
-            StatusType status = StatusType.valueOf(statusStr);
-            KVEntry entry = kvEntryDeserializer.deserialize(kvEntryStr);
+                LOGGER.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
+                return deserialized;
+            } else {
+                throw new DeserializationException(CustomStringJoiner.join("",
+                        "Unable to extract KVMessage from:", serializedMessageStr));
+            }
+        } catch (Exception ex) {
+            throw new DeserializationException(ex.getMessage());
+        }
+    }
 
-            // deserialized object
-            KVMessage deserialized = new KVMessage.Builder().status(status).key(entry.getKey())
-                    .value(entry.getValue()).build();
-            LOGGER.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
+    private StatusType deserializeStatus(String from) throws DeserializationException {
+        Matcher statusMatcher = getRegexFromToken(STATUS).matcher(from);
+        if (statusMatcher.find()) {
+            String statusStr = statusMatcher.group(XML_NODE);
+            try {
+                return StatusType.valueOf(statusStr);
+            } catch (IllegalArgumentException ex) {
+                throw new DeserializationException("StatusType is not recognized.");
+            }
+        } else {
+            throw new DeserializationException(
+                    CustomStringJoiner.join("", "Unable to extract status from:", from));
+        }
+    }
 
-            return deserialized;
-        } catch (IllegalArgumentException ex) {
-            LOGGER.error(ex);
-            throw new DeserializationException("StatusType is not recognized.");
+    private KVEntry deserializeKVEntry(String from) throws DeserializationException {
+        Matcher kvEntryMatcher = getRegexFromToken(KV_ENTRY).matcher(from);
+        if (kvEntryMatcher.find()) {
+            return kvEntryDeserializer.deserialize(kvEntryMatcher.group(XML_NODE));
+        } else {
+            throw new DeserializationException(
+                    CustomStringJoiner.join("", "Unable to extract KVEntry from:", from));
         }
     }
 }

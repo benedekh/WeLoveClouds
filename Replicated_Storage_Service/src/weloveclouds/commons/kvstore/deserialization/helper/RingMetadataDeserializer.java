@@ -1,16 +1,17 @@
 package weloveclouds.commons.kvstore.deserialization.helper;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
+import static weloveclouds.commons.serialization.models.XMLTokens.RING_METADATA_PART;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
 
-import org.apache.log4j.Logger;
-
+import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;;
 
 /**
  * A deserializer which converts a {@link RingMetadata} to a {@link String}.
@@ -18,8 +19,6 @@ import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
  * @author Benedek
  */
 public class RingMetadataDeserializer implements IDeserializer<RingMetadata, String> {
-
-    private static final Logger LOGGER = Logger.getLogger(RingMetadataDeserializer.class);
 
     private IDeserializer<RingMetadataPart, String> metadataPartDeserializer =
             new RingMetadataPartDeserializer();
@@ -29,19 +28,24 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
         RingMetadata deserialized = null;
 
         if (from != null && !"null".equals(from)) {
-            LOGGER.debug("Deserializing a RingMetadata from String.");
-            // raw message split
-            String[] parts = from.split(RingMetadataSerializer.SEPARATOR);
+            try {
+                Set<RingMetadataPart> metadataParts = new HashSet<>();
 
-            // deserialized fields
-            Set<RingMetadataPart> metadataParts = new HashSet<>();
-            for (String serializedPart : parts) {
-                metadataParts.add(metadataPartDeserializer.deserialize(serializedPart));
+                Matcher metadataPartMatcher = getRegexFromToken(RING_METADATA_PART).matcher(from);
+                while (metadataPartMatcher.find()) {
+                    metadataParts.add(metadataPartDeserializer
+                            .deserialize(metadataPartMatcher.group(XML_NODE)));
+                }
+
+                if (metadataParts.isEmpty()) {
+                    throw new DeserializationException(CustomStringJoiner.join("",
+                            "Unable to extract ring metadata parts from:", from));
+                }
+
+                deserialized = new RingMetadata(metadataParts);
+            } catch (Exception ex) {
+                new DeserializationException(ex.getMessage());
             }
-
-            // deserialized object
-            deserialized = new RingMetadata(metadataParts);
-            LOGGER.debug(join(" ", "Deserialized ring metadata is:", deserialized.toString()));
         }
 
         return deserialized;

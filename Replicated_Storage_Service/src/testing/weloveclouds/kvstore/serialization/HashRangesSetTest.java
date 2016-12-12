@@ -10,14 +10,17 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import testing.weloveclouds.kvstore.serialization.utils.OuterTagRemover;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtil;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.HashRangesSetDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.commons.kvstore.serialization.helper.HashRangesSetSerializer;
+import weloveclouds.commons.kvstore.serialization.helper.HashRangesIterableSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.serialization.models.XMLTokens;
 import weloveclouds.server.utils.SetToStringUtility;
 
 /**
@@ -29,8 +32,8 @@ public class HashRangesSetTest extends TestCase {
 
     private static final IDeserializer<Set<HashRange>, String> hashRangesDeserializer =
             new HashRangesSetDeserializer();
-    private static final ISerializer<String, Set<HashRange>> hashRangesSerializer =
-            new HashRangesSetSerializer();
+    private static final ISerializer<AbstractXMLNode, Iterable<HashRange>> hashRangesSerializer =
+            new HashRangesIterableSerializer();
 
     @Test
     public void testHashRangeSerializationAndDeserialization()
@@ -41,7 +44,8 @@ public class HashRangesSetTest extends TestCase {
                 .end(HashingUtil.getHash("a")).build();
         Set<HashRange> hashRanges = new HashSet<>(Arrays.asList(range1, range2));
 
-        String serializedRangess = hashRangesSerializer.serialize(hashRanges);
+        String serializedRangess = OuterTagRemover.removeOuterTag(
+                hashRangesSerializer.serialize(hashRanges).toString(), XMLTokens.HASH_RANGES);
         Set<HashRange> deserializedRanges = hashRangesDeserializer.deserialize(serializedRangess);
 
         Assert.assertEquals(SetToStringUtility.toString(hashRanges),

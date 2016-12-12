@@ -22,7 +22,7 @@ import static weloveclouds.commons.serialization.models.XMLTokens.NAME;
 import static weloveclouds.commons.serialization.models.XMLTokens.NODE;
 import static weloveclouds.commons.serialization.models.XMLTokens.REPLICAS;
 import static weloveclouds.commons.serialization.models.XMLTokens.REPLICA;
-import static weloveclouds.commons.serialization.models.XMLTokens.SERVER_CONNECTION;
+import static weloveclouds.commons.serialization.models.XMLTokens.CONNECTION_INFOS;
 
 /**
  * Created by Benoit on 2016-12-08.
@@ -50,7 +50,7 @@ public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, Stora
     public AbstractXMLNode serialize(StorageNode nodeToSerialize) {
         return new XMLRootNode.Builder().token(NODE)
                 .addInnerNode(new XMLNode(NAME, nodeToSerialize.getName()))
-                .addInnerNode(new XMLNode(SERVER_CONNECTION, serverConnectionInfoISerializer
+                .addInnerNode(new XMLNode(CONNECTION_INFOS, serverConnectionInfoISerializer
                         .serialize(nodeToSerialize.getServerConnectionInfo())))
                 .addInnerNode(new XMLNode(HASH_KEY, hashSerializer
                         .serialize(nodeToSerialize.getHashKey())))

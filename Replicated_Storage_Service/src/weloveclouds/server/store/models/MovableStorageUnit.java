@@ -1,6 +1,7 @@
 package weloveclouds.server.store.models;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,6 +34,10 @@ public class MovableStorageUnit extends PersistedStorageUnit {
 
     public MovableStorageUnit copyEntries(HashRange range) {
         return new MovableStorageUnit(filterEntries(range), getPath());
+    }
+
+    public Set<Map.Entry<String, String>> getEntries() {
+        return Collections.unmodifiableSet(entries.entrySet());
     }
 
     /**

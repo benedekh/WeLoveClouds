@@ -13,7 +13,7 @@ import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 import static weloveclouds.commons.serialization.models.XMLTokens.ACTIVE_CONNECTIONS;
 import static weloveclouds.commons.serialization.models.XMLTokens.NAME;
-import static weloveclouds.commons.serialization.models.XMLTokens.SERVER_CONNECTION;
+import static weloveclouds.commons.serialization.models.XMLTokens.CONNECTION_INFOS;
 
 /**
  * Created by Benoit on 2016-12-09.
@@ -58,7 +58,7 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
 
     private ServerConnectionInfo deserializeServerConnectionInfoFrom(String serializedNodeHealthInfos)
             throws DeserializationException {
-        Matcher matcher = getRegexFromToken(SERVER_CONNECTION).matcher(serializedNodeHealthInfos);
+        Matcher matcher = getRegexFromToken(CONNECTION_INFOS).matcher(serializedNodeHealthInfos);
 
         if (matcher.find()) {
             return serverConnectionInfoStringDeserializer.deserialize(matcher.group(XML_NODE));

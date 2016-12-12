@@ -2,8 +2,18 @@ package weloveclouds.commons.kvstore.deserialization;
 
 import static weloveclouds.client.utils.CustomStringJoiner.join;
 import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
+import static weloveclouds.commons.serialization.models.XMLTokens.KVADMIN_MESSAGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.REMOVABLE_RANGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.REPLICAS;
+import static weloveclouds.commons.serialization.models.XMLTokens.RESPONSE_MESSAGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.RING_METADATA;
+import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
+import static weloveclouds.commons.serialization.models.XMLTokens.TARGET_SERVER_INFO;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
@@ -19,7 +29,6 @@ import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataPartDeser
 import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfosSetDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.communication.models.ServerConnectionInfo;
@@ -31,14 +40,6 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public class KVAdminMessageDeserializer
         implements IMessageDeserializer<KVAdminMessage, SerializedMessage> {
-
-    private static final int NUMBER_OF_MESSAGE_PARTS = 6;
-    private static final int MESSAGE_STATUS_INDEX = 0;
-    private static final int MESSAGE_RING_METADATA_INDEX = 1;
-    private static final int MESSAGE_TARGET_SERVER_INFO_INDEX = 2;
-    private static final int MESSAGE_REPLICA_CONNECTION_INFOS_INDEX = 3;
-    private static final int MESSAGE_REMOVABLE_RANGE_INDEX = 4;
-    private static final int MESSAGE_RESPONSE_MESSAGE_INDEX = 5;
 
     private static final Logger LOGGER = Logger.getLogger(KVAdminMessageDeserializer.class);
 
@@ -60,52 +61,96 @@ public class KVAdminMessageDeserializer
     @Override
     public KVAdminMessage deserialize(byte[] serializedMessage) throws DeserializationException {
         LOGGER.debug("Deserializing KVAdminMessage from byte[].");
-
-        // remove prefix and postfix
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
-        serializedMessageStr = serializedMessageStr.replace(KVAdminMessageSerializer.PREFIX, "");
-        serializedMessageStr = serializedMessageStr.replace(KVAdminMessageSerializer.POSTFIX, "");
-
-        // raw message split
-        String[] messageParts = serializedMessageStr.split(KVAdminMessageSerializer.SEPARATOR);
-
-        // length check
-        if (messageParts.length != NUMBER_OF_MESSAGE_PARTS) {
-            throw new DeserializationException(
-                    CustomStringJoiner.join("", "Message must consist of exactly ",
-                            String.valueOf(NUMBER_OF_MESSAGE_PARTS), " parts."));
-        }
 
         try {
-            // raw fields
-            String statusStr = messageParts[MESSAGE_STATUS_INDEX];
-            String ringMetadataStr = messageParts[MESSAGE_RING_METADATA_INDEX];
-            String targetServerInfoStr = messageParts[MESSAGE_TARGET_SERVER_INFO_INDEX];
-            String replicaConnectionInfosStr = messageParts[MESSAGE_REPLICA_CONNECTION_INFOS_INDEX];
-            String removableRangeStr = messageParts[MESSAGE_REMOVABLE_RANGE_INDEX];
-            String responseMessageStr = messageParts[MESSAGE_RESPONSE_MESSAGE_INDEX];
+            Matcher adminMessageMatcher =
+                    getRegexFromToken(KVADMIN_MESSAGE).matcher(serializedMessageStr);
+            if (adminMessageMatcher.find()) {
+                String serializedAdminMessage = adminMessageMatcher.group(XML_NODE);
 
-            // deserialized fields
-            StatusType status = StatusType.valueOf(statusStr);
-            RingMetadata ringMetadata = metadataDeserializer.deserialize(ringMetadataStr);
-            RingMetadataPart targetServerInfo =
-                    metadataPartDeserializer.deserialize(targetServerInfoStr);
-            HashRange removableRange = removableRangeDeserializer.deserialize(removableRangeStr);
-            Set<ServerConnectionInfo> replicaConnectionInfos =
-                    replicaConnectionInfosDeserializer.deserialize(replicaConnectionInfosStr);
-            String responseMessage = "null".equals(responseMessageStr) ? null : responseMessageStr;
+                KVAdminMessage deserialized = new KVAdminMessage.Builder()
+                        .status(deserializeStatus(serializedAdminMessage))
+                        .ringMetadata(deserializeRingMetadata(serializedAdminMessage))
+                        .targetServerInfo(deserializeTargetServerInfo(serializedAdminMessage))
+                        .replicaConnectionInfos(
+                                deserializeReplicaConnectionInfos(serializedAdminMessage))
+                        .removableRange(deserializeRemovableRange(serializedAdminMessage))
+                        .responseMessage(deserializeResponseMessage(serializedAdminMessage))
+                        .build();
 
-            // deserialized object
-            KVAdminMessage deserialized = new KVAdminMessage.Builder().status(status)
-                    .ringMetadata(ringMetadata).targetServerInfo(targetServerInfo)
-                    .replicaConnectionInfos(replicaConnectionInfos).removableRange(removableRange)
-                    .responseMessage(responseMessage).build();
-
-            LOGGER.debug(join(" ", "Deserialized KVAdminMessage is:", deserialized.toString()));
-            return deserialized;
-        } catch (IllegalArgumentException ex) {
-            LOGGER.error(ex);
-            throw new DeserializationException("StatusType is not recognized.");
+                LOGGER.debug(join(" ", "Deserialized KVAdminMessage is:", deserialized.toString()));
+                return deserialized;
+            } else {
+                throw new DeserializationException(CustomStringJoiner.join("",
+                        "Unable to extract KVAdminTransferMessage from:", serializedMessageStr));
+            }
+        } catch (Exception ex) {
+            throw new DeserializationException(ex.getMessage());
         }
     }
+
+    private StatusType deserializeStatus(String from) throws DeserializationException {
+        Matcher statusMatcher = getRegexFromToken(STATUS).matcher(from);
+        if (statusMatcher.find()) {
+            String statusStr = statusMatcher.group(XML_NODE);
+            try {
+                return StatusType.valueOf(statusStr);
+            } catch (IllegalArgumentException ex) {
+                throw new DeserializationException("StatusType is not recognized.");
+            }
+        } else {
+            throw new DeserializationException(
+                    CustomStringJoiner.join("", "Unable to extract status from:", from));
+        }
+    }
+
+    private RingMetadata deserializeRingMetadata(String from) throws DeserializationException {
+        Matcher ringMetadataMatcher = getRegexFromToken(RING_METADATA).matcher(from);
+        if (ringMetadataMatcher.find()) {
+            return metadataDeserializer.deserialize(ringMetadataMatcher.group(XML_NODE));
+        } else {
+            return null;
+        }
+    }
+
+    private RingMetadataPart deserializeTargetServerInfo(String from)
+            throws DeserializationException {
+        Matcher metadataPartMatcher = getRegexFromToken(TARGET_SERVER_INFO).matcher(from);
+        if (metadataPartMatcher.find()) {
+            return metadataPartDeserializer.deserialize(metadataPartMatcher.group(XML_NODE));
+        } else {
+            return null;
+        }
+    }
+
+    private Set<ServerConnectionInfo> deserializeReplicaConnectionInfos(String from)
+            throws DeserializationException {
+        Matcher replicaConnectionInfosMatcher = getRegexFromToken(REPLICAS).matcher(from);
+        if (replicaConnectionInfosMatcher.find()) {
+            return replicaConnectionInfosDeserializer
+                    .deserialize(replicaConnectionInfosMatcher.group(XML_NODE));
+        } else {
+            return null;
+        }
+    }
+
+    private HashRange deserializeRemovableRange(String from) throws DeserializationException {
+        Matcher removableRangeMatcher = getRegexFromToken(REMOVABLE_RANGE).matcher(from);
+        if (removableRangeMatcher.find()) {
+            return removableRangeDeserializer.deserialize(removableRangeMatcher.group(XML_NODE));
+        } else {
+            return null;
+        }
+    }
+
+    private String deserializeResponseMessage(String from) throws DeserializationException {
+        Matcher responseMessageMatcher = getRegexFromToken(RESPONSE_MESSAGE).matcher(from);
+        if (responseMessageMatcher.find()) {
+            return responseMessageMatcher.group(XML_NODE);
+        } else {
+            return null;
+        }
+    }
+
 }

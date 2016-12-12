@@ -1,26 +1,23 @@
 package weloveclouds.commons.kvstore.deserialization.helper;
 
-import org.apache.log4j.Logger;
+import static weloveclouds.commons.serialization.models.XMLTokens.BEGIN;
+import static weloveclouds.commons.serialization.models.XMLTokens.END;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import java.util.regex.Matcher;
+
+import static weloveclouds.client.utils.CustomStringJoiner.join;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.helper.HashRangeSerializer;
 
 /**
- * A deserializer which converts a {@link HashRange} to a {@link String}.
+ * A deserializer which converts a {@link String} to a {@link HashRange}.
  * 
  * @author Benedek
  */
 public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
-
-    private static final int NUMBER_OF_HASH_RANGE_PARTS = 2;
-
-    private static final int RANGE_START_INDEX = 0;
-    private static final int RANGE_END_INDEX = 1;
-
-    private static final Logger LOGGER = Logger.getLogger(HashRangeDeserializer.class);
 
     private IDeserializer<Hash, String> hashDeserializer = new HashDeserializer();
 
@@ -29,31 +26,25 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
         HashRange deserialized = null;
 
         if (from != null && !"null".equals(from)) {
-            LOGGER.debug("Deserializing a HashRange from String.");
-            // raw message split
-            String[] parts = from.split(HashRangeSerializer.SEPARATOR);
-
-            // length check
-            if (parts.length != NUMBER_OF_HASH_RANGE_PARTS) {
-                throw new DeserializationException(
-                        CustomStringJoiner.join("", "Hash range must consist of exactly ",
-                                String.valueOf(NUMBER_OF_HASH_RANGE_PARTS), " parts."));
+            try {
+                deserialized = new HashRange.Builder().begin(deserializeHash(from, BEGIN))
+                        .end(deserializeHash(from, END)).build();
+            } catch (Exception ex) {
+                new DeserializationException(ex.getMessage());
             }
-
-            // raw fields
-            String startHashStr = parts[RANGE_START_INDEX];
-            String endHashStr = parts[RANGE_END_INDEX];
-
-            // deserialized fields
-            Hash startHash = hashDeserializer.deserialize(startHashStr);
-            Hash endHash = hashDeserializer.deserialize(endHashStr);
-
-            // deserialized object
-            deserialized = new HashRange.Builder().begin(startHash).end(endHash).build();
-            LOGGER.debug("Deserializing a HashRange from String finished.");
         }
 
         return deserialized;
+    }
+
+    private Hash deserializeHash(String from, String token) throws DeserializationException {
+        Matcher hashFieldMatcher = getRegexFromToken(token).matcher(from);
+        if (hashFieldMatcher.find()) {
+            return hashDeserializer.deserialize(hashFieldMatcher.group(XML_NODE));
+        } else {
+            throw new DeserializationException(
+                    join("", "Unable to extract ", token, " hash range from:", from));
+        }
     }
 
 }

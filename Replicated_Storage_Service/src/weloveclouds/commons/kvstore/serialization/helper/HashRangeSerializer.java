@@ -1,43 +1,35 @@
 package weloveclouds.commons.kvstore.serialization.helper;
 
-import org.apache.log4j.Logger;
+import static weloveclouds.commons.serialization.models.XMLTokens.BEGIN;
+import static weloveclouds.commons.serialization.models.XMLTokens.END;
+import static weloveclouds.commons.serialization.models.XMLTokens.HASH_RANGE;
 
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.serialization.models.XMLNode;
+import weloveclouds.commons.serialization.models.XMLRootNode;
+import weloveclouds.commons.serialization.models.XMLRootNode.Builder;
 
 /**
- * A serializer which converts a {@link HashRange} to a {@link String}.
+ * A serializer which converts a {@link HashRange} to a {@link AbstractXMLNode}.
  *
  * @author Benedek
  */
-public class HashRangeSerializer implements ISerializer<String, HashRange> {
-
-    public static final String SEPARATOR = "-Ł-";
-    private static final Logger LOGGER = Logger.getLogger(HashRangeSerializer.class);
+public class HashRangeSerializer implements ISerializer<AbstractXMLNode, HashRange> {
 
     private ISerializer<String, Hash> hashSerializer = new HashSerializer();
 
     @Override
-    public String serialize(HashRange target) {
-        String serialized = null;
+    public AbstractXMLNode serialize(HashRange target) {
+        Builder builder = new XMLRootNode.Builder().token(HASH_RANGE);
 
         if (target != null) {
-            LOGGER.debug("Serializing a HashRange.");
-            // original fields
-            Hash begin = target.getStart();
-            Hash end = target.getEnd();
-
-            // string representation
-            String beginStr = hashSerializer.serialize(begin);
-            String endStr = hashSerializer.serialize(end);
-
-            // merged string representation
-            serialized = CustomStringJoiner.join(SEPARATOR, beginStr, endStr);
-            LOGGER.debug("Serializing a HashRange finished.");
+            builder.addInnerNode(new XMLNode(BEGIN, hashSerializer.serialize(target.getStart())))
+                    .addInnerNode(new XMLNode(END, hashSerializer.serialize(target.getEnd())));
         }
 
-        return serialized;
+        return builder.build();
     }
 
 }
