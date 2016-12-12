@@ -47,6 +47,9 @@ public class EcsClientCommandFactory {
             case HELP:
                 recognizedCommand = new Help(externalConfigurationServiceApi, userInput.getArguments());
                 break;
+            case LOGLEVEL:
+                recognizedCommand = new LogLevel(externalConfigurationServiceApi, userInput.getArguments());
+                break;
             default:
                 recognizedCommand = new DefaultCommand(externalConfigurationServiceApi, userInput.getArguments());
                 break;

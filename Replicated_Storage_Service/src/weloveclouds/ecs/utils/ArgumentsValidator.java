@@ -11,11 +11,13 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 /**
  * Created by Benoit on 2016-11-21.
+ * Added to by hb
  */
 public class ArgumentsValidator {
     private static final int INIT_SERVICE_NUMBER_OF_ARGUMENTS = 3;
     private static final int ADD_NODE_NUMBER_OF_ARGUMENTS = 2;
     private static List<String> validStrategyNames = Arrays.asList("FIFO", "LFU", "LRU");
+    private static List<String> validLogLevels = Arrays.asList("ALL", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF");
 
     public static void validateStartArguments(List<String> arguments) throws
             IllegalArgumentException {
@@ -95,6 +97,14 @@ public class ArgumentsValidator {
             throw new IllegalArgumentException(message);
         }
     }
+    
+    public static void validateLogLevelArguments(List<String> arguments) throws IllegalArgumentException {
+        if(arguments.size()!= 1 || !validLogLevels.contains(arguments.get(0))) {
+            String msg = join("", "Log level not recognized, should be one of: ", join(",", validLogLevels));
+            throw new IllegalArgumentException(msg);
+        }
+        
+    }
 
     private static boolean isInteger(String argument) {
         boolean isInteger;
@@ -111,4 +121,6 @@ public class ArgumentsValidator {
     private static boolean isNullOrEmpty(List<String> arguments) {
         return arguments == null || arguments.isEmpty();
     }
+
+
 }
