@@ -9,14 +9,12 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import testing.weloveclouds.kvstore.serialization.utils.OuterTagRemover;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfosSetDeserializer;
 import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfosIterableSerializer;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
-import weloveclouds.commons.serialization.models.XMLTokens;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.utils.SetToStringUtility;
 
@@ -44,9 +42,8 @@ public class ServerConnectionInfosSetTest extends TestCase {
         Set<ServerConnectionInfo> connectionInfos =
                 new HashSet<>(Arrays.asList(connectionInfo1, connectionInfo2));
 
-        String serializedConnectionInfos = OuterTagRemover.removeOuterTag(
-                connectionInfosSerializer.serialize(connectionInfos).toString(),
-                XMLTokens.CONNECTION_INFOS);
+        String serializedConnectionInfos =
+                connectionInfosSerializer.serialize(connectionInfos).toString();
         Set<ServerConnectionInfo> deserializedConnectionInfos =
                 connectionInfosDeserializer.deserialize(serializedConnectionInfos);
 

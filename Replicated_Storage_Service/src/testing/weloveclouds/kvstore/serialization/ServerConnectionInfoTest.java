@@ -6,14 +6,12 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import testing.weloveclouds.kvstore.serialization.utils.OuterTagRemover;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfoDeserializer;
 import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
-import weloveclouds.commons.serialization.models.XMLTokens;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -35,9 +33,8 @@ public class ServerConnectionInfoTest extends TestCase {
         ServerConnectionInfo connectionInfo =
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
 
-        String serializedConnectionInfo = OuterTagRemover.removeOuterTag(
-                connectionInfoSerializer.serialize(connectionInfo).toString(),
-                XMLTokens.CONNECTION_INFO);
+        String serializedConnectionInfo =
+                connectionInfoSerializer.serialize(connectionInfo).toString();
         ServerConnectionInfo deserializedConnectionInfo =
                 connectionInfoDeserializer.deserialize(serializedConnectionInfo);
 

@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import testing.weloveclouds.kvstore.serialization.utils.OuterTagRemover;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtil;
@@ -20,7 +19,6 @@ import weloveclouds.commons.kvstore.serialization.helper.HashRangesIterableSeria
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
-import weloveclouds.commons.serialization.models.XMLTokens;
 import weloveclouds.server.utils.SetToStringUtility;
 
 /**
@@ -44,8 +42,7 @@ public class HashRangesSetTest extends TestCase {
                 .end(HashingUtil.getHash("a")).build();
         Set<HashRange> hashRanges = new HashSet<>(Arrays.asList(range1, range2));
 
-        String serializedRangess = OuterTagRemover.removeOuterTag(
-                hashRangesSerializer.serialize(hashRanges).toString(), XMLTokens.HASH_RANGES);
+        String serializedRangess = hashRangesSerializer.serialize(hashRanges).toString();
         Set<HashRange> deserializedRanges = hashRangesDeserializer.deserialize(serializedRangess);
 
         Assert.assertEquals(SetToStringUtility.toString(hashRanges),

@@ -11,14 +11,12 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import testing.weloveclouds.kvstore.serialization.utils.OuterTagRemover;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.MovableStorageUnitsSetDeserializer;
 import weloveclouds.commons.kvstore.serialization.helper.MovableStorageUnitsIterableSerializer;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
-import weloveclouds.commons.serialization.models.XMLTokens;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.utils.FileUtility;
 import weloveclouds.server.utils.SetToStringUtility;
@@ -50,8 +48,7 @@ public class MovableStorageUnitsSetTest extends TestCase {
 
         Set<MovableStorageUnit> storageUnits = new HashSet<>(Arrays.asList(unit1, unit2));
 
-        String serializedStorageUnits = OuterTagRemover.removeOuterTag(
-                storageUnitsSerializer.serialize(storageUnits).toString(), XMLTokens.STORAGE_UNITS);
+        String serializedStorageUnits = storageUnitsSerializer.serialize(storageUnits).toString();
         Set<MovableStorageUnit> deserializedStorageUnits =
                 storageUnitsDeserializer.deserialize(serializedStorageUnits);
 

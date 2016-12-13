@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import testing.weloveclouds.kvstore.serialization.utils.OuterTagRemover;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
@@ -21,7 +20,6 @@ import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
-import weloveclouds.commons.serialization.models.XMLTokens;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -57,8 +55,7 @@ public class RingMetadataTest extends TestCase {
         RingMetadata metadata =
                 new RingMetadata(new HashSet<>(Arrays.asList(metadataPart1, metadataPart2)));
 
-        String serializedMetadata = OuterTagRemover.removeOuterTag(
-                metadataSerializer.serialize(metadata).toString(), XMLTokens.RING_METADATA);
+        String serializedMetadata = metadataSerializer.serialize(metadata).toString();
         RingMetadata deserializedMetadata = metadataDeserializer.deserialize(serializedMetadata);
 
         Assert.assertEquals(metadata.toString(), deserializedMetadata.toString());

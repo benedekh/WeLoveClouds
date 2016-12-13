@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import testing.weloveclouds.kvstore.serialization.utils.OuterTagRemover;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtil;
@@ -16,7 +15,6 @@ import weloveclouds.commons.kvstore.serialization.helper.HashRangeSerializer;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
-import weloveclouds.commons.serialization.models.XMLTokens;
 
 /**
  * Tests for the {@link HashRange} to verify its serialization and deserialization processes.
@@ -37,8 +35,7 @@ public class HashRangeTest extends TestCase {
         Hash end = HashingUtil.getHash("z");
         HashRange range = new HashRange.Builder().begin(start).end(end).build();
 
-        String serializedRange = OuterTagRemover.removeOuterTag(
-                hashRangeSerializer.serialize(range).toString(), XMLTokens.HASH_RANGE);
+        String serializedRange = hashRangeSerializer.serialize(range).toString();
         HashRange deserializedRange = hashRangeDeserializer.deserialize(serializedRange);
 
         Assert.assertEquals(range.toString(), deserializedRange.toString());
