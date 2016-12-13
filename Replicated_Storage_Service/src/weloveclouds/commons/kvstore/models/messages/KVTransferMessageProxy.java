@@ -1,5 +1,6 @@
 package weloveclouds.commons.kvstore.models.messages;
 
+import weloveclouds.commons.exceptions.IllegalAccessException;
 import java.util.Set;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
@@ -32,8 +33,7 @@ public class KVTransferMessageProxy implements IKVTransferMessage {
             case TRANSFER_ENTRIES:
                 return message.getStorageUnits();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getStorageUnits");
+                throw new IllegalAccessException(status.toString(), "getStorageUnits");
         }
     }
 
@@ -44,8 +44,7 @@ public class KVTransferMessageProxy implements IKVTransferMessage {
             case PUT_ENTRY:
                 return message.getPutableEntry();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getPutableEntry");
+                throw new IllegalAccessException(status.toString(), "getPutableEntry");
         }
     }
 
@@ -56,8 +55,7 @@ public class KVTransferMessageProxy implements IKVTransferMessage {
             case REMOVE_ENTRY_BY_KEY:
                 return message.getRemovableKey();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getRemovableKey");
+                throw new IllegalAccessException(status.toString(), "getRemovableKey");
         }
     }
 
