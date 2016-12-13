@@ -21,6 +21,7 @@ import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link KVMessage}.
@@ -48,13 +49,17 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
             Matcher kvMessageMatcher = getRegexFromToken(KVMESSAGE).matcher(serializedMessageStr);
             if (kvMessageMatcher.find()) {
                 String serializedKVMessage = kvMessageMatcher.group(XML_NODE);
-                KVEntry entry = deserializeKVEntry(serializedKVMessage);
-                KVMessage deserialized =
-                        new KVMessage.Builder().status(deserializeStatus(serializedKVMessage))
-                                .key(entry.getKey()).value(entry.getValue()).build();
 
-                LOGGER.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
-                return deserialized;
+                if (StringUtils.stringIsNotEmpty(serializedKVMessage)) {
+                    KVEntry entry = deserializeKVEntry(serializedKVMessage);
+                    KVMessage deserialized =
+                            new KVMessage.Builder().status(deserializeStatus(serializedKVMessage))
+                                    .key(entry.getKey()).value(entry.getValue()).build();
+                    LOGGER.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
+                    return deserialized;
+                } else {
+                    throw new DeserializationException("KVMessage is empty.");
+                }
             } else {
                 throw new DeserializationException(CustomStringJoiner.join("",
                         "Unable to extract KVMessage from:", serializedMessageStr));

@@ -12,6 +12,7 @@ import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * A deserializer which converts a {@link String} to a {@link HashRange}.
@@ -26,7 +27,7 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
     public HashRange deserialize(String from) throws DeserializationException {
         HashRange deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
+        if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 deserialized = new HashRange.Builder().begin(deserializeHash(from, BEGIN))
                         .end(deserializeHash(from, END)).build();

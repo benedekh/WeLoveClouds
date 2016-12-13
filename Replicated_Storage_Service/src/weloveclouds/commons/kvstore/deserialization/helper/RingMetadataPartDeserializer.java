@@ -14,6 +14,7 @@ import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -33,7 +34,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
     public RingMetadataPart deserialize(String from) throws DeserializationException {
         RingMetadataPart deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
+        if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 deserialized = new RingMetadataPart.Builder()
                         .connectionInfo(deserializeConnectionInfo(from))

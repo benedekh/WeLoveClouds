@@ -8,9 +8,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -28,19 +28,13 @@ public class ServerConnectionInfosSetDeserializer
     public Set<ServerConnectionInfo> deserialize(String from) throws DeserializationException {
         Set<ServerConnectionInfo> deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
+        if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 deserialized = new HashSet<>();
-
                 Matcher connectionInfosMatcher = getRegexFromToken(CONNECTION_INFO).matcher(from);
                 while (connectionInfosMatcher.find()) {
                     deserialized.add(connectionInfoDeserializer
                             .deserialize(connectionInfosMatcher.group(XML_NODE)));
-                }
-
-                if (deserialized.isEmpty()) {
-                    throw new DeserializationException(CustomStringJoiner.join("",
-                            "Unable to extract connection infos from:", from));
                 }
             } catch (Exception ex) {
                 new DeserializationException(ex.getMessage());

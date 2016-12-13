@@ -12,7 +12,8 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.serialization.IDeserializer;;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;;
 
 /**
  * A deserializer which converts a {@link RingMetadata} to a {@link String}.
@@ -28,7 +29,7 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
     public RingMetadata deserialize(String from) throws DeserializationException {
         RingMetadata deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
+        if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 Set<RingMetadataPart> metadataParts = new HashSet<>();
 
@@ -51,5 +52,5 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
 
         return deserialized;
     }
-
+    
 }

@@ -31,6 +31,7 @@ import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -69,23 +70,28 @@ public class KVAdminMessageDeserializer
             if (adminMessageMatcher.find()) {
                 String serializedAdminMessage = adminMessageMatcher.group(XML_NODE);
 
-                KVAdminMessage deserialized = new KVAdminMessage.Builder()
-                        .status(deserializeStatus(serializedAdminMessage))
-                        .ringMetadata(deserializeRingMetadata(serializedAdminMessage))
-                        .targetServerInfo(deserializeTargetServerInfo(serializedAdminMessage))
-                        .replicaConnectionInfos(
-                                deserializeReplicaConnectionInfos(serializedAdminMessage))
-                        .removableRange(deserializeRemovableRange(serializedAdminMessage))
-                        .responseMessage(deserializeResponseMessage(serializedAdminMessage))
-                        .build();
-
-                LOGGER.debug(join(" ", "Deserialized KVAdminMessage is:", deserialized.toString()));
-                return deserialized;
+                if (StringUtils.stringIsNotEmpty(serializedAdminMessage)) {
+                    KVAdminMessage deserialized = new KVAdminMessage.Builder()
+                            .status(deserializeStatus(serializedAdminMessage))
+                            .ringMetadata(deserializeRingMetadata(serializedAdminMessage))
+                            .targetServerInfo(deserializeTargetServerInfo(serializedAdminMessage))
+                            .replicaConnectionInfos(
+                                    deserializeReplicaConnectionInfos(serializedAdminMessage))
+                            .removableRange(deserializeRemovableRange(serializedAdminMessage))
+                            .responseMessage(deserializeResponseMessage(serializedAdminMessage))
+                            .build();
+                    LOGGER.debug(
+                            join(" ", "Deserialized KVAdminMessage is:", deserialized.toString()));
+                    return deserialized;
+                } else {
+                    throw new DeserializationException("KVAdminMessage is empty.");
+                }
             } else {
                 throw new DeserializationException(CustomStringJoiner.join("",
                         "Unable to extract KVAdminTransferMessage from:", serializedMessageStr));
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new DeserializationException(ex.getMessage());
         }
     }
@@ -147,7 +153,12 @@ public class KVAdminMessageDeserializer
     private String deserializeResponseMessage(String from) throws DeserializationException {
         Matcher responseMessageMatcher = getRegexFromToken(RESPONSE_MESSAGE).matcher(from);
         if (responseMessageMatcher.find()) {
-            return responseMessageMatcher.group(XML_NODE);
+            String deserialized = responseMessageMatcher.group(XML_NODE);
+            if (StringUtils.stringIsNotEmpty(deserialized)) {
+                return deserialized;
+            } else {
+                return null;
+            }
         } else {
             return null;
         }

@@ -116,7 +116,7 @@ public class KVServerRequestsValidator {
      */
     public static void validateServerConnectionInfos(Set<ServerConnectionInfo> connectionInfos)
             throws IllegalArgumentException {
-        if (connectionInfos == null || connectionInfos.isEmpty()) {
+        if (connectionInfos == null) {
             throw new IllegalArgumentException();
         }
         for (ServerConnectionInfo serverConnectionInfo : connectionInfos) {
@@ -137,7 +137,10 @@ public class KVServerRequestsValidator {
         if (ringMetadataPart == null) {
             throw new IllegalArgumentException();
         }
-        validateHashRange(ringMetadataPart.getWriteRange());
+        HashRange writeRange = ringMetadataPart.getWriteRange();
+        if (writeRange != null) {
+            validateHashRange(writeRange);
+        }
         validateServerConnectionInfo(ringMetadataPart.getConnectionInfo());
     }
 

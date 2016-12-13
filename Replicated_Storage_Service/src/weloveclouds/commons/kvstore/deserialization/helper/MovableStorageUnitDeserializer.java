@@ -12,6 +12,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.utils.FileUtility;
 
@@ -28,7 +29,7 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
     public MovableStorageUnit deserialize(String from) throws DeserializationException {
         MovableStorageUnit deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
+        if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 Map<String, String> deserializedEntries = new HashMap<>();
 

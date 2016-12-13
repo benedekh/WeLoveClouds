@@ -11,6 +11,7 @@ import static weloveclouds.client.utils.CustomStringJoiner.join;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * A deserializer which converts a {@link KVEntry} to a {@link String}.
@@ -23,7 +24,7 @@ public class KVEntryDeserializer implements IDeserializer<KVEntry, String> {
     public KVEntry deserialize(String from) throws DeserializationException {
         KVEntry deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
+        if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 deserialized =
                         new KVEntry(deserializeField(from, KEY), deserializeField(from, VALUE));
@@ -38,7 +39,12 @@ public class KVEntryDeserializer implements IDeserializer<KVEntry, String> {
     private String deserializeField(String from, String token) throws DeserializationException {
         Matcher fieldMatcher = getRegexFromToken(token).matcher(from);
         if (fieldMatcher.find()) {
-            return fieldMatcher.group(XML_NODE);
+            String deserialized = fieldMatcher.group(XML_NODE);
+            if (StringUtils.stringIsNotEmpty(deserialized)) {
+                return deserialized;
+            } else {
+                return null;
+            }
         } else {
             throw new DeserializationException(
                     join("", "Unable to extract ", token, " from:", from));

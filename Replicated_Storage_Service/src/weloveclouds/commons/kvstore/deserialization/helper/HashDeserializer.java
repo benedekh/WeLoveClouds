@@ -7,6 +7,7 @@ import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.helper.HashSerializer;
 import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * A deserializer which converts a {@link Hash} to a {@link String}.
@@ -22,7 +23,7 @@ public class HashDeserializer implements IDeserializer<Hash, String> {
     public Hash deserialize(String from) throws DeserializationException {
         Hash deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
+        if (StringUtils.stringIsNotEmpty(from)) {
             LOGGER.debug("Deserializing a Hash from String.");
             // raw message split
             String[] parts = from.split(HashSerializer.SEPARATOR_INSIDE_HASH);

@@ -23,7 +23,10 @@ public class SetToStringUtility {
                 sb.append(object);
                 sb.append(delimiter);
             }
-            sb.setLength(sb.length() - delimiter.length());
+            int lengthAfterRemovingTheLastDelmiter = sb.length() - delimiter.length();
+            if (lengthAfterRemovingTheLastDelmiter > 0) {
+                sb.setLength(lengthAfterRemovingTheLastDelmiter);
+            }
             sb.append("}");
 
             return sb.toString();

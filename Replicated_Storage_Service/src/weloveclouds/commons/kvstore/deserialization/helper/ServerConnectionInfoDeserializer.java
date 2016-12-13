@@ -1,5 +1,6 @@
 package weloveclouds.commons.kvstore.deserialization.helper;
 
+import static weloveclouds.client.utils.CustomStringJoiner.join;
 import static weloveclouds.commons.serialization.models.XMLTokens.IP_ADDRESS;
 import static weloveclouds.commons.serialization.models.XMLTokens.PORT;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
@@ -9,9 +10,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -26,7 +27,7 @@ public class ServerConnectionInfoDeserializer
     public ServerConnectionInfo deserialize(String from) throws DeserializationException {
         ServerConnectionInfo deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
+        if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 deserialized = new ServerConnectionInfo.Builder()
                         .ipAddress(deserializeIpAddress(from)).port(deserializePort(from)).build();

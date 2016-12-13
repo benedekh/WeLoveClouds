@@ -12,6 +12,7 @@ import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * A deserializer which converts a {@link Set<HashRange>} to a {@link String}.
@@ -26,7 +27,7 @@ public class HashRangesSetDeserializer implements IDeserializer<Set<HashRange>, 
     public Set<HashRange> deserialize(String from) throws DeserializationException {
         Set<HashRange> deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
+        if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 deserialized = new HashSet<>();
 

@@ -8,9 +8,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
@@ -28,19 +28,13 @@ public class MovableStorageUnitsSetDeserializer
     public Set<MovableStorageUnit> deserialize(String from) throws DeserializationException {
         Set<MovableStorageUnit> deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
+        if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 deserialized = new HashSet<>();
-
                 Matcher storageUnitMatcher = getRegexFromToken(STORAGE_UNIT).matcher(from);
                 while (storageUnitMatcher.find()) {
                     deserialized.add(storageUnitDeserializer
                             .deserialize(storageUnitMatcher.group(XML_NODE)));
-                }
-
-                if (deserialized.isEmpty()) {
-                    throw new DeserializationException(CustomStringJoiner.join("",
-                            "Unable to extract storage unit from:", from));
                 }
             } catch (Exception ex) {
                 new DeserializationException(ex.getMessage());

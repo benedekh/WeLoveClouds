@@ -25,6 +25,7 @@ import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
@@ -58,17 +59,21 @@ public class KVTransferMessageDeserializer
             if (transferMessageMatcher.find()) {
                 String serializedTransferMessage = transferMessageMatcher.group(XML_NODE);
 
-                KVTransferMessage deserialized = new KVTransferMessage.Builder()
-                        .status(deserializeStatus(serializedTransferMessage))
-                        .storageUnits(deserializeStorageUnits(serializedTransferMessage))
-                        .putableEntry(deserializePutableEntry(serializedTransferMessage))
-                        .removableKey(deserializeString(serializedTransferMessage, REMOVABLE_KEY))
-                        .responseMessage(
-                                deserializeString(serializedTransferMessage, RESPONSE_MESSAGE))
-                        .build();
-
-                LOGGER.debug("KVTransferMessage deserialization finished.");
-                return deserialized;
+                if (StringUtils.stringIsNotEmpty(serializedTransferMessage)) {
+                    KVTransferMessage deserialized = new KVTransferMessage.Builder()
+                            .status(deserializeStatus(serializedTransferMessage))
+                            .storageUnits(deserializeStorageUnits(serializedTransferMessage))
+                            .putableEntry(deserializePutableEntry(serializedTransferMessage))
+                            .removableKey(
+                                    deserializeString(serializedTransferMessage, REMOVABLE_KEY))
+                            .responseMessage(
+                                    deserializeString(serializedTransferMessage, RESPONSE_MESSAGE))
+                            .build();
+                    LOGGER.debug("KVTransferMessage deserialization finished.");
+                    return deserialized;
+                } else {
+                    throw new DeserializationException("KVTransferMessage is empty.");
+                }
             } else {
                 throw new DeserializationException(CustomStringJoiner.join("",
                         "Unable to extract KVTransferMessage from:", serializedMessageStr));
