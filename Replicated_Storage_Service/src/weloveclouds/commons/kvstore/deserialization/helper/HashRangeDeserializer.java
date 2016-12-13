@@ -4,7 +4,6 @@ import static weloveclouds.commons.serialization.models.XMLTokens.BEGIN;
 import static weloveclouds.commons.serialization.models.XMLTokens.END;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.regex.Matcher;
 
@@ -45,7 +44,7 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
             return hashDeserializer.deserialize(hashFieldMatcher.group(XML_NODE));
         } else {
             throw new DeserializationException(
-                    join("", "Unable to extract ", token, " hash range from:", from));
+                    StringUtils.join("", "Unable to extract ", token, " hash range from:", from));
         }
     }
 

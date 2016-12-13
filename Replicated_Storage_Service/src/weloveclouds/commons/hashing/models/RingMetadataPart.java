@@ -49,10 +49,8 @@ public class RingMetadataPart {
 
     @Override
     public String toString() {
-        return StringUtils.join("", "{", "Connection info: ",
-                connectionInfo == null ? null : connectionInfo.toString(), ", Write range: ",
-                writeRange == null ? null : writeRange.toString(), ", Read ranges: ",
-                StringUtils.setToString(readRanges), "}");
+        return StringUtils.join("", "{", "Connection info: ", connectionInfo, ", Write range: ",
+                writeRange, ", Read ranges: ", StringUtils.setToString(readRanges), "}");
     }
 
     @Override

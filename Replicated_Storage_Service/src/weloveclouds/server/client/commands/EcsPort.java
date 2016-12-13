@@ -1,12 +1,11 @@
 package weloveclouds.server.client.commands;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.ServerSideException;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.client.commands.utils.ArgumentsValidator;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
 
@@ -38,7 +37,7 @@ public class EcsPort extends AbstractServerCommand {
             int port = Integer.parseInt(arguments[PORT_INDEX]);
             context.setEcsPort(port);
 
-            String statusMessage = join(" ", "Latest port:", String.valueOf(port));
+            String statusMessage = StringUtils.join(" ", "Latest port:", port);
             userOutputWriter.writeLine(statusMessage);
             LOGGER.debug(statusMessage);
         } catch (IOException ex) {

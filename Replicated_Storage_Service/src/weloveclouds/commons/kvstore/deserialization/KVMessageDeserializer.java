@@ -6,7 +6,6 @@ import static weloveclouds.commons.serialization.models.XMLTokens.KV_ENTRY;
 import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.regex.Matcher;
 
@@ -57,7 +56,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<IKVMessage, S
                             new KVMessage.Builder().status(deserializeStatus(serializedKVMessage))
                                     .key(entry.getKey()).value(entry.getValue()).build();
 
-                    LOGGER.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
+                    LOGGER.debug(StringUtils.join(" ", "Deserialized KVMessage is:", deserialized));
                     return new KVMessageProxy(deserialized);
                 } else {
                     throw new DeserializationException("KVMessage is empty.");

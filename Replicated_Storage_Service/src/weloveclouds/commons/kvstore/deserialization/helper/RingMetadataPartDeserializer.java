@@ -5,7 +5,6 @@ import static weloveclouds.commons.serialization.models.XMLTokens.READ_RANGES;
 import static weloveclouds.commons.serialization.models.XMLTokens.WRITE_RANGE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -55,7 +54,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
             return connectionInfoDeserializer.deserialize(connectionInfoMatcher.group(XML_NODE));
         } else {
             throw new DeserializationException(
-                    join("", "Unable to extract connection info from:", from));
+                    StringUtils.join("", "Unable to extract connection info from:", from));
         }
     }
 
@@ -65,7 +64,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
             return hashRangesDeserializer.deserialize(readRangesMatcher.group(XML_NODE));
         } else {
             throw new DeserializationException(
-                    join("", "Unable to extract read ranges from:", from));
+                    StringUtils.join("", "Unable to extract read ranges from:", from));
         }
     }
 
@@ -75,7 +74,7 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
             return hashRangeDeserializer.deserialize(writeRangeMatcher.group(XML_NODE));
         } else {
             throw new DeserializationException(
-                    join("", "Unable to extract write range from:", from));
+                    StringUtils.join("", "Unable to extract write range from:", from));
         }
     }
 

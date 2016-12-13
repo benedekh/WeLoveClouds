@@ -78,8 +78,8 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
                     buffer = smaller;
                 }
 
-                LOGGER.debug(StringUtils.join(" ", "Received", String.valueOf(readBytes),
-                        "bytes from the connection."));
+                LOGGER.debug(
+                        StringUtils.join(" ", "Received", readBytes, "bytes from the connection."));
                 baosBuffer.write(buffer);
 
                 byte[] contentReceivedSoFar = baosBuffer.toByteArray();

@@ -147,7 +147,7 @@ public class MovableDataAccessService extends DataAccessService
             throw new UninitializedServiceException();
         }
 
-        LOGGER.debug(StringUtils.join(" ", "Filtering entries in range:", range.toString()));
+        LOGGER.debug(StringUtils.join(" ", "Filtering entries in range:", range));
         return movablePersistentStorage.filterEntries(range);
     }
 
@@ -158,7 +158,7 @@ public class MovableDataAccessService extends DataAccessService
             throw new UninitializedServiceException();
         }
 
-        LOGGER.debug(StringUtils.join(" ", "Removing entries in range:", range.toString()));
+        LOGGER.debug(StringUtils.join(" ", "Removing entries in range:", range));
         movablePersistentStorage.removeEntries(range);
         LOGGER.debug("Removing entries finished.");
     }
@@ -197,8 +197,7 @@ public class MovableDataAccessService extends DataAccessService
                 serviceRecentStatus = serviceNewStatus;
         }
 
-        LOGGER.debug(
-                StringUtils.join(" ", "Recent service status is:", serviceRecentStatus.toString()));
+        LOGGER.debug(StringUtils.join(" ", "Recent service status is:", serviceRecentStatus));
     }
 
     @Override

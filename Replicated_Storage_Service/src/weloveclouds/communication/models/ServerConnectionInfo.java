@@ -64,8 +64,7 @@ public class ServerConnectionInfo {
 
     @Override
     public String toString() {
-        return StringUtils.join("", "<", ipAddress.getHostAddress(), " , ", String.valueOf(port),
-                ">");
+        return StringUtils.join("", "<", ipAddress.getHostAddress(), " , ", port, ">");
     }
 
     /**

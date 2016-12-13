@@ -4,7 +4,6 @@ import static weloveclouds.commons.serialization.models.XMLTokens.IP_ADDRESS;
 import static weloveclouds.commons.serialization.models.XMLTokens.PORT;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -45,12 +44,12 @@ public class ServerConnectionInfoDeserializer
             try {
                 return InetAddress.getByName(ipAddressStr);
             } catch (UnknownHostException ex) {
-                throw new DeserializationException(
-                        join(": ", "Host referred by IP address is unknown", ipAddressStr));
+                throw new DeserializationException(StringUtils.join(": ",
+                        "Host referred by IP address is unknown", ipAddressStr));
             }
         } else {
             throw new DeserializationException(
-                    join("", "Unable to extract ip address from:", from));
+                    StringUtils.join("", "Unable to extract ip address from:", from));
         }
     }
 
@@ -61,10 +60,11 @@ public class ServerConnectionInfoDeserializer
             try {
                 return Integer.valueOf(portStr);
             } catch (NumberFormatException ex) {
-                throw new DeserializationException(join("", "Port is NaN: ", portStr));
+                throw new DeserializationException(StringUtils.join("", "Port is NaN: ", portStr));
             }
         } else {
-            throw new DeserializationException(join("", "Unable to extract port from:", from));
+            throw new DeserializationException(
+                    StringUtils.join("", "Unable to extract port from:", from));
         }
     }
 

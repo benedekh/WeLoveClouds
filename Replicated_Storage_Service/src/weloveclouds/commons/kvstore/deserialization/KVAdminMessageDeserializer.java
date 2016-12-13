@@ -10,7 +10,6 @@ import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
 import static weloveclouds.commons.serialization.models.XMLTokens.TARGET_SERVER_INFO;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -83,7 +82,7 @@ public class KVAdminMessageDeserializer
                             .build();
 
                     LOGGER.debug(
-                            join(" ", "Deserialized KVAdminMessage is:", deserialized.toString()));
+                            StringUtils.join(" ", "Deserialized KVAdminMessage is:", deserialized));
                     return new KVAdminMessageProxy(deserialized);
                 } else {
                     throw new DeserializationException("KVAdminMessage is empty.");

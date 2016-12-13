@@ -4,7 +4,6 @@ import static weloveclouds.commons.serialization.models.XMLTokens.KEY;
 import static weloveclouds.commons.serialization.models.XMLTokens.VALUE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.regex.Matcher;
 
@@ -47,7 +46,7 @@ public class KVEntryDeserializer implements IDeserializer<KVEntry, String> {
             }
         } else {
             throw new DeserializationException(
-                    join("", "Unable to extract ", token, " from:", from));
+                    StringUtils.join("", "Unable to extract ", token, " from:", from));
         }
     }
 }

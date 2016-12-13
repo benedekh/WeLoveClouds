@@ -1,12 +1,11 @@
 package weloveclouds.server.client.commands;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.ServerSideException;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.client.commands.utils.ArgumentsValidator;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
 import weloveclouds.server.store.KVCache;
@@ -40,7 +39,7 @@ public class CacheSize extends AbstractServerCommand {
             int cacheSize = Integer.parseInt(arguments[CACHE_SIZE_INDEX]);
             context.setCacheSize(cacheSize);
 
-            String statusMessage = join(" ", "Latest cache size:", String.valueOf(cacheSize));
+            String statusMessage = StringUtils.join(" ", "Latest cache size:", cacheSize);
             userOutputWriter.writeLine(statusMessage);
             LOGGER.debug(statusMessage);
         } catch (IOException ex) {

@@ -30,7 +30,7 @@ public abstract class AbstractRetryableTask {
     protected int maxNumberOfRetries;
 
     public AbstractRetryableTask(int maxNumberOfRetries, AbstractCommand command,
-                                 List<AbstractCommand> successCommand, List<AbstractCommand> failCommand) {
+            List<AbstractCommand> successCommand, List<AbstractCommand> failCommand) {
         this.id = UUID.randomUUID().toString();
         this.status = WAITING;
         this.command = command;
@@ -124,8 +124,8 @@ public abstract class AbstractRetryableTask {
     }
 
     public String toString() {
-        return StringUtils.join(" ", Arrays.asList("Task id:", id, "Command:", command
-                .toString(), "Status:", status.name()));
+        return StringUtils.join(" ",
+                Arrays.asList("Task id:", id, "Command:", command, "Status:", status));
     }
 }
 

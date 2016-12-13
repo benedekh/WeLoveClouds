@@ -1,12 +1,11 @@
 package weloveclouds.communication.services;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.retryer.IBackoffIntervalComputer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.Connection;
 
 /**
@@ -48,9 +47,8 @@ public abstract class AbstractNetworkPacketResender {
      * @throws InterruptedException if the thread was waken up from sleep
      */
     protected void sleepBeforeNextAttempt() throws InterruptedException {
-        LOGGER.info(join("", "#",
-                String.valueOf(numberOfAttemptsSoFar) + " resend attempts were made out of #",
-                String.valueOf(maxNumberOfAttempts), " attempts."));
+        LOGGER.info(StringUtils.join("", "#", numberOfAttemptsSoFar,
+                " resend attempts were made out of #", maxNumberOfAttempts, " attempts."));
         Thread.sleep(
                 backoffIntervalComputer.computeIntervalFrom(numberOfAttemptsSoFar).getMillis());
     }

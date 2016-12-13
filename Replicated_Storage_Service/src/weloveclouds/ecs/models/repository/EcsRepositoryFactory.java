@@ -1,12 +1,11 @@
 package weloveclouds.ecs.models.repository;
 
-import com.google.inject.Inject;
-
 import java.io.File;
 import java.util.List;
 
+import com.google.inject.Inject;
+
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;
-import weloveclouds.ecs.utils.ConfigurationFileParser;
 import weloveclouds.ecs.utils.IParser;
 
 /**

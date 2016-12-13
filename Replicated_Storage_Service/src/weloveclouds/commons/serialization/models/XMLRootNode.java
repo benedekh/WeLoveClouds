@@ -3,6 +3,8 @@ package weloveclouds.commons.serialization.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import weloveclouds.commons.utils.StringUtils;
+
 
 /**
  * Created by Benoit on 2016-12-10.
@@ -16,11 +18,7 @@ public class XMLRootNode extends AbstractXMLNode {
     }
 
     public String getContentAsString() {
-        String stringRepresentation = "";
-        for (AbstractXMLNode innerNode : innerNodes) {
-            stringRepresentation += innerNode.toString();
-        }
-        return stringRepresentation;
+        return StringUtils.join("", innerNodes);
     }
 
     public static class Builder {

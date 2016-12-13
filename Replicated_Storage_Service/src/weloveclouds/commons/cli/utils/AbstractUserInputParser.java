@@ -74,8 +74,8 @@ public abstract class AbstractUserInputParser<T> {
 
             ServerConnectionInfo connectionInfo =
                     new ServerConnectionInfo.Builder().ipAddress(ipAddress).port(port).build();
-            LOGGER.debug(StringUtils.join(" ", "Connection parameters are extracted",
-                    connectionInfo.toString()));
+            LOGGER.debug(
+                    StringUtils.join(" ", "Connection parameters are extracted", connectionInfo));
             return connectionInfo;
         } catch (IndexOutOfBoundsException ex) {
             throw new IllegalArgumentException(

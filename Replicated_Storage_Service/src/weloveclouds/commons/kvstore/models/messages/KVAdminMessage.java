@@ -64,14 +64,11 @@ public class KVAdminMessage implements IKVAdminMessage {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Message status:", status == null ? null : status.toString(),
-                ", Removable range: ", removableRange == null ? null : removableRange.toString(),
-                ", Ring metadata:", ringMetadata == null ? null : ringMetadata.toString(),
-                ", Target server info:",
-                targetServerInfo == null ? null : targetServerInfo.toString(),
-                ", Replica connection infos:", StringUtils.setToString(replicaConnectionInfos),
-                ",  Response message: ",
-                responseMessage == null ? null : responseMessage.toString());
+        return StringUtils.join(" ", "Message status:", status, ", Removable range: ",
+                removableRange, ", Ring metadata:", ringMetadata, ", Target server info:",
+                targetServerInfo, ", Replica connection infos:",
+                StringUtils.setToString(replicaConnectionInfos), ",  Response message: ",
+                responseMessage);
     }
 
     @Override

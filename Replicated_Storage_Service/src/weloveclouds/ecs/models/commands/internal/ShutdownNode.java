@@ -26,8 +26,7 @@ public class ShutdownNode extends AbstractEcsNetworkCommand {
         this.targetedNode = shutDownBuilder.targetedNode;
         this.messageSerializer = shutDownBuilder.messageSerializer;
         this.messageDeserializer = shutDownBuilder.messageDeserializer;
-        this.errorMessage =
-                StringUtils.join(" ", "Unable to shutdown node:", targetedNode.toString());
+        this.errorMessage = StringUtils.join(" ", "Unable to shutdown node:", targetedNode);
     }
 
     @Override
@@ -56,8 +55,7 @@ public class ShutdownNode extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Command: Shutdown", "Targeted node:",
-                targetedNode.toString());
+        return StringUtils.join(" ", "Command: Shutdown", "Targeted node:", targetedNode);
     }
 
     public static class Builder {

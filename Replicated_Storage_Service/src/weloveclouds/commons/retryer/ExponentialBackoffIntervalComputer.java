@@ -1,11 +1,11 @@
 package weloveclouds.commons.retryer;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
+
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * A backoff interval computer which calculates the length of the backoff interval, based on which
@@ -39,7 +39,7 @@ public class ExponentialBackoffIntervalComputer implements IBackoffIntervalCompu
         int drawnFactor = Math.max(1, numberGenerator.nextInt(powerOfTwo - 1));
         long intervalLength = drawnFactor * minimalInterval.getMillis();
 
-        LOGGER.debug(join("", "Interval in milliseconds: ", String.valueOf(intervalLength)));
+        LOGGER.debug(StringUtils.join("", "Interval in milliseconds: ", intervalLength));
 
         return new Duration(intervalLength);
     }

@@ -39,11 +39,9 @@ public class StorageNode extends AbstractNode {
         this.previousHashRange = storageNodeBuilder.previousHashRange;
 
         if (storageNodeBuilder.healthInfos == null) {
-            this.healthInfos = new NodeHealthInfos.Builder()
-                    .serverName(name)
+            this.healthInfos = new NodeHealthInfos.Builder().serverName(name)
                     .serverConnectionInfo(serverConnectionInfo)
-                    .numberOfActiveConnections(NO_CONNECTION)
-                    .build();
+                    .numberOfActiveConnections(NO_CONNECTION).build();
         } else {
             this.healthInfos = storageNodeBuilder.healthInfos;
         }
@@ -130,7 +128,7 @@ public class StorageNode extends AbstractNode {
     }
 
     public String toString() {
-        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status.name());
+        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status);
     }
 
     public static class Builder {
@@ -158,8 +156,7 @@ public class StorageNode extends AbstractNode {
             this.serverConnectionInfo = serverConnectionInfo;
             this.ecsChannelConnectionInfo = new ServerConnectionInfo.Builder()
                     .ipAddress(serverConnectionInfo.getIpAddress())
-                    .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT)
-                    .build();
+                    .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT).build();
             this.hashKey = HashingUtils.getHash(serverConnectionInfo.toString());
             return this;
         }

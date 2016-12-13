@@ -26,7 +26,7 @@ public class StopNode extends AbstractEcsNetworkCommand {
         this.targetedNode = stopNodeBuilder.targetedNode;
         this.messageSerializer = stopNodeBuilder.messageSerializer;
         this.messageDeserializer = stopNodeBuilder.messageDeserializer;
-        this.errorMessage = StringUtils.join(" ", "Unable to stop node:", targetedNode.toString());
+        this.errorMessage = StringUtils.join(" ", "Unable to stop node:", targetedNode);
     }
 
     @Override
@@ -54,8 +54,7 @@ public class StopNode extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Command: StopNode", "Targeted node:",
-                targetedNode.toString());
+        return StringUtils.join(" ", "Command: StopNode", "Targeted node:", targetedNode);
     }
 
     public static class Builder {

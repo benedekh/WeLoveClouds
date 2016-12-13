@@ -1,13 +1,12 @@
 package weloveclouds.server.client.commands;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.commands.Connect;
 import weloveclouds.commons.cli.models.ParsedUserInput;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
 import weloveclouds.server.core.ServerFactory;
 import weloveclouds.server.services.DataAccessServiceFactory;
@@ -83,7 +82,7 @@ public class ServerCommandFactory {
                 recognizedCommand = new Quit(arguments);
                 break;
             default:
-                LOGGER.info(join(" ", "Unrecognized command:", userCommand.toString()));
+                LOGGER.info(StringUtils.join(" ", "Unrecognized command:", userCommand));
                 recognizedCommand = new DefaultCommand(null);
                 break;
         }

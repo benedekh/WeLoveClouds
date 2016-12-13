@@ -25,21 +25,19 @@ import static weloveclouds.commons.status.ServerStatus.RUNNING;
 /**
  * Created by Benoit on 2016-12-06.
  */
-public class EcsNotificationService extends AbstractServer<KVAdminMessage> implements INotifier<Object> {
+public class EcsNotificationService extends AbstractServer<KVAdminMessage>
+        implements INotifier<Object> {
     private DistributedSystemAccessService distributedSystemAccessService;
 
     @Inject
     public EcsNotificationService(CommunicationApiFactory communicationApiFactory,
-                                  ServerSocketFactory serverSocketFactory,
-                                  IMessageSerializer<SerializedMessage, KVAdminMessage>
-                                          messageSerializer,
-                                  IMessageDeserializer<KVAdminMessage, SerializedMessage>
-                                          messageDeserializer,
-                                  @EcsNotificationServicePort int port,
-                                  DistributedSystemAccessService distributedSystemAccessService)
-            throws IOException {
-        super(communicationApiFactory, serverSocketFactory, messageSerializer,
-                messageDeserializer, port);
+            ServerSocketFactory serverSocketFactory,
+            IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
+            IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer,
+            @EcsNotificationServicePort int port,
+            DistributedSystemAccessService distributedSystemAccessService) throws IOException {
+        super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
+                port);
     }
 
     @Override
@@ -51,10 +49,8 @@ public class EcsNotificationService extends AbstractServer<KVAdminMessage> imple
             while (status == RUNNING) {
                 ConnectionHandler connectionHandler = new ConnectionHandler(
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
-                        new Connection.Builder().socket(socket.accept()).build(),
-                        messageSerializer,
-                        messageDeserializer,
-                        distributedSystemAccessService);
+                        new Connection.Builder().socket(socket.accept()).build(), messageSerializer,
+                        messageDeserializer, distributedSystemAccessService);
                 connectionHandler.handleConnection();
             }
         } catch (IOException ex) {
@@ -74,12 +70,10 @@ public class EcsNotificationService extends AbstractServer<KVAdminMessage> imple
     private class ConnectionHandler extends AbstractConnectionHandler<KVAdminMessage> {
         private DistributedSystemAccessService distributedSystemAccessService;
 
-        ConnectionHandler(IConcurrentCommunicationApi communicationApi,
-                          Connection connection,
-                          IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
-                          IMessageDeserializer<KVAdminMessage, SerializedMessage>
-                                  messageDeserializer,
-                          DistributedSystemAccessService distributedSystemAccessService) {
+        ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection connection,
+                IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
+                IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer,
+                DistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;
@@ -97,8 +91,7 @@ public class EcsNotificationService extends AbstractServer<KVAdminMessage> imple
                 while (connection.isConnected()) {
                     KVAdminMessage receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
-                    logger.debug(StringUtils.join(" ", "Message received:",
-                            receivedMessage.toString()));
+                    logger.debug(StringUtils.join(" ", "Message received:", receivedMessage));
                     distributedSystemAccessService
                             .updateServiceRingMetadataWith(receivedMessage.getRingMetadata());
                     connection.kill();

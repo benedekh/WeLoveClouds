@@ -29,8 +29,8 @@ public class InvokeDataTransfer extends AbstractEcsNetworkCommand {
         this.messageDeserializer = invokeDataTransferBuilder.messageDeserializer;
         this.newNode = invokeDataTransferBuilder.newNode;
         this.ringMetadata = invokeDataTransferBuilder.ringMetadata;
-        this.errorMessage = StringUtils.join(" ", "Unable to invoke data transfer on node:",
-                targetedNode.toString());
+        this.errorMessage =
+                StringUtils.join(" ", "Unable to invoke data transfer on node:", targetedNode);
     }
 
     @Override
@@ -60,8 +60,7 @@ public class InvokeDataTransfer extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Command: InvokeDataTransfer", "Targeted node:",
-                targetedNode.toString());
+        return StringUtils.join(" ", "Command: InvokeDataTransfer", "Targeted node:", targetedNode);
     }
 
     public static class Builder {

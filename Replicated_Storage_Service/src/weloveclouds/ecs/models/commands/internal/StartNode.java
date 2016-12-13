@@ -26,7 +26,7 @@ public class StartNode extends AbstractEcsNetworkCommand {
         this.targetedNode = startNodeBuilder.targetedNode;
         this.messageSerializer = startNodeBuilder.messageSerializer;
         this.messageDeserializer = startNodeBuilder.messageDeserializer;
-        this.errorMessage = StringUtils.join(" ", "Unable to start node:", targetedNode.toString());
+        this.errorMessage = StringUtils.join(" ", "Unable to start node:", targetedNode);
     }
 
     @Override
@@ -54,8 +54,7 @@ public class StartNode extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Command: StartNode", "Targeted node:",
-                targetedNode.toString());
+        return StringUtils.join(" ", "Command: StartNode", "Targeted node:", targetedNode);
     }
 
     public static class Builder {

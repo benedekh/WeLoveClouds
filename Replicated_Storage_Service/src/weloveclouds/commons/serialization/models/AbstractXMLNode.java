@@ -1,6 +1,6 @@
 package weloveclouds.commons.serialization.models;
 
-import static weloveclouds.commons.utils.StringUtils.join;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Created by Benoit on 2016-12-10.
@@ -17,7 +17,7 @@ public abstract class AbstractXMLNode {
     }
 
     public String toString() {
-        return join("", "<", token, ">", getContentAsString(), "</", token, ">");
+        return StringUtils.join("", "<", token, ">", getContentAsString(), "</", token, ">");
     }
 
     public abstract String getContentAsString();

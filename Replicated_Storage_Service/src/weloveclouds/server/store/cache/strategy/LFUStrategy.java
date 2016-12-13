@@ -66,8 +66,8 @@ public class LFUStrategy implements DisplacementStrategy {
         try {
             KeyFrequency keyFrequency = keyFrequencyPairs.get(key);
             keyFrequency.increaseFrequencyByOne();
-            LOGGER.debug(StringUtils.join(" ", keyFrequency.toString(),
-                    "is updated in the LFU strategy store."));
+            LOGGER.debug(
+                    StringUtils.join(" ", keyFrequency, "is updated in the LFU strategy store."));
         } catch (NullPointerException ex) {
             LOGGER.error("Key cannot be null for get in LFU strategy.");
         }

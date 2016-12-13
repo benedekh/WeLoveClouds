@@ -12,19 +12,21 @@ import java.util.Set;
 public class StringUtils {
 
     /**
-     * Joins string fragments using the delimiter string into one string.
+     * Joins fragments (by calling their {@link #toString()} method) using the delimiter string into
+     * one string.
      */
-    public static String join(String delimiter, String... fragments) {
+    public static String join(String delimiter, Object... fragments) {
         return join(delimiter, Arrays.asList(fragments));
     }
 
     /**
-     * Joins string fragments using the delimiter string into one string.
+     * Joins fragments (by calling their {@link #toString()} method) using the delimiter string into
+     * one string.
      */
-    public static String join(String delimiter, List<String> fragments) {
+    public static String join(String delimiter, List<Object> fragments) {
         if (fragments != null && fragments.size() > 0) {
             StringBuffer buffer = new StringBuffer();
-            for (String fragment : fragments) {
+            for (Object fragment : fragments) {
                 buffer.append(fragment);
                 buffer.append(delimiter);
             }

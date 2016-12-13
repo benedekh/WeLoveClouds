@@ -74,7 +74,7 @@ public class Put implements IKVClientRequest {
         } catch (StorageException ex) {
             response = createKVMessage(PUT_ERROR, key, ex.getMessage());
         } finally {
-            LOGGER.debug(StringUtils.join(" ", "Result:", response.toString()));
+            LOGGER.debug(StringUtils.join(" ", "Result:", response));
         }
         return response;
     }

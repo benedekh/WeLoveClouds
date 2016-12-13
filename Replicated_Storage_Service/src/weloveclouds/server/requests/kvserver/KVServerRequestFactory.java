@@ -1,13 +1,12 @@
 package weloveclouds.server.requests.kvserver;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**
@@ -46,7 +45,7 @@ public class KVServerRequestFactory
                 break;
             default:
                 String errorMessage = "Unrecognized command for transfer message";
-                LOGGER.error(join(" ", errorMessage, receivedMessage.toString()));
+                LOGGER.error(StringUtils.join(" ", errorMessage, receivedMessage));
                 request = new DefaultRequest(errorMessage);
                 break;
         }
