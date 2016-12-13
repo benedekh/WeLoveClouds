@@ -1,6 +1,6 @@
 package weloveclouds.commons.kvstore.deserialization;
 
-import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
+import static weloveclouds.commons.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 import static weloveclouds.commons.serialization.models.XMLTokens.KVTRANSFER_MESSAGE;
 import static weloveclouds.commons.serialization.models.XMLTokens.PUTABLE_ENTRY;
 import static weloveclouds.commons.serialization.models.XMLTokens.REMOVABLE_KEY;
@@ -15,16 +15,15 @@ import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.KVEntryDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.MovableStorageUnitsSetDeserializer;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
@@ -75,7 +74,7 @@ public class KVTransferMessageDeserializer
                     throw new DeserializationException("KVTransferMessage is empty.");
                 }
             } else {
-                throw new DeserializationException(CustomStringJoiner.join("",
+                throw new DeserializationException(StringUtils.join("",
                         "Unable to extract KVTransferMessage from:", serializedMessageStr));
             }
         } catch (Exception ex) {
@@ -94,7 +93,7 @@ public class KVTransferMessageDeserializer
             }
         } else {
             throw new DeserializationException(
-                    CustomStringJoiner.join("", "Unable to extract status from:", from));
+                    StringUtils.join("", "Unable to extract status from:", from));
         }
     }
 

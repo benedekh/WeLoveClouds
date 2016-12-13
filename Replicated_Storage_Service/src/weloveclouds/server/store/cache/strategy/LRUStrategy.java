@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
@@ -34,8 +34,8 @@ public class LRUStrategy implements DisplacementStrategy {
         try {
             // the last element of the queue is the least recently used one
             String displaced = recentKeys.removeLast();
-            LOGGER.debug(CustomStringJoiner.join(" ", displaced,
-                    "to be removed from cache by LRU strategy."));
+            LOGGER.debug(
+                    StringUtils.join(" ", displaced, "to be removed from cache by LRU strategy."));
             return displaced;
         } catch (NoSuchElementException ex) {
             String errorMessage = "LRU strategy store is empty so it cannot remove anything.";
@@ -48,7 +48,7 @@ public class LRUStrategy implements DisplacementStrategy {
     public synchronized void put(String key) {
         try {
             recentKeys.addFirst(key);
-            LOGGER.debug(CustomStringJoiner.join(" ", key, "is added to the LRU strategy store."));
+            LOGGER.debug(StringUtils.join(" ", key, "is added to the LRU strategy store."));
         } catch (NullPointerException ex) {
             LOGGER.error("Key cannot be null for put in LRU strategy.");
         }
@@ -61,7 +61,7 @@ public class LRUStrategy implements DisplacementStrategy {
             // because it was most recently used
             recentKeys.remove(key);
             recentKeys.addFirst(key);
-            LOGGER.debug(CustomStringJoiner.join(" ", key,
+            LOGGER.debug(StringUtils.join(" ", key,
                     "is the most recently used in the LRU strategy store."));
         } catch (NullPointerException ex) {
             LOGGER.error("Key cannot be null for get in LRU strategy.");
@@ -73,8 +73,7 @@ public class LRUStrategy implements DisplacementStrategy {
         try {
             boolean isRemoved = recentKeys.remove(key);
             if (isRemoved) {
-                LOGGER.debug(CustomStringJoiner.join(" ", key,
-                        "is removed from the LRU strategy store."));
+                LOGGER.debug(StringUtils.join(" ", key, "is removed from the LRU strategy store."));
             }
         } catch (NullPointerException ex) {
             LOGGER.error("Key cannot be null for remove in LRU strategy.");

@@ -1,6 +1,5 @@
 package weloveclouds.ecs.models.commands.internal;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
@@ -9,8 +8,9 @@ import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.SYNCHRONIZED;
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
@@ -28,7 +28,7 @@ public class UpdateMetadata extends AbstractEcsNetworkCommand {
         this.targetedNode = updateMetadataBuider.targetedNode;
         this.messageSerializer = updateMetadataBuider.messageSerializer;
         this.messageDeserializer = updateMetadataBuider.messageDeserializer;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to update metadata on node:",
+        this.errorMessage = StringUtils.join(" ", "Unable to update metadata on node:",
                 targetedNode.toString());
     }
 
@@ -62,7 +62,7 @@ public class UpdateMetadata extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Command: UpdateMetadata", "Targeted node:",
+        return StringUtils.join(" ", "Command: UpdateMetadata", "Targeted node:",
                 targetedNode.toString());
     }
 

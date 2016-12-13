@@ -14,7 +14,7 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
- * A deserializer which converts a {@link Set<ServerConnectionInfo>} to a {@link String}.
+ * A deserializer which converts a {@link String} to a {@link Set<ServerConnectionInfo>}.
  * 
  * @author Benedek
  */

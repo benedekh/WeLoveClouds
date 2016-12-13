@@ -1,9 +1,9 @@
 package weloveclouds.server.requests.kvecs.utils;
 
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.models.ServerConnectionInfo;
 

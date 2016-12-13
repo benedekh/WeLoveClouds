@@ -7,7 +7,7 @@ import org.junit.Test;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import weloveclouds.commons.hashing.models.Hash;
-import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.deserialization.helper.HashDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.helper.HashSerializer;
@@ -27,7 +27,7 @@ public class HashTest extends TestCase {
     @Test
     public void testHashSerializationAndDeserialization()
             throws DeserializationException, UnknownHostException {
-        Hash hash = HashingUtil.getHash("a");
+        Hash hash = HashingUtils.getHash("a");
 
         String serializedHash = hashSerializer.serialize(hash);
         Hash deserializedHash = hashDeserializer.deserialize(serializedHash);

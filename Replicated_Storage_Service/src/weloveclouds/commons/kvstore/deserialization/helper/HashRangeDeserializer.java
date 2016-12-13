@@ -4,10 +4,10 @@ import static weloveclouds.commons.serialization.models.XMLTokens.BEGIN;
 import static weloveclouds.commons.serialization.models.XMLTokens.END;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.regex.Matcher;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;

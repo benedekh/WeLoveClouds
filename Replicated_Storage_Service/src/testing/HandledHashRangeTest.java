@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import testing.util.KVServerInitializationUtil;
+import testing.utils.KVServerInitializationUtils;
 import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
@@ -17,9 +17,9 @@ import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
@@ -43,7 +43,7 @@ public class HandledHashRangeTest extends TestCase {
 
     @BeforeClass
     public static void setUpBaseClass() {
-        try (KVServerInitializationUtil initializationUtil = new KVServerInitializationUtil()) {
+        try (KVServerInitializationUtils initializationUtil = new KVServerInitializationUtils()) {
             initializationUtil.connect();
             initializationUtil.updateRingMetadataServerHandlesOnlyHashA();
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class HandledHashRangeTest extends TestCase {
 
     @AfterClass
     public static void tearDownBaseClass() {
-        try (KVServerInitializationUtil initializationUtil = new KVServerInitializationUtil()) {
+        try (KVServerInitializationUtils initializationUtil = new KVServerInitializationUtils()) {
             initializationUtil.connect();
             initializationUtil.updateRingMetadataServerHandlesEveryHash();
         } catch (Exception e) {

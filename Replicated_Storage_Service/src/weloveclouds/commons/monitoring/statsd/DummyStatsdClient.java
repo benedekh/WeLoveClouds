@@ -1,12 +1,11 @@
 package weloveclouds.commons.monitoring.statsd;
 
+import static weloveclouds.commons.utils.StringUtils.*;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 
-
 import weloveclouds.commons.monitoring.models.Metric;
-
-import static weloveclouds.client.utils.CustomStringJoiner.*;
 
 /**
  * Created by Benoit on 2016-11-27.
@@ -21,8 +20,8 @@ public class DummyStatsdClient implements IStatsdClient {
 
     @Override
     public void incrementCounter(Metric metric, long value) {
-        LOGGER.info(join(" ", metric.toString(), "has been incremented by:", String.valueOf
-                (value)));
+        LOGGER.info(
+                join(" ", metric.toString(), "has been incremented by:", String.valueOf(value)));
     }
 
     @Override

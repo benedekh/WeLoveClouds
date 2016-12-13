@@ -6,9 +6,9 @@ import java.security.InvalidParameterException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.ArgumentsValidator;
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.client.commands.utils.ArgumentsValidator;
 import weloveclouds.commons.exceptions.ClientSideException;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * LogLevel command which means setting the log level to the respective value.
@@ -34,7 +34,7 @@ public class LogLevel extends AbstractCommand {
             String logLevel = arguments[LEVEL_INDEX];
             Logger.getRootLogger().setLevel(Level.toLevel(logLevel));
 
-            String statusMessage = CustomStringJoiner.join(" ", "Latest log level:", logLevel);
+            String statusMessage = StringUtils.join(" ", "Latest log level:", logLevel);
             userOutputWriter.writeLine(statusMessage);
             LOGGER.debug(statusMessage);
         } catch (IOException ex) {

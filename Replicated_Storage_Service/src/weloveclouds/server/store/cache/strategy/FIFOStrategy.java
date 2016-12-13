@@ -6,7 +6,7 @@ import java.util.Queue;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
@@ -33,8 +33,8 @@ public class FIFOStrategy implements DisplacementStrategy {
     public synchronized String displaceKey() throws StorageException {
         try {
             String displaced = fifo.remove();
-            LOGGER.debug(CustomStringJoiner.join(" ", displaced,
-                    "to be removed from cache by FIFO strategy."));
+            LOGGER.debug(
+                    StringUtils.join(" ", displaced, "to be removed from cache by FIFO strategy."));
             return displaced;
         } catch (NoSuchElementException ex) {
             String errorMessage = "FIFO strategy store is empty so it cannot remove anything.";
@@ -47,7 +47,7 @@ public class FIFOStrategy implements DisplacementStrategy {
     public synchronized void put(String key) {
         try {
             fifo.add(key);
-            LOGGER.debug(CustomStringJoiner.join(" ", key, "is added to the FIFO strategy store."));
+            LOGGER.debug(StringUtils.join(" ", key, "is added to the FIFO strategy store."));
         } catch (NullPointerException ex) {
             LOGGER.error("Key cannot be null for put in FIFO strategy.");
         }
@@ -62,8 +62,8 @@ public class FIFOStrategy implements DisplacementStrategy {
         try {
             boolean isRemoved = fifo.remove(key);
             if (isRemoved) {
-                LOGGER.debug(CustomStringJoiner.join(" ", key,
-                        "is removed from the FIFO strategy store."));
+                LOGGER.debug(
+                        StringUtils.join(" ", key, "is removed from the FIFO strategy store."));
             }
         } catch (NullPointerException ex) {
             LOGGER.error("Key cannot be null for remove in FIFO strategy.");

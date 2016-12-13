@@ -7,7 +7,7 @@ import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.exceptions.AlreadyConnectedException;
 import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
@@ -16,7 +16,7 @@ import weloveclouds.communication.exceptions.UnableToSendContentToServerExceptio
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.communication.util.MessageFramesDetector;
+import weloveclouds.communication.utils.MessageFramesDetector;
 
 /**
  * The communication module implementation which executes the network operations (connect,
@@ -76,7 +76,7 @@ public class CommunicationService implements ICommunicationService {
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
-        LOGGER.debug(CustomStringJoiner.join(" ", "Trying to connect to", remoteServer.toString()));
+        LOGGER.debug(StringUtils.join(" ", "Trying to connect to", remoteServer.toString()));
         connectionToEndpoint = connectionFactory.createConnectionFrom(remoteServer);
 
         // create shutdown hook to automatically close the connection
@@ -137,7 +137,7 @@ public class CommunicationService implements ICommunicationService {
                     buffer = smaller;
                 }
 
-                LOGGER.debug(CustomStringJoiner.join(" ", "Received", String.valueOf(readBytes),
+                LOGGER.debug(StringUtils.join(" ", "Received", String.valueOf(readBytes),
                         "bytes from the connection."));
                 baosBuffer.write(buffer);
 

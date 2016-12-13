@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataPartDeserializer;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataPartSerializer;
@@ -41,8 +41,8 @@ public class RingMetadataPartTest extends TestCase {
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
         HashRange range1 =
                 new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
-        HashRange writeRange = new HashRange.Builder().begin(HashingUtil.getHash("a"))
-                .end(HashingUtil.getHash("a")).build();
+        HashRange writeRange = new HashRange.Builder().begin(HashingUtils.getHash("a"))
+                .end(HashingUtils.getHash("a")).build();
         Set<HashRange> readRanges = new HashSet<>(Arrays.asList(range1, writeRange));
 
         RingMetadataPart metadataPart = new RingMetadataPart.Builder().connectionInfo(sci)

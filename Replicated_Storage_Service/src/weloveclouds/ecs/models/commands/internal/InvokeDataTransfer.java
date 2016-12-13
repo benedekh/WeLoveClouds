@@ -1,6 +1,5 @@
 package weloveclouds.ecs.models.commands.internal;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
@@ -10,8 +9,9 @@ import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 
@@ -29,7 +29,7 @@ public class InvokeDataTransfer extends AbstractEcsNetworkCommand {
         this.messageDeserializer = invokeDataTransferBuilder.messageDeserializer;
         this.newNode = invokeDataTransferBuilder.newNode;
         this.ringMetadata = invokeDataTransferBuilder.ringMetadata;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to invoke data transfer on node:",
+        this.errorMessage = StringUtils.join(" ", "Unable to invoke data transfer on node:",
                 targetedNode.toString());
     }
 
@@ -59,7 +59,7 @@ public class InvokeDataTransfer extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Command: InvokeDataTransfer", "Targeted node:",
+        return StringUtils.join(" ", "Command: InvokeDataTransfer", "Targeted node:",
                 targetedNode.toString());
     }
 

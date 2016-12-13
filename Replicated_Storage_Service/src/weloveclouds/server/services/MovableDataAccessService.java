@@ -1,16 +1,16 @@
 package weloveclouds.server.services;
 
+import static weloveclouds.server.monitoring.KVServerMonitoringMetricUtils.incrementCounter;
+import static weloveclouds.server.monitoring.KVServerMonitoringMetricUtils.recordExecutionTime;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.ERROR;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.EXEC_TIME;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.GET_COMMAND_NAME;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.KVSTORE_MODULE_NAME;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.NOT_RESPONSIBLE;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.PUT_COMMAND_NAME;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.REMOVE_COMMAND_NAME;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.SUCCESS;
 import static weloveclouds.server.services.models.DataAccessServiceStatus.STOPPED;
-import static weloveclouds.server.utils.monitoring.KVServerMonitoringMetricUtils.incrementCounter;
-import static weloveclouds.server.utils.monitoring.KVServerMonitoringMetricUtils.recordExecutionTime;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.ERROR;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.EXEC_TIME;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.GET_COMMAND_NAME;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.KVSTORE_MODULE_NAME;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.NOT_RESPONSIBLE;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.PUT_COMMAND_NAME;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.REMOVE_COMMAND_NAME;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.SUCCESS;
 
 import java.util.Set;
 
@@ -20,11 +20,11 @@ import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
-import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
@@ -32,10 +32,10 @@ import weloveclouds.server.services.exceptions.WriteLockIsActiveException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.MovablePersistentStorage;
-import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.store.models.PutType;
 
 /**
  * An implementation of {@link IMovableDataAccessService} whose underlying storage units can be
@@ -147,7 +147,7 @@ public class MovableDataAccessService extends DataAccessService
             throw new UninitializedServiceException();
         }
 
-        LOGGER.debug(CustomStringJoiner.join(" ", "Filtering entries in range:", range.toString()));
+        LOGGER.debug(StringUtils.join(" ", "Filtering entries in range:", range.toString()));
         return movablePersistentStorage.filterEntries(range);
     }
 
@@ -158,7 +158,7 @@ public class MovableDataAccessService extends DataAccessService
             throw new UninitializedServiceException();
         }
 
-        LOGGER.debug(CustomStringJoiner.join(" ", "Removing entries in range:", range.toString()));
+        LOGGER.debug(StringUtils.join(" ", "Removing entries in range:", range.toString()));
         movablePersistentStorage.removeEntries(range);
         LOGGER.debug("Removing entries finished.");
     }
@@ -197,8 +197,8 @@ public class MovableDataAccessService extends DataAccessService
                 serviceRecentStatus = serviceNewStatus;
         }
 
-        LOGGER.debug(CustomStringJoiner.join(" ", "Recent service status is:",
-                serviceRecentStatus.toString()));
+        LOGGER.debug(
+                StringUtils.join(" ", "Recent service status is:", serviceRecentStatus.toString()));
     }
 
     @Override
@@ -339,9 +339,9 @@ public class MovableDataAccessService extends DataAccessService
      */
     private void checkIfServiceHasWritePrivilegeFor(String key)
             throws KeyIsNotManagedByServiceException {
-        if (writeRange == null || !writeRange.contains(HashingUtil.getHash(key))) {
-            LOGGER.error(CustomStringJoiner.join("",
-                    "Service does not have WRITE privilege for key (", key, ")."));
+        if (writeRange == null || !writeRange.contains(HashingUtils.getHash(key))) {
+            LOGGER.error(StringUtils.join("", "Service does not have WRITE privilege for key (",
+                    key, ")."));
             throw new KeyIsNotManagedByServiceException();
         }
     }
@@ -354,13 +354,13 @@ public class MovableDataAccessService extends DataAccessService
             throws KeyIsNotManagedByServiceException {
         if (readRanges != null) {
             for (HashRange range : readRanges) {
-                if (range.contains(HashingUtil.getHash(key))) {
+                if (range.contains(HashingUtils.getHash(key))) {
                     return;
                 }
             }
         }
-        LOGGER.error(CustomStringJoiner.join("", "Service does not have WRITE privilege for key (",
-                key, ")."));
+        LOGGER.error(
+                StringUtils.join("", "Service does not have WRITE privilege for key (", key, ")."));
         throw new KeyIsNotManagedByServiceException();
     }
 

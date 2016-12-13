@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Factory class to create {@link ServerSocket}.
@@ -22,8 +22,7 @@ public class ServerSocketFactory {
      * @throws IOException if the socket cannot be created
      */
     public ServerSocket createServerSocketFromPort(int port) throws IOException {
-        LOGGER.info(CustomStringJoiner.join(" ", "Creating server socket on port",
-                String.valueOf(port)));
+        LOGGER.info(StringUtils.join(" ", "Creating server socket on port", String.valueOf(port)));
         return new ServerSocket(port);
     }
 }

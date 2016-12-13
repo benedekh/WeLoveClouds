@@ -9,9 +9,9 @@ import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationEx
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 
 /**
  * Tests for the {@link KVMessage} to verify its serialization and deserialization processes.

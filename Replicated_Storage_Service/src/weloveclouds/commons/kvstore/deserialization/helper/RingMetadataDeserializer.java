@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
@@ -16,7 +15,7 @@ import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.utils.StringUtils;;
 
 /**
- * A deserializer which converts a {@link RingMetadata} to a {@link String}.
+ * A deserializer which converts a {@link String} to a {@link RingMetadata}.
  * 
  * @author Benedek
  */
@@ -40,7 +39,7 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
                 }
 
                 if (metadataParts.isEmpty()) {
-                    throw new DeserializationException(CustomStringJoiner.join("",
+                    throw new DeserializationException(StringUtils.join("",
                             "Unable to extract ring metadata parts from:", from));
                 }
 
@@ -52,5 +51,5 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
 
         return deserialized;
     }
-    
+
 }
