@@ -4,12 +4,12 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 
@@ -43,8 +43,8 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
 
     @Override
     public void run() {
-        logger.debug(CustomStringJoiner.join(" ", "Starting replicating (", payload.toString(),
-                ") on", connection.toString()));
+        logger.debug(StringUtils.join(" ", "Starting replicating (", payload.toString(), ") on",
+                connection.toString()));
 
         try (Connection conn = connection) {
             KVTransferMessage transferMessage = createTransferMessageFrom(payload);
@@ -57,11 +57,11 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
                 throw new IOException(responseMessage.getResponseMessage());
             }
         } catch (Exception ex) {
-            logger.error(CustomStringJoiner.join(" ", "Exception (", ex.toString(),
+            logger.error(StringUtils.join(" ", "Exception (", ex.toString(),
                     ") occured while replicating on", connection.toString()));
         }
 
-        logger.debug(CustomStringJoiner.join(" ", "Replicating (", payload.toString(), ") on",
+        logger.debug(StringUtils.join(" ", "Replicating (", payload.toString(), ") on",
                 connection.toString(), " finished"));
     }
 

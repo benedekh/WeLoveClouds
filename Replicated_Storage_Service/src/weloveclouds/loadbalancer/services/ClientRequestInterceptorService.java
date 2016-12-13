@@ -7,20 +7,20 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.configuration.annotations.ClientRequestsInterceptorPort;
 import weloveclouds.loadbalancer.exceptions.cache.UnableToFindRequestedKeyException;
 
@@ -110,7 +110,7 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
                     KVMessage deserializedMessage =
                             messageDeserializer.deserialize(receivedMessage);
 
-                    logger.debug(CustomStringJoiner.join(" ", "Message received:",
+                    logger.debug(StringUtils.join(" ", "Message received:",
                             deserializedMessage.toString()));
 
                     switch (deserializedMessage.getStatus()) {

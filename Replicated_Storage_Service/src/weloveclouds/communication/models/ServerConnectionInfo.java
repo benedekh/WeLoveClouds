@@ -3,7 +3,7 @@ package weloveclouds.communication.models;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Stores the server connection information, the {@link #ipAddress} and the {@link #port}.
@@ -64,8 +64,8 @@ public class ServerConnectionInfo {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join("", "<", ipAddress.getHostAddress(), " , ",
-                String.valueOf(port), ">");
+        return StringUtils.join("", "<", ipAddress.getHostAddress(), " , ", String.valueOf(port),
+                ">");
     }
 
     /**

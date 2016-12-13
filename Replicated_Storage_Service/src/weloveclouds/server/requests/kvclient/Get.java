@@ -8,12 +8,12 @@ import static weloveclouds.server.requests.kvclient.utils.KVMessageFactory.creat
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.MovableDataAccessService;
@@ -47,7 +47,7 @@ public class Get implements IKVClientRequest {
     public KVMessage execute() {
         KVMessage response = null;
         try {
-            LOGGER.debug(CustomStringJoiner.join(" ", "Trying to get value for key", key));
+            LOGGER.debug(StringUtils.join(" ", "Trying to get value for key", key));
             response = createKVMessage(GET_SUCCESS, key, dataAccessService.getValue(key));
         } catch (KeyIsNotManagedByServiceException ex) {
             RingMetadata ringMetadata = dataAccessService.getRingMetadata();
@@ -58,7 +58,7 @@ public class Get implements IKVClientRequest {
         } catch (StorageException e) {
             response = createKVMessage(GET_ERROR, key, e.getMessage());
         } finally {
-            LOGGER.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
+            LOGGER.debug(StringUtils.join(" ", "Result:", response.toString()));
         }
         return response;
     }

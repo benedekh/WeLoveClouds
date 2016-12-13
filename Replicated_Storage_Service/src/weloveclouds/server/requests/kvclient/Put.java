@@ -10,21 +10,21 @@ import static weloveclouds.server.requests.kvclient.utils.KVMessageFactory.creat
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.IMovableDataAccessService;
 import weloveclouds.server.services.MovableDataAccessService;
 import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.exceptions.WriteLockIsActiveException;
-import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
+import weloveclouds.server.store.models.PutType;
 
 /**
  * A put request to store a key and a value in the {@link MovableDataAccessService}.
@@ -52,7 +52,7 @@ public class Put implements IKVClientRequest {
     public KVMessage execute() {
         KVMessage response = null;
         try {
-            LOGGER.debug(CustomStringJoiner.join(" ", "Trying to put record", key, value));
+            LOGGER.debug(StringUtils.join(" ", "Trying to put record", key, value));
 
             PutType putType = dataAccessService.putEntry(new KVEntry(key, value));
             switch (putType) {
@@ -74,7 +74,7 @@ public class Put implements IKVClientRequest {
         } catch (StorageException ex) {
             response = createKVMessage(PUT_ERROR, key, ex.getMessage());
         } finally {
-            LOGGER.debug(CustomStringJoiner.join(" ", "Result:", response.toString()));
+            LOGGER.debug(StringUtils.join(" ", "Result:", response.toString()));
         }
         return response;
     }

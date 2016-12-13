@@ -4,17 +4,17 @@ import static weloveclouds.commons.serialization.models.XMLTokens.KEY;
 import static weloveclouds.commons.serialization.models.XMLTokens.VALUE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.regex.Matcher;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
- * A deserializer which converts a {@link KVEntry} to a {@link String}.
+ * A deserializer which converts a {@link String} to a {@link KVEntry}.
  * 
  * @author Benedek
  */

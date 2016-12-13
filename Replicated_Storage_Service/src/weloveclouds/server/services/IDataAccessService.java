@@ -1,9 +1,9 @@
 package weloveclouds.server.services;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
+import weloveclouds.server.store.models.PutType;
 
 /**
  * A common interface for the data access layer through which key-value pairs can be stored on the

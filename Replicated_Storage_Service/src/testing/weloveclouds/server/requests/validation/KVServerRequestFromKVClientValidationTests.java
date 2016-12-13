@@ -14,12 +14,12 @@ import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
-import weloveclouds.server.models.configuration.KVServerPortConstants;
+import weloveclouds.server.configuration.models.KVServerPortConstants;
 
 /**
  * Unit tests for validating KVServer, server-side request validation of messages from KVClient.

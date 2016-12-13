@@ -17,18 +17,18 @@ import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
-import weloveclouds.server.models.configuration.KVServerPortConstants;
+import weloveclouds.server.configuration.models.KVServerPortConstants;
 
 public class KVServerHandlingECSRequestTests {
 
@@ -119,8 +119,8 @@ public class KVServerHandlingECSRequestTests {
             ConnectionClosedException, DeserializationException {
         ServerConnectionInfo server1 = new ServerConnectionInfo.Builder().ipAddress("localhost")
                 .port(SERVER1_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
-        HashRange range1 = new HashRange.Builder().begin(HashingUtil.getHash("a"))
-                .end(HashingUtil.getHash("a")).build();
+        HashRange range1 = new HashRange.Builder().begin(HashingUtils.getHash("a"))
+                .end(HashingUtils.getHash("a")).build();
         Set<HashRange> readRanges = new HashSet<>(Arrays.asList(range1));
         RingMetadataPart part1 = new RingMetadataPart.Builder().connectionInfo(server1)
                 .readRanges(readRanges).writeRange(range1).build();
@@ -162,8 +162,8 @@ public class KVServerHandlingECSRequestTests {
 
         ServerConnectionInfo server2 = new ServerConnectionInfo.Builder().ipAddress("localhost")
                 .port(SERVER2_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
-        HashRange writeRange2 = new HashRange.Builder().begin(HashingUtil.getHash("1"))
-                .end(HashingUtil.getHash("2")).build();
+        HashRange writeRange2 = new HashRange.Builder().begin(HashingUtils.getHash("1"))
+                .end(HashingUtils.getHash("2")).build();
         RingMetadataPart part2 = new RingMetadataPart.Builder().connectionInfo(server2)
                 .writeRange(writeRange2).build();
 
@@ -181,8 +181,8 @@ public class KVServerHandlingECSRequestTests {
     @Test
     public void testRemoveRange() throws UnknownHostException, UnableToSendContentToServerException,
             ConnectionClosedException, DeserializationException {
-        HashRange targetRange = new HashRange.Builder().begin(HashingUtil.getHash("b"))
-                .end(HashingUtil.getHash("b")).build();
+        HashRange targetRange = new HashRange.Builder().begin(HashingUtils.getHash("b"))
+                .end(HashingUtils.getHash("b")).build();
 
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.COPYDATA)
                 .removableRange(targetRange).build();
@@ -199,8 +199,8 @@ public class KVServerHandlingECSRequestTests {
             ConnectionClosedException, DeserializationException {
         ServerConnectionInfo targetServer = new ServerConnectionInfo.Builder()
                 .ipAddress("localhost").port(SERVER1_KVSERVER_REQUEST_ACCEPTING_PORT).build();
-        HashRange targetRange = new HashRange.Builder().begin(HashingUtil.getHash("b"))
-                .end(HashingUtil.getHash("b")).build();
+        HashRange targetRange = new HashRange.Builder().begin(HashingUtils.getHash("b"))
+                .end(HashingUtils.getHash("b")).build();
         RingMetadataPart target = new RingMetadataPart.Builder().connectionInfo(targetServer)
                 .writeRange(targetRange).build();
 
@@ -219,8 +219,8 @@ public class KVServerHandlingECSRequestTests {
             ConnectionClosedException, DeserializationException {
         ServerConnectionInfo targetServer = new ServerConnectionInfo.Builder()
                 .ipAddress("localhost").port(SERVER1_KVSERVER_REQUEST_ACCEPTING_PORT).build();
-        HashRange targetRange = new HashRange.Builder().begin(HashingUtil.getHash("b"))
-                .end(HashingUtil.getHash("b")).build();
+        HashRange targetRange = new HashRange.Builder().begin(HashingUtils.getHash("b"))
+                .end(HashingUtils.getHash("b")).build();
         RingMetadataPart target = new RingMetadataPart.Builder().connectionInfo(targetServer)
                 .writeRange(targetRange).build();
 

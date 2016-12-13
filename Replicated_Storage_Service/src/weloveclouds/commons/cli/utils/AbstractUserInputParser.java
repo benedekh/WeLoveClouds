@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.cli.models.ParsedUserInput;
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -35,14 +35,14 @@ public abstract class AbstractUserInputParser<T> {
      * @param userInput the raw content of the user input (raw line from the user input stream)
      * @return the extracted command and its arguments stored in one object
      */
-    public ParsedUserInput parse(String userInput) {
+    public ParsedUserInput<?> parse(String userInput) {
         String command = "";
         String[] arguments = {};
         Matcher matcher = INPUT_REGEX.matcher(userInput);
         if (matcher.find()) {
             if (matcher.group("command") != null) {
                 command = matcher.group("command");
-                LOGGER.debug(CustomStringJoiner.join(" ", command, "is parsed."));
+                LOGGER.debug(StringUtils.join(" ", command, "is parsed."));
             }
             if (matcher.group("arguments") != null) {
                 arguments = matcher.group("arguments").split(ARGUMENTS_SEPARATOR);
@@ -50,7 +50,7 @@ public abstract class AbstractUserInputParser<T> {
                 List<String> debugMessages = new ArrayList<>();
                 debugMessages.add("Arguments are recognized for the command:");
                 debugMessages.addAll(Arrays.asList(arguments));
-                LOGGER.debug(CustomStringJoiner.join(" ", debugMessages));
+                LOGGER.debug(StringUtils.join(" ", debugMessages));
             }
         }
         return new ParsedUserInput<>(getCommandFromEnum(command)).withArguments(arguments);
@@ -62,7 +62,8 @@ public abstract class AbstractUserInputParser<T> {
      * The port shall be the 1. element of the array.
      *
      * @return the IP address and port stored in one server connection information object
-     * @throws UnknownHostException see {@link ServerConnectionInfo.Builder#ipAddress(java.net.InetAddress)}
+     * @throws UnknownHostException see
+     *         {@link ServerConnectionInfo.Builder#ipAddress(java.net.InetAddress)}
      */
     public static ServerConnectionInfo extractConnectionInfoFrom(String[] arguments)
             throws UnknownHostException {
@@ -73,7 +74,7 @@ public abstract class AbstractUserInputParser<T> {
 
             ServerConnectionInfo connectionInfo =
                     new ServerConnectionInfo.Builder().ipAddress(ipAddress).port(port).build();
-            LOGGER.debug(CustomStringJoiner.join(" ", "Connection parameters are extracted",
+            LOGGER.debug(StringUtils.join(" ", "Connection parameters are extracted",
                     connectionInfo.toString()));
             return connectionInfo;
         } catch (IndexOutOfBoundsException ex) {

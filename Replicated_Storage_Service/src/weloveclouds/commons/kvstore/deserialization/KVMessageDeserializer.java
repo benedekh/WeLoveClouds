@@ -1,26 +1,25 @@
 package weloveclouds.commons.kvstore.deserialization;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
+import static weloveclouds.commons.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 import static weloveclouds.commons.serialization.models.XMLTokens.KVMESSAGE;
 import static weloveclouds.commons.serialization.models.XMLTokens.KV_ENTRY;
 import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.KVEntryDeserializer;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
@@ -61,7 +60,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
                     throw new DeserializationException("KVMessage is empty.");
                 }
             } else {
-                throw new DeserializationException(CustomStringJoiner.join("",
+                throw new DeserializationException(StringUtils.join("",
                         "Unable to extract KVMessage from:", serializedMessageStr));
             }
         } catch (Exception ex) {
@@ -80,7 +79,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
             }
         } else {
             throw new DeserializationException(
-                    CustomStringJoiner.join("", "Unable to extract status from:", from));
+                    StringUtils.join("", "Unable to extract status from:", from));
         }
     }
 
@@ -90,7 +89,7 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
             return kvEntryDeserializer.deserialize(kvEntryMatcher.group(XML_NODE));
         } else {
             throw new DeserializationException(
-                    CustomStringJoiner.join("", "Unable to extract KVEntry from:", from));
+                    StringUtils.join("", "Unable to extract KVEntry from:", from));
         }
     }
 }

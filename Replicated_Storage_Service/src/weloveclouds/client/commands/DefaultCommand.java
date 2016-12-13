@@ -2,9 +2,9 @@ package weloveclouds.client.commands;
 
 import java.security.InvalidParameterException;
 
-import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.client.utils.HelpMessageGenerator;
+import weloveclouds.client.commands.utils.HelpMessageGenerator;
 import weloveclouds.commons.exceptions.ClientSideException;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Represents a command that was not recognized as a valid
@@ -20,7 +20,7 @@ public class DefaultCommand extends AbstractCommand {
 
     @Override
     public void execute() throws ClientSideException {
-        throw new ClientSideException(CustomStringJoiner.join(" ", "Unable to find command.",
+        throw new ClientSideException(StringUtils.join(" ", "Unable to find command.",
                 HelpMessageGenerator.generateHelpMessage()));
     }
 

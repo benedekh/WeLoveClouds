@@ -2,7 +2,7 @@ package weloveclouds.commons.kvstore.models;
 
 import java.io.Serializable;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Represents a Key-value pair that is transferred through the network.
@@ -74,12 +74,12 @@ public class KVEntry implements Serializable {
     }
 
     public String toStringWithDelimiter(String delimiter) {
-        return CustomStringJoiner.join(delimiter, key, value);
+        return StringUtils.join(delimiter, key, value);
     }
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "{", toStringWithDelimiter("::"), "}");
+        return StringUtils.join(" ", "{", toStringWithDelimiter("::"), "}");
     }
 
 }

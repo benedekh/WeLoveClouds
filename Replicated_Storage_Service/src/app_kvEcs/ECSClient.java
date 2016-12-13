@@ -10,10 +10,10 @@ import java.io.IOException;
 
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.context.ExecutionContext;
+import weloveclouds.commons.utils.LogSetup;
 import weloveclouds.ecs.client.Client;
 import weloveclouds.ecs.contexts.EcsExecutionContext;
 import weloveclouds.ecs.modules.client.EcsClientModule;
-import weloveclouds.server.utils.LogSetup;
 
 public class ECSClient {
     private static Logger LOGGER = Logger.getLogger(ECSClient.class);

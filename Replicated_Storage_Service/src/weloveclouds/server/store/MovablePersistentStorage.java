@@ -9,13 +9,13 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.PersistedStorageUnit;
-import weloveclouds.server.utils.FileUtility;
 
 /**
  * Represents a {@link KVPersistentStorage}, whose entries and storage units can be filtered,
@@ -40,7 +40,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
         LOGGER.debug("Putting storage units from parameter data structure started.");
 
         for (MovableStorageUnit storageUnit : fromStorageUnits) {
-            Path path = FileUtility.generateUniqueFilePath(rootPath, FILE_EXTENSION);
+            Path path = PathUtils.generateUniqueFilePath(rootPath, FILE_EXTENSION);
             storageUnit.setPath(path);
             storageUnit.save();
 
@@ -63,9 +63,8 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @throws StorageException if an error occurs
      */
     public Set<MovableStorageUnit> filterEntries(HashRange range) {
-        LOGGER.debug(
-                CustomStringJoiner.join(" ", "Filtering storage units according to range filter (",
-                        range.toString(), ") started."));
+        LOGGER.debug(StringUtils.join(" ", "Filtering storage units according to range filter (",
+                range.toString(), ") started."));
 
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<MovableStorageUnit> toBeCopied = new HashSet<>();
@@ -74,7 +73,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             toBeCopied.add(new MovableStorageUnit(storageUnit).copyEntries(range));
         }
 
-        LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(toBeCopied.size()),
+        LOGGER.debug(StringUtils.join(" ", String.valueOf(toBeCopied.size()),
                 " storage units are filtered."));
         return toBeCopied;
     }
@@ -86,9 +85,8 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @throws StorageException if an error occurs
      */
     public void removeEntries(HashRange range) throws StorageException {
-        LOGGER.debug(
-                CustomStringJoiner.join(" ", "Removing storage units according to range filter (",
-                        range.toString(), ") started."));
+        LOGGER.debug(StringUtils.join(" ", "Removing storage units according to range filter (",
+                range.toString(), ") started."));
 
 
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
@@ -118,7 +116,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             removeKeyFromStore(key);
         }
 
-        LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(keysToBeRemoved.size()),
+        LOGGER.debug(StringUtils.join(" ", String.valueOf(keysToBeRemoved.size()),
                 "storage units were removed from the persistent storage according to the range filter."));
     }
 
@@ -182,7 +180,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             for (PersistedStorageUnit hasFreeSpace : collectNotFullStorageUnits()) {
                 putStorageUnitIntoFreeSpaceCache(hasFreeSpace);
             }
-            LOGGER.debug(CustomStringJoiner.join(" ", String.valueOf(unitsWithFreeSpace.size()),
+            LOGGER.debug(StringUtils.join(" ", String.valueOf(unitsWithFreeSpace.size()),
                     " storage units have free space after defragmentation."));
 
         }

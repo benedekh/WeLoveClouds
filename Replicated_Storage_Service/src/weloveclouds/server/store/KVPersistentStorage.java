@@ -1,6 +1,6 @@
 package weloveclouds.server.store;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -15,14 +15,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.PersistedStorageUnit;
-import weloveclouds.server.utils.FileUtility;
+import weloveclouds.server.store.models.PutType;
 
 /**
  * The persistent storage for the {@link DataAccessService}} which stores the key-value pairs on the
@@ -70,14 +71,14 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 PersistedStorageUnit storageUnit = unitsWithFreeSpace.peek();
                 putEntryIntoStorageUnit(storageUnit, entry);
             } else {
-                Path path = FileUtility.generateUniqueFilePath(rootPath, FILE_EXTENSION);
+                Path path = PathUtils.generateUniqueFilePath(rootPath, FILE_EXTENSION);
                 PersistedStorageUnit storageUnit = new PersistedStorageUnit(path);
                 putEntryIntoStorageUnit(storageUnit, entry);
             }
         }
 
-        LOGGER.debug(CustomStringJoiner.join(" ", entry.toString(),
-                "is persisted to permanent storage unit."));
+        LOGGER.debug(
+                StringUtils.join(" ", entry.toString(), "is persisted to permanent storage unit."));
         notifyObservers(entry);
 
         return response;
@@ -116,7 +117,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             throw new StorageException(errorMessage);
         } catch (NoSuchFileException ex) {
             storageUnits.remove(key);
-            String errorMessage = CustomStringJoiner.join(" ", "File for key", key,
+            String errorMessage = StringUtils.join(" ", "File for key", key,
                     "was already removed from persistent storage.");
             LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
@@ -151,7 +152,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 // load the keys from the storage unit
                 for (String key : storageUnit.getKeys()) {
                     storageUnits.put(key, storageUnit);
-                    LOGGER.debug(CustomStringJoiner.join(" ", "Key", key,
+                    LOGGER.debug(StringUtils.join(" ", "Key", key,
                             "is put in the persistent store metastore from path", path.toString()));
                 }
                 putStorageUnitIntoFreeSpaceCache(storageUnit);
@@ -202,7 +203,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      */
     protected PersistedStorageUnit loadStorageUnitFromPath(Path path) throws StorageException {
         try {
-            return FileUtility.<PersistedStorageUnit>loadFromFile(path);
+            return PathUtils.<PersistedStorageUnit>loadFromFile(path);
         } catch (IOException ex) {
             LOGGER.error(ex);
             throw new StorageException(
@@ -244,7 +245,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         } catch (UnsupportedOperationException ex) {
             removeStorageUnitFromFreeSpaceCache(storageUnit);
 
-            Path path = FileUtility.generateUniqueFilePath(rootPath, FILE_EXTENSION);
+            Path path = PathUtils.generateUniqueFilePath(rootPath, FILE_EXTENSION);
             PersistedStorageUnit newStorageUnit = new PersistedStorageUnit(path);
 
             newStorageUnit.putEntry(entry);

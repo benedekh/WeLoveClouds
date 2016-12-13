@@ -4,8 +4,8 @@ import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.services.utils.IReplicationTransferer;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.MovablePersistentStorage;
-import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
+import weloveclouds.server.store.models.PutType;
 
 /**
  * An implementation of {@link IReplicableDataAccessService} whose underlying storage units can be

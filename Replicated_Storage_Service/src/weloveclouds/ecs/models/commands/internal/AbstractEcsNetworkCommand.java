@@ -6,7 +6,7 @@ import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 
 
 /**

@@ -13,7 +13,7 @@ import junit.framework.TestCase;
 import testing.weloveclouds.kvstore.serialization.utils.OuterTagRemover;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
-import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.HashRangesSetDeserializer;
 import weloveclouds.commons.kvstore.serialization.helper.HashRangesIterableSerializer;
@@ -21,7 +21,7 @@ import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLTokens;
-import weloveclouds.server.utils.SetToStringUtility;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Tests for the {@link Set<HashRange>} to verify its serialization and deserialization processes.
@@ -40,16 +40,16 @@ public class HashRangesSetTest extends TestCase {
             throws DeserializationException, UnknownHostException {
         HashRange range1 =
                 new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
-        HashRange range2 = new HashRange.Builder().begin(HashingUtil.getHash("a"))
-                .end(HashingUtil.getHash("a")).build();
+        HashRange range2 = new HashRange.Builder().begin(HashingUtils.getHash("a"))
+                .end(HashingUtils.getHash("a")).build();
         Set<HashRange> hashRanges = new HashSet<>(Arrays.asList(range1, range2));
 
         String serializedRangess = OuterTagRemover.removeOuterTag(
                 hashRangesSerializer.serialize(hashRanges).toString(), XMLTokens.HASH_RANGES);
         Set<HashRange> deserializedRanges = hashRangesDeserializer.deserialize(serializedRangess);
 
-        Assert.assertEquals(SetToStringUtility.toString(hashRanges),
-                SetToStringUtility.toString(deserializedRanges));
+        Assert.assertEquals(StringUtils.setToString(hashRanges),
+                StringUtils.setToString(deserializedRanges));
         Assert.assertEquals(hashRanges, deserializedRanges);
     }
 

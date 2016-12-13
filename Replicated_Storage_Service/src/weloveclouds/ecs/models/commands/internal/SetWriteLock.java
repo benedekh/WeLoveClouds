@@ -1,6 +1,5 @@
 package weloveclouds.ecs.models.commands.internal;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
@@ -8,8 +7,9 @@ import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.WRITELOCKED;
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
@@ -25,7 +25,7 @@ public class SetWriteLock extends AbstractEcsNetworkCommand {
         this.targetedNode = setWriteLockBuilder.targetedNode;
         this.messageSerializer = setWriteLockBuilder.messageSerializer;
         this.messageDeserializer = setWriteLockBuilder.messageDeserializer;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to set write lock on node:",
+        this.errorMessage = StringUtils.join(" ", "Unable to set write lock on node:",
                 targetedNode.toString());
     }
 
@@ -56,7 +56,7 @@ public class SetWriteLock extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Command: SetWriteLock", "Targeted node:", targetedNode
+        return StringUtils.join(" ", "Command: SetWriteLock", "Targeted node:", targetedNode
                 .toString());
     }
 

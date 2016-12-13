@@ -1,6 +1,5 @@
 package weloveclouds.ecs.models.commands.internal;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
@@ -10,8 +9,9 @@ import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 
@@ -25,7 +25,7 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
         this.targetedNode = releaseWriteLockBuilder.targetedNode;
         this.messageSerializer = releaseWriteLockBuilder.messageSerializer;
         this.messageDeserializer = releaseWriteLockBuilder.messageDeserializer;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to release write lock on node:",
+        this.errorMessage = StringUtils.join(" ", "Unable to release write lock on node:",
                 targetedNode.toString());
     }
 
@@ -56,7 +56,7 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Command: ReleaseWriteLock", "Targeted node:",
+        return StringUtils.join(" ", "Command: ReleaseWriteLock", "Targeted node:",
                 targetedNode.toString());
     }
 
