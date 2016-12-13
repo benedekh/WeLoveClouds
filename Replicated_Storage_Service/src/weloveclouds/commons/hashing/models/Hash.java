@@ -2,7 +2,7 @@ package weloveclouds.commons.hashing.models;
 
 import java.util.Arrays;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Represents an arbitrary long hash value stored as a byte array.
@@ -85,7 +85,7 @@ public class Hash implements Comparable<Hash> {
         final int GREATER = 1;
 
         if (hash.length != other.hash.length) {
-            throw new IllegalArgumentException(CustomStringJoiner.join(" ",
+            throw new IllegalArgumentException(StringUtils.join(" ",
                     "Two objects need to have the same length. This:", String.valueOf(hash.length),
                     "Other:", String.valueOf(other.hash.length)));
         }

@@ -1,9 +1,10 @@
 package weloveclouds.server.requests.kvecs.utils;
 
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
@@ -26,8 +27,8 @@ public class StorageUnitsTransporterFactory {
      */
     public StorageUnitsTransporter createStorageUnitsTransporter(ICommunicationApi communicationApi,
             ServerConnectionInfo connectionInfo,
-            IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+            IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer,
+            IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer) {
         return new StorageUnitsTransporter.Builder().communicationApi(communicationApi)
                 .connectionInfo(connectionInfo).transferMessageSerializer(transferMessageSerializer)
                 .transferMessageDeserializer(transferMessageDeserializer).build();

@@ -1,15 +1,16 @@
 package weloveclouds.server.requests.kvclient;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
-import weloveclouds.commons.kvstore.models.messages.KVMessage;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.serialization.ISerializer;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**
@@ -19,21 +20,21 @@ import weloveclouds.server.services.IMovableDataAccessService;
  *
  * @author Benoit
  */
-public class KVClientRequestFactory implements IRequestFactory<KVMessage, IKVClientRequest> {
+public class KVClientRequestFactory implements IRequestFactory<IKVMessage, IKVClientRequest> {
 
     private static final Logger LOGGER = Logger.getLogger(Put.class);
 
     private IMovableDataAccessService dataAccessService;
-    private ISerializer<String, RingMetadata> ringMetadataSerializer;
+    private ISerializer<AbstractXMLNode, RingMetadata> ringMetadataSerializer;
 
     public KVClientRequestFactory(IMovableDataAccessService dataAccessService,
-            ISerializer<String, RingMetadata> ringMetadataSerializer) {
+            ISerializer<AbstractXMLNode, RingMetadata> ringMetadataSerializer) {
         this.dataAccessService = dataAccessService;
         this.ringMetadataSerializer = ringMetadataSerializer;
     }
 
     @Override
-    public IKVClientRequest createRequestFromReceivedMessage(KVMessage receivedMessage,
+    public IKVClientRequest createRequestFromReceivedMessage(IKVMessage receivedMessage,
             ICallbackRegister callbackRegister) {
         IKVClientRequest request = null;
         StatusType status = receivedMessage.getStatus();

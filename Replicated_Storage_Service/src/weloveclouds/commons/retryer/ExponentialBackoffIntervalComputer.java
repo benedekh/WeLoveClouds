@@ -1,6 +1,6 @@
 package weloveclouds.commons.retryer;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.Random;
 

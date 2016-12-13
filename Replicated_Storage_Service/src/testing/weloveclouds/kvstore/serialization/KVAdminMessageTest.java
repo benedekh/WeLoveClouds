@@ -13,15 +13,16 @@ import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -31,21 +32,21 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public class KVAdminMessageTest extends TestCase {
 
-    private static IMessageDeserializer<KVAdminMessage, SerializedMessage> adminMessageDeserializer =
+    private static IMessageDeserializer<IKVAdminMessage, SerializedMessage> adminMessageDeserializer =
             new KVAdminMessageDeserializer();
-    private static IMessageSerializer<SerializedMessage, KVAdminMessage> adminMessageSerializer =
+    private static IMessageSerializer<SerializedMessage, IKVAdminMessage> adminMessageSerializer =
             new KVAdminMessageSerializer();
 
     @Test
     public void testKVAdminMessageSerializationAndDeserialization()
             throws DeserializationException, UnknownHostException {
-        HashRange removableRange = new HashRange.Builder().begin(HashingUtil.getHash("a"))
-                .end(HashingUtil.getHash("b")).build();
+        HashRange removableRange = new HashRange.Builder().begin(HashingUtils.getHash("a"))
+                .end(HashingUtils.getHash("b")).build();
 
         HashRange range1 =
                 new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
-        HashRange writeRange = new HashRange.Builder().begin(HashingUtil.getHash("a"))
-                .end(HashingUtil.getHash("a")).build();
+        HashRange writeRange = new HashRange.Builder().begin(HashingUtils.getHash("a"))
+                .end(HashingUtils.getHash("a")).build();
         Set<HashRange> readRanges = new HashSet<>(Arrays.asList(range1, writeRange));
         ServerConnectionInfo connectionInfo1 =
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
@@ -70,7 +71,7 @@ public class KVAdminMessageTest extends TestCase {
                         .removableRange(removableRange).responseMessage(responseMessage).build();
 
         SerializedMessage serializedMessage = adminMessageSerializer.serialize(adminMessage);
-        KVAdminMessage deserializedAdminMessage =
+        IKVAdminMessage deserializedAdminMessage =
                 adminMessageDeserializer.deserialize(serializedMessage);
 
         Assert.assertEquals(adminMessage.toString(), deserializedAdminMessage.toString());

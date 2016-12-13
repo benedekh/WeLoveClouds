@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.networking.AbstractServer;
-import weloveclouds.server.models.configuration.KVServerPortContext;
+import weloveclouds.server.configuration.models.KVServerPortContext;
 import weloveclouds.server.services.IReplicableDataAccessService;
 
 

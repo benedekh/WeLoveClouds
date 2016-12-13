@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 
@@ -29,8 +30,8 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
 
     private Logger logger;
 
-    protected IMessageSerializer<SerializedMessage, KVTransferMessage> messageSerializer;
-    protected IMessageDeserializer<KVTransferMessage, SerializedMessage> messageDeserializer;
+    protected IMessageSerializer<SerializedMessage, IKVTransferMessage> messageSerializer;
+    protected IMessageDeserializer<IKVTransferMessage, SerializedMessage> messageDeserializer;
 
     protected AbstractReplicationRequest(Builder<T, E> builder) {
         this.connection = builder.connection;
@@ -43,8 +44,8 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
 
     @Override
     public void run() {
-        logger.debug(CustomStringJoiner.join(" ", "Starting replicating (", payload.toString(),
-                ") on", connection.toString()));
+        logger.debug(StringUtils.join(" ", "Starting replicating (", payload.toString(), ") on",
+                connection.toString()));
 
         try (Connection conn = connection) {
             KVTransferMessage transferMessage = createTransferMessageFrom(payload);
@@ -52,16 +53,16 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
 
             byte[] response =
                     communicationApi.sendAndExpectForResponse(serializedMessage.getBytes(), conn);
-            KVTransferMessage responseMessage = messageDeserializer.deserialize(response);
+            IKVTransferMessage responseMessage = messageDeserializer.deserialize(response);
             if (responseMessage.getStatus() == StatusType.RESPONSE_ERROR) {
                 throw new IOException(responseMessage.getResponseMessage());
             }
         } catch (Exception ex) {
-            logger.error(CustomStringJoiner.join(" ", "Exception (", ex.toString(),
+            logger.error(StringUtils.join(" ", "Exception (", ex.toString(),
                     ") occured while replicating on", connection.toString()));
         }
 
-        logger.debug(CustomStringJoiner.join(" ", "Replicating (", payload.toString(), ") on",
+        logger.debug(StringUtils.join(" ", "Replicating (", payload.toString(), ") on",
                 connection.toString(), " finished"));
     }
 
@@ -80,8 +81,8 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
         protected Connection connection;
         protected T payload;
         protected Logger logger;
-        protected IMessageSerializer<SerializedMessage, KVTransferMessage> messageSerializer;
-        protected IMessageDeserializer<KVTransferMessage, SerializedMessage> messageDeserializer;
+        protected IMessageSerializer<SerializedMessage, IKVTransferMessage> messageSerializer;
+        protected IMessageDeserializer<IKVTransferMessage, SerializedMessage> messageDeserializer;
 
         public Builder<T, E> communicationApi(IConcurrentCommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
@@ -104,13 +105,13 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
         }
 
         public Builder<T, E> messageSerializer(
-                IMessageSerializer<SerializedMessage, KVTransferMessage> messageSerializer) {
+                IMessageSerializer<SerializedMessage, IKVTransferMessage> messageSerializer) {
             this.messageSerializer = messageSerializer;
             return getThis();
         }
 
         public Builder<T, E> messageDeserializer(
-                IMessageDeserializer<KVTransferMessage, SerializedMessage> messageDeserializer) {
+                IMessageDeserializer<IKVTransferMessage, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return getThis();
         }

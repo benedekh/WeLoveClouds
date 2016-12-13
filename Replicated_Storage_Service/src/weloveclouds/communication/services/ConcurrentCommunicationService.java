@@ -10,10 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.communication.util.MessageFramesDetector;
+import weloveclouds.communication.utils.MessageFramesDetector;
 
 /**
  * A communication service that can handle multiple connections concurrently.
@@ -78,7 +78,7 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
                     buffer = smaller;
                 }
 
-                LOGGER.debug(CustomStringJoiner.join(" ", "Received", String.valueOf(readBytes),
+                LOGGER.debug(StringUtils.join(" ", "Received", String.valueOf(readBytes),
                         "bytes from the connection."));
                 baosBuffer.write(buffer);
 

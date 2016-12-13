@@ -2,7 +2,7 @@ package weloveclouds.commons.hashing.models;
 
 import java.math.BigInteger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * The following properties should be held for the range:<br>
@@ -59,7 +59,7 @@ public class HashRange {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join("", "(", begin.toString(), ",", end.toString(), ")");
+        return StringUtils.join("", "(", begin.toString(), ",", end.toString(), ")");
     }
 
     @Override

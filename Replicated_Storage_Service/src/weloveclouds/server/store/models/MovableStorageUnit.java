@@ -1,6 +1,7 @@
 package weloveclouds.server.store.models;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,7 +11,7 @@ import java.util.Set;
 
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
-import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.store.exceptions.StorageException;
 
@@ -33,6 +34,10 @@ public class MovableStorageUnit extends PersistedStorageUnit {
 
     public MovableStorageUnit copyEntries(HashRange range) {
         return new MovableStorageUnit(filterEntries(range), getPath());
+    }
+
+    public Set<Map.Entry<String, String>> getEntries() {
+        return Collections.unmodifiableSet(entries.entrySet());
     }
 
     /**
@@ -88,7 +93,7 @@ public class MovableStorageUnit extends PersistedStorageUnit {
     private Map<String, String> filterEntries(HashRange range) {
         Map<String, String> filtered = new HashMap<>();
         for (String key : entries.keySet()) {
-            Hash hash = HashingUtil.getHash(key);
+            Hash hash = HashingUtils.getHash(key);
             if (range.contains(hash)) {
                 filtered.put(key, entries.get(key));
             }

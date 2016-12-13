@@ -6,15 +6,15 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.commands.CommandFactory;
+import weloveclouds.client.commands.utils.ArgumentsValidator;
 import weloveclouds.client.core.Client;
-import weloveclouds.client.utils.ArgumentsValidator;
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
+import weloveclouds.server.configuration.models.KVServerPortConstants;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataDeserializer;
-import weloveclouds.server.models.configuration.KVServerPortConstants;
-import weloveclouds.server.utils.LogSetup;
+import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.commons.utils.LogSetup;
 
 /**
  * Client application. See {@link Client} for more details.
@@ -82,7 +82,7 @@ public class KVClient {
         try {
             new LogSetup(DEFAULT_LOG_PATH, logLevel);
         } catch (IOException ex) {
-            System.err.println(CustomStringJoiner.join(" ", "Log file cannot be created on path ",
+            System.err.println(StringUtils.join(" ", "Log file cannot be created on path ",
                     DEFAULT_LOG_PATH, "due to an error:", ex.getMessage()));
         }
     }

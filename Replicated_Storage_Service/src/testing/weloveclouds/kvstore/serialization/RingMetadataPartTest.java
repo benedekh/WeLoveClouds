@@ -12,12 +12,13 @@ import junit.framework.TestCase;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataPartDeserializer;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataPartSerializer;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.serialization.ISerializer;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 
@@ -30,7 +31,7 @@ public class RingMetadataPartTest extends TestCase {
 
     private static final IDeserializer<RingMetadataPart, String> metadataPartDeserializer =
             new RingMetadataPartDeserializer();
-    private static final ISerializer<String, RingMetadataPart> metadataPartSerializer =
+    private static final ISerializer<AbstractXMLNode, RingMetadataPart> metadataPartSerializer =
             new RingMetadataPartSerializer();
 
     @Test
@@ -40,14 +41,14 @@ public class RingMetadataPartTest extends TestCase {
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
         HashRange range1 =
                 new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
-        HashRange writeRange = new HashRange.Builder().begin(HashingUtil.getHash("a"))
-                .end(HashingUtil.getHash("a")).build();
+        HashRange writeRange = new HashRange.Builder().begin(HashingUtils.getHash("a"))
+                .end(HashingUtils.getHash("a")).build();
         Set<HashRange> readRanges = new HashSet<>(Arrays.asList(range1, writeRange));
 
         RingMetadataPart metadataPart = new RingMetadataPart.Builder().connectionInfo(sci)
                 .readRanges(readRanges).writeRange(writeRange).build();
 
-        String serializedMetadataPart = metadataPartSerializer.serialize(metadataPart);
+        String serializedMetadataPart = metadataPartSerializer.serialize(metadataPart).toString();
         RingMetadataPart deserializedMetadataPart =
                 metadataPartDeserializer.deserialize(serializedMetadataPart);
 

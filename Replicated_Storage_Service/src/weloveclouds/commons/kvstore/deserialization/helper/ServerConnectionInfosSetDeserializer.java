@@ -1,24 +1,25 @@
 package weloveclouds.commons.kvstore.deserialization.helper;
 
+import static weloveclouds.commons.serialization.models.XMLTokens.CONNECTION_INFO;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
+import java.util.regex.Matcher;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfosSetSerializer;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
- * A deserializer which converts a {@link Set<ServerConnectionInfo>} to a {@link String}.
+ * A deserializer which converts a {@link String} to a {@link Set<ServerConnectionInfo>}.
  * 
  * @author Benedek
  */
 public class ServerConnectionInfosSetDeserializer
         implements IDeserializer<Set<ServerConnectionInfo>, String> {
-
-    private static final Logger LOGGER =
-            Logger.getLogger(ServerConnectionInfosSetDeserializer.class);
 
     private IDeserializer<ServerConnectionInfo, String> connectionInfoDeserializer =
             new ServerConnectionInfoDeserializer();
@@ -27,18 +28,17 @@ public class ServerConnectionInfosSetDeserializer
     public Set<ServerConnectionInfo> deserialize(String from) throws DeserializationException {
         Set<ServerConnectionInfo> deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
-            LOGGER.debug("Deserializing a Set<ServerConnectionInfo> from String.");
-            // raw message split
-            String[] rawStorageUnits = from.split(ServerConnectionInfosSetSerializer.SEPARATOR);
-
-            // deserialized object
-            deserialized = new HashSet<>();
-            for (String rawStorageUnit : rawStorageUnits) {
-                // deserialized fields
-                deserialized.add(connectionInfoDeserializer.deserialize(rawStorageUnit));
+        if (StringUtils.stringIsNotEmpty(from)) {
+            try {
+                deserialized = new HashSet<>();
+                Matcher connectionInfosMatcher = getRegexFromToken(CONNECTION_INFO).matcher(from);
+                while (connectionInfosMatcher.find()) {
+                    deserialized.add(connectionInfoDeserializer
+                            .deserialize(connectionInfosMatcher.group(XML_NODE)));
+                }
+            } catch (Exception ex) {
+                new DeserializationException(ex.getMessage());
             }
-            LOGGER.debug("Deserializing a Set<ServerConnectionInfo> from String finished.");
         }
 
         return deserialized;
