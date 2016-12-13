@@ -1,6 +1,6 @@
 package weloveclouds.server.requests.kvclient;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import org.apache.log4j.Logger;
 

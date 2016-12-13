@@ -1,6 +1,5 @@
 package weloveclouds.ecs.models.commands.internal;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
@@ -9,8 +8,9 @@ import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.SYNCHRONIZED;
@@ -29,7 +29,7 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand {
         this.targetedNode = initNodeMetadataBuilder.targetedNode;
         this.messageSerializer = initNodeMetadataBuilder.messageSerializer;
         this.messageDeserializer = initNodeMetadataBuilder.messageDeserializer;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to initialize metadata on node:",
+        this.errorMessage = StringUtils.join(" ", "Unable to initialize metadata on node:",
                 targetedNode.toString());
     }
 
@@ -64,7 +64,7 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Command: InitNodeMetadata", "Targeted node:",
+        return StringUtils.join(" ", "Command: InitNodeMetadata", "Targeted node:",
                 targetedNode.toString());
     }
 

@@ -2,10 +2,9 @@ package weloveclouds.commons.kvstore.models.messages;
 
 import java.util.Set;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
-import weloveclouds.server.utils.SetToStringUtility;
 
 /**
  * Represents a message which transfers storage units between KVServers.
@@ -114,9 +113,8 @@ public class KVTransferMessage implements IKVTransferMessage {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Message status:",
-                status == null ? null : status.toString(), ", Storage units:",
-                SetToStringUtility.toString(storageUnits), ", Putable entry: ",
+        return StringUtils.join(" ", "Message status:", status == null ? null : status.toString(),
+                ", Storage units:", StringUtils.setToString(storageUnits), ", Putable entry: ",
                 putableEntry == null ? null : putableEntry.toString(), ", Removable key: ",
                 removableKey, ", Response message: ", responseMessage);
     }

@@ -1,9 +1,9 @@
 package weloveclouds.server.store;
 
-import static weloveclouds.server.utils.monitoring.KVServerMonitoringMetricUtils.incrementCounter;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.CACHE_MODULE_NAME;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.MISS;
-import static weloveclouds.server.utils.monitoring.MonitoringMetricConstants.SUCCESS;
+import static weloveclouds.server.monitoring.KVServerMonitoringMetricUtils.incrementCounter;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.CACHE_MODULE_NAME;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.MISS;
+import static weloveclouds.server.monitoring.MonitoringMetricConstants.SUCCESS;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,13 +12,14 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
+import weloveclouds.server.store.models.PutType;
 
 /**
  * A key-value cache for the {@link DataAccessService}. It hides the {@link DisplacementStrategy}
@@ -73,7 +74,7 @@ public class KVCache implements IDataAccessService, Observer {
                 incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
             }
 
-            LOGGER.debug(CustomStringJoiner.join(" ", entry.toString(), "was added to cache."));
+            LOGGER.debug(StringUtils.join(" ", entry.toString(), "was added to cache."));
             displacementStrategy.put(key);
 
             return response;
@@ -100,8 +101,7 @@ public class KVCache implements IDataAccessService, Observer {
                 throw new ValueNotFoundException(key);
             } else {
                 displacementStrategy.get(key);
-                LOGGER.debug(CustomStringJoiner.join(" ", value, "was retrieved from cache for key",
-                        key));
+                LOGGER.debug(StringUtils.join(" ", value, "was retrieved from cache for key", key));
                 incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(),
                         SUCCESS);
                 return value;
@@ -121,7 +121,7 @@ public class KVCache implements IDataAccessService, Observer {
             if (removed != null) {
                 currentSize--;
                 displacementStrategy.remove(key);
-                LOGGER.debug(CustomStringJoiner.join(" ", key, "was removed from cache."));
+                LOGGER.debug(StringUtils.join(" ", key, "was removed from cache."));
                 incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(),
                         SUCCESS);
             } else {

@@ -1,7 +1,6 @@
 package weloveclouds.commons.kvstore.deserialization;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
+import static weloveclouds.commons.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 import static weloveclouds.commons.serialization.models.XMLTokens.KVADMIN_MESSAGE;
 import static weloveclouds.commons.serialization.models.XMLTokens.REMOVABLE_RANGE;
 import static weloveclouds.commons.serialization.models.XMLTokens.REPLICAS;
@@ -11,13 +10,13 @@ import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
 import static weloveclouds.commons.serialization.models.XMLTokens.TARGET_SERVER_INFO;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
@@ -28,9 +27,9 @@ import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataPartDeser
 import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfosSetDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
@@ -87,7 +86,7 @@ public class KVAdminMessageDeserializer
                     throw new DeserializationException("KVAdminMessage is empty.");
                 }
             } else {
-                throw new DeserializationException(CustomStringJoiner.join("",
+                throw new DeserializationException(StringUtils.join("",
                         "Unable to extract KVAdminTransferMessage from:", serializedMessageStr));
             }
         } catch (Exception ex) {
@@ -107,7 +106,7 @@ public class KVAdminMessageDeserializer
             }
         } else {
             throw new DeserializationException(
-                    CustomStringJoiner.join("", "Unable to extract status from:", from));
+                    StringUtils.join("", "Unable to extract status from:", from));
         }
     }
 

@@ -17,8 +17,8 @@ import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLTokens;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.server.utils.SetToStringUtility;
 
 /**
  * Tests for the {@link Set<ServerConnectionInfo>} to verify its serialization and deserialization
@@ -50,8 +50,8 @@ public class ServerConnectionInfosSetTest extends TestCase {
         Set<ServerConnectionInfo> deserializedConnectionInfos =
                 connectionInfosDeserializer.deserialize(serializedConnectionInfos);
 
-        Assert.assertEquals(SetToStringUtility.toString(connectionInfos),
-                SetToStringUtility.toString(deserializedConnectionInfos));
+        Assert.assertEquals(StringUtils.setToString(connectionInfos),
+                StringUtils.setToString(deserializedConnectionInfos));
         Assert.assertEquals(connectionInfos, deserializedConnectionInfos);
     }
 

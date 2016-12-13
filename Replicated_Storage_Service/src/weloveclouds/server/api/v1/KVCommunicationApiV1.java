@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.services.NetworkPacketResenderFactory;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.ICommunicationApi;
@@ -23,8 +22,9 @@ import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.server.api.IKVCommunicationApi;
 
 /**
@@ -173,7 +173,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      */
     private IKVMessage convertToKVMessage(byte[] packet) throws Exception {
         KVMessage response = messageDeserializer.deserialize(packet);
-        LOGGER.debug(CustomStringJoiner.join(" ", response.toString(), "is received."));
+        LOGGER.debug(StringUtils.join(" ", response.toString(), "is received."));
         return response;
     }
 

@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.cli.models.ParsedUserInput;
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Abstracts the user input source so different input streams can be used as source.
@@ -20,12 +20,12 @@ public class UserInputReader implements AutoCloseable {
     private static final Logger LOGGER = Logger.getLogger(UserInputReader.class);
 
     private BufferedReader inputReader;
-    private AbstractUserInputParser userInputParser;
+    private AbstractUserInputParser<?> userInputParser;
 
     /**
      * @param inputStream from which the user input can be read
      */
-    public UserInputReader(InputStream inputStream, AbstractUserInputParser userInputParser) {
+    public UserInputReader(InputStream inputStream, AbstractUserInputParser<?> userInputParser) {
         this.inputReader = new BufferedReader(new InputStreamReader(inputStream));
         this.userInputParser = userInputParser;
     }
@@ -36,9 +36,9 @@ public class UserInputReader implements AutoCloseable {
      *
      * @throws IOException see {@link BufferedReader#readLine()}
      */
-    public ParsedUserInput readAndParseUserInput() throws IOException {
+    public ParsedUserInput<?> readAndParseUserInput() throws IOException {
         String line = inputReader.readLine();
-        LOGGER.debug(CustomStringJoiner.join(" ", "Line read from the user:", line));
+        LOGGER.debug(StringUtils.join(" ", "Line read from the user:", line));
         return userInputParser.parse(line);
     }
 

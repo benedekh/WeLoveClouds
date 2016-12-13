@@ -9,18 +9,18 @@ import static weloveclouds.commons.serialization.models.XMLTokens.STORAGE_UNITS;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.kvstore.serialization.helper.KVEntrySerializer;
 import weloveclouds.commons.kvstore.serialization.helper.MovableStorageUnitsIterableSerializer;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
 
@@ -56,8 +56,7 @@ public class KVTransferMessageSerializer
                         new XMLNode(RESPONSE_MESSAGE, unserializedMessage.getResponseMessage()))
                 .build().toString();
 
-        LOGGER.debug(
-                CustomStringJoiner.join("", "KVTransferMessage serialization finished: ", message));
+        LOGGER.debug(StringUtils.join("", "KVTransferMessage serialization finished: ", message));
         return new SerializedMessage(message);
     }
 

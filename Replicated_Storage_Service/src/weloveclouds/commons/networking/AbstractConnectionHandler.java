@@ -8,9 +8,9 @@ import java.util.List;
 
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 /**
  * Created by Benoit on 2016-12-05.

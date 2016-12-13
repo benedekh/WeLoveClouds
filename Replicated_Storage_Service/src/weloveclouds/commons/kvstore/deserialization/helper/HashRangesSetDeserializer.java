@@ -8,14 +8,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
- * A deserializer which converts a {@link Set<HashRange>} to a {@link String}.
+ * A deserializer which converts a {@link String} to a {@link Set<HashRange>}.
  * 
  * @author Benedek
  */
@@ -38,8 +37,8 @@ public class HashRangesSetDeserializer implements IDeserializer<Set<HashRange>, 
                 }
 
                 if (deserialized.isEmpty()) {
-                    throw new DeserializationException(CustomStringJoiner.join("",
-                            "Unable to extract hash ranges from:", from));
+                    throw new DeserializationException(
+                            StringUtils.join("", "Unable to extract hash ranges from:", from));
                 }
             } catch (Exception ex) {
                 new DeserializationException(ex.getMessage());

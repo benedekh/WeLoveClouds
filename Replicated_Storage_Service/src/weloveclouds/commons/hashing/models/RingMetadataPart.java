@@ -2,9 +2,8 @@ package weloveclouds.commons.hashing.models;
 
 import java.util.Set;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.server.utils.SetToStringUtility;
 
 
 /**
@@ -41,14 +40,19 @@ public class RingMetadataPart {
      * @return true if the write range contains the referred hash
      */
     public boolean rangeContains(Hash hash) {
-        return writeRange.contains(hash);
+        if (writeRange != null) {
+            return writeRange.contains(hash);
+        } else {
+            return false;
+        }
     }
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join("", "{", "Connection info: ", connectionInfo.toString(),
-                ", Write range: ", writeRange == null ? null : writeRange.toString(),
-                ", Read ranges: ", SetToStringUtility.toString(readRanges), "}");
+        return StringUtils.join("", "{", "Connection info: ",
+                connectionInfo == null ? null : connectionInfo.toString(), ", Write range: ",
+                writeRange == null ? null : writeRange.toString(), ", Read ranges: ",
+                StringUtils.setToString(readRanges), "}");
     }
 
     @Override

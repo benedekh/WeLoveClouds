@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.ClientSideException;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.ecs.exceptions.task.RetryableException;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 
@@ -124,7 +124,7 @@ public abstract class AbstractRetryableTask {
     }
 
     public String toString() {
-        return CustomStringJoiner.join(" ", Arrays.asList("Task id:", id, "Command:", command
+        return StringUtils.join(" ", Arrays.asList("Task id:", id, "Command:", command
                 .toString(), "Status:", status.name()));
     }
 }

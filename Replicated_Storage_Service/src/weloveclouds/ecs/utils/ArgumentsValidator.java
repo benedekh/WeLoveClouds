@@ -1,12 +1,12 @@
 package weloveclouds.ecs.utils;
 
+import static weloveclouds.commons.utils.StringUtils.join;
+
 import java.util.Arrays;
 import java.util.List;
 
 import weloveclouds.ecs.models.commands.client.AddNode;
 import weloveclouds.ecs.models.commands.client.InitService;
-
-import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 
 /**

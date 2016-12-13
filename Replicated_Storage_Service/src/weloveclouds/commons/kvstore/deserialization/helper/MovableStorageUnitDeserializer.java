@@ -8,16 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
-import weloveclouds.server.utils.FileUtility;
 
 /**
- * A deserializer which converts a {@link MovableStorageUnit} to a {@link String}.
+ * A deserializer which converts a {@link String} to a {@link MovableStorageUnit}.
  * 
  * @author Benedek
  */
@@ -42,12 +41,12 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
                 }
 
                 if (deserializedEntries.isEmpty()) {
-                    throw new DeserializationException(CustomStringJoiner.join("",
+                    throw new DeserializationException(StringUtils.join("",
                             "Unable to extract storage unit entries from:", from));
                 }
 
                 deserialized =
-                        new MovableStorageUnit(deserializedEntries, FileUtility.createDummyPath());
+                        new MovableStorageUnit(deserializedEntries, PathUtils.createDummyPath());
             } catch (Exception ex) {
                 new DeserializationException(ex.getMessage());
             }

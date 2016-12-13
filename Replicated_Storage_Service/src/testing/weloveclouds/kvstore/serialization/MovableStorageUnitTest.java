@@ -16,8 +16,8 @@ import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLTokens;
+import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
-import weloveclouds.server.utils.FileUtility;
 
 /**
  * Tests for the {@link MovableStorageUnit} to verify its serialization and deserialization
@@ -40,7 +40,7 @@ public class MovableStorageUnitTest extends TestCase {
         keyval.put("apple", "juice");
 
         MovableStorageUnit storageUnit =
-                new MovableStorageUnit(keyval, FileUtility.createDummyPath());
+                new MovableStorageUnit(keyval, PathUtils.createDummyPath());
 
         String serializedStorageUnit = OuterTagRemover.removeOuterTag(
                 storageUnitSerializer.serialize(storageUnit).toString(), XMLTokens.STORAGE_UNIT);

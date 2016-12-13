@@ -5,7 +5,7 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -16,7 +16,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 public class SocketFactory {
 
     private static final Logger LOGGER = Logger.getLogger(SocketFactory.class);
-    
+
     /**
      * Creates a TCP Socket using server connection information
      * ({@link ServerConnectionInfo#getIpAddress()} and {@link ServerConnectionInfo#getPort()}).
@@ -24,7 +24,7 @@ public class SocketFactory {
      * @throws IOException see {@link Socket}
      */
     public Socket createTcpSocketFromInfo(ServerConnectionInfo connectionInfo) throws IOException {
-        LOGGER.debug(CustomStringJoiner.join(" ", "Creating socket for", connectionInfo.toString()));
+        LOGGER.debug(StringUtils.join(" ", "Creating socket for", connectionInfo.toString()));
         return new Socket(connectionInfo.getIpAddress(), connectionInfo.getPort());
     }
 }

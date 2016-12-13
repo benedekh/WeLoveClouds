@@ -10,7 +10,6 @@ import static weloveclouds.commons.serialization.models.XMLTokens.TARGET_SERVER_
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
@@ -20,12 +19,13 @@ import weloveclouds.commons.kvstore.serialization.helper.HashRangeSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataPartSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfosIterableSerializer;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -68,8 +68,7 @@ public class KVAdminMessageSerializer
                         new XMLNode(RESPONSE_MESSAGE, unserializedMessage.getResponseMessage()))
                 .build().toString();
 
-        LOGGER.debug(
-                CustomStringJoiner.join("", "KVAdminMessage serialization finished: ", message));
+        LOGGER.debug(StringUtils.join("", "KVAdminMessage serialization finished: ", message));
         return new SerializedMessage(message);
     }
 

@@ -7,7 +7,7 @@ import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.requests.kvecs.IKVECSRequest;

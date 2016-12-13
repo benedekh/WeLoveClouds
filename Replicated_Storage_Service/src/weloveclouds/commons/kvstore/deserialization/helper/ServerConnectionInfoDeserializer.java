@@ -1,10 +1,10 @@
 package weloveclouds.commons.kvstore.deserialization.helper;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
 import static weloveclouds.commons.serialization.models.XMLTokens.IP_ADDRESS;
 import static weloveclouds.commons.serialization.models.XMLTokens.PORT;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -16,7 +16,7 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
- * A deserializer which converts a {@link ServerConnectionInfo} to a {@link String}.
+ * A deserializer which converts a {@link String} to a {@link ServerConnectionInfo}.
  * 
  * @author Benedek
  */

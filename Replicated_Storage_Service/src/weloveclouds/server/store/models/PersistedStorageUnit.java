@@ -13,9 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.server.store.PutType;
+import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.exceptions.StorageException;
-import weloveclouds.server.utils.FileUtility;
 
 /**
  * Representation of the data structure where the key-value pairs are persisted on the storage.
@@ -119,7 +118,7 @@ public class PersistedStorageUnit implements Serializable {
      * @throws IOException if any error occurs
      */
     public void deleteFile() throws IOException {
-        FileUtility.deleteFile(getPath());
+        PathUtils.deleteFile(getPath());
     }
 
     /**
@@ -129,7 +128,7 @@ public class PersistedStorageUnit implements Serializable {
      */
     public void save() throws StorageException {
         try {
-            FileUtility.saveToFile(getPath(), this);
+            PathUtils.saveToFile(getPath(), this);
         } catch (FileNotFoundException e) {
             getLogger().error(e);
             throw new StorageException("File was not found.");

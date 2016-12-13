@@ -14,7 +14,7 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
- * A deserializer which converts a {@link Set<MovableStorageUnit>} to a {@link String}.
+ * A deserializer which converts a {@link String} to a {@link Set<MovableStorageUnit>}.
  * 
  * @author Benedek
  */
