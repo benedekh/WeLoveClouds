@@ -1,12 +1,12 @@
 package weloveclouds.ecs.models.commands.internal;
 
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.serialization.models.SerializedMessage;
 
 
 /**
@@ -14,8 +14,8 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
  */
 public abstract class AbstractEcsNetworkCommand extends AbstractCommand<StorageNode> {
     protected ICommunicationApi communicationApi;
-    protected IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
-    protected IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
+    protected IMessageSerializer<SerializedMessage, IKVAdminMessage> messageSerializer;
+    protected IMessageDeserializer<IKVAdminMessage, SerializedMessage> messageDeserializer;
     protected StorageNode targetedNode;
     protected String errorMessage;
 }

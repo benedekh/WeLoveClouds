@@ -34,10 +34,9 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
         try {
             communicationApi.connectTo(targetedNode.getEcsChannelConnectionInfo());
             KVAdminMessage message = new KVAdminMessage.Builder()
-                    .status(IKVAdminMessage.StatusType.UNLOCKWRITE)
-                    .build();
+                    .status(IKVAdminMessage.StatusType.UNLOCKWRITE).build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
-            KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
+            IKVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             } else {
@@ -45,11 +44,11 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
             }
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);
-        }finally {
+        } finally {
             try {
                 communicationApi.disconnect();
-            }catch(UnableToDisconnectException ex){
-                //LOG
+            } catch (UnableToDisconnectException ex) {
+                // LOG
             }
         }
     }
@@ -63,8 +62,8 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
     public static class Builder {
         private ICommunicationApi communicationApi;
         private StorageNode targetedNode;
-        private IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
-        private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
+        private IMessageSerializer<SerializedMessage, IKVAdminMessage> messageSerializer;
+        private IMessageDeserializer<IKVAdminMessage, SerializedMessage> messageDeserializer;
 
         public Builder communicationApi(ICommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
@@ -76,12 +75,14 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
             return this;
         }
 
-        public Builder messageSerializer(IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer) {
+        public Builder messageSerializer(
+                IMessageSerializer<SerializedMessage, IKVAdminMessage> messageSerializer) {
             this.messageSerializer = messageSerializer;
             return this;
         }
 
-        public Builder messageDeserializer(IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer) {
+        public Builder messageDeserializer(
+                IMessageDeserializer<IKVAdminMessage, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return this;
         }

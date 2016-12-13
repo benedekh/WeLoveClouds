@@ -4,20 +4,21 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.hashing.utils.HashingUtils;
-import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
+import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
@@ -30,8 +31,8 @@ public class KVServerInitializationUtils implements AutoCloseable {
             new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
 
     private IKVCommunicationApiV2 serverCommunication;
-    private IMessageDeserializer<KVAdminMessage, SerializedMessage> kvAdminMessageDeserializer;
-    private IMessageSerializer<SerializedMessage, KVAdminMessage> kvAdminMessageSerializer;
+    private IMessageDeserializer<IKVAdminMessage, SerializedMessage> kvAdminMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, IKVAdminMessage> kvAdminMessageSerializer;
 
     public KVServerInitializationUtils() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo =
@@ -70,7 +71,7 @@ public class KVServerInitializationUtils implements AutoCloseable {
                 .ringMetadata(ringMetadata).targetServerInfo(part).build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         if (response.getStatus() == StatusType.RESPONSE_ERROR) {
@@ -81,7 +82,7 @@ public class KVServerInitializationUtils implements AutoCloseable {
     public void startServer() throws Exception {
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.START).build();
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
         if (response.getStatus() == StatusType.RESPONSE_ERROR) {
             throw new Exception(response.getResponseMessage());
@@ -95,7 +96,7 @@ public class KVServerInitializationUtils implements AutoCloseable {
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.UPDATE)
                 .ringMetadata(ringMetadata).targetServerInfo(part).build();
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         if (response.getStatus() == StatusType.RESPONSE_ERROR) {

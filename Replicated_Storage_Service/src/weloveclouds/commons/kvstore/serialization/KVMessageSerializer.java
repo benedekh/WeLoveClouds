@@ -7,6 +7,7 @@ import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.kvstore.serialization.helper.KVEntrySerializer;
@@ -24,14 +25,14 @@ import weloveclouds.commons.utils.StringUtils;
  * 
  * @author Benoit
  */
-public class KVMessageSerializer implements IMessageSerializer<SerializedMessage, KVMessage> {
+public class KVMessageSerializer implements IMessageSerializer<SerializedMessage, IKVMessage> {
 
     private static final Logger LOGGER = Logger.getLogger(KVMessageSerializer.class);
 
     private ISerializer<AbstractXMLNode, KVEntry> kvEntrySerializer = new KVEntrySerializer();
 
     @Override
-    public SerializedMessage serialize(KVMessage unserializedMessage) {
+    public SerializedMessage serialize(IKVMessage unserializedMessage) {
         LOGGER.debug("Serializing KVMessage.");
 
         StatusType status = unserializedMessage.getStatus();

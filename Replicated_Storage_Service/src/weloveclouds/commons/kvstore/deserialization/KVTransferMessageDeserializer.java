@@ -19,8 +19,10 @@ import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationEx
 import weloveclouds.commons.kvstore.deserialization.helper.KVEntryDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.MovableStorageUnitsSetDeserializer;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessageProxy;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -33,7 +35,7 @@ import weloveclouds.server.store.models.MovableStorageUnit;
  * @author Benedek
  */
 public class KVTransferMessageDeserializer
-        implements IMessageDeserializer<KVTransferMessage, SerializedMessage> {
+        implements IMessageDeserializer<IKVTransferMessage, SerializedMessage> {
 
     private static final Logger LOGGER = Logger.getLogger(KVTransferMessageDeserializer.class);
 
@@ -42,13 +44,14 @@ public class KVTransferMessageDeserializer
     private IDeserializer<KVEntry, String> kvEntryDeserializer = new KVEntryDeserializer();
 
     @Override
-    public KVTransferMessage deserialize(SerializedMessage serializedMessage)
+    public IKVTransferMessage deserialize(SerializedMessage serializedMessage)
             throws DeserializationException {
         return deserialize(serializedMessage.getBytes());
     }
 
     @Override
-    public KVTransferMessage deserialize(byte[] serializedMessage) throws DeserializationException {
+    public IKVTransferMessage deserialize(byte[] serializedMessage)
+            throws DeserializationException {
         LOGGER.debug("Deserializing KVTransferMessage from byte[].");
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
 
@@ -68,8 +71,9 @@ public class KVTransferMessageDeserializer
                             .responseMessage(
                                     deserializeString(serializedTransferMessage, RESPONSE_MESSAGE))
                             .build();
+
                     LOGGER.debug("KVTransferMessage deserialization finished.");
-                    return deserialized;
+                    return new KVTransferMessageProxy(deserialized);
                 } else {
                     throw new DeserializationException("KVTransferMessage is empty.");
                 }

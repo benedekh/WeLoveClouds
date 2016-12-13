@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
-import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.kvstore.serialization.helper.HashRangeSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataPartSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
@@ -29,12 +29,12 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
- * A serializer which converts a {@link KVAdminMessage} to a {@link SerializedMessage}.
+ * A serializer which converts a {@link IKVAdminMessage} to a {@link SerializedMessage}.
  * 
  * @author Benedek
  */
 public class KVAdminMessageSerializer
-        implements IMessageSerializer<SerializedMessage, KVAdminMessage> {
+        implements IMessageSerializer<SerializedMessage, IKVAdminMessage> {
 
     private static final Logger LOGGER = Logger.getLogger(KVAdminMessageSerializer.class);
 
@@ -47,7 +47,7 @@ public class KVAdminMessageSerializer
     private ISerializer<AbstractXMLNode, HashRange> hashRangeSerializer = new HashRangeSerializer();
 
     @Override
-    public SerializedMessage serialize(KVAdminMessage unserializedMessage) {
+    public SerializedMessage serialize(IKVAdminMessage unserializedMessage) {
         LOGGER.debug("Serializing KVAdminMessage.");
 
         StatusType status = unserializedMessage.getStatus();

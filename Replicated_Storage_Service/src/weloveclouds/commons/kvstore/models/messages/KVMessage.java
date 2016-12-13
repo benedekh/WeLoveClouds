@@ -58,6 +58,10 @@ public class KVMessage implements IKVMessage {
         if (obj == null) {
             return false;
         }
+        if (obj instanceof KVMessageProxy) {
+            KVMessageProxy other = (KVMessageProxy) obj;
+            return other.equals(this);
+        }
         if (!(obj instanceof KVMessage)) {
             return false;
         }

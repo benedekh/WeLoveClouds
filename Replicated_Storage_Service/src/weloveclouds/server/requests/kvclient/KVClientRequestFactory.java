@@ -5,8 +5,8 @@ import static weloveclouds.commons.utils.StringUtils.join;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
-import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.serialization.ISerializer;
@@ -20,7 +20,7 @@ import weloveclouds.server.services.IMovableDataAccessService;
  *
  * @author Benoit
  */
-public class KVClientRequestFactory implements IRequestFactory<KVMessage, IKVClientRequest> {
+public class KVClientRequestFactory implements IRequestFactory<IKVMessage, IKVClientRequest> {
 
     private static final Logger LOGGER = Logger.getLogger(Put.class);
 
@@ -34,7 +34,7 @@ public class KVClientRequestFactory implements IRequestFactory<KVMessage, IKVCli
     }
 
     @Override
-    public IKVClientRequest createRequestFromReceivedMessage(KVMessage receivedMessage,
+    public IKVClientRequest createRequestFromReceivedMessage(IKVMessage receivedMessage,
             ICallbackRegister callbackRegister) {
         IKVClientRequest request = null;
         StatusType status = receivedMessage.getStatus();

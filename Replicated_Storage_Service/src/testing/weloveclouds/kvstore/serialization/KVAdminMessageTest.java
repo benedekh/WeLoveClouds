@@ -16,6 +16,7 @@ import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
@@ -31,9 +32,9 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public class KVAdminMessageTest extends TestCase {
 
-    private static IMessageDeserializer<KVAdminMessage, SerializedMessage> adminMessageDeserializer =
+    private static IMessageDeserializer<IKVAdminMessage, SerializedMessage> adminMessageDeserializer =
             new KVAdminMessageDeserializer();
-    private static IMessageSerializer<SerializedMessage, KVAdminMessage> adminMessageSerializer =
+    private static IMessageSerializer<SerializedMessage, IKVAdminMessage> adminMessageSerializer =
             new KVAdminMessageSerializer();
 
     @Test
@@ -70,7 +71,7 @@ public class KVAdminMessageTest extends TestCase {
                         .removableRange(removableRange).responseMessage(responseMessage).build();
 
         SerializedMessage serializedMessage = adminMessageSerializer.serialize(adminMessage);
-        KVAdminMessage deserializedAdminMessage =
+        IKVAdminMessage deserializedAdminMessage =
                 adminMessageDeserializer.deserialize(serializedMessage);
 
         Assert.assertEquals(adminMessage.toString(), deserializedAdminMessage.toString());

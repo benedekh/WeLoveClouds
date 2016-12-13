@@ -15,8 +15,10 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.KVEntryDeserializer;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
+import weloveclouds.commons.kvstore.models.messages.KVMessageProxy;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -27,20 +29,20 @@ import weloveclouds.commons.utils.StringUtils;
  * 
  * @author Benoit
  */
-public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, SerializedMessage> {
+public class KVMessageDeserializer implements IMessageDeserializer<IKVMessage, SerializedMessage> {
 
     private static final Logger LOGGER = Logger.getLogger(KVMessageDeserializer.class);
 
     private IDeserializer<KVEntry, String> kvEntryDeserializer = new KVEntryDeserializer();
 
     @Override
-    public KVMessage deserialize(SerializedMessage serializedMessage)
+    public IKVMessage deserialize(SerializedMessage serializedMessage)
             throws DeserializationException {
         return deserialize(serializedMessage.getBytes());
     }
 
     @Override
-    public KVMessage deserialize(byte[] serializedMessage) throws DeserializationException {
+    public IKVMessage deserialize(byte[] serializedMessage) throws DeserializationException {
         LOGGER.debug("Deserializing KVMessage from byte[].");
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
 
@@ -54,8 +56,9 @@ public class KVMessageDeserializer implements IMessageDeserializer<KVMessage, Se
                     KVMessage deserialized =
                             new KVMessage.Builder().status(deserializeStatus(serializedKVMessage))
                                     .key(entry.getKey()).value(entry.getValue()).build();
+
                     LOGGER.debug(join(" ", "Deserialized KVMessage is:", deserialized.toString()));
-                    return deserialized;
+                    return new KVMessageProxy(deserialized);
                 } else {
                     throw new DeserializationException("KVMessage is empty.");
                 }

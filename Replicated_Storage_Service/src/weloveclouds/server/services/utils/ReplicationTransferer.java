@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -36,8 +36,8 @@ public class ReplicationTransferer implements IReplicationTransferer {
     private ConnectionFactory connectionFactory;
     private Set<ServerConnectionInfo> replicaConnectionInfos;
 
-    private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
-    private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
+    private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
     private ExecutorService executorService;
 
@@ -124,8 +124,8 @@ public class ReplicationTransferer implements IReplicationTransferer {
         private IConcurrentCommunicationApi concurrentCommunicationApi;
         private ConnectionFactory connectionFactory;
         private Set<ServerConnectionInfo> replicaConnectionInfos;
-        private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
-        private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+        private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
+        private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
         public Builder communicationApi(IConcurrentCommunicationApi concurrentCommunicationApi) {
             this.concurrentCommunicationApi = concurrentCommunicationApi;
@@ -143,13 +143,13 @@ public class ReplicationTransferer implements IReplicationTransferer {
         }
 
         public Builder messageSerializer(
-                IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer) {
+                IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer) {
             this.transferMessageSerializer = transferMessageSerializer;
             return this;
         }
 
         public Builder messageDeserializer(
-                IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+                IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer) {
             this.transferMessageDeserializer = transferMessageDeserializer;
             return this;
         }

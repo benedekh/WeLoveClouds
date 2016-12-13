@@ -73,6 +73,10 @@ public class KVTransferMessage implements IKVTransferMessage {
         if (obj == null) {
             return false;
         }
+        if (obj instanceof KVTransferMessageProxy) {
+            KVTransferMessageProxy other = (KVTransferMessageProxy) obj;
+            return other.equals(this);
+        }
         if (!(obj instanceof KVTransferMessage)) {
             return false;
         }

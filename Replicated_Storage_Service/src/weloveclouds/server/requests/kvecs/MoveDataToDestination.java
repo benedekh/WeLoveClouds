@@ -11,8 +11,8 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -39,8 +39,8 @@ public class MoveDataToDestination implements IKVECSRequest {
 
     private ICommunicationApi communicationApi;
     private RingMetadataPart targetServerInfo;
-    private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
-    private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
+    private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
     private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
 
     protected MoveDataToDestination(Builder builder) {
@@ -109,8 +109,8 @@ public class MoveDataToDestination implements IKVECSRequest {
         private RingMetadataPart targetServerInfo;
         private ICommunicationApi communicationApi;
         private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
-        private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
-        private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+        private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
+        private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
         /**
          * @param dataAccessService a reference to the data access service
@@ -148,21 +148,21 @@ public class MoveDataToDestination implements IKVECSRequest {
         }
 
         /**
-         * @param transferMessageSerializer to serialize {@link KVTransferMessage} into
+         * @param transferMessageSerializer to serialize {@link IKVTransferMessage} into
          *        {@link SerializedMessage}
          */
         public Builder transferMessageSerializer(
-                IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer) {
+                IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer) {
             this.transferMessageSerializer = transferMessageSerializer;
             return this;
         }
 
         /**
-         * @param transferMessageDeserializer to deserialize {@link KVTransferMessage} from
+         * @param transferMessageDeserializer to deserialize {@link IKVTransferMessage} from
          *        {@link SerializedMessage}
          */
         public Builder transferMessageDeserializer(
-                IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+                IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer) {
             this.transferMessageDeserializer = transferMessageDeserializer;
             return this;
         }

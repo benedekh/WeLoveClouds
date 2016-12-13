@@ -10,22 +10,23 @@ import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.Assert;
-import weloveclouds.communication.exceptions.ConnectionClosedException;
-import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
-import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.hashing.utils.HashingUtils;
-import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
+import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
-import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.communication.exceptions.ConnectionClosedException;
+import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.server.configuration.models.KVServerPortConstants;
@@ -47,8 +48,8 @@ public class KVServerHandlingECSRequestTests {
     private static final int SERVER2_KVECS_REQUEST_ACCEPTING_PORT = 60002;
 
     private IKVCommunicationApiV2 serverCommunication;
-    private IMessageDeserializer<KVAdminMessage, SerializedMessage> kvAdminMessageDeserializer;
-    private IMessageSerializer<SerializedMessage, KVAdminMessage> kvAdminMessageSerializer;
+    private IMessageDeserializer<IKVAdminMessage, SerializedMessage> kvAdminMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, IKVAdminMessage> kvAdminMessageSerializer;
 
     @Before
     public void init() throws Exception {
@@ -72,7 +73,7 @@ public class KVServerHandlingECSRequestTests {
             DeserializationException {
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.START).build();
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
@@ -83,7 +84,7 @@ public class KVServerHandlingECSRequestTests {
             DeserializationException {
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.STOP).build();
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
@@ -95,7 +96,7 @@ public class KVServerHandlingECSRequestTests {
         KVAdminMessage adminMessage =
                 new KVAdminMessage.Builder().status(StatusType.LOCKWRITE).build();
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
@@ -107,7 +108,7 @@ public class KVServerHandlingECSRequestTests {
         KVAdminMessage adminMessage =
                 new KVAdminMessage.Builder().status(StatusType.UNLOCKWRITE).build();
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
@@ -144,7 +145,7 @@ public class KVServerHandlingECSRequestTests {
                 .ringMetadata(ringMetadata).targetServerInfo(part1).build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
@@ -172,7 +173,7 @@ public class KVServerHandlingECSRequestTests {
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.UPDATE)
                 .ringMetadata(ringMetadata).targetServerInfo(part2).build();
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
@@ -188,7 +189,7 @@ public class KVServerHandlingECSRequestTests {
                 .removableRange(targetRange).build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
@@ -208,7 +209,7 @@ public class KVServerHandlingECSRequestTests {
                 .targetServerInfo(target).build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
@@ -228,7 +229,7 @@ public class KVServerHandlingECSRequestTests {
                 .targetServerInfo(target).build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
@@ -240,7 +241,7 @@ public class KVServerHandlingECSRequestTests {
         KVAdminMessage adminMessage =
                 new KVAdminMessage.Builder().status(StatusType.SHUTDOWN).build();
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
-        KVAdminMessage response =
+        IKVAdminMessage response =
                 kvAdminMessageDeserializer.deserialize(serverCommunication.receive());
 
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());

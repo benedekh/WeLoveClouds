@@ -7,9 +7,9 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.KVTransferMessageDeserializer;
-import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.commons.kvstore.models.messages.KVMessage;
-import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
@@ -48,7 +48,7 @@ public class ServerFactory {
     public AbstractServer<?> createServerForKVClientRequests(int port,
             IMovableDataAccessService dataAccessService) throws IOException {
         LOGGER.debug("Creating Server for KVClient requests.");
-        return new Server.Builder<KVMessage, IKVClientRequest>().port(port)
+        return new Server.Builder<IKVMessage, IKVClientRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
                 .requestFactory(
                         new KVClientRequestFactory(dataAccessService, new RingMetadataSerializer()))
@@ -68,7 +68,7 @@ public class ServerFactory {
     public AbstractServer<?> createServerForKVServerRequests(int port,
             IMovableDataAccessService dataAccessService) throws IOException {
         LOGGER.debug("Creating Server for KVServer requests.");
-        return new Server.Builder<KVTransferMessage, IKVServerRequest>().port(port)
+        return new Server.Builder<IKVTransferMessage, IKVServerRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
                 .requestFactory(new KVServerRequestFactory(dataAccessService))
                 .communicationApiFactory(new CommunicationApiFactory())
@@ -89,7 +89,7 @@ public class ServerFactory {
             IReplicableDataAccessService dataAccessService) throws IOException {
         LOGGER.debug("Creating Server for KVECS requests.");
         CommunicationApiFactory communicationApiFactory = new CommunicationApiFactory();
-        return new Server.Builder<KVAdminMessage, IKVECSRequest>().port(port)
+        return new Server.Builder<IKVAdminMessage, IKVECSRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
                 .requestFactory(new KVECSRequestFactory.Builder()
                         .dataAccessService(dataAccessService)

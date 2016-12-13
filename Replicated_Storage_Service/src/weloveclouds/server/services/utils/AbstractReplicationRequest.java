@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
@@ -29,8 +30,8 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
 
     private Logger logger;
 
-    protected IMessageSerializer<SerializedMessage, KVTransferMessage> messageSerializer;
-    protected IMessageDeserializer<KVTransferMessage, SerializedMessage> messageDeserializer;
+    protected IMessageSerializer<SerializedMessage, IKVTransferMessage> messageSerializer;
+    protected IMessageDeserializer<IKVTransferMessage, SerializedMessage> messageDeserializer;
 
     protected AbstractReplicationRequest(Builder<T, E> builder) {
         this.connection = builder.connection;
@@ -52,7 +53,7 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
 
             byte[] response =
                     communicationApi.sendAndExpectForResponse(serializedMessage.getBytes(), conn);
-            KVTransferMessage responseMessage = messageDeserializer.deserialize(response);
+            IKVTransferMessage responseMessage = messageDeserializer.deserialize(response);
             if (responseMessage.getStatus() == StatusType.RESPONSE_ERROR) {
                 throw new IOException(responseMessage.getResponseMessage());
             }
@@ -80,8 +81,8 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
         protected Connection connection;
         protected T payload;
         protected Logger logger;
-        protected IMessageSerializer<SerializedMessage, KVTransferMessage> messageSerializer;
-        protected IMessageDeserializer<KVTransferMessage, SerializedMessage> messageDeserializer;
+        protected IMessageSerializer<SerializedMessage, IKVTransferMessage> messageSerializer;
+        protected IMessageDeserializer<IKVTransferMessage, SerializedMessage> messageDeserializer;
 
         public Builder<T, E> communicationApi(IConcurrentCommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
@@ -104,13 +105,13 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
         }
 
         public Builder<T, E> messageSerializer(
-                IMessageSerializer<SerializedMessage, KVTransferMessage> messageSerializer) {
+                IMessageSerializer<SerializedMessage, IKVTransferMessage> messageSerializer) {
             this.messageSerializer = messageSerializer;
             return getThis();
         }
 
         public Builder<T, E> messageDeserializer(
-                IMessageDeserializer<KVTransferMessage, SerializedMessage> messageDeserializer) {
+                IMessageDeserializer<IKVTransferMessage, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return getThis();
         }

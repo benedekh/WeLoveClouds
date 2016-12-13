@@ -10,8 +10,8 @@ import static weloveclouds.commons.serialization.models.XMLTokens.STORAGE_UNITS;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
-import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.kvstore.serialization.helper.KVEntrySerializer;
 import weloveclouds.commons.kvstore.serialization.helper.MovableStorageUnitsIterableSerializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
@@ -25,12 +25,12 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 
 
 /**
- * A serializer which converts a {@link KVTransferMessage} to a {@link SerializedMessage}.
+ * A serializer which converts a {@link IKVTransferMessage} to a {@link SerializedMessage}.
  * 
  * @author Benedek
  */
 public class KVTransferMessageSerializer
-        implements IMessageSerializer<SerializedMessage, KVTransferMessage> {
+        implements IMessageSerializer<SerializedMessage, IKVTransferMessage> {
 
     private static final Logger LOGGER = Logger.getLogger(KVTransferMessageSerializer.class);
 
@@ -39,7 +39,7 @@ public class KVTransferMessageSerializer
     private ISerializer<AbstractXMLNode, KVEntry> kvEntrySerializer = new KVEntrySerializer();
 
     @Override
-    public SerializedMessage serialize(KVTransferMessage unserializedMessage) {
+    public SerializedMessage serialize(IKVTransferMessage unserializedMessage) {
         LOGGER.debug("Serializing KVTransferMessage.");
         StatusType status = unserializedMessage.getStatus();
 

@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
@@ -39,8 +40,8 @@ public class StorageUnitsTransporter {
     private ICommunicationApi communicationApi;
     private ServerConnectionInfo connectionInfo;
 
-    private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
-    private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
+    private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
     protected StorageUnitsTransporter(Builder builder) {
         this.communicationApi = builder.communicationApi;
@@ -110,7 +111,7 @@ public class StorageUnitsTransporter {
             byte[] responsePacket =
                     communicationApi.sendAndExpectForResponse(serializedMessage.getBytes());
 
-            KVTransferMessage response = transferMessageDeserializer.deserialize(responsePacket);
+            IKVTransferMessage response = transferMessageDeserializer.deserialize(responsePacket);
             if (response.getStatus() == StatusType.RESPONSE_ERROR) {
                 throw new UnableToSendContentToServerException(response.getResponseMessage());
             }
@@ -127,8 +128,8 @@ public class StorageUnitsTransporter {
     public static class Builder {
         private ICommunicationApi communicationApi;
         private ServerConnectionInfo connectionInfo;
-        private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
-        private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+        private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
+        private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
         /**
          * @param connectionInfo the IP + port of the destination
@@ -151,7 +152,7 @@ public class StorageUnitsTransporter {
          *        {@link SerializedMessage}
          */
         public Builder transferMessageSerializer(
-                IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer) {
+                IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer) {
             this.transferMessageSerializer = transferMessageSerializer;
             return this;
         }
@@ -161,7 +162,7 @@ public class StorageUnitsTransporter {
          *        {@link SerializedMessage}
          */
         public Builder transferMessageDeserializer(
-                IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+                IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer) {
             this.transferMessageDeserializer = transferMessageDeserializer;
             return this;
         }

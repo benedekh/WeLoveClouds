@@ -96,6 +96,10 @@ public class KVAdminMessage implements IKVAdminMessage {
         if (obj == null) {
             return false;
         }
+        if (obj instanceof KVAdminMessageProxy) {
+            KVAdminMessageProxy other = (KVAdminMessageProxy) obj;
+            return other.equals(this);
+        }
         if (!(obj instanceof KVAdminMessage)) {
             return false;
         }

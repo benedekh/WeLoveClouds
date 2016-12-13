@@ -15,6 +15,7 @@ import junit.framework.Assert;
 import weloveclouds.commons.kvstore.deserialization.KVTransferMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
@@ -43,8 +44,8 @@ public class KVServerRequestFromKVServerValidationTests {
             KVServerPortConstants.KVSERVER_REQUESTS_PORT;
 
     private IKVCommunicationApiV2 serverCommunication;
-    private IMessageDeserializer<KVTransferMessage, SerializedMessage> kvTransferMessageDeserializer;
-    private IMessageSerializer<SerializedMessage, KVTransferMessage> kvTransferMessageSerializer;
+    private IMessageDeserializer<IKVTransferMessage, SerializedMessage> kvTransferMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, IKVTransferMessage> kvTransferMessageSerializer;
 
     @Before
     public void init() throws Exception {
@@ -71,7 +72,7 @@ public class KVServerRequestFromKVServerValidationTests {
                 .status(StatusType.TRANSFER_ENTRIES).storageUnits(null).build();
         serverCommunication.send(kvTransferMessageSerializer.serialize(message).getBytes());
 
-        KVTransferMessage response =
+        IKVTransferMessage response =
                 kvTransferMessageDeserializer.deserialize(serverCommunication.receive());
         Assert.assertEquals(StatusType.RESPONSE_ERROR, response.getStatus());
     }
@@ -93,7 +94,7 @@ public class KVServerRequestFromKVServerValidationTests {
                 .status(StatusType.TRANSFER_ENTRIES).storageUnits(storageUnits).build();
         serverCommunication.send(kvTransferMessageSerializer.serialize(message).getBytes());
 
-        KVTransferMessage response =
+        IKVTransferMessage response =
                 kvTransferMessageDeserializer.deserialize(serverCommunication.receive());
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
     }
@@ -107,7 +108,7 @@ public class KVServerRequestFromKVServerValidationTests {
                 .putableEntry(entry).build();
         serverCommunication.send(kvTransferMessageSerializer.serialize(message).getBytes());
 
-        KVTransferMessage response =
+        IKVTransferMessage response =
                 kvTransferMessageDeserializer.deserialize(serverCommunication.receive());
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
     }
@@ -121,7 +122,7 @@ public class KVServerRequestFromKVServerValidationTests {
                 .removableKey(key).build();
         serverCommunication.send(kvTransferMessageSerializer.serialize(message).getBytes());
 
-        KVTransferMessage response =
+        IKVTransferMessage response =
                 kvTransferMessageDeserializer.deserialize(serverCommunication.receive());
         Assert.assertEquals(StatusType.RESPONSE_SUCCESS, response.getStatus());
 

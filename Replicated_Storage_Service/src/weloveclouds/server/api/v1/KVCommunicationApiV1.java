@@ -4,7 +4,15 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.communication.services.NetworkPacketResenderFactory;
+import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVMessage;
+import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
@@ -16,15 +24,7 @@ import weloveclouds.communication.exceptions.UnableToSendContentToServerExceptio
 import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
-import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
-import weloveclouds.commons.kvstore.models.messages.IKVMessage;
-import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
-import weloveclouds.commons.kvstore.models.messages.KVMessage;
-import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.communication.services.NetworkPacketResenderFactory;
 import weloveclouds.server.api.IKVCommunicationApi;
 
 /**
@@ -40,8 +40,8 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
 
     private ServerConnectionInfo remoteServer;
     private ICommunicationApi serverCommunication;
-    private IMessageSerializer<SerializedMessage, KVMessage> messageSerializer;
-    private IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer;
+    private IMessageSerializer<SerializedMessage, IKVMessage> messageSerializer;
+    private IMessageDeserializer<IKVMessage, SerializedMessage> messageDeserializer;
     private String address;
     private int port;
 
@@ -67,8 +67,8 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      * @param messageDeserializer to deserialize {@link KVMessage} from byte[].
      */
     public KVCommunicationApiV1(ICommunicationApi communicationApi,
-            IMessageSerializer<SerializedMessage, KVMessage> messageSerializer,
-            IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer) {
+            IMessageSerializer<SerializedMessage, IKVMessage> messageSerializer,
+            IMessageDeserializer<IKVMessage, SerializedMessage> messageDeserializer) {
         this.serverCommunication = communicationApi;
         this.messageSerializer = messageSerializer;
         this.messageDeserializer = messageDeserializer;
@@ -172,7 +172,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      * @throws Exception if any error occurs
      */
     private IKVMessage convertToKVMessage(byte[] packet) throws Exception {
-        KVMessage response = messageDeserializer.deserialize(packet);
+        IKVMessage response = messageDeserializer.deserialize(packet);
         LOGGER.debug(StringUtils.join(" ", response.toString(), "is received."));
         return response;
     }
