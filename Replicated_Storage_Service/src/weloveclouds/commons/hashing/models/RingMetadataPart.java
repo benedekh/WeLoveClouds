@@ -40,7 +40,11 @@ public class RingMetadataPart {
      * @return true if the write range contains the referred hash
      */
     public boolean rangeContains(Hash hash) {
-        return writeRange.contains(hash);
+        if (writeRange != null) {
+            return writeRange.contains(hash);
+        } else {
+            return false;
+        }
     }
 
     @Override
