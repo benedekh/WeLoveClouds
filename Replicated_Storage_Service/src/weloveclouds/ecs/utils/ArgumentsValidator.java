@@ -1,12 +1,12 @@
 package weloveclouds.ecs.utils;
 
+import static weloveclouds.client.utils.CustomStringJoiner.join;
+
 import java.util.Arrays;
 import java.util.List;
 
 import weloveclouds.ecs.models.commands.client.AddNode;
 import weloveclouds.ecs.models.commands.client.InitService;
-
-import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 
 /**
@@ -133,6 +133,5 @@ public class ArgumentsValidator {
     private static boolean isNullOrEmpty(List<String> arguments) {
         return arguments == null || arguments.isEmpty();
     }
-
 
 }

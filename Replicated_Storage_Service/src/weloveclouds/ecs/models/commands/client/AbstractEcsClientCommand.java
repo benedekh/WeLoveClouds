@@ -12,9 +12,7 @@ public abstract class AbstractEcsClientCommand extends AbstractCommand<String> i
     protected IKVEcsApi externalCommunicationServiceApi;
     
     public AbstractEcsClientCommand(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {
-
         this.externalCommunicationServiceApi = externalCommunicationServiceApi;
-        
         this.addArguments(arguments);
     }
 }
