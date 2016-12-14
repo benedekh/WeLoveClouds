@@ -9,7 +9,7 @@ import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
 import weloveclouds.server.core.ServerFactory;
-import weloveclouds.server.services.DataAccessServiceFactory;
+import weloveclouds.server.services.datastore.DataAccessServiceFactory;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different commands. It

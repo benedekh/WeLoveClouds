@@ -1,6 +1,6 @@
-package weloveclouds.server.services.models;
+package weloveclouds.server.services.datastore.models;
 
-import weloveclouds.server.services.DataAccessService;
+import weloveclouds.server.services.datastore.DataAccessService;
 
 /**
  * Represents the recent status of the {@link DataAccessService}.

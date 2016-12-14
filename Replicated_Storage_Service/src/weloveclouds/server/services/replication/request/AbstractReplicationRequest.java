@@ -1,4 +1,4 @@
-package weloveclouds.server.services.utils;
+package weloveclouds.server.services.replication.request;
 
 import java.io.IOException;
 
@@ -24,22 +24,25 @@ import weloveclouds.communication.models.Connection;
 public abstract class AbstractReplicationRequest<T, E extends AbstractReplicationRequest.Builder<T, E>>
         implements Runnable {
 
-    private IConcurrentCommunicationApi communicationApi;
+    protected IConcurrentCommunicationApi communicationApi;
+    protected T payload;
     private Connection connection;
-    private T payload;
 
-    private Logger logger;
+    protected Logger logger;
 
     protected IMessageSerializer<SerializedMessage, IKVTransferMessage> messageSerializer;
     protected IMessageDeserializer<IKVTransferMessage, SerializedMessage> messageDeserializer;
 
     protected AbstractReplicationRequest(Builder<T, E> builder) {
-        this.connection = builder.connection;
         this.communicationApi = builder.communicationApi;
         this.payload = builder.payload;
         this.logger = builder.logger;
         this.messageSerializer = builder.messageSerializer;
         this.messageDeserializer = builder.messageDeserializer;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
@@ -70,14 +73,15 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
      */
     protected abstract KVTransferMessage createTransferMessageFrom(T payload);
 
+    public abstract AbstractReplicationRequest<T, E> clone();
+
     /**
      * Builder pattern for creating a {@link AbstractReplicationRequest} instance.
      *
      * @author Benedek
      */
-    protected abstract static class Builder<T, E extends Builder<T, E>> {
+    public abstract static class Builder<T, E extends Builder<T, E>> {
         protected IConcurrentCommunicationApi communicationApi;
-        protected Connection connection;
         protected T payload;
         protected Logger logger;
         protected IMessageSerializer<SerializedMessage, IKVTransferMessage> messageSerializer;
@@ -85,11 +89,6 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
 
         public Builder<T, E> communicationApi(IConcurrentCommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
-            return getThis();
-        }
-
-        public Builder<T, E> connection(Connection connection) {
-            this.connection = connection;
             return getThis();
         }
 
@@ -117,6 +116,6 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
 
         protected abstract E getThis();
 
-        protected abstract AbstractReplicationRequest<T, E> build();
+        public abstract AbstractReplicationRequest<T, E> build();
     }
 }

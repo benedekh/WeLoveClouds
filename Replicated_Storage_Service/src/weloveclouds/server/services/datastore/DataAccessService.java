@@ -1,4 +1,4 @@
-package weloveclouds.server.services;
+package weloveclouds.server.services.datastore;
 
 import org.apache.log4j.Logger;
 

@@ -1,8 +1,8 @@
-package weloveclouds.server.services.models;
+package weloveclouds.server.services.datastore.models;
 
 import java.nio.file.Path;
 
-import weloveclouds.server.services.DataAccessService;
+import weloveclouds.server.services.datastore.DataAccessService;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.models.PersistedStorageUnit;
 

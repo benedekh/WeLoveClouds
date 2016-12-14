@@ -20,8 +20,8 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporter;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporterFactory;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
-import weloveclouds.server.services.IMovableDataAccessService;
-import weloveclouds.server.services.IReplicableDataAccessService;
+import weloveclouds.server.services.datastore.IMovableDataAccessService;
+import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 

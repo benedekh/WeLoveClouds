@@ -14,8 +14,7 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporterFactory;
-import weloveclouds.server.services.IReplicableDataAccessService;
-import weloveclouds.server.services.utils.ReplicationTransfererFactory;
+import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different requests. It
@@ -32,7 +31,6 @@ public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKV
     private ICommunicationApi communicationApi;
 
     private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
-    private ReplicationTransfererFactory replicationTransfererFactory;
 
     private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
     private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
@@ -41,7 +39,6 @@ public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKV
         this.dataAccessService = builder.dataAccessService;
         this.communicationApi = builder.communicationApi;
         this.storageUnitsTransporterFactory = builder.storageUnitsTransporterFactory;
-        this.replicationTransfererFactory = builder.replicationTransfererFactory;
         this.transferMessageSerializer = builder.transferMessageSerializer;
         this.transferMessageDeserializer = builder.transferMessageDeserializer;
     }
@@ -55,7 +52,6 @@ public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKV
         switch (status) {
             case INITKVSERVER:
                 request = new InitializeKVServer.Builder().dataAccessService(dataAccessService)
-                        .replicationTransfererFactory(replicationTransfererFactory)
                         .ringMetadata(receivedMessage.getRingMetadata())
                         .readRanges(receivedMessage.getTargetServerInfo().getReadRanges())
                         .writeRange(receivedMessage.getTargetServerInfo().getWriteRange())
@@ -95,7 +91,6 @@ public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKV
                 break;
             case UPDATE:
                 request = new UpdateRingMetadata.Builder().dataAccessService(dataAccessService)
-                        .replicationTransfererFactory(replicationTransfererFactory)
                         .ringMetadata(receivedMessage.getRingMetadata())
                         .readRanges(receivedMessage.getTargetServerInfo().getReadRanges())
                         .writeRange(receivedMessage.getTargetServerInfo().getWriteRange())
@@ -124,7 +119,6 @@ public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKV
         private IReplicableDataAccessService dataAccessService;
         private ICommunicationApi communicationApi;
         private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
-        private ReplicationTransfererFactory replicationTransfererFactory;
         private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
         private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
@@ -141,12 +135,6 @@ public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKV
         public Builder storageUnitsTransporterFactory(
                 StorageUnitsTransporterFactory storageUnitsTransporterFactory) {
             this.storageUnitsTransporterFactory = storageUnitsTransporterFactory;
-            return this;
-        }
-
-        public Builder replicationTransfererFactory(
-                ReplicationTransfererFactory replicationTransfererFactory) {
-            this.replicationTransfererFactory = replicationTransfererFactory;
             return this;
         }
 

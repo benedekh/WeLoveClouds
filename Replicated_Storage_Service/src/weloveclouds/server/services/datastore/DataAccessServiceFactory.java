@@ -1,8 +1,9 @@
-package weloveclouds.server.services;
+package weloveclouds.server.services.datastore;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
+import weloveclouds.server.services.datastore.models.DataAccessServiceInitializationContext;
+import weloveclouds.server.services.replication.ReplicationService;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.store.MovablePersistentStorage;
@@ -46,16 +47,18 @@ public class DataAccessServiceFactory {
      * @param initializationContext the parameters for the initialization
      * @param replicationTransferer helper class which transfers the replication requests to the
      *        replicas
-     * 
+     * @param replicationService the service which is responsible for the replication
      * @return a {@link ReplicableDataAccessService} which is already initialized by the parameters
      */
     public ReplicableDataAccessService createInitializedReplicableDataAccessService(
-            DataAccessServiceInitializationContext initializationContext) {
+            DataAccessServiceInitializationContext initializationContext,
+            ReplicationService replicationService) {
         LOGGER.debug("Creating an initialized ReplicableDataAccessService.");
         return new ReplicableDataAccessService(
                 new KVCache(initializationContext.getCacheSize(),
                         initializationContext.getDisplacementStrategy()),
-                new MovablePersistentStorage(initializationContext.getStorageRootFolderPath()));
+                new MovablePersistentStorage(initializationContext.getStorageRootFolderPath()),
+                replicationService);
     }
 
 }

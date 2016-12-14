@@ -6,9 +6,9 @@ import static weloveclouds.server.requests.kvecs.utils.KVAdminMessageFactory.cre
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.server.services.IMovableDataAccessService;
-import weloveclouds.server.services.exceptions.UninitializedServiceException;
-import weloveclouds.server.services.models.DataAccessServiceStatus;
+import weloveclouds.server.services.datastore.IMovableDataAccessService;
+import weloveclouds.server.services.datastore.exceptions.UninitializedServiceException;
+import weloveclouds.server.services.datastore.models.DataAccessServiceStatus;
 
 /**
  * An unlock request to the {@link IMovableDataAccessService}, which releases the previously

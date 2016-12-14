@@ -1,6 +1,8 @@
-package weloveclouds.server.services;
+package weloveclouds.server.services.datastore;
 
-import weloveclouds.server.services.utils.IReplicationTransferer;
+import java.util.Set;
+
+import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * A common interface to those {@link IMovableDataAccessService} implementations whose underlying
@@ -10,9 +12,6 @@ import weloveclouds.server.services.utils.IReplicationTransferer;
  */
 public interface IReplicableDataAccessService extends IMovableDataAccessService {
 
-    /**
-     * Sets the replication transferer.
-     */
-    void setReplicationTransferer(IReplicationTransferer replicationTransferer);
+    public void setReplicaConnectionInfos(Set<ServerConnectionInfo> replicaConnectionInfos);
 
 }

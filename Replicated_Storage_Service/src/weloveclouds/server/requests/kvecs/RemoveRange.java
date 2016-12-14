@@ -9,7 +9,7 @@ import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
-import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.datastore.IMovableDataAccessService;
 
 /**
  * A remove range request to the {@link IMovableDataAccessService}, which removes those entries

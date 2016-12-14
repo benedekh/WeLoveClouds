@@ -24,9 +24,8 @@ import weloveclouds.server.requests.kvecs.KVECSRequestFactory;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporterFactory;
 import weloveclouds.server.requests.kvserver.IKVServerRequest;
 import weloveclouds.server.requests.kvserver.KVServerRequestFactory;
-import weloveclouds.server.services.IMovableDataAccessService;
-import weloveclouds.server.services.IReplicableDataAccessService;
-import weloveclouds.server.services.utils.ReplicationTransfererFactory;
+import weloveclouds.server.services.datastore.IMovableDataAccessService;
+import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 
 /**
  * Factory class which creates different {@link Server} instances, depending on the processable
@@ -94,7 +93,6 @@ public class ServerFactory {
                 .requestFactory(new KVECSRequestFactory.Builder()
                         .dataAccessService(dataAccessService)
                         .communicationApiFactory(communicationApiFactory)
-                        .replicationTransfererFactory(new ReplicationTransfererFactory())
                         .storageUnitsTransporterFactory(new StorageUnitsTransporterFactory())
                         .transferMessageSerializer(new KVTransferMessageSerializer())
                         .transferMessageDeserializer(new KVTransferMessageDeserializer()).build())

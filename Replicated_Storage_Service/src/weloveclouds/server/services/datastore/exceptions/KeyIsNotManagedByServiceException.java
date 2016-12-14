@@ -1,4 +1,4 @@
-package weloveclouds.server.services.exceptions;
+package weloveclouds.server.services.datastore.exceptions;
 
 
 import weloveclouds.server.store.exceptions.StorageException;

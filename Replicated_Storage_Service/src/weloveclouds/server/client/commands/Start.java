@@ -1,21 +1,20 @@
 package weloveclouds.server.client.commands;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.ServerSideException;
 import weloveclouds.server.client.commands.utils.ArgumentsValidator;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
-import weloveclouds.server.configuration.models.KVServerPortContext;
 import weloveclouds.server.core.KVServer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerFactory;
-import weloveclouds.server.services.DataAccessServiceFactory;
-import weloveclouds.server.services.IReplicableDataAccessService;
-import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
-import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
+import weloveclouds.server.services.datastore.DataAccessServiceFactory;
+import weloveclouds.server.services.datastore.IReplicableDataAccessService;
+import weloveclouds.server.services.datastore.models.DataAccessServiceInitializationContext;
+import weloveclouds.server.services.replication.ReplicationService;
+import weloveclouds.server.services.replication.ReplicationServiceFactory;
 
 /**
  * StartNode command which starts the {@link Server}} based on the configuration in
@@ -43,19 +42,23 @@ public class Start extends AbstractServerCommand {
         try {
             LOGGER.info("Executing start command.");
 
-            KVServerPortContext portContext = context.getPortContext();
-            DisplacementStrategy startegy = context.getDisplacementStrategy();
-            Path storagePath = context.getStoragePath();
-            int cacheSize = context.getCacheSize();
-
             DataAccessServiceInitializationContext initializationContext =
-                    new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
-                            .displacementStrategy(startegy).rootFolderPath(storagePath).build();
-            IReplicableDataAccessService dataAccessService = dataAccessServiceFactory
-                    .createInitializedReplicableDataAccessService(initializationContext);
+                    new DataAccessServiceInitializationContext.Builder()
+                            .cacheSize(context.getCacheSize())
+                            .displacementStrategy(context.getDisplacementStrategy())
+                            .rootFolderPath(context.getStoragePath()).build();
+
+            ReplicationServiceFactory replicationServiceFactory = new ReplicationServiceFactory();
+            ReplicationService replicationService =
+                    replicationServiceFactory.createReplicationService();
+
+            IReplicableDataAccessService dataAccessService =
+                    dataAccessServiceFactory.createInitializedReplicableDataAccessService(
+                            initializationContext, replicationService);
 
             KVServer kvServer = new KVServer.Builder().serverFactory(serverFactory)
-                    .portConfiguration(portContext).dataAccessService(dataAccessService).build();
+                    .portConfiguration(context.getPortContext())
+                    .dataAccessService(dataAccessService).build();
             kvServer.start();
 
             context.setStarted(true);

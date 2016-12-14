@@ -1,12 +1,12 @@
-package weloveclouds.server.services;
+package weloveclouds.server.services.datastore;
 
 import java.util.Set;
 
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.server.services.exceptions.UninitializedServiceException;
-import weloveclouds.server.services.models.DataAccessServiceStatus;
+import weloveclouds.server.services.datastore.exceptions.UninitializedServiceException;
+import weloveclouds.server.services.datastore.models.DataAccessServiceStatus;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.PutType;

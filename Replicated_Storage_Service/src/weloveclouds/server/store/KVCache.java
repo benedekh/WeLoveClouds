@@ -14,8 +14,8 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.server.services.DataAccessService;
-import weloveclouds.server.services.IDataAccessService;
+import weloveclouds.server.services.datastore.DataAccessService;
+import weloveclouds.server.services.datastore.IDataAccessService;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;

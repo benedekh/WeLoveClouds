@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.server.configuration.models.KVServerPortContext;
-import weloveclouds.server.services.IReplicableDataAccessService;
+import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 
 
 /**

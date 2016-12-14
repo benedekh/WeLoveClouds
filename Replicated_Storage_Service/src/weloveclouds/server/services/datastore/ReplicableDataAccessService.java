@@ -1,7 +1,10 @@
-package weloveclouds.server.services;
+package weloveclouds.server.services.datastore;
+
+import java.util.Set;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.server.services.utils.IReplicationTransferer;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.server.services.replication.IReplicationService;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.exceptions.StorageException;
@@ -16,24 +19,25 @@ import weloveclouds.server.store.models.PutType;
 public class ReplicableDataAccessService extends MovableDataAccessService
         implements IReplicableDataAccessService {
 
-    private volatile IReplicationTransferer replicationTransferer;
+    private volatile IReplicationService replicationService;
 
-    public ReplicableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage) {
+    public ReplicableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage,
+            IReplicationService replicationService) {
         super(cache, persistentStorage);
+        this.replicationService = replicationService;
     }
 
     @Override
-    public synchronized void setReplicationTransferer(
-            IReplicationTransferer replicationTransferer) {
-        this.replicationTransferer = replicationTransferer;
+    public void setReplicaConnectionInfos(Set<ServerConnectionInfo> replicaConnectionInfos) {
+        replicationService.updateReplicaConnectionInfos(replicaConnectionInfos);
     }
 
     @Override
     protected PutType putEntry(KVEntry entry, boolean coordinatorRoleIsExpected)
             throws StorageException {
         PutType response = super.putEntry(entry, coordinatorRoleIsExpected);
-        if (coordinatorRoleIsExpected && replicationTransferer != null) {
-            replicationTransferer.putEntryOnReplicas(entry);
+        if (coordinatorRoleIsExpected) {
+            replicationService.putEntryOnReplicas(entry);
         }
         return response;
     }
@@ -42,8 +46,8 @@ public class ReplicableDataAccessService extends MovableDataAccessService
     protected void removeEntry(String key, boolean coordinatorRoleIsExpected)
             throws StorageException {
         super.removeEntry(key, coordinatorRoleIsExpected);
-        if (coordinatorRoleIsExpected && replicationTransferer != null) {
-            replicationTransferer.removeEntryOnReplicas(key);
+        if (coordinatorRoleIsExpected) {
+            replicationService.removeEntryOnReplicas(key);
         }
     }
 

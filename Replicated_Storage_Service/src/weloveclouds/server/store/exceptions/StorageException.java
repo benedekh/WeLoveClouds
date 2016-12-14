@@ -1,6 +1,6 @@
 package weloveclouds.server.store.exceptions;
 
-import weloveclouds.server.services.DataAccessService;
+import weloveclouds.server.services.datastore.DataAccessService;
 
 /**
  * Represents an exception that occurred in the {@link DataAccessService}.

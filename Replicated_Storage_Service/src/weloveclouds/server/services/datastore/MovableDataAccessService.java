@@ -1,4 +1,4 @@
-package weloveclouds.server.services;
+package weloveclouds.server.services.datastore;
 
 import static weloveclouds.server.monitoring.KVServerMonitoringMetricUtils.incrementCounter;
 import static weloveclouds.server.monitoring.KVServerMonitoringMetricUtils.recordExecutionTime;
@@ -10,7 +10,6 @@ import static weloveclouds.server.monitoring.MonitoringMetricConstants.NOT_RESPO
 import static weloveclouds.server.monitoring.MonitoringMetricConstants.PUT_COMMAND_NAME;
 import static weloveclouds.server.monitoring.MonitoringMetricConstants.REMOVE_COMMAND_NAME;
 import static weloveclouds.server.monitoring.MonitoringMetricConstants.SUCCESS;
-import static weloveclouds.server.services.models.DataAccessServiceStatus.STOPPED;
 
 import java.util.Set;
 
@@ -25,11 +24,11 @@ import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
-import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
-import weloveclouds.server.services.exceptions.UninitializedServiceException;
-import weloveclouds.server.services.exceptions.WriteLockIsActiveException;
-import weloveclouds.server.services.models.DataAccessServiceStatus;
+import weloveclouds.server.services.datastore.exceptions.KeyIsNotManagedByServiceException;
+import weloveclouds.server.services.datastore.exceptions.ServiceIsStoppedException;
+import weloveclouds.server.services.datastore.exceptions.UninitializedServiceException;
+import weloveclouds.server.services.datastore.exceptions.WriteLockIsActiveException;
+import weloveclouds.server.services.datastore.models.DataAccessServiceStatus;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.exceptions.StorageException;
@@ -60,8 +59,8 @@ public class MovableDataAccessService extends DataAccessService
     public MovableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage) {
         super(cache, persistentStorage);
         this.movablePersistentStorage = persistentStorage;
-        this.servicePreviousStatus = STOPPED;
-        this.serviceRecentStatus = STOPPED;
+        this.servicePreviousStatus = DataAccessServiceStatus.STOPPED;
+        this.serviceRecentStatus = DataAccessServiceStatus.STOPPED;
     }
 
     @Override

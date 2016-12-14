@@ -1,4 +1,4 @@
-package weloveclouds.server.services;
+package weloveclouds.server.services.datastore;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.store.exceptions.StorageException;
