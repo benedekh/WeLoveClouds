@@ -116,9 +116,8 @@ public class KVAdminMessageDeserializer
         Matcher ringMetadataMatcher = getRegexFromToken(RING_METADATA).matcher(from);
         if (ringMetadataMatcher.find()) {
             return metadataDeserializer.deserialize(ringMetadataMatcher.group(XML_NODE));
-        } else {
-            return null;
         }
+        return null;
     }
 
     private RingMetadataPart deserializeTargetServerInfo(String from)
@@ -126,9 +125,8 @@ public class KVAdminMessageDeserializer
         Matcher metadataPartMatcher = getRegexFromToken(TARGET_SERVER_INFO).matcher(from);
         if (metadataPartMatcher.find()) {
             return metadataPartDeserializer.deserialize(metadataPartMatcher.group(XML_NODE));
-        } else {
-            return null;
         }
+        return null;
     }
 
     private Set<ServerConnectionInfo> deserializeReplicaConnectionInfos(String from)
@@ -137,18 +135,16 @@ public class KVAdminMessageDeserializer
         if (replicaConnectionInfosMatcher.find()) {
             return replicaConnectionInfosDeserializer
                     .deserialize(replicaConnectionInfosMatcher.group(XML_NODE));
-        } else {
-            return null;
         }
+        return null;
     }
 
     private HashRange deserializeRemovableRange(String from) throws DeserializationException {
         Matcher removableRangeMatcher = getRegexFromToken(REMOVABLE_RANGE).matcher(from);
         if (removableRangeMatcher.find()) {
             return removableRangeDeserializer.deserialize(removableRangeMatcher.group(XML_NODE));
-        } else {
-            return null;
         }
+        return null;
     }
 
     private String deserializeResponseMessage(String from) throws DeserializationException {
@@ -157,12 +153,9 @@ public class KVAdminMessageDeserializer
             String deserialized = responseMessageMatcher.group(XML_NODE);
             if (StringUtils.stringIsNotEmpty(deserialized)) {
                 return deserialized;
-            } else {
-                return null;
             }
-        } else {
-            return null;
         }
+        return null;
     }
 
 }

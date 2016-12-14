@@ -22,16 +22,25 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 public class ServerConnectionInfoDeserializer
         implements IDeserializer<ServerConnectionInfo, String> {
 
+    private static final int FAULTY_PORT = -1;
+
     @Override
     public ServerConnectionInfo deserialize(String from) throws DeserializationException {
         ServerConnectionInfo deserialized = null;
 
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
-                deserialized = new ServerConnectionInfo.Builder()
-                        .ipAddress(deserializeIpAddress(from)).port(deserializePort(from)).build();
+                InetAddress ipAddress = deserializeIpAddress(from);
+                int port = deserializePort(from);
+
+                if (ipAddress == null && port == FAULTY_PORT) {
+                    return deserialized;
+                }
+
+                deserialized =
+                        new ServerConnectionInfo.Builder().ipAddress(ipAddress).port(port).build();
             } catch (Exception ex) {
-                new DeserializationException(ex.getMessage());
+                throw new DeserializationException(ex.getMessage());
             }
         }
         return deserialized;
@@ -47,10 +56,8 @@ public class ServerConnectionInfoDeserializer
                 throw new DeserializationException(StringUtils.join(": ",
                         "Host referred by IP address is unknown", ipAddressStr));
             }
-        } else {
-            throw new DeserializationException(
-                    StringUtils.join("", "Unable to extract ip address from:", from));
         }
+        return null;
     }
 
     private int deserializePort(String from) throws DeserializationException {
@@ -62,10 +69,8 @@ public class ServerConnectionInfoDeserializer
             } catch (NumberFormatException ex) {
                 throw new DeserializationException(StringUtils.join("", "Port is NaN: ", portStr));
             }
-        } else {
-            throw new DeserializationException(
-                    StringUtils.join("", "Unable to extract port from:", from));
         }
+        return FAULTY_PORT;
     }
 
 }
