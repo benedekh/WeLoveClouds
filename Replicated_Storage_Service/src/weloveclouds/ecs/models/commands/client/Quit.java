@@ -14,11 +14,11 @@ import weloveclouds.ecs.utils.ArgumentsValidator;
  * @author Benoit, hb
  *
  */
-public class Quit extends AbstractEcsClientCommand{
+public class Quit extends AbstractEcsClientCommand {
 
     private static final String APPLICATION_EXIT_MESSAGE = "Exiting ECS application.";
     private static final Logger LOGGER = Logger.getLogger(Quit.class);
-    
+
     public Quit(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {
         super(externalCommunicationServiceApi, arguments);
     }
@@ -31,31 +31,21 @@ public class Quit extends AbstractEcsClientCommand{
 
     @Override
     public void execute() throws ClientSideException {
-        try{
+        try {
             LOGGER.info("Executing quit command");
             userOutputWriter.writeLine(APPLICATION_EXIT_MESSAGE);
             LOGGER.debug(APPLICATION_EXIT_MESSAGE);
-            /*
-            try{
-                externalCommunicationServiceApi.shutDown();
-            } catch(Exception e){
-                userOutputWriter.writeLine("Shutdown of storage service failed!");
-                LOGGER.debug("Shutdown failed");
-                LOGGER.error(e.getMessage());
-            }*/
-            //brutish solution, not particularly safe.
             System.exit(0);
-        }catch (IOException ioe){
-            LOGGER.error(ioe);
-            throw new ClientSideException(ioe.getMessage(), ioe);
+        } catch (IOException e) {
+            LOGGER.error(e);
+            throw new ClientSideException(e.getMessage(), e);
         }
-        
+
     }
 
     @Override
     public String toString() {
-        //no point
-        return null;
+        return "Quit command";
     }
 
 }

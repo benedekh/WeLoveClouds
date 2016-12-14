@@ -2,6 +2,8 @@ package weloveclouds.ecs.models.commands.client;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.models.commands.ICommand;
@@ -13,9 +15,9 @@ import weloveclouds.ecs.utils.ArgumentsValidator;
  * @author hb
  *
  */
-public class Help extends AbstractEcsClientCommand{
-    
-    //TODO: It may be a good idea to put a logger here
+public class Help extends AbstractEcsClientCommand {
+
+    private static final Logger LOGGER = Logger.getLogger(Help.class);
 
     public Help(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {
         super(externalCommunicationServiceApi, arguments);
@@ -23,26 +25,25 @@ public class Help extends AbstractEcsClientCommand{
 
     @Override
     public ICommand validate() throws IllegalArgumentException {
-        //arguments referring to the attribute of the super class
         ArgumentsValidator.validateHelpArguments(arguments);
         return this;
     }
 
     @Override
     public void execute() throws ClientSideException {
-        try{
+        try {
             userOutputWriter.writeLine(HelpMessageGenerator.generateHelpMessage());
-        }catch(IOException ioe){
-            throw new ClientSideException(ioe.getMessage(), ioe);
+            LOGGER.info("Help message written.");
+        } catch (IOException e) {
+            throw new ClientSideException(e.getMessage(), e);
         }
-        
+
     }
 
     @Override
     public String toString() {
-        //No point
-        return null;
+        return "Help Command";
     }
-    
+
 
 }

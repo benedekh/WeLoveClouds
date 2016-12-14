@@ -9,36 +9,29 @@ import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.models.commands.ICommand;
 
 /**
- * Returned when an invalid command is parsed
- * Created by Hunton on 2016-12-08
+ * Returned when an invalid command is parsed Created by Hunton on 2016-12-08
+ * 
  * @author Benoit, hb
  */
-public class DefaultCommand extends AbstractEcsClientCommand{
-    //logger for debugging
-    //private static Logger LOGGER = Logger.getLogger(DefaultCommand.class);
+public class DefaultCommand extends AbstractEcsClientCommand {
 
     public DefaultCommand(IKVEcsApi externalConfigurationServiceApi, String[] arguments) {
         super(externalConfigurationServiceApi, arguments);
-        //LOGGER.debug("Default command super constructor called successfully.");
     }
 
     @Override
     public void execute() throws ClientSideException {
-        //LOGGER.debug("Default command execute() executing");
         throw new ClientSideException(CustomStringJoiner.join(" ", "Unable to find command."));
-        
     }
 
     @Override
     public String toString() {
-        //I don't know if this'll need to be converted to a string at any point.
-        return null;
+        return "Default Command";
     }
 
     @Override
     public ICommand validate() throws IllegalArgumentException {
-        //nothing to validate
+        // nothing to validate
         return this;
     }
-
 }

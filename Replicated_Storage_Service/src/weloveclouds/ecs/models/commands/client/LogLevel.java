@@ -19,8 +19,8 @@ import weloveclouds.ecs.utils.ArgumentsValidator;
  * @author Benedek, Benoit, hb
  *
  */
-public class LogLevel extends AbstractEcsClientCommand{
-    
+public class LogLevel extends AbstractEcsClientCommand {
+
     private static final int LEVEL_INDEX = 0;
     private static final Logger LOGGER = Logger.getLogger(LogLevel.class);
 
@@ -44,19 +44,18 @@ public class LogLevel extends AbstractEcsClientCommand{
             String statusMessage = CustomStringJoiner.join(" ", "Latest log level:", logLevel);
             userOutputWriter.writeLine(statusMessage);
             LOGGER.debug(statusMessage);
-        } catch (IOException ex) {
-            LOGGER.error(ex);
-            throw new ClientSideException(ex.getMessage(), ex);
+        } catch (IOException e) {
+            LOGGER.error(e);
+            throw new ClientSideException(e.getMessage(), e);
         } finally {
             LOGGER.info("logLevel command execution finished.");
         }
-        
+
     }
 
     @Override
     public String toString() {
-        //no point
-        return null;
+        return CustomStringJoiner.join("", "Loglevel command ", arguments.get(LEVEL_INDEX));
     }
 
 }
