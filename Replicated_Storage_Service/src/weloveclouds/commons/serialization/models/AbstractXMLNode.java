@@ -1,6 +1,6 @@
 package weloveclouds.commons.serialization.models;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 /**
  * Created by Benoit on 2016-12-10.

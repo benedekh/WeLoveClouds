@@ -2,7 +2,7 @@ package weloveclouds.server.store.cache.strategy;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * To create a displacement strategy based on its name.
@@ -32,7 +32,7 @@ public class StrategyFactory {
                 displacementStrategy = new LFUStrategy();
                 break;
             default:
-                LOGGER.error(CustomStringJoiner.join(" ", "Unrecognized displacement startegy:",
+                LOGGER.error(StringUtils.join(" ", "Unrecognized displacement startegy:",
                         displacementStrategyName));
                 break;
         }

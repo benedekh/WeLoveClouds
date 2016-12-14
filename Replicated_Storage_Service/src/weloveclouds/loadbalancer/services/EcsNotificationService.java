@@ -7,17 +7,17 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
 
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
@@ -97,7 +97,7 @@ public class EcsNotificationService extends AbstractServer<KVAdminMessage> imple
                 while (connection.isConnected()) {
                     KVAdminMessage receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
-                    logger.debug(CustomStringJoiner.join(" ", "Message received:",
+                    logger.debug(StringUtils.join(" ", "Message received:",
                             receivedMessage.toString()));
                     distributedSystemAccessService
                             .updateServiceRingMetadataWith(receivedMessage.getRingMetadata());

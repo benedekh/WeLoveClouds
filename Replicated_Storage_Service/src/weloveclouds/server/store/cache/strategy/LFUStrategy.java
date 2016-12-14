@@ -8,8 +8,8 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.models.KeyFrequency;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
@@ -40,8 +40,8 @@ public class LFUStrategy implements DisplacementStrategy {
             KeyFrequency first = sorted.first();
             String displaced = first.getKey();
             remove(displaced);
-            LOGGER.debug(CustomStringJoiner.join(" ", displaced,
-                    "to be removed from cache by LFU strategy."));
+            LOGGER.debug(
+                    StringUtils.join(" ", displaced, "to be removed from cache by LFU strategy."));
             return displaced;
         } catch (NoSuchElementException ex) {
             String errorMessage = "LFU strategy store is empty so it cannot remove anything.";
@@ -55,7 +55,7 @@ public class LFUStrategy implements DisplacementStrategy {
         try {
             KeyFrequency keyFrequency = new KeyFrequency(key, 0);
             keyFrequencyPairs.put(key, keyFrequency);
-            LOGGER.debug(CustomStringJoiner.join(" ", key, "is added to the LFU strategy store."));
+            LOGGER.debug(StringUtils.join(" ", key, "is added to the LFU strategy store."));
         } catch (NullPointerException ex) {
             LOGGER.error("Key cannot be null for put in LFU strategy.");
         }
@@ -66,7 +66,7 @@ public class LFUStrategy implements DisplacementStrategy {
         try {
             KeyFrequency keyFrequency = keyFrequencyPairs.get(key);
             keyFrequency.increaseFrequencyByOne();
-            LOGGER.debug(CustomStringJoiner.join(" ", keyFrequency.toString(),
+            LOGGER.debug(StringUtils.join(" ", keyFrequency.toString(),
                     "is updated in the LFU strategy store."));
         } catch (NullPointerException ex) {
             LOGGER.error("Key cannot be null for get in LFU strategy.");
@@ -78,8 +78,7 @@ public class LFUStrategy implements DisplacementStrategy {
         try {
             KeyFrequency removed = keyFrequencyPairs.remove(key);
             if (removed != null) {
-                LOGGER.debug(CustomStringJoiner.join(" ", key,
-                        "is removed from the LFU strategy store."));
+                LOGGER.debug(StringUtils.join(" ", key, "is removed from the LFU strategy store."));
             }
         } catch (NullPointerException ex) {
             LOGGER.error("Key cannot be null for remove in LFU strategy.");

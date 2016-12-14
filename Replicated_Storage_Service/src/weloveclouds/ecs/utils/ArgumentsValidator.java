@@ -1,10 +1,10 @@
 package weloveclouds.ecs.utils;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
 
 import java.util.Arrays;
 import java.util.List;
 
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.ecs.models.commands.client.AddNode;
 import weloveclouds.ecs.models.commands.client.InitService;
 
@@ -100,9 +100,9 @@ public class ArgumentsValidator {
 
     private static void validateDisplacementStrategy(String argument)
             throws IllegalArgumentException {
-        String message = join(" ",
+        String message = StringUtils.join(" ",
                 "Strategy is not recognized. It should be capitalized and should be one of the following:",
-                join(",", validStrategyNames));
+                StringUtils.join(",", validStrategyNames));
         if (!validStrategyNames.contains(argument)) {
             throw new IllegalArgumentException(message);
         }
@@ -112,8 +112,8 @@ public class ArgumentsValidator {
             throws IllegalArgumentException {
         if (arguments.size() != LOGLEVEL_NUMBER_OF_ARGUMENTS
                 || !validLogLevels.contains(arguments.get(0))) {
-            String msg = join("", "Log level not recognized, should be one of: ",
-                    join(",", validLogLevels));
+            String msg = StringUtils.join("", "Log level not recognized, should be one of: ",
+                    StringUtils.join(",", validLogLevels));
             throw new IllegalArgumentException(msg);
         }
     }

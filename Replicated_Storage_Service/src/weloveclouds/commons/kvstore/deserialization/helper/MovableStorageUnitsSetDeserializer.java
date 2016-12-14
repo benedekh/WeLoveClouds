@@ -1,23 +1,25 @@
 package weloveclouds.commons.kvstore.deserialization.helper;
 
+import static weloveclouds.commons.serialization.models.XMLTokens.STORAGE_UNIT;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
+import java.util.regex.Matcher;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.helper.MovableStorageUnitsSetSerializer;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
- * A deserializer which converts a {@link Set<MovableStorageUnit>} to a {@link String}.
+ * A deserializer which converts a {@link String} to a {@link Set<MovableStorageUnit>}.
  * 
  * @author Benedek
  */
 public class MovableStorageUnitsSetDeserializer
         implements IDeserializer<Set<MovableStorageUnit>, String> {
-
-    private static final Logger LOGGER = Logger.getLogger(MovableStorageUnitsSetDeserializer.class);
 
     private IDeserializer<MovableStorageUnit, String> storageUnitDeserializer =
             new MovableStorageUnitDeserializer();
@@ -26,20 +28,17 @@ public class MovableStorageUnitsSetDeserializer
     public Set<MovableStorageUnit> deserialize(String from) throws DeserializationException {
         Set<MovableStorageUnit> deserialized = null;
 
-        if (from != null && !"null".equals(from)) {
-            LOGGER.debug("Deserializing a Set<MovableStorageUnit> from String.");
-            // raw message split
-            String[] rawStorageUnits =
-                    from.split(MovableStorageUnitsSetSerializer.SEPARATOR_BETWEEN_STORAGE_UNITS);
-
-            // deserialized object
-            deserialized = new HashSet<>();
-            for (String rawStorageUnit : rawStorageUnits) {
-                // deserialized fields
-                deserialized.add(storageUnitDeserializer.deserialize(rawStorageUnit));
+        if (StringUtils.stringIsNotEmpty(from)) {
+            try {
+                deserialized = new HashSet<>();
+                Matcher storageUnitMatcher = getRegexFromToken(STORAGE_UNIT).matcher(from);
+                while (storageUnitMatcher.find()) {
+                    deserialized.add(storageUnitDeserializer
+                            .deserialize(storageUnitMatcher.group(XML_NODE)));
+                }
+            } catch (Exception ex) {
+                new DeserializationException(ex.getMessage());
             }
-
-            LOGGER.debug("Deserializing a Set<MovableStorageUnit> from String finished.");
         }
 
         return deserialized;

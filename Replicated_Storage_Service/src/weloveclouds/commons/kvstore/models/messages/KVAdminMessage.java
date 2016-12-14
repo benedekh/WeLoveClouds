@@ -2,12 +2,11 @@ package weloveclouds.commons.kvstore.models.messages;
 
 import java.util.Set;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.server.utils.SetToStringUtility;
 
 
 /**
@@ -65,12 +64,12 @@ public class KVAdminMessage implements IKVAdminMessage {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Message status:",
-                status == null ? null : status.toString(), ", Removable range: ",
-                removableRange == null ? null : removableRange.toString(), ", Ring metadata:",
-                ringMetadata == null ? null : ringMetadata.toString(), ", Target server info:",
+        return StringUtils.join(" ", "Message status:", status == null ? null : status.toString(),
+                ", Removable range: ", removableRange == null ? null : removableRange.toString(),
+                ", Ring metadata:", ringMetadata == null ? null : ringMetadata.toString(),
+                ", Target server info:",
                 targetServerInfo == null ? null : targetServerInfo.toString(),
-                ", Replica connection infos:", SetToStringUtility.toString(replicaConnectionInfos),
+                ", Replica connection infos:", StringUtils.setToString(replicaConnectionInfos),
                 ",  Response message: ",
                 responseMessage == null ? null : responseMessage.toString());
     }
@@ -96,6 +95,10 @@ public class KVAdminMessage implements IKVAdminMessage {
         }
         if (obj == null) {
             return false;
+        }
+        if (obj instanceof KVAdminMessageProxy) {
+            KVAdminMessageProxy other = (KVAdminMessageProxy) obj;
+            return other.equals(this);
         }
         if (!(obj instanceof KVAdminMessage)) {
             return false;

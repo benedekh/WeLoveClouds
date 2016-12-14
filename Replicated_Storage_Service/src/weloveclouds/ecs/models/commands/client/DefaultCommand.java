@@ -1,10 +1,7 @@
 package weloveclouds.ecs.models.commands.client;
 
-import org.apache.log4j.Logger;
-
-import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.client.utils.HelpMessageGenerator;
 import weloveclouds.commons.exceptions.ClientSideException;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.models.commands.ICommand;
 
@@ -21,7 +18,7 @@ public class DefaultCommand extends AbstractEcsClientCommand {
 
     @Override
     public void execute() throws ClientSideException {
-        throw new ClientSideException(CustomStringJoiner.join(" ", "Unable to find command."));
+        throw new ClientSideException(StringUtils.join(" ", "Unable to find command."));
     }
 
     @Override

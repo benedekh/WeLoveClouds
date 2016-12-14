@@ -13,7 +13,7 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.networking.models.requests.IExecutable;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.networking.models.requests.IValidatable;

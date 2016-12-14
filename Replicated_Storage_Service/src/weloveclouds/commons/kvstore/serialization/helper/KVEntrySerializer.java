@@ -1,36 +1,33 @@
 package weloveclouds.commons.kvstore.serialization.helper;
 
-import org.apache.log4j.Logger;
+import static weloveclouds.commons.serialization.models.XMLTokens.KEY;
+import static weloveclouds.commons.serialization.models.XMLTokens.KV_ENTRY;
+import static weloveclouds.commons.serialization.models.XMLTokens.VALUE;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.serialization.ISerializer;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.serialization.models.XMLNode;
+import weloveclouds.commons.serialization.models.XMLRootNode;
+import weloveclouds.commons.serialization.models.XMLRootNode.Builder;
 
 /**
- * A serializer which converts a {@link KVEntry} to a {@link String}.
+ * A serializer which converts a {@link KVEntry} to a {@link AbstractXMLNode}.
  * 
  * @author Benedek
  */
-public class KVEntrySerializer implements ISerializer<String, KVEntry> {
-
-    public static final String SEPARATOR = "-ŁŁ-";
-    private static final Logger LOGGER = Logger.getLogger(KVEntrySerializer.class);
+public class KVEntrySerializer implements ISerializer<AbstractXMLNode, KVEntry> {
 
     @Override
-    public String serialize(KVEntry target) {
-        String serialized = null;
+    public AbstractXMLNode serialize(KVEntry target) {
+        Builder builder = new XMLRootNode.Builder().token(KV_ENTRY);
 
         if (target != null) {
-            LOGGER.debug("Serializing a KVEntry.");
-            // original fields
-            String key = target.getKey();
-            String value = target.getValue();
-
-            // merged string representation
-            serialized = CustomStringJoiner.join(SEPARATOR, key, value);
-            LOGGER.debug("Serializing a KVEntry finished.");
+            builder.addInnerNode(new XMLNode(KEY, target.getKey()))
+                    .addInnerNode(new XMLNode(VALUE, target.getValue()));
         }
 
-        return serialized;
+        return builder.build();
     }
 
 }

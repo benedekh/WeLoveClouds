@@ -21,7 +21,7 @@ public class ParsedUserInput<T> {
         return arguments;
     }
 
-    public ParsedUserInput withArguments(String[] arguments) {
+    public ParsedUserInput<?> withArguments(String[] arguments) {
         this.arguments = arguments;
         return this;
     }

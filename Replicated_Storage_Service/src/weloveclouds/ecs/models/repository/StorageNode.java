@@ -3,12 +3,12 @@ package weloveclouds.ecs.models.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
-import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.commons.hashing.utils.HashingUtils;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
@@ -130,7 +130,7 @@ public class StorageNode extends AbstractNode {
     }
 
     public String toString() {
-        return CustomStringJoiner.join(" ", "Node:" + getIpAddress() + "Status:" + status.name());
+        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status.name());
     }
 
     public static class Builder {
@@ -160,7 +160,7 @@ public class StorageNode extends AbstractNode {
                     .ipAddress(serverConnectionInfo.getIpAddress())
                     .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT)
                     .build();
-            this.hashKey = HashingUtil.getHash(serverConnectionInfo.toString());
+            this.hashKey = HashingUtils.getHash(serverConnectionInfo.toString());
             return this;
         }
 

@@ -1,16 +1,16 @@
 package weloveclouds.client.commands;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.ArgumentsValidator;
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.client.commands.utils.ArgumentsValidator;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.commons.hashing.models.RingMetadata;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 
 
@@ -48,7 +48,7 @@ public class Get extends AbstractKVCommunicationApiCommand {
             String responseValue = response.getValue();
             switch (response.getStatus()) {
                 case GET_SUCCESS:
-                    userOutputWriter.writeLine(CustomStringJoiner.join(" ", "Value", responseValue,
+                    userOutputWriter.writeLine(StringUtils.join(" ", "Value", responseValue,
                             "was sucessfully got for key."));
                     break;
                 case GET_ERROR:
@@ -136,7 +136,7 @@ public class Get extends AbstractKVCommunicationApiCommand {
 
         /**
          * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object
-         *                                 to its original representation from String
+         *        to its original representation from String
          */
         public Builder ringMetadataDeserializer(
                 IDeserializer<RingMetadata, String> ringMetadataDeserializer) {

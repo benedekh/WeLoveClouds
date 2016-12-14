@@ -1,11 +1,11 @@
 package weloveclouds.server.requests.kvserver;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
-import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.server.services.IMovableDataAccessService;
@@ -18,7 +18,7 @@ import weloveclouds.server.services.IMovableDataAccessService;
  * @author Benedek
  */
 public class KVServerRequestFactory
-        implements IRequestFactory<KVTransferMessage, IKVServerRequest> {
+        implements IRequestFactory<IKVTransferMessage, IKVServerRequest> {
 
     private static final Logger LOGGER = Logger.getLogger(KVServerRequestFactory.class);
 
@@ -29,7 +29,7 @@ public class KVServerRequestFactory
     }
 
     @Override
-    public IKVServerRequest createRequestFromReceivedMessage(KVTransferMessage receivedMessage,
+    public IKVServerRequest createRequestFromReceivedMessage(IKVTransferMessage receivedMessage,
             ICallbackRegister callbackRegister) {
         IKVServerRequest request = null;
         StatusType status = receivedMessage.getStatus();

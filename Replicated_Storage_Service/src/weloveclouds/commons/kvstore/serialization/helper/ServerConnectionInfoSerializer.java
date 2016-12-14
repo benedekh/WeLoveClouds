@@ -1,42 +1,34 @@
 package weloveclouds.commons.kvstore.serialization.helper;
 
-import java.net.InetAddress;
+import static weloveclouds.commons.serialization.models.XMLTokens.CONNECTION_INFO;
+import static weloveclouds.commons.serialization.models.XMLTokens.IP_ADDRESS;
+import static weloveclouds.commons.serialization.models.XMLTokens.PORT;
 
-import org.apache.log4j.Logger;
-
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.serialization.ISerializer;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.serialization.models.XMLNode;
+import weloveclouds.commons.serialization.models.XMLRootNode;
+import weloveclouds.commons.serialization.models.XMLRootNode.Builder;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
- * A serializer which converts a {@link ServerConnectionInfo} to a {@link String}.
+ * A serializer which converts a {@link ServerConnectionInfo} to a {@link AbstractXMLNode}.
  * 
  * @author Benedek
  */
-public class ServerConnectionInfoSerializer implements ISerializer<String, ServerConnectionInfo> {
-
-    public static final String SEPARATOR = "-ł-";
-    private static final Logger LOGGER = Logger.getLogger(ServerConnectionInfo.class);
+public class ServerConnectionInfoSerializer
+        implements ISerializer<AbstractXMLNode, ServerConnectionInfo> {
 
     @Override
-    public String serialize(ServerConnectionInfo target) {
-        String serialized = null;
+    public AbstractXMLNode serialize(ServerConnectionInfo target) {
+        Builder builder = new XMLRootNode.Builder().token(CONNECTION_INFO);
 
         if (target != null) {
-            LOGGER.debug("Serializing a ServerConnectionInfo.");
-            // original fields
-            InetAddress ipAddress = target.getIpAddress();
-            int port = target.getPort();
-
-            // string representation
-            String ipAddressStr = ipAddress.getHostAddress();
-            String portStr = String.valueOf(port);
-
-            // merged string representation
-            serialized = CustomStringJoiner.join(SEPARATOR, ipAddressStr, portStr);
-            LOGGER.debug("Serializing a ServerConnectionInfo finished.");
+            builder.addInnerNode(new XMLNode(IP_ADDRESS, target.getIpAddress().getHostAddress()))
+                    .addInnerNode(new XMLNode(PORT, String.valueOf(target.getPort())));
         }
 
-        return serialized;
+        return builder.build();
     }
 
 }

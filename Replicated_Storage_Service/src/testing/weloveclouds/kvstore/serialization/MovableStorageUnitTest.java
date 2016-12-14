@@ -8,13 +8,14 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.commons.kvstore.deserialization.helper.MovableStorageUnitDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
+import weloveclouds.commons.kvstore.deserialization.helper.MovableStorageUnitDeserializer;
 import weloveclouds.commons.kvstore.serialization.helper.MovableStorageUnitSerializer;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.serialization.ISerializer;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
-import weloveclouds.server.utils.FileUtility;
 
 /**
  * Tests for the {@link MovableStorageUnit} to verify its serialization and deserialization
@@ -26,7 +27,7 @@ public class MovableStorageUnitTest extends TestCase {
 
     private static final IDeserializer<MovableStorageUnit, String> storageUnitDeserializer =
             new MovableStorageUnitDeserializer();
-    private static final ISerializer<String, MovableStorageUnit> storageUnitSerializer =
+    private static final ISerializer<AbstractXMLNode, MovableStorageUnit> storageUnitSerializer =
             new MovableStorageUnitSerializer();
 
     @Test
@@ -37,9 +38,9 @@ public class MovableStorageUnitTest extends TestCase {
         keyval.put("apple", "juice");
 
         MovableStorageUnit storageUnit =
-                new MovableStorageUnit(keyval, FileUtility.createDummyPath());
+                new MovableStorageUnit(keyval, PathUtils.createDummyPath());
 
-        String serializedStorageUnit = storageUnitSerializer.serialize(storageUnit);
+        String serializedStorageUnit = storageUnitSerializer.serialize(storageUnit).toString();
         MovableStorageUnit deserializedStorageUnit =
                 storageUnitDeserializer.deserialize(serializedStorageUnit);
 

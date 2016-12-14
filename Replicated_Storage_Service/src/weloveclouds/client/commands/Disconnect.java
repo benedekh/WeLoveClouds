@@ -5,7 +5,7 @@ import java.security.InvalidParameterException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.ArgumentsValidator;
+import weloveclouds.client.commands.utils.ArgumentsValidator;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
 

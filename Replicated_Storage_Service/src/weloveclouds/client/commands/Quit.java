@@ -5,7 +5,7 @@ import java.security.InvalidParameterException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.ArgumentsValidator;
+import weloveclouds.client.commands.utils.ArgumentsValidator;
 import weloveclouds.commons.exceptions.ClientSideException;
 
 /**
@@ -14,10 +14,10 @@ import weloveclouds.commons.exceptions.ClientSideException;
  * @author Benoit, Hunton
  */
 public class Quit extends AbstractCommand {
-    
+
     private static final String APPLICATION_EXITED_MESSAGE = "Application exit!";
     private static final Logger LOGGER = Logger.getLogger(Quit.class);
-    
+
     public Quit(String[] arguments) {
         super(arguments);
     }

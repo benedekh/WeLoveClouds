@@ -9,8 +9,8 @@ import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.commons.cli.utils.UserInputReader;
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.exceptions.ServerSideException;
-import weloveclouds.server.commands.client.ServerCommandFactory;
-import weloveclouds.server.utils.ServerUserInputParser;
+import weloveclouds.server.client.ServerUserInputParser;
+import weloveclouds.server.client.commands.ServerCommandFactory;
 
 /**
  * CommandLineInterface handler for the Server so it can be run as a standalone application. Handles
@@ -25,7 +25,7 @@ public class ServerCLIHandler {
     private ServerCommandFactory commandFactory;
 
     /**
-     * @param inputStream    from which it receives command from the user
+     * @param inputStream from which it receives command from the user
      * @param commandFactory that processes (validate and execute) the various commands
      */
     public ServerCLIHandler(InputStream inputStream, ServerCommandFactory commandFactory) {
@@ -39,8 +39,9 @@ public class ServerCLIHandler {
      */
     @SuppressWarnings("unchecked")
     public void run() {
-        try (UserInputReader inputReader = new UserInputReader(inputStream, new ServerUserInputParser());
-             UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
+        try (UserInputReader inputReader =
+                new UserInputReader(inputStream, new ServerUserInputParser());
+                UserOutputWriter outputWriter = UserOutputWriter.getInstance()) {
             UserOutputWriter.setPrefix("Server> ");
             LOGGER.info("Server started.");
             while (!Thread.currentThread().isInterrupted()) {

@@ -5,18 +5,18 @@ import org.apache.log4j.Level;
 import app_kvServer.KVServer;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import testing.util.KVServerInitializationUtil;
+import testing.utils.KVServerInitializationUtils;
 import testing.weloveclouds.client.utils.ArgumentsValidatorTest;
 import testing.weloveclouds.client.utils.UserInputParserTest;
 import testing.weloveclouds.ecs.utils.EcsArgumentsValidatorTest;
 import testing.weloveclouds.kvstore.serialization.SerializationValidationTests;
 import testing.weloveclouds.server.requests.validation.KVServerRequestFromKVClientValidationTests;
-import weloveclouds.server.utils.LogSetup;
+import weloveclouds.commons.utils.LogSetup;
 
 public class AllTests {
 
     static {
-        try (KVServerInitializationUtil initializationUtil = new KVServerInitializationUtil()) {
+        try (KVServerInitializationUtils initializationUtil = new KVServerInitializationUtils()) {
             new LogSetup("logs/testing/test.log", Level.ERROR);
             new KVServer(50000, 10, "FIFO");
 

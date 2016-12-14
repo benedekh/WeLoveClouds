@@ -3,7 +3,7 @@ package weloveclouds.commons.serialization.utils;
 
 import java.util.regex.Pattern;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Created by Benoit on 2016-12-10.
@@ -17,10 +17,10 @@ public class XMLPatternUtils {
     }
 
     private static String createStartTokenFrom(String token) {
-        return CustomStringJoiner.join("", "<", token, ">");
+        return StringUtils.join("", "<", token, ">");
     }
 
     private static String createEndTokenFrom(String token) {
-        return CustomStringJoiner.join("", "</", token, ">");
+        return StringUtils.join("", "</", token, ">");
     }
 }

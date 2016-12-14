@@ -1,10 +1,8 @@
 package weloveclouds.ecs.models.commands.client;
 
-import com.google.inject.Inject;
-
-import static weloveclouds.client.utils.CustomStringJoiner.join;
-
 import org.apache.log4j.Logger;
+
+import com.google.inject.Inject;
 
 import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.ecs.api.IKVEcsApi;

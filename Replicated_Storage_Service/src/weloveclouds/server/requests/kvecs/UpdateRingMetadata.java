@@ -51,7 +51,7 @@ public class UpdateRingMetadata implements IKVECSRequest {
         dataAccessService.setManagedHashRanges(readRanges, writeRange);
 
         IReplicationTransferer replicationTransferer = null;
-        if (replicaConnectionInfos != null) {
+        if (replicaConnectionInfos != null && !replicaConnectionInfos.isEmpty()) {
             replicationTransferer = replicationTransfererFactory
                     .createReplicationTransferer(replicaConnectionInfos);
         }

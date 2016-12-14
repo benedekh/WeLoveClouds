@@ -1,16 +1,14 @@
 package weloveclouds.ecs.models.commands.client;
 
-import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.commons.exceptions.ClientSideException;
-import weloveclouds.ecs.api.IKVEcsApi;
-import weloveclouds.ecs.models.commands.ICommand;
-
 import java.io.IOException;
-import java.security.InvalidParameterException;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.exceptions.ClientSideException;
+import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.ecs.api.IKVEcsApi;
+import weloveclouds.ecs.models.commands.ICommand;
 import weloveclouds.ecs.utils.ArgumentsValidator;
 
 
@@ -41,7 +39,7 @@ public class LogLevel extends AbstractEcsClientCommand {
             String logLevel = arguments.get(LEVEL_INDEX);
             Logger.getRootLogger().setLevel(Level.toLevel(logLevel));
 
-            String statusMessage = CustomStringJoiner.join(" ", "Latest log level:", logLevel);
+            String statusMessage = StringUtils.join(" ", "Latest log level:", logLevel);
             userOutputWriter.writeLine(statusMessage);
             LOGGER.debug(statusMessage);
         } catch (IOException e) {
@@ -55,7 +53,7 @@ public class LogLevel extends AbstractEcsClientCommand {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join("", "Loglevel command ", arguments.get(LEVEL_INDEX));
+        return StringUtils.join("", "Loglevel command ", arguments.get(LEVEL_INDEX));
     }
 
 }
