@@ -12,7 +12,7 @@ import weloveclouds.commons.utils.StringUtils;
 public class XMLRootNode extends AbstractXMLNode {
     private List<AbstractXMLNode> innerNodes;
 
-    XMLRootNode(Builder xmlRootNodeBuilder) {
+    protected XMLRootNode(Builder xmlRootNodeBuilder) {
         super(xmlRootNodeBuilder.token);
         this.innerNodes = xmlRootNodeBuilder.innerNodes;
     }

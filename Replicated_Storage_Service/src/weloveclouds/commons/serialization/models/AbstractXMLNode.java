@@ -8,7 +8,7 @@ import weloveclouds.commons.utils.StringUtils;
 public abstract class AbstractXMLNode {
     protected String token;
 
-    public AbstractXMLNode(String token) {
+    protected AbstractXMLNode(String token) {
         this.token = token;
     }
 
