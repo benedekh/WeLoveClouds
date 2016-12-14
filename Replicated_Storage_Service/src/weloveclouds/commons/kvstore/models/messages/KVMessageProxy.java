@@ -1,5 +1,7 @@
 package weloveclouds.commons.kvstore.models.messages;
 
+import weloveclouds.commons.exceptions.IllegalAccessException;
+
 /**
  * Encapsulates a {@link #message} with method level access authentication based on the
  * {@link StatusType}.
@@ -23,8 +25,7 @@ public class KVMessageProxy implements IKVMessage {
             case GET:
                 return message.getKey();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getKey");
+                throw new IllegalAccessException(status.toString(), "getKey");
         }
     }
 
@@ -45,8 +46,7 @@ public class KVMessageProxy implements IKVMessage {
             case PUT:
                 return message.getValue();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getValue");
+                throw new IllegalAccessException(status.toString(), "getValue");
         }
     }
 

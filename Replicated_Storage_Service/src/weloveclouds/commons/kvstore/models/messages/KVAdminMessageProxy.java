@@ -1,5 +1,6 @@
 package weloveclouds.commons.kvstore.models.messages;
 
+import weloveclouds.commons.exceptions.IllegalAccessException;
 import java.util.Set;
 
 import weloveclouds.commons.hashing.models.HashRange;
@@ -34,8 +35,7 @@ public class KVAdminMessageProxy implements IKVAdminMessage {
             case UPDATE:
                 return message.getRingMetadata();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getRingMetadata");
+                throw new IllegalAccessException(status.toString(), "getRingMetadata");
         }
     }
 
@@ -49,8 +49,7 @@ public class KVAdminMessageProxy implements IKVAdminMessage {
             case UPDATE:
                 return message.getTargetServerInfo();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getTargetServerInfo");
+                throw new IllegalAccessException(status.toString(), "getTargetServerInfo");
         }
     }
 
@@ -62,8 +61,7 @@ public class KVAdminMessageProxy implements IKVAdminMessage {
             case UPDATE:
                 return message.getReplicaConnectionInfos();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getReplicaConnectionInfos");
+                throw new IllegalAccessException(status.toString(), "getReplicaConnectionInfos");
         }
     }
 
@@ -74,8 +72,7 @@ public class KVAdminMessageProxy implements IKVAdminMessage {
             case REMOVERANGE:
                 return message.getRemovableRange();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getRemovableRange");
+                throw new IllegalAccessException(status.toString(), "getRemovableRange");
         }
     }
 
@@ -87,8 +84,7 @@ public class KVAdminMessageProxy implements IKVAdminMessage {
             case RESPONSE_SUCCESS:
                 return message.getResponseMessage();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getResponseMessage");
+                throw new IllegalAccessException(status.toString(), "getResponseMessage");
         }
     }
 

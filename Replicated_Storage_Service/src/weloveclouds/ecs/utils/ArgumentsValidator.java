@@ -9,17 +9,34 @@ import weloveclouds.ecs.models.commands.client.InitService;
 
 
 /**
- * Created by Benoit on 2016-11-21.
+ * Created by Benoit on 2016-11-21. Added to by hb
  */
 public class ArgumentsValidator {
     private static final int INIT_SERVICE_NUMBER_OF_ARGUMENTS = 3;
     private static final int ADD_NODE_NUMBER_OF_ARGUMENTS = 2;
+    private static final int LOGLEVEL_NUMBER_OF_ARGUMENTS = 1;
     private static List<String> validStrategyNames = Arrays.asList("FIFO", "LFU", "LRU");
+    private static List<String> validLogLevels =
+            Arrays.asList("ALL", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF");
 
     public static void validateStartArguments(List<String> arguments)
             throws IllegalArgumentException {
         if (!isNullOrEmpty(arguments)) {
             throw new IllegalArgumentException("Start command doesn't accept any arguments.");
+        }
+    }
+
+    public static void validateQuitArguments(List<String> arguments)
+            throws IllegalArgumentException {
+        if (!isNullOrEmpty(arguments)) {
+            throw new IllegalArgumentException("Quit command doesn't accept any arguments.");
+        }
+    }
+
+    public static void validateHelpArguments(List<String> arguments)
+            throws IllegalArgumentException {
+        if (!isNullOrEmpty(arguments)) {
+            throw new IllegalArgumentException("Help command doesn't accept any arguments.");
         }
     }
 
@@ -83,10 +100,20 @@ public class ArgumentsValidator {
     private static void validateDisplacementStrategy(String argument)
             throws IllegalArgumentException {
         String message = StringUtils.join(" ",
-                "Strategy is not recognized. It should be capitalized and should be one of the followings:",
+                "Strategy is not recognized. It should be capitalized and should be one of the following:",
                 StringUtils.join(",", validStrategyNames));
         if (!validStrategyNames.contains(argument)) {
             throw new IllegalArgumentException(message);
+        }
+    }
+
+    public static void validateLogLevelArguments(List<String> arguments)
+            throws IllegalArgumentException {
+        if (arguments.size() != LOGLEVEL_NUMBER_OF_ARGUMENTS
+                || !validLogLevels.contains(arguments.get(0))) {
+            String msg = StringUtils.join("", "Log level not recognized, should be one of: ",
+                    StringUtils.join(",", validLogLevels));
+            throw new IllegalArgumentException(msg);
         }
     }
 
@@ -105,4 +132,5 @@ public class ArgumentsValidator {
     private static boolean isNullOrEmpty(List<String> arguments) {
         return arguments == null || arguments.isEmpty();
     }
+
 }
