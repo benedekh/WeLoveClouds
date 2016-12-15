@@ -26,6 +26,7 @@ public class ReplicationService implements IReplicationService, Runnable {
     private Set<ServerConnectionInfo> latestReplicaConnectionInfos;
 
     private Thread runner;
+    private volatile boolean halted;
 
     public ReplicationService(Builder builder) {
         this.replicationExecutorFactory = builder.replicationExecutorFactory;
@@ -38,14 +39,17 @@ public class ReplicationService implements IReplicationService, Runnable {
 
     @Override
     public void start() {
-        runner = new Thread(this);
-        runner.start();
+        if (!halted) {
+            runner = new Thread(this);
+            runner.start();
+        }
     }
 
     @Override
     public void halt() {
         if (isRunning()) {
             runner.interrupt();
+            halted = true;
         }
         awaitingRequests.clear();
         this.replicaConnectionInfos.clear();
@@ -73,7 +77,7 @@ public class ReplicationService implements IReplicationService, Runnable {
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (!Thread.currentThread().isInterrupted() && !halted) {
             waitUntilThereAreEnoughRequests();
             AbstractReplicationRequest<?, ?> request = awaitingRequests.poll();
             ReplicationExecutor executor = replicationExecutorFactory.createReplicationExecutor();

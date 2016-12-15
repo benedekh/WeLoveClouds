@@ -11,6 +11,7 @@ import static weloveclouds.server.monitoring.MonitoringMetricConstants.PUT_COMMA
 import static weloveclouds.server.monitoring.MonitoringMetricConstants.REMOVE_COMMAND_NAME;
 import static weloveclouds.server.monitoring.MonitoringMetricConstants.SUCCESS;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.management.relation.Role;
@@ -52,15 +53,16 @@ public class MovableDataAccessService extends DataAccessService
     private DataAccessServiceStatus servicePreviousStatus;
     private volatile DataAccessServiceStatus serviceRecentStatus;
 
-    private volatile RingMetadata ringMetadata;
-    private volatile Set<HashRange> readRanges;
+    private Set<HashRange> readRanges;
     private volatile HashRange writeRange;
-
+    private volatile RingMetadata ringMetadata;
+    
     public MovableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage) {
         super(cache, persistentStorage);
         this.movablePersistentStorage = persistentStorage;
         this.servicePreviousStatus = DataAccessServiceStatus.STOPPED;
         this.serviceRecentStatus = DataAccessServiceStatus.STOPPED;
+        this.readRanges = new HashSet<>();
     }
 
     @Override
@@ -211,7 +213,10 @@ public class MovableDataAccessService extends DataAccessService
 
     @Override
     public synchronized void setManagedHashRanges(Set<HashRange> readRanges, HashRange writeRange) {
-        this.readRanges = readRanges;
+        if (readRanges != null) {
+            this.readRanges.clear();
+            this.readRanges.addAll(readRanges);
+        }
         this.writeRange = writeRange;
     }
 
