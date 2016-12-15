@@ -27,7 +27,7 @@ public interface IReplicationService {
     
     public void start();
     
-    public void stop();
+    public void halt();
     
     public boolean isRunning();
 

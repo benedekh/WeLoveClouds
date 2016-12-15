@@ -43,8 +43,12 @@ public class ReplicationService implements IReplicationService, Runnable {
     }
 
     @Override
-    public void stop() {
-        runner.interrupt();
+    public void halt() {
+        if (isRunning()) {
+            runner.interrupt();
+        }
+        awaitingRequests.clear();
+        this.replicaConnectionInfos.clear();
     }
 
     @Override
@@ -83,11 +87,7 @@ public class ReplicationService implements IReplicationService, Runnable {
     @Override
     public void updateReplicaConnectionInfos(Set<ServerConnectionInfo> replicaConnectionInfos) {
         if (replicaConnectionInfos == null) {
-            if (isRunning()) {
-                stop();
-            }
-            awaitingRequests.clear();
-            this.replicaConnectionInfos.clear();
+            halt();
         } else {
             if (isRunning()) {
                 synchronized (latestReplicaConnectionInfos) {
