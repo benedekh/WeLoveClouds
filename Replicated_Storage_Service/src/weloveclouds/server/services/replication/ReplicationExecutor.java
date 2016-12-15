@@ -54,6 +54,7 @@ public class ReplicationExecutor {
                 return new HashSet<>();
             }
         }
+        LOGGER.debug("Connections initialized.");
         return replicationRequests;
 
     }

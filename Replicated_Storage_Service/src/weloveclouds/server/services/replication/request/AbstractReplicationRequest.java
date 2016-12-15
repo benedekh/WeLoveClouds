@@ -60,12 +60,12 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
                 throw new IOException(responseMessage.getResponseMessage());
             }
         } catch (Exception ex) {
-            logger.error(StringUtils.join(" ", "Exception (", ex, ") occured while replicating on",
+            logger.error(StringUtils.join("", "Exception (", ex, ") occured while replicating on.",
                     connection));
         }
 
-        logger.debug(
-                StringUtils.join(" ", "Replicating (", payload, ") on", connection, " finished"));
+        logger.debug(StringUtils.join("", "Replicating (", payload, ") on (", connection,
+                ") finished."));
     }
 
     /**

@@ -18,12 +18,14 @@ public class ReplicationService implements IReplicationService, Runnable {
     private static final int MAX_NUMBER_OF_WAITING_REQUESTS = 20;
     private static final Seconds MAX_WAITING_TIME = Seconds.seconds(2);
 
-    private Queue<AbstractReplicationRequest<?, ?>> awaitingRequests;
+    private volatile Queue<AbstractReplicationRequest<?, ?>> awaitingRequests;
     private ReplicationExecutorFactory replicationExecutorFactory;
     private StatefulReplicationFactory replicationFactory;
 
     private Set<ServerConnectionInfo> replicaConnectionInfos;
     private Set<ServerConnectionInfo> latestReplicaConnectionInfos;
+
+    private Thread runner;
 
     public ReplicationService(Builder builder) {
         this.replicationExecutorFactory = builder.replicationExecutorFactory;
@@ -35,12 +37,33 @@ public class ReplicationService implements IReplicationService, Runnable {
     }
 
     @Override
+    public void start() {
+        runner = new Thread(this);
+        runner.start();
+    }
+
+    @Override
+    public void stop() {
+        runner.interrupt();
+    }
+
+    @Override
+    public boolean isRunning() {
+        if (runner == null) {
+            return false;
+        }
+        return runner.isAlive();
+    }
+
+    @Override
     public void putEntryOnReplicas(KVEntry entry) {
+        startIfNotRunning();
         awaitingRequests.add(replicationFactory.createPutReplicationRequest(entry));
     }
 
     @Override
     public void removeEntryOnReplicas(String key) {
+        startIfNotRunning();
         awaitingRequests.add(replicationFactory.createDeleteReplicationRequest(key));
     }
 
@@ -59,17 +82,33 @@ public class ReplicationService implements IReplicationService, Runnable {
 
     @Override
     public void updateReplicaConnectionInfos(Set<ServerConnectionInfo> replicaConnectionInfos) {
-        if (replicaConnectionInfos != null) {
-            synchronized (latestReplicaConnectionInfos) {
-                latestReplicaConnectionInfos.addAll(replicaConnectionInfos);
+        if (replicaConnectionInfos == null) {
+            if (isRunning()) {
+                stop();
             }
+            awaitingRequests.clear();
+            this.replicaConnectionInfos.clear();
+        } else {
+            if (isRunning()) {
+                synchronized (latestReplicaConnectionInfos) {
+                    latestReplicaConnectionInfos.addAll(replicaConnectionInfos);
+                }
+            } else {
+                this.replicaConnectionInfos.addAll(replicaConnectionInfos);
+            }
+        }
+    }
+
+    private void startIfNotRunning() {
+        if (!isRunning()) {
+            start();
         }
     }
 
     private void waitUntilThereAreEnoughRequests() {
         do {
             DateTime start = DateTime.now();
-            while (!enoughTimeElapsed(start) || !hasEnoughWaitingRequests());
+            while (!enoughTimeElapsed(start) && !hasEnoughWaitingRequests());
         } while (awaitingRequests.isEmpty());
     }
 

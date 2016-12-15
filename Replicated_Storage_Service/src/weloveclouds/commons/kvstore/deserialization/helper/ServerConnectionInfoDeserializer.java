@@ -51,8 +51,6 @@ public class ServerConnectionInfoDeserializer
         if (ipAddressFieldMatcher.find()) {
             String ipAddressStr = ipAddressFieldMatcher.group(XML_NODE);
             try {
-                System.out.println(from);
-                System.out.println(ipAddressStr);
                 return InetAddress.getByName(ipAddressStr);
             } catch (UnknownHostException ex) {
                 throw new DeserializationException(StringUtils.join(": ",

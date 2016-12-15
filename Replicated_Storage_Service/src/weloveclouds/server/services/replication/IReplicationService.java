@@ -24,5 +24,11 @@ public interface IReplicationService {
     public void removeEntryOnReplicas(String key);
 
     public void updateReplicaConnectionInfos(Set<ServerConnectionInfo> replicationConnectionInfos);
+    
+    public void start();
+    
+    public void stop();
+    
+    public boolean isRunning();
 
 }
