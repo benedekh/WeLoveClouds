@@ -92,7 +92,6 @@ public class KVAdminMessageDeserializer
                         "Unable to extract KVAdminTransferMessage from:", serializedMessageStr));
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw new DeserializationException(ex.getMessage());
         }
     }

@@ -27,7 +27,6 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
     @Override
     public RingMetadata deserialize(String from) throws DeserializationException {
         RingMetadata deserialized = null;
-
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 Set<RingMetadataPart> metadataParts = new HashSet<>();
@@ -35,6 +34,9 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
                 while (metadataPartMatcher.find()) {
                     metadataParts.add(metadataPartDeserializer
                             .deserialize(metadataPartMatcher.group(XML_NODE)));
+                }
+                if (metadataParts.isEmpty()) {
+                    return null;
                 }
                 deserialized = new RingMetadata(metadataParts);
             } catch (Exception ex) {

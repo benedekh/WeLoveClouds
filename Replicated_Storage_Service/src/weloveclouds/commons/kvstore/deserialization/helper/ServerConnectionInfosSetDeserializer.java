@@ -40,6 +40,7 @@ public class ServerConnectionInfosSetDeserializer
                     return null;
                 }
             } catch (Exception ex) {
+                ex.printStackTrace();
                 throw new DeserializationException(ex.getMessage());
             }
         }

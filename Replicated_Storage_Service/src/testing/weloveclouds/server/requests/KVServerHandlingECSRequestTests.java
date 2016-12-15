@@ -142,7 +142,7 @@ public class KVServerHandlingECSRequestTests {
                 new HashSet<>(Arrays.asList(server2, server3));
 
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.INITKVSERVER)
-                .ringMetadata(ringMetadata).targetServerInfo(part1).build();
+                .ringMetadata(ringMetadata).targetServerInfo(part1).replicaConnectionInfos(serverConnectionInfos).build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
         IKVAdminMessage response =
