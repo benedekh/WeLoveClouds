@@ -36,6 +36,9 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
                     metadataParts.add(metadataPartDeserializer
                             .deserialize(metadataPartMatcher.group(XML_NODE)));
                 }
+                if (metadataParts.isEmpty()) {
+                    return null;
+                }
                 deserialized = new RingMetadata(metadataParts);
             } catch (Exception ex) {
                 throw new DeserializationException(ex.getMessage());
