@@ -15,10 +15,10 @@ import weloveclouds.commons.kvstore.models.messages.KVTransactionMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.server.services.transaction.model.TransactionWithResponseStatus;
 
 public class SenderTransaction implements AutoCloseable {
 
@@ -59,46 +59,15 @@ public class SenderTransaction implements AutoCloseable {
         this.transactionId = transactionId;
     }
 
-    public class Init implements Callable<TransactionWithResponseStatus> {
-        @Override
-        public TransactionWithResponseStatus call() throws Exception {
-            KVTransactionMessage message =
-                    createTransactionMessage(StatusType.INIT, otherParticipants, transferMessage);
-            return sendAndExpectForResponse(message);
-        }
-    }
-
-    public class CommitReady implements Callable<TransactionWithResponseStatus> {
-        @Override
-        public TransactionWithResponseStatus call() throws Exception {
-            KVTransactionMessage message = createTransactionMessage(StatusType.COMMIT_READY);
-            return sendAndExpectForResponse(message);
-        }
-    }
-
-    public class Commit implements Callable<TransactionWithResponseStatus> {
-        @Override
-        public TransactionWithResponseStatus call() throws Exception {
-            KVTransactionMessage message = createTransactionMessage(StatusType.COMMIT);
-            return sendAndExpectForResponse(message);
-        }
-    }
-
-    public class Abort implements Callable<TransactionWithResponseStatus> {
-        @Override
-        public TransactionWithResponseStatus call() throws Exception {
-            KVTransactionMessage message = createTransactionMessage(StatusType.ABORT);
-            return sendAndExpectForResponse(message);
-        }
-    }
-
-    private TransactionWithResponseStatus sendAndExpectForResponse(KVTransactionMessage message)
+    private StatusType sendAndExpectForResponse(KVTransactionMessage message)
             throws IOException, DeserializationException {
+        LOGGER.debug(StringUtils.join(" ", "Sending transaction status" + message.getStatus(), "to",
+                connection));
         byte[] serialized = transactionMessageSerializer.serialize(message).getBytes();
         byte[] response = communicationApi.sendAndExpectForResponse(serialized, connection);
         IKVTransactionMessage responseMessage =
                 transactionMessageDeserializer.deserialize(response);
-        return new TransactionWithResponseStatus(this, responseMessage.getStatus());
+        return responseMessage.getStatus();
     }
 
     private KVTransactionMessage createTransactionMessage(StatusType status) {
@@ -110,6 +79,39 @@ public class SenderTransaction implements AutoCloseable {
         return new KVTransactionMessage.Builder().status(status)
                 .participantConnectionInfos(otherParticipants).transactionId(transactionId)
                 .transferPayload(transferMessage).build();
+    }
+
+    public class Init implements Callable<StatusType> {
+        @Override
+        public StatusType call() throws Exception {
+            KVTransactionMessage message =
+                    createTransactionMessage(StatusType.INIT, otherParticipants, transferMessage);
+            return sendAndExpectForResponse(message);
+        }
+    }
+
+    public class CommitReady implements Callable<StatusType> {
+        @Override
+        public StatusType call() throws Exception {
+            KVTransactionMessage message = createTransactionMessage(StatusType.COMMIT_READY);
+            return sendAndExpectForResponse(message);
+        }
+    }
+
+    public class Commit implements Callable<StatusType> {
+        @Override
+        public StatusType call() throws Exception {
+            KVTransactionMessage message = createTransactionMessage(StatusType.COMMIT);
+            return sendAndExpectForResponse(message);
+        }
+    }
+
+    public class Abort implements Callable<StatusType> {
+        @Override
+        public StatusType call() throws Exception {
+            KVTransactionMessage message = createTransactionMessage(StatusType.ABORT);
+            return sendAndExpectForResponse(message);
+        }
     }
 
     public static class Builder {

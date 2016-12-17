@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -21,12 +19,9 @@ import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.services.replication.request.AbstractReplicationRequest;
-import weloveclouds.server.services.transaction.tasks.AbortTask;
-import weloveclouds.server.services.transaction.tasks.CommitReadyTask;
-import weloveclouds.server.services.transaction.tasks.CommitTask;
-import weloveclouds.server.services.transaction.tasks.InitTask;
+import weloveclouds.server.services.transaction.flow.ITransactionExecutionFlow;
 
-public class TransactionSenderService {
+public class TransactionSenderService implements ITransactionSenderService {
 
     private static final Logger LOGGER = Logger.getLogger(TransactionSenderService.class);
 
@@ -35,13 +30,23 @@ public class TransactionSenderService {
     private IMessageDeserializer<IKVTransactionMessage, SerializedMessage> transactionMessageDeserializer;
 
     private ConnectionFactory connectionFactory;
-    private ExecutorService executorService;
+    private ITransactionExecutionFlow transactionExecutor;
 
+    protected TransactionSenderService(Builder builder) {
+        this.communicationApi = builder.communicationApi;
+        this.transactionMessageSerializer = builder.transactionMessageSerializer;
+        this.transactionMessageDeserializer = builder.transactionMessageDeserializer;
+        this.connectionFactory = builder.connectionFactory;
+        this.transactionExecutor = builder.transactionExecutor;
+    }
+
+    @Override
     public void executeTransactionsFor(AbstractReplicationRequest<?, ?> replicationRequest,
             Set<ServerConnectionInfo> participantConnectionInfos) {
         executeTransactionsFor(replicationRequest.getTransferMessage(), participantConnectionInfos);
     }
 
+    @Override
     public void executeTransactionsFor(KVTransferMessage transferMessage,
             Set<ServerConnectionInfo> participantConnectionInfos) {
         try {
@@ -53,8 +58,12 @@ public class TransactionSenderService {
                     Set<ServerConnectionInfo> otherParticipants =
                             SetUtils.removeValueFromSet(participantConnectionInfos, connectionInfo);
 
-                    SenderTransaction senderTransaction = createTransactionFor(transferMessage,
-                            transactionId, connection, otherParticipants);
+                    SenderTransaction senderTransaction = new SenderTransaction.Builder()
+                            .connection(connection).communicationApi(communicationApi)
+                            .transactionId(transactionId).transferMessage(transferMessage)
+                            .otherParticipants(otherParticipants)
+                            .transactionMessageSerializer(transactionMessageSerializer)
+                            .transactionMessageDeserializer(transactionMessageDeserializer).build();
                     transactions.add(senderTransaction);
                 } catch (IOException ex) {
                     LOGGER.error(StringUtils.join("", "Cannot create connection to (",
@@ -62,42 +71,49 @@ public class TransactionSenderService {
                     return;
                 }
             }
-            executeTransactions(transactions);
+            transactionExecutor.executeTransactions(transactions);
         } catch (Exception ex) {
             LOGGER.error(ex);
         }
     }
 
-    private void executeTransactions(Set<SenderTransaction> transactions) {
-        try {
-            executorService = Executors.newFixedThreadPool(transactions.size());
-            AbortTask abortTask = new AbortTask(transactions, executorService);
-            CommitTask commitTask = new CommitTask(abortTask, transactions, executorService);
-            CommitReadyTask commitReadyTask =
-                    new CommitReadyTask(commitTask, abortTask, transactions, executorService);
-            InitTask initTask =
-                    new InitTask(commitReadyTask, abortTask, transactions, executorService);
-            initTask.execute();
-        } finally {
-            closeTransactions(transactions);
-            executorService.shutdown();
-        }
-    }
+    public static class Builder {
+        private IConcurrentCommunicationApi communicationApi;
+        private IMessageSerializer<SerializedMessage, IKVTransactionMessage> transactionMessageSerializer;
+        private IMessageDeserializer<IKVTransactionMessage, SerializedMessage> transactionMessageDeserializer;
+        private ConnectionFactory connectionFactory;
+        private ITransactionExecutionFlow transactionExecutor;
 
-    private void closeTransactions(Set<SenderTransaction> transactions) {
-        for (SenderTransaction transaction : transactions) {
-            transaction.close();
+        public Builder communicationApi(IConcurrentCommunicationApi communicationApi) {
+            this.communicationApi = communicationApi;
+            return this;
         }
-    }
 
-    private SenderTransaction createTransactionFor(KVTransferMessage transferMessage,
-            UUID transactionId, Connection connection,
-            Set<ServerConnectionInfo> otherParticipants) {
-        return new SenderTransaction.Builder().connection(connection)
-                .communicationApi(communicationApi).transactionId(transactionId)
-                .transferMessage(transferMessage).otherParticipants(otherParticipants)
-                .transactionMessageSerializer(transactionMessageSerializer)
-                .transactionMessageDeserializer(transactionMessageDeserializer).build();
+        public Builder connectionFactory(ConnectionFactory connectionFactory) {
+            this.connectionFactory = connectionFactory;
+            return this;
+        }
+
+        public Builder transactionExecutor(ITransactionExecutionFlow transactionExecutor) {
+            this.transactionExecutor = transactionExecutor;
+            return this;
+        }
+
+        public Builder transactionMessageSerializer(
+                IMessageSerializer<SerializedMessage, IKVTransactionMessage> transactionMessageSerializer) {
+            this.transactionMessageSerializer = transactionMessageSerializer;
+            return this;
+        }
+
+        public Builder transactionMessageDeserializer(
+                IMessageDeserializer<IKVTransactionMessage, SerializedMessage> transactionMessageDeserializer) {
+            this.transactionMessageDeserializer = transactionMessageDeserializer;
+            return this;
+        }
+
+        public ITransactionSenderService build() {
+            return new TransactionSenderService(this);
+        }
     }
 
 }

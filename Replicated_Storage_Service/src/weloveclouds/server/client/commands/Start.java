@@ -50,7 +50,7 @@ public class Start extends AbstractServerCommand {
 
             ReplicationServiceFactory replicationServiceFactory = new ReplicationServiceFactory();
             ReplicationService replicationService =
-                    replicationServiceFactory.createReplicationService();
+                    replicationServiceFactory.createReplicationServiceWith2PC();
 
             IReplicableDataAccessService dataAccessService =
                     dataAccessServiceFactory.createInitializedReplicableDataAccessService(

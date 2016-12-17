@@ -5,11 +5,11 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 
-public class StatefulReplicationFactory {
+public class ReplicationRequestFactory {
 
     private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
 
-    public StatefulReplicationFactory(
+    public ReplicationRequestFactory(
             IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer) {
         this.transferMessageSerializer = transferMessageSerializer;
     }

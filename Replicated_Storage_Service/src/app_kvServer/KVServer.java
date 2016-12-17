@@ -86,7 +86,7 @@ public class KVServer {
 
             ReplicationServiceFactory replicationServiceFactory = new ReplicationServiceFactory();
             ReplicationService replicationService =
-                    replicationServiceFactory.createReplicationService();
+                    replicationServiceFactory.createReplicationServiceWith2PC();
 
             int kvClientPort = Integer.valueOf(cliArguments[CLI_KVCLIENT_PORT_INDEX]);
             int kvServerPort = Integer.valueOf(cliArguments[CLI_KVSERVER_PORT_INDEX]);
@@ -186,7 +186,7 @@ public class KVServer {
 
         ReplicationServiceFactory replicationServiceFactory = new ReplicationServiceFactory();
         ReplicationService replicationService =
-                replicationServiceFactory.createReplicationService();
+                replicationServiceFactory.createReplicationServiceWith2PC();
 
         IReplicableDataAccessService dataAccessService =
                 new DataAccessServiceFactory().createInitializedReplicableDataAccessService(

@@ -1,23 +1,23 @@
 package weloveclouds.server.services.replication;
 
-import weloveclouds.commons.kvstore.deserialization.KVTransferMessageDeserializer;
 import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
-import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.server.services.replication.request.StatefulReplicationFactory;
+import weloveclouds.server.services.replication.request.ReplicationRequestFactory;
+import weloveclouds.server.services.transaction.ITransactionSenderService;
+import weloveclouds.server.services.transaction.TransactionSenderServiceFactory;
 
 public class ReplicationServiceFactory {
 
-    public ReplicationService createReplicationService() {
-        return new ReplicationService.Builder()
-                .replicationExecutorFactory(new ReplicationExecutorFactory())
-                .statefulReplicationFactory(new StatefulReplicationFactory.Builder()
-                        .messageDeserializer(new KVTransferMessageDeserializer())
-                        .messageSerializer(new KVTransferMessageSerializer())
-                        .communicationApi(
-                                new CommunicationApiFactory().createConcurrentCommunicationApiV1())
-                        .build())
+    public ReplicationService createReplicationService(
+            ITransactionSenderService transactionSenderService) {
+        return new ReplicationService.Builder().transactionSenderService(transactionSenderService)
+                .statefulReplicationFactory(
+                        new ReplicationRequestFactory(new KVTransferMessageSerializer()))
                 .build();
+    }
 
+    public ReplicationService createReplicationServiceWith2PC() {
+        return createReplicationService(
+                new TransactionSenderServiceFactory().create2PCTransactionSenderService());
     }
 
 }

@@ -11,7 +11,8 @@ import org.joda.time.Seconds;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.services.replication.request.AbstractReplicationRequest;
-import weloveclouds.server.services.replication.request.StatefulReplicationFactory;
+import weloveclouds.server.services.replication.request.ReplicationRequestFactory;
+import weloveclouds.server.services.transaction.ITransactionSenderService;
 
 public class ReplicationService implements IReplicationService, Runnable {
 
@@ -19,8 +20,8 @@ public class ReplicationService implements IReplicationService, Runnable {
     private static final Seconds MAX_WAITING_TIME = Seconds.seconds(2);
 
     private volatile Queue<AbstractReplicationRequest<?, ?>> awaitingRequests;
-    private ReplicationExecutorFactory replicationExecutorFactory;
-    private StatefulReplicationFactory replicationFactory;
+    private ITransactionSenderService transactionSenderService;
+    private ReplicationRequestFactory replicationFactory;
 
     private Set<ServerConnectionInfo> replicaConnectionInfos;
     private Set<ServerConnectionInfo> latestReplicaConnectionInfos;
@@ -29,7 +30,7 @@ public class ReplicationService implements IReplicationService, Runnable {
     private volatile boolean halted;
 
     public ReplicationService(Builder builder) {
-        this.replicationExecutorFactory = builder.replicationExecutorFactory;
+        this.transactionSenderService = builder.transactionSenderService;
         this.replicationFactory = builder.replicationFactory;
 
         this.awaitingRequests = new LinkedBlockingQueue<>();
@@ -80,8 +81,7 @@ public class ReplicationService implements IReplicationService, Runnable {
         while (!Thread.currentThread().isInterrupted() && !halted) {
             waitUntilThereAreEnoughRequests();
             AbstractReplicationRequest<?, ?> request = awaitingRequests.poll();
-            ReplicationExecutor executor = replicationExecutorFactory.createReplicationExecutor();
-            executor.executeRequest(request, replicaConnectionInfos);
+            transactionSenderService.executeTransactionsFor(request, replicaConnectionInfos);
             if (awaitingRequests.isEmpty()) {
                 updateReplicaConnectionInfos();
             }
@@ -141,16 +141,16 @@ public class ReplicationService implements IReplicationService, Runnable {
      * @author Benedek
      */
     public static class Builder {
-        private ReplicationExecutorFactory replicationExecutorFactory;
-        private StatefulReplicationFactory replicationFactory;
+        private ITransactionSenderService transactionSenderService;
+        private ReplicationRequestFactory replicationFactory;
 
-        public Builder replicationExecutorFactory(
-                ReplicationExecutorFactory replicationExecutorFactory) {
-            this.replicationExecutorFactory = replicationExecutorFactory;
+        public Builder transactionSenderService(
+                ITransactionSenderService transactionSenderService) {
+            this.transactionSenderService = transactionSenderService;
             return this;
         }
 
-        public Builder statefulReplicationFactory(StatefulReplicationFactory replicationFactory) {
+        public Builder statefulReplicationFactory(ReplicationRequestFactory replicationFactory) {
             this.replicationFactory = replicationFactory;
             return this;
         }
