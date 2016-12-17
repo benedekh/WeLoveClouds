@@ -24,6 +24,7 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.Status
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.KVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.proxy.KVTransactionMessageProxy;
+import weloveclouds.commons.kvstore.models.messages.proxy.KVTransferMessageProxy;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -61,14 +62,14 @@ public class KVTransactionMessageDeserializer
                 String serializedTransactionMessage = transactionMessageMatcher.group(XML_NODE);
 
                 if (StringUtils.stringIsNotEmpty(serializedTransactionMessage)) {
+                    IKVTransferMessage transferMessage =
+                            deserializeTransferPayload(serializedTransactionMessage);
                     KVTransactionMessage transactionMessage = new KVTransactionMessage.Builder()
                             .status(deserializeStatus(serializedTransactionMessage))
                             .participantConnectionInfos(deserializeParticipantConnectionInfos(
                                     serializedTransactionMessage))
                             .transactionId(deserializeTransactionId(serializedTransactionMessage))
-                            .transferPayload(
-                                    deserializeTransferPayload(serializedTransactionMessage))
-                            .build();
+                            .transferPayload(new KVTransferMessageProxy(transferMessage)).build();
                     deserialized = new KVTransactionMessageProxy(transactionMessage);
                     LOGGER.debug(StringUtils.join(" ", "Deserialized KVTransactionMessage is:",
                             deserialized));
