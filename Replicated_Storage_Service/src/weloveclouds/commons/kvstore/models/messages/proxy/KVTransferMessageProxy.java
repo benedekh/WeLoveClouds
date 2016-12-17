@@ -1,8 +1,12 @@
-package weloveclouds.commons.kvstore.models.messages;
+package weloveclouds.commons.kvstore.models.messages.proxy;
 
+import weloveclouds.commons.exceptions.IllegalAccessException;
 import java.util.Set;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
+import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
 
@@ -14,9 +18,9 @@ import weloveclouds.server.store.models.MovableStorageUnit;
  */
 public class KVTransferMessageProxy implements IKVTransferMessage {
 
-    private KVTransferMessage message;
+    private IKVTransferMessage message;
 
-    public KVTransferMessageProxy(KVTransferMessage message) {
+    public KVTransferMessageProxy(IKVTransferMessage message) {
         this.message = message;
     }
 
@@ -27,50 +31,42 @@ public class KVTransferMessageProxy implements IKVTransferMessage {
 
     @Override
     public Set<MovableStorageUnit> getStorageUnits() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case TRANSFER_ENTRIES:
                 return message.getStorageUnits();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getStorageUnits");
+                throw new IllegalAccessException(getStatus().toString(), "getStorageUnits");
         }
     }
 
     @Override
     public KVEntry getPutableEntry() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case PUT_ENTRY:
                 return message.getPutableEntry();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getPutableEntry");
+                throw new IllegalAccessException(getStatus().toString(), "getPutableEntry");
         }
     }
 
     @Override
     public String getRemovableKey() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case REMOVE_ENTRY_BY_KEY:
                 return message.getRemovableKey();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getRemovableKey");
+                throw new IllegalAccessException(getStatus().toString(), "getRemovableKey");
         }
     }
 
     @Override
     public String getResponseMessage() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case RESPONSE_ERROR:
             case RESPONSE_SUCCESS:
                 return message.getResponseMessage();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getResponseMessage");
+                throw new IllegalAccessException(getStatus().toString(), "getResponseMessage");
         }
     }
 

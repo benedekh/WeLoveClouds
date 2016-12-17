@@ -1,10 +1,13 @@
-package weloveclouds.commons.kvstore.models.messages;
+package weloveclouds.commons.kvstore.models.messages.proxy;
 
 import java.util.Set;
 
+import weloveclouds.commons.exceptions.IllegalAccessException;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -15,9 +18,9 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public class KVAdminMessageProxy implements IKVAdminMessage {
 
-    private KVAdminMessage message;
+    private IKVAdminMessage message;
 
-    public KVAdminMessageProxy(KVAdminMessage message) {
+    public KVAdminMessageProxy(IKVAdminMessage message) {
         this.message = message;
     }
 
@@ -28,67 +31,58 @@ public class KVAdminMessageProxy implements IKVAdminMessage {
 
     @Override
     public RingMetadata getRingMetadata() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case INITKVSERVER:
             case UPDATE:
                 return message.getRingMetadata();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getRingMetadata");
+                throw new IllegalAccessException(getStatus().toString(), "getRingMetadata");
         }
     }
 
     @Override
     public RingMetadataPart getTargetServerInfo() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case INITKVSERVER:
             case COPYDATA:
             case MOVEDATA:
             case UPDATE:
                 return message.getTargetServerInfo();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getTargetServerInfo");
+                throw new IllegalAccessException(getStatus().toString(), "getTargetServerInfo");
         }
     }
 
     @Override
     public Set<ServerConnectionInfo> getReplicaConnectionInfos() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case INITKVSERVER:
             case UPDATE:
                 return message.getReplicaConnectionInfos();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
+                throw new IllegalAccessException(getStatus().toString(),
                         "getReplicaConnectionInfos");
         }
     }
 
     @Override
     public HashRange getRemovableRange() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case REMOVERANGE:
                 return message.getRemovableRange();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getRemovableRange");
+                throw new IllegalAccessException(getStatus().toString(), "getRemovableRange");
         }
     }
 
     @Override
     public String getResponseMessage() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case RESPONSE_ERROR:
             case RESPONSE_SUCCESS:
                 return message.getResponseMessage();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getResponseMessage");
+                throw new IllegalAccessException(getStatus().toString(), "getResponseMessage");
         }
     }
 

@@ -1,4 +1,8 @@
-package weloveclouds.commons.kvstore.models.messages;
+package weloveclouds.commons.kvstore.models.messages.proxy;
+
+import weloveclouds.commons.exceptions.IllegalAccessException;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.kvstore.models.messages.KVMessage;
 
 /**
  * Encapsulates a {@link #message} with method level access authentication based on the
@@ -16,22 +20,19 @@ public class KVMessageProxy implements IKVMessage {
 
     @Override
     public String getKey() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case PUT:
             case DELETE:
             case GET:
                 return message.getKey();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getKey");
+                throw new IllegalAccessException(getStatus().toString(), "getKey");
         }
     }
 
     @Override
     public String getValue() {
-        StatusType status = message.getStatus();
-        switch (status) {
+        switch (getStatus()) {
             case DELETE_ERROR:
             case DELETE_SUCCESS:
             case PUT_ERROR:
@@ -45,8 +46,7 @@ public class KVMessageProxy implements IKVMessage {
             case PUT:
                 return message.getValue();
             default:
-                throw new weloveclouds.commons.exceptions.IllegalAccessException(status.toString(),
-                        "getValue");
+                throw new IllegalAccessException(getStatus().toString(), "getValue");
         }
     }
 

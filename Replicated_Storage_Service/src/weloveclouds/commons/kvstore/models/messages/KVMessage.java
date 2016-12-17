@@ -1,6 +1,7 @@
 package weloveclouds.commons.kvstore.models.messages;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.messages.proxy.KVMessageProxy;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
