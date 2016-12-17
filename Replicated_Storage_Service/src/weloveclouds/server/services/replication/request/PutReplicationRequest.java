@@ -1,9 +1,8 @@
 package weloveclouds.server.services.replication.request;
 
-import org.apache.log4j.Logger;
+import static weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType.PUT_ENTRY;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.utils.StringUtils;
 
@@ -20,21 +19,18 @@ public class PutReplicationRequest
     }
 
     @Override
-    protected KVTransferMessage createTransferMessageFrom(KVEntry payload) {
-        return new KVTransferMessage.Builder().putableEntry(payload).status(StatusType.PUT_ENTRY)
-                .build();
+    public KVTransferMessage getTransferMessage() {
+        return new KVTransferMessage.Builder().putableEntry(payload).status(PUT_ENTRY).build();
     }
 
     @Override
     public AbstractReplicationRequest<KVEntry, Builder> clone() {
-        return new Builder().communicationApi(super.communicationApi).logger(super.logger)
-                .messageDeserializer(super.messageDeserializer)
-                .messageSerializer(super.messageSerializer).payload(super.payload).build();
+        return new Builder().messageSerializer(messageSerializer).payload(payload).build();
     }
 
     @Override
     public String toString() {
-        return StringUtils.join("", "PUT replication request with payload (", super.payload, ")");
+        return StringUtils.join("", "PUT replication request with payload (", payload, ")");
     }
 
     /**
@@ -51,7 +47,6 @@ public class PutReplicationRequest
 
         @Override
         public PutReplicationRequest build() {
-            super.logger(Logger.getLogger(PutReplicationRequest.class));
             return new PutReplicationRequest(this);
         }
     }

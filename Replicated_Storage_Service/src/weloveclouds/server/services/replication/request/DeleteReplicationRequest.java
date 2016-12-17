@@ -1,8 +1,7 @@
 package weloveclouds.server.services.replication.request;
 
-import org.apache.log4j.Logger;
+import static weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType.REMOVE_ENTRY_BY_KEY;
 
-import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.utils.StringUtils;
 
@@ -19,22 +18,19 @@ public class DeleteReplicationRequest
     }
 
     @Override
-    protected KVTransferMessage createTransferMessageFrom(String payload) {
-        return new KVTransferMessage.Builder().removableKey(payload)
-                .status(StatusType.REMOVE_ENTRY_BY_KEY).build();
+    public KVTransferMessage getTransferMessage() {
+        return new KVTransferMessage.Builder().removableKey(payload).status(REMOVE_ENTRY_BY_KEY)
+                .build();
     }
 
     @Override
     public AbstractReplicationRequest<String, Builder> clone() {
-        return new Builder().communicationApi(super.communicationApi).logger(super.logger)
-                .messageDeserializer(super.messageDeserializer)
-                .messageSerializer(super.messageSerializer).payload(super.payload).build();
+        return new Builder().messageSerializer(messageSerializer).payload(payload).build();
     }
 
     @Override
     public String toString() {
-        return StringUtils.join("", "DELETE replication request with payload (", super.payload,
-                ")");
+        return StringUtils.join("", "DELETE replication request with payload (", payload, ")");
     }
 
     /**
@@ -51,7 +47,6 @@ public class DeleteReplicationRequest
 
         @Override
         public DeleteReplicationRequest build() {
-            super.logger(Logger.getLogger(DeleteReplicationRequest.class));
             return new DeleteReplicationRequest(this);
         }
     }
