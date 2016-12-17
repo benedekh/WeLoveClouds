@@ -1,4 +1,4 @@
-package weloveclouds.server.requests.kvserver;
+package weloveclouds.server.requests.kvserver.transfer;
 
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.networking.models.requests.IExecutable;
@@ -9,7 +9,7 @@ import weloveclouds.commons.networking.models.requests.IValidatable;
  * 
  * @author Benedek
  */
-public interface IKVServerRequest
-        extends IExecutable<IKVTransferMessage>, IValidatable<IKVServerRequest> {
+public interface IKVTransferRequest
+        extends IExecutable<IKVTransferMessage>, IValidatable<IKVTransferRequest> {
 
 }

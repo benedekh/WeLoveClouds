@@ -3,7 +3,7 @@ package weloveclouds.server.services.replication;
 import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
 import weloveclouds.server.services.replication.request.ReplicationRequestFactory;
 import weloveclouds.server.services.transaction.ITransactionSenderService;
-import weloveclouds.server.services.transaction.TransactionSenderServiceFactory;
+import weloveclouds.server.services.transaction.TransactionServiceFactory;
 
 public class ReplicationServiceFactory {
 
@@ -17,7 +17,7 @@ public class ReplicationServiceFactory {
 
     public ReplicationService createReplicationServiceWith2PC() {
         return createReplicationService(
-                new TransactionSenderServiceFactory().create2PCTransactionSenderService());
+                new TransactionServiceFactory().create2PCTransactionSenderService());
     }
 
 }

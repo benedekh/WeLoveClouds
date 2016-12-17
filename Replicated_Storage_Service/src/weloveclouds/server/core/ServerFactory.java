@@ -22,8 +22,8 @@ import weloveclouds.server.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.requests.kvecs.KVECSRequestFactory;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporterFactory;
-import weloveclouds.server.requests.kvserver.IKVServerRequest;
-import weloveclouds.server.requests.kvserver.KVServerRequestFactory;
+import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
+import weloveclouds.server.requests.kvserver.transfer.KVTransferRequestFactory;
 import weloveclouds.server.services.datastore.IMovableDataAccessService;
 import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 
@@ -67,9 +67,9 @@ public class ServerFactory {
     public AbstractServer<?> createServerForKVServerRequests(int port,
             IMovableDataAccessService dataAccessService) throws IOException {
         LOGGER.debug("Creating Server for KVServer requests.");
-        return new Server.Builder<IKVTransferMessage, IKVServerRequest>().port(port)
+        return new Server.Builder<IKVTransferMessage, IKVTransferRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
-                .requestFactory(new KVServerRequestFactory(dataAccessService))
+                .requestFactory(new KVTransferRequestFactory(dataAccessService))
                 .communicationApiFactory(new CommunicationApiFactory())
                 .messageSerializer(new KVTransferMessageSerializer())
                 .messageDeserializer(new KVTransferMessageDeserializer()).build();

@@ -1,7 +1,7 @@
-package weloveclouds.server.requests.kvserver;
+package weloveclouds.server.requests.kvserver.transfer;
 
-import static weloveclouds.server.requests.kvserver.utils.KVTransferMessageFactory.createErrorKVTransferMessage;
-import static weloveclouds.server.requests.kvserver.utils.KVTransferMessageFactory.createSuccessKVTransferMessage;
+import static weloveclouds.server.requests.kvserver.transfer.utils.KVTransferMessageFactory.createErrorKVTransferMessage;
+import static weloveclouds.server.requests.kvserver.transfer.utils.KVTransferMessageFactory.createSuccessKVTransferMessage;
 
 import java.util.Set;
 
@@ -20,7 +20,7 @@ import weloveclouds.server.store.models.MovableStorageUnit;
  * 
  * @author Benedek
  */
-public class Transfer implements IKVServerRequest {
+public class Transfer implements IKVTransferRequest {
 
     private static final Logger LOGGER = Logger.getLogger(Transfer.class);
 
@@ -51,7 +51,7 @@ public class Transfer implements IKVServerRequest {
     }
 
     @Override
-    public IKVServerRequest validate() throws IllegalArgumentException {
+    public IKVTransferRequest validate() throws IllegalArgumentException {
         try {
             KVServerRequestsValidator.validateMovableStorageUnits(storageUnits);
         } catch (IllegalArgumentException ex) {

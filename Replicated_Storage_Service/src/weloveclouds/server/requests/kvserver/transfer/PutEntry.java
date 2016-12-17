@@ -1,7 +1,7 @@
-package weloveclouds.server.requests.kvserver;
+package weloveclouds.server.requests.kvserver.transfer;
 
-import static weloveclouds.server.requests.kvserver.utils.KVTransferMessageFactory.createErrorKVTransferMessage;
-import static weloveclouds.server.requests.kvserver.utils.KVTransferMessageFactory.createSuccessKVTransferMessage;
+import static weloveclouds.server.requests.kvserver.transfer.utils.KVTransferMessageFactory.createErrorKVTransferMessage;
+import static weloveclouds.server.requests.kvserver.transfer.utils.KVTransferMessageFactory.createSuccessKVTransferMessage;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +17,7 @@ import weloveclouds.server.store.exceptions.StorageException;
  * 
  * @author Benedek
  */
-public class PutEntry implements IKVServerRequest {
+public class PutEntry implements IKVTransferRequest {
 
     private static final Logger LOGGER = Logger.getLogger(PutEntry.class);
 
@@ -48,7 +48,7 @@ public class PutEntry implements IKVServerRequest {
 
 
     @Override
-    public IKVServerRequest validate() throws IllegalArgumentException {
+    public IKVTransferRequest validate() throws IllegalArgumentException {
         if (entry == null) {
             String errorMessage = "Entry cannot be null.";
             LOGGER.error(errorMessage);

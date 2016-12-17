@@ -11,12 +11,12 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.requests.kvecs.IKVECSRequest;
-import weloveclouds.server.requests.kvserver.IKVServerRequest;
+import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
  * Validates different objects which are used in the requests ({@link IKVClientRequest},
- * {@link IKVServerRequest}, {@link IKVECSRequest}} served by the KVServer.
+ * {@link IKVTransferRequest}, {@link IKVECSRequest}} served by the KVServer.
  * 
  * @author Benedek
  */

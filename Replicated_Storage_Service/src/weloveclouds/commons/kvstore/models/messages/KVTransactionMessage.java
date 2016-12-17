@@ -14,7 +14,7 @@ public class KVTransactionMessage implements IKVTransactionMessage {
     private Set<ServerConnectionInfo> participantConnectionInfos;
     private IKVTransferMessage transferPayload;
 
-    public KVTransactionMessage(Builder builder) {
+    protected KVTransactionMessage(Builder builder) {
         this.status = builder.status;
         this.transactionId = builder.transactionId;
         this.participantConnectionInfos = builder.participantConnectionInfos;

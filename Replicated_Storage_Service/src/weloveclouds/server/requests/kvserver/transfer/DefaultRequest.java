@@ -1,6 +1,6 @@
-package weloveclouds.server.requests.kvserver;
+package weloveclouds.server.requests.kvserver.transfer;
 
-import static weloveclouds.server.requests.kvserver.utils.KVTransferMessageFactory.createErrorKVTransferMessage;
+import static weloveclouds.server.requests.kvserver.transfer.utils.KVTransferMessageFactory.createErrorKVTransferMessage;
 
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 
@@ -10,7 +10,7 @@ import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
  * 
  * @author Benedek
  */
-public class DefaultRequest implements IKVServerRequest {
+public class DefaultRequest implements IKVTransferRequest {
 
     private String errorMessage;
 
@@ -24,7 +24,7 @@ public class DefaultRequest implements IKVServerRequest {
     }
 
     @Override
-    public IKVServerRequest validate() throws IllegalArgumentException {
+    public IKVTransferRequest validate() throws IllegalArgumentException {
         return this;
     }
 

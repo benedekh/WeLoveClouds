@@ -1,4 +1,4 @@
-package weloveclouds.server.requests.kvserver;
+package weloveclouds.server.requests.kvserver.transfer;
 
 import org.apache.log4j.Logger;
 
@@ -16,21 +16,21 @@ import weloveclouds.server.services.datastore.IMovableDataAccessService;
  *
  * @author Benedek
  */
-public class KVServerRequestFactory
-        implements IRequestFactory<IKVTransferMessage, IKVServerRequest> {
+public class KVTransferRequestFactory
+        implements IRequestFactory<IKVTransferMessage, IKVTransferRequest> {
 
-    private static final Logger LOGGER = Logger.getLogger(KVServerRequestFactory.class);
+    private static final Logger LOGGER = Logger.getLogger(KVTransferRequestFactory.class);
 
     private IMovableDataAccessService dataAccessService;
 
-    public KVServerRequestFactory(IMovableDataAccessService dataAccessService) {
+    public KVTransferRequestFactory(IMovableDataAccessService dataAccessService) {
         this.dataAccessService = dataAccessService;
     }
 
     @Override
-    public IKVServerRequest createRequestFromReceivedMessage(IKVTransferMessage receivedMessage,
+    public IKVTransferRequest createRequestFromReceivedMessage(IKVTransferMessage receivedMessage,
             ICallbackRegister callbackRegister) {
-        IKVServerRequest request = null;
+        IKVTransferRequest request = null;
         StatusType status = receivedMessage.getStatus();
 
         switch (status) {

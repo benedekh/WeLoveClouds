@@ -7,7 +7,7 @@ import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.server.services.transaction.flow.TwoPCExecutionFlow;
 
-public class TransactionSenderServiceFactory {
+public class TransactionServiceFactory {
 
     public ITransactionSenderService create2PCTransactionSenderService() {
         return new TransactionSenderService.Builder()
