@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.UUIDDeserializer;
 import weloveclouds.commons.kvstore.serialization.helper.UUIDSerializer;
@@ -13,7 +14,7 @@ import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 
-public class UUIDTest {
+public class UUIDTest extends TestCase {
 
     private static final IDeserializer<UUID, String> uuidDeserializer = new UUIDDeserializer();
     private static final ISerializer<AbstractXMLNode, UUID> uuidSerializer = new UUIDSerializer();

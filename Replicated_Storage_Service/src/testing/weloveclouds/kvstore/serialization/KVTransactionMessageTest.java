@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import weloveclouds.commons.kvstore.deserialization.KVTransactionMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.models.KVEntry;
@@ -26,7 +27,7 @@ import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
-public class KVTransactionMessageTest {
+public class KVTransactionMessageTest extends TestCase{
     private static IMessageDeserializer<IKVTransactionMessage, SerializedMessage> transactionMessageDeserializer =
             new KVTransactionMessageDeserializer();
     private static IMessageSerializer<SerializedMessage, IKVTransactionMessage> transactionMessageSerializer =

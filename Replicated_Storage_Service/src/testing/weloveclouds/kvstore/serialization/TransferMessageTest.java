@@ -10,6 +10,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.TransferMessageDeserializer;
 import weloveclouds.commons.kvstore.models.KVEntry;
@@ -23,7 +24,7 @@ import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
-public class TransferMessageTest {
+public class TransferMessageTest extends TestCase {
 
     private static IDeserializer<IKVTransferMessage, String> transferMessageDeserializer =
             new TransferMessageDeserializer();
