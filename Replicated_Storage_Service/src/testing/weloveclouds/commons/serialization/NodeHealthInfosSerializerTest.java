@@ -34,7 +34,7 @@ public class NodeHealthInfosSerializerTest {
     private static final int SERVICE_PORT_1 = 5000;
     private static final int SERVICE_PRIORITY_1 = 2;
     private static final int NUMBER_OF_ACTIVE_CONNECTIONS_1 = 8;
-    private static final String SERVICE_NAME_1 = "AN SOLO";
+    private static final String SERVICE_NAME_1 = "HAN SOLO";
     private static final String SERVICE_IP_1 = "127.0.0.1";
     private static final ServiceStatus SERVICE_STATUS_1 = RUNNING;
 
