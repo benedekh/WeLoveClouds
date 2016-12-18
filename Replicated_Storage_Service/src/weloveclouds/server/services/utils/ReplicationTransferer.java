@@ -11,12 +11,12 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ConnectionFactory;
@@ -36,8 +36,8 @@ public class ReplicationTransferer implements IReplicationTransferer {
     private ConnectionFactory connectionFactory;
     private Set<ServerConnectionInfo> replicaConnectionInfos;
 
-    private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
-    private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
+    private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
     private ExecutorService executorService;
 
@@ -63,7 +63,7 @@ public class ReplicationTransferer implements IReplicationTransferer {
                         .payload(entry).messageSerializer(transferMessageSerializer)
                         .messageDeserializer(transferMessageDeserializer).build());
             } catch (IOException ex) {
-                LOGGER.error(CustomStringJoiner.join(" ", "Exception (", ex.toString(),
+                LOGGER.error(StringUtils.join(" ", "Exception (", ex.toString(),
                         ") occured while replicating PUT (", entry.toString(), ") on",
                         connectionInfo.toString()));
             }
@@ -84,7 +84,7 @@ public class ReplicationTransferer implements IReplicationTransferer {
                         .payload(key).messageSerializer(transferMessageSerializer)
                         .messageDeserializer(transferMessageDeserializer).build());
             } catch (IOException ex) {
-                LOGGER.error(CustomStringJoiner.join(" ", "Exception (", ex.toString(),
+                LOGGER.error(StringUtils.join(" ", "Exception (", ex.toString(),
                         ") occured while replicating DELETE (", key, ") on",
                         connectionInfo.toString()));
             }
@@ -124,8 +124,8 @@ public class ReplicationTransferer implements IReplicationTransferer {
         private IConcurrentCommunicationApi concurrentCommunicationApi;
         private ConnectionFactory connectionFactory;
         private Set<ServerConnectionInfo> replicaConnectionInfos;
-        private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
-        private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+        private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
+        private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
         public Builder communicationApi(IConcurrentCommunicationApi concurrentCommunicationApi) {
             this.concurrentCommunicationApi = concurrentCommunicationApi;
@@ -143,13 +143,13 @@ public class ReplicationTransferer implements IReplicationTransferer {
         }
 
         public Builder messageSerializer(
-                IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer) {
+                IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer) {
             this.transferMessageSerializer = transferMessageSerializer;
             return this;
         }
 
         public Builder messageDeserializer(
-                IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+                IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer) {
             this.transferMessageDeserializer = transferMessageDeserializer;
             return this;
         }

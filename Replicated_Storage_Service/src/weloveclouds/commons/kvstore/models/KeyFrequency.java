@@ -1,6 +1,6 @@
 package weloveclouds.commons.kvstore.models;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Represents a class which counts how many times the referred key was accessed.
@@ -71,8 +71,7 @@ public class KeyFrequency implements Comparable<KeyFrequency> {
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "{", key, ": frequency ->", String.valueOf(frequency),
-                "}");
+        return StringUtils.join(" ", "{", key, ": frequency ->", String.valueOf(frequency), "}");
     }
 
 }

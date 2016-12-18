@@ -1,53 +1,46 @@
 package weloveclouds.commons.kvstore.serialization.helper;
 
-import java.util.Set;
+import static weloveclouds.commons.serialization.models.XMLTokens.CONNECTION_INFO;
+import static weloveclouds.commons.serialization.models.XMLTokens.READ_RANGES;
+import static weloveclouds.commons.serialization.models.XMLTokens.RING_METADATA_PART;
+import static weloveclouds.commons.serialization.models.XMLTokens.WRITE_RANGE;
 
-import org.apache.log4j.Logger;
-
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
+import weloveclouds.commons.serialization.ISerializer;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.serialization.models.XMLNode;
+import weloveclouds.commons.serialization.models.XMLRootNode;
+import weloveclouds.commons.serialization.models.XMLRootNode.Builder;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
- * A serializer which converts a {@link RingMetadataPart} to a {@link String}.
+ * A serializer which converts a {@link RingMetadataPart} to a {@link AbstractXMLNode}.
  * 
  * @author Benedek
  */
-public class RingMetadataPartSerializer implements ISerializer<String, RingMetadataPart> {
+public class RingMetadataPartSerializer implements ISerializer<AbstractXMLNode, RingMetadataPart> {
 
-    public static final String SEPARATOR = "-Łł-";
-    private static final Logger LOGGER = Logger.getLogger(RingMetadataPartSerializer.class);
-
-    private ISerializer<String, ServerConnectionInfo> connectionInfoSerializer =
+    private ISerializer<AbstractXMLNode, ServerConnectionInfo> connectionInfoSerializer =
             new ServerConnectionInfoSerializer();
-    private ISerializer<String, Set<HashRange>> hashRangesSerializer =
-            new HashRangesSetSerializer();
-    private ISerializer<String, HashRange> hashRangeSerializer = new HashRangeSerializer();
+    private ISerializer<AbstractXMLNode, Iterable<HashRange>> hashRangesSerializer =
+            new HashRangesIterableSerializer();
+    private ISerializer<AbstractXMLNode, HashRange> hashRangeSerializer = new HashRangeSerializer();
 
     @Override
-    public String serialize(RingMetadataPart target) {
-        String serialized = null;
+    public AbstractXMLNode serialize(RingMetadataPart target) {
+        Builder builder = new XMLRootNode.Builder().token(RING_METADATA_PART);
 
         if (target != null) {
-            LOGGER.debug("Serializing a RingMetadataPart.");
-            // original fields
-            ServerConnectionInfo connectionInfo = target.getConnectionInfo();
-            Set<HashRange> readRanges = target.getReadRanges();
-            HashRange writeRange = target.getWriteRange();
-
-            // string representation
-            String connectionInfoStr = connectionInfoSerializer.serialize(connectionInfo);
-            String readRangesStr = hashRangesSerializer.serialize(readRanges);
-            String writeRangeStr = hashRangeSerializer.serialize(writeRange);
-
-            // merged string representation
-            serialized = CustomStringJoiner.join(SEPARATOR, connectionInfoStr, readRangesStr,
-                    writeRangeStr);
-            LOGGER.debug("Serializing a RingMetadataPart finished.");
+            builder.addInnerNode(new XMLNode(CONNECTION_INFO,
+                    connectionInfoSerializer.serialize(target.getConnectionInfo()).toString()))
+                    .addInnerNode(new XMLNode(READ_RANGES,
+                            hashRangesSerializer.serialize(target.getReadRanges()).toString()))
+                    .addInnerNode(new XMLNode(WRITE_RANGE,
+                            hashRangeSerializer.serialize(target.getWriteRange()).toString()));
         }
 
-        return serialized;
+        return builder.build();
     }
 
 }

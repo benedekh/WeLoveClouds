@@ -1,32 +1,40 @@
 package weloveclouds.commons.kvstore.serialization.helper;
 
-import org.apache.log4j.Logger;
+import static weloveclouds.commons.serialization.models.XMLTokens.KV_ENTRY;
+import static weloveclouds.commons.serialization.models.XMLTokens.STORAGE_UNIT;
 
+import java.util.Map.Entry;
+
+import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.serialization.ISerializer;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.serialization.models.XMLNode;
+import weloveclouds.commons.serialization.models.XMLRootNode;
+import weloveclouds.commons.serialization.models.XMLRootNode.Builder;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
- * A serializer which converts a {@link MovableStorageUnit} to a {@link String}.
+ * A serializer which converts a {@link MovableStorageUnit} to a {@link AbstractXMLNode}.
  * 
  * @author Benedek
  */
-public class MovableStorageUnitSerializer implements ISerializer<String, MovableStorageUnit> {
+public class MovableStorageUnitSerializer
+        implements ISerializer<AbstractXMLNode, MovableStorageUnit> {
 
-    public static final String SEPARATOR_BETWEEN_ENTRIES = "-ł-";
-    public static final String SEPARATOR_INSIDE_ENTRY = "::Ł::";
-    private static final Logger LOGGER = Logger.getLogger(MovableStorageUnitSerializer.class);
+    private ISerializer<AbstractXMLNode, KVEntry> kvEntrySerializer = new KVEntrySerializer();
 
     @Override
-    public String serialize(MovableStorageUnit target) {
-        String serialized = null;
+    public AbstractXMLNode serialize(MovableStorageUnit target) {
+        Builder builder = new XMLRootNode.Builder().token(STORAGE_UNIT);
 
         if (target != null) {
-            LOGGER.debug("Serializing a MovableStorageUnit.");
-            serialized =
-                    target.toStringWithDelimiter(SEPARATOR_BETWEEN_ENTRIES, SEPARATOR_INSIDE_ENTRY);
-            LOGGER.debug("Serializing a MovableStorageUnit finished.");
+            for (Entry<String, String> entry : target.getEntries()) {
+                builder.addInnerNode(new XMLNode(KV_ENTRY, kvEntrySerializer
+                        .serialize(new KVEntry(entry.getKey(), entry.getValue())).toString()));
+            }
         }
 
-        return serialized;
+        return builder.build();
     }
 
 }

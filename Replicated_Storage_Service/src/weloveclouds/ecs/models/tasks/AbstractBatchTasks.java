@@ -7,7 +7,7 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.UUID;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Created by Benoit on 2016-11-19.
@@ -54,6 +54,6 @@ public abstract class AbstractBatchTasks<T> extends Observable {
     public abstract void taskExecutionFinishedCallback();
 
     public String toString() {
-        return CustomStringJoiner.join(" ", "Batch id:", id, "Purpose:", batchPurpose.toString());
+        return StringUtils.join(" ", "Batch id:", id, "Purpose:", batchPurpose.toString());
     }
 }

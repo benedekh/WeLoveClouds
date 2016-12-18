@@ -2,7 +2,7 @@ package weloveclouds.ecs.models.commands.client;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Different commands which are handled by
@@ -11,8 +11,9 @@ import weloveclouds.client.utils.CustomStringJoiner;
  * @author Benoit
  */
 public enum EcsCommand {
-    START("start"), STOP("stop"), INIT_SERVICE("initService"), SHUTDOWN("shutDown"), ADD_NODE(
-            "addNode"), REMOVE_NODE("removeNode"), DEFAULT("default");
+    START("start"), STOP("stop"), INIT_SERVICE("initService"), SHUTDOWN("shutDown"),
+    ADD_NODE("addNode"), REMOVE_NODE("removeNode"), DEFAULT("default"), QUIT("quit"),
+    LOGLEVEL("logLevel"), HELP("help");
 
     private static final Logger LOGGER = Logger.getLogger(EcsCommand.class);
 
@@ -33,7 +34,7 @@ public enum EcsCommand {
             }
         }
 
-        LOGGER.warn(CustomStringJoiner.join("", "Command (", description, ") is not recognized."));
+        LOGGER.warn(StringUtils.join("", "Command (", description, ") is not recognized."));
         return DEFAULT;
     }
 }

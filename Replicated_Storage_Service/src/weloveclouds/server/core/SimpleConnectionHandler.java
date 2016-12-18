@@ -5,13 +5,13 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.networking.models.requests.IExecutable;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.networking.models.requests.IValidatable;
@@ -26,8 +26,8 @@ import weloveclouds.commons.exceptions.IllegalRequestException;
  * @param <R> the type of the request which shall be created from M
  * @author Benoit
  */
-public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<R>> extends
-        AbstractConnectionHandler<M> {
+public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<R>>
+        extends AbstractConnectionHandler<M> {
     private IRequestFactory<M, R> requestFactory;
 
     public SimpleConnectionHandler(Builder<M, R> simpleConnectionBuilder) {
@@ -53,8 +53,8 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
                 try {
                     M receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
-                    logger.debug(CustomStringJoiner.join(" ", "Message received:",
-                            receivedMessage.toString()));
+                    logger.debug(
+                            StringUtils.join(" ", "Message received:", receivedMessage.toString()));
 
                     response =
                             requestFactory.createRequestFromReceivedMessage(receivedMessage, this)
@@ -70,8 +70,8 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
                         try {
                             communicationApi.send(messageSerializer.serialize(response).getBytes(),
                                     connection);
-                            logger.debug(CustomStringJoiner.join(" ", "Sent response:",
-                                    response.toString()));
+                            logger.debug(
+                                    StringUtils.join(" ", "Sent response:", response.toString()));
                         } catch (IOException e) {
                             logger.error(e);
                         }

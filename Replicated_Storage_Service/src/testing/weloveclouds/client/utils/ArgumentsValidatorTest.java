@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-import weloveclouds.client.utils.ArgumentsValidator;
+import weloveclouds.client.commands.utils.ArgumentsValidator;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -72,6 +72,7 @@ public class ArgumentsValidatorTest extends TestCase {
 
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testShouldThrowIfConnectArgumentIsNull() {
         Exception ex = null;

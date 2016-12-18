@@ -8,20 +8,20 @@ import java.nio.file.Paths;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.server.commands.client.ServerCommandFactory;
+import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.commons.utils.LogSetup;
+import weloveclouds.server.client.commands.ServerCommandFactory;
+import weloveclouds.server.client.commands.utils.ArgumentsValidator;
+import weloveclouds.server.configuration.models.KVServerPortConstants;
+import weloveclouds.server.configuration.models.KVServerPortContext;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerFactory;
-import weloveclouds.server.models.configuration.KVServerPortConstants;
-import weloveclouds.server.models.configuration.KVServerPortContext;
 import weloveclouds.server.services.DataAccessServiceFactory;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.services.IReplicableDataAccessService;
 import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
-import weloveclouds.server.utils.ArgumentsValidator;
-import weloveclouds.server.utils.LogSetup;
 
 /**
  * KVServer application which starts a {@link ServerSocket} to accept connections and to transform
@@ -142,7 +142,7 @@ public class KVServer {
                 Logger.getRootLogger().setLevel(logLevel);
             }
         } catch (IOException ex) {
-            System.err.println(CustomStringJoiner.join(" ", "Log file cannot be created on path ",
+            System.err.println(StringUtils.join(" ", "Log file cannot be created on path ",
                     DEFAULT_LOG_PATH, "due to an error:", ex.getMessage()));
         }
     }

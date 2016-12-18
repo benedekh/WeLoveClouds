@@ -2,11 +2,10 @@ package weloveclouds.client.commands;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 
 /**
- * Different commands which are handled by
- * {@link weloveclouds.client.commands.CommandFactory}.
+ * Different commands which are handled by {@link weloveclouds.client.commands.CommandFactory}.
  *
  * @author Benedek
  */
@@ -18,7 +17,7 @@ public enum ClientCommand {
 
     private String description;
 
-    ClientCommand(String description) {
+    private ClientCommand(String description) {
         this.description = description;
     }
 
@@ -33,7 +32,7 @@ public enum ClientCommand {
             }
         }
 
-        LOGGER.warn(CustomStringJoiner.join("", "Command (", description, ") is not recognized."));
+        LOGGER.warn(StringUtils.join("", "Command (", description, ") is not recognized."));
         return DEFAULT;
     }
 

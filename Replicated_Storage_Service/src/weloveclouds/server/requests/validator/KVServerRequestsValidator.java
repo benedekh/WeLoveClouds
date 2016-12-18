@@ -7,7 +7,7 @@ import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.requests.kvecs.IKVECSRequest;
@@ -116,7 +116,7 @@ public class KVServerRequestsValidator {
      */
     public static void validateServerConnectionInfos(Set<ServerConnectionInfo> connectionInfos)
             throws IllegalArgumentException {
-        if (connectionInfos == null || connectionInfos.isEmpty()) {
+        if (connectionInfos == null) {
             throw new IllegalArgumentException();
         }
         for (ServerConnectionInfo serverConnectionInfo : connectionInfos) {
@@ -137,7 +137,10 @@ public class KVServerRequestsValidator {
         if (ringMetadataPart == null) {
             throw new IllegalArgumentException();
         }
-        validateHashRange(ringMetadataPart.getWriteRange());
+        HashRange writeRange = ringMetadataPart.getWriteRange();
+        if (writeRange != null) {
+            validateHashRange(writeRange);
+        }
         validateServerConnectionInfo(ringMetadataPart.getConnectionInfo());
     }
 

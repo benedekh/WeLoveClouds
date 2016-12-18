@@ -10,12 +10,13 @@ import org.junit.Test;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfosSetDeserializer;
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
-import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfosSetSerializer;
+import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfosIterableSerializer;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.serialization.ISerializer;
+import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.server.utils.SetToStringUtility;
 
 /**
  * Tests for the {@link Set<ServerConnectionInfo>} to verify its serialization and deserialization
@@ -27,8 +28,8 @@ public class ServerConnectionInfosSetTest extends TestCase {
 
     private static final IDeserializer<Set<ServerConnectionInfo>, String> connectionInfosDeserializer =
             new ServerConnectionInfosSetDeserializer();
-    private static final ISerializer<String, Set<ServerConnectionInfo>> connectionInfosSerializer =
-            new ServerConnectionInfosSetSerializer();
+    private static final ISerializer<AbstractXMLNode, Iterable<ServerConnectionInfo>> connectionInfosSerializer =
+            new ServerConnectionInfosIterableSerializer();
 
     @Test
     public void testServerConnectionInfoSerializationAndDeserialization()
@@ -41,12 +42,13 @@ public class ServerConnectionInfosSetTest extends TestCase {
         Set<ServerConnectionInfo> connectionInfos =
                 new HashSet<>(Arrays.asList(connectionInfo1, connectionInfo2));
 
-        String serializedConnectionInfos = connectionInfosSerializer.serialize(connectionInfos);
+        String serializedConnectionInfos =
+                connectionInfosSerializer.serialize(connectionInfos).toString();
         Set<ServerConnectionInfo> deserializedConnectionInfos =
                 connectionInfosDeserializer.deserialize(serializedConnectionInfos);
 
-        Assert.assertEquals(SetToStringUtility.toString(connectionInfos),
-                SetToStringUtility.toString(deserializedConnectionInfos));
+        Assert.assertEquals(StringUtils.setToString(connectionInfos),
+                StringUtils.setToString(deserializedConnectionInfos));
         Assert.assertEquals(connectionInfos, deserializedConnectionInfos);
     }
 

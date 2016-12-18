@@ -1,17 +1,17 @@
 package weloveclouds.client.commands;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.utils.ArgumentsValidator;
-import weloveclouds.client.utils.CustomStringJoiner;
-import weloveclouds.client.utils.PutCommandUtils;
+import weloveclouds.client.commands.utils.ArgumentsValidator;
+import weloveclouds.client.commands.utils.PutCommandUtils;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.commons.hashing.models.RingMetadata;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 
 /**
@@ -55,8 +55,8 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     userOutputWriter.writeLine("Key was successfully put on the server.");
                     break;
                 case PUT_ERROR:
-                    userOutputWriter.writeLine(CustomStringJoiner.join(" ", "Error during key put:",
-                            response.getValue()));
+                    userOutputWriter.writeLine(
+                            StringUtils.join(" ", "Error during key put:", response.getValue()));
                     break;
                 case DELETE_SUCCESS:
                     userOutputWriter.writeLine("Key removed successfully.");

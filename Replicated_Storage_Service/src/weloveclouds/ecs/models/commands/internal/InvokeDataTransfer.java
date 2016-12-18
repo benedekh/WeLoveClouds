@@ -1,6 +1,5 @@
 package weloveclouds.ecs.models.commands.internal;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
@@ -10,8 +9,9 @@ import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 
@@ -29,7 +29,7 @@ public class InvokeDataTransfer extends AbstractEcsNetworkCommand {
         this.messageDeserializer = invokeDataTransferBuilder.messageDeserializer;
         this.newNode = invokeDataTransferBuilder.newNode;
         this.ringMetadata = invokeDataTransferBuilder.ringMetadata;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to invoke data transfer on node:",
+        this.errorMessage = StringUtils.join(" ", "Unable to invoke data transfer on node:",
                 targetedNode.toString());
     }
 
@@ -37,37 +37,38 @@ public class InvokeDataTransfer extends AbstractEcsNetworkCommand {
     public void execute() throws ClientSideException {
         try {
             communicationApi.connectTo(targetedNode.getEcsChannelConnectionInfo());
-            KVAdminMessage message = new KVAdminMessage.Builder()
-                    .status(IKVAdminMessage.StatusType.MOVEDATA)
-                    .targetServerInfo(ringMetadata.findServerInfoByHash(newNode.getHashKey()))
-                    .build();
+            KVAdminMessage message =
+                    new KVAdminMessage.Builder().status(IKVAdminMessage.StatusType.MOVEDATA)
+                            .targetServerInfo(
+                                    ringMetadata.findServerInfoByHash(newNode.getHashKey()))
+                            .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
-            KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
+            IKVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             }
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);
-        }finally {
+        } finally {
             try {
                 communicationApi.disconnect();
-            }catch(UnableToDisconnectException ex){
-                //LOG
+            } catch (UnableToDisconnectException ex) {
+                // LOG
             }
         }
     }
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Command: InvokeDataTransfer", "Targeted node:",
+        return StringUtils.join(" ", "Command: InvokeDataTransfer", "Targeted node:",
                 targetedNode.toString());
     }
 
     public static class Builder {
         private ICommunicationApi communicationApi;
         private StorageNode targetedNode;
-        private IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
-        private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
+        private IMessageSerializer<SerializedMessage, IKVAdminMessage> messageSerializer;
+        private IMessageDeserializer<IKVAdminMessage, SerializedMessage> messageDeserializer;
         private RingMetadata ringMetadata;
         private StorageNode newNode;
 
@@ -81,12 +82,14 @@ public class InvokeDataTransfer extends AbstractEcsNetworkCommand {
             return this;
         }
 
-        public Builder messageSerializer(IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer) {
+        public Builder messageSerializer(
+                IMessageSerializer<SerializedMessage, IKVAdminMessage> messageSerializer) {
             this.messageSerializer = messageSerializer;
             return this;
         }
 
-        public Builder messageDeserializer(IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer) {
+        public Builder messageDeserializer(
+                IMessageDeserializer<IKVAdminMessage, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return this;
         }

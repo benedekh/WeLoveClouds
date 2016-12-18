@@ -1,17 +1,17 @@
 package weloveclouds.server.requests.kvecs;
 
-import static weloveclouds.client.utils.CustomStringJoiner.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
-import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporterFactory;
@@ -25,7 +25,7 @@ import weloveclouds.server.services.utils.ReplicationTransfererFactory;
  *
  * @author Benedek
  */
-public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVECSRequest> {
+public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKVECSRequest> {
 
     private static final Logger LOGGER = Logger.getLogger(KVECSRequestFactory.class);
 
@@ -35,8 +35,8 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
     private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
     private ReplicationTransfererFactory replicationTransfererFactory;
 
-    private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
-    private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+    private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
+    private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
     protected KVECSRequestFactory(Builder builder) {
         this.dataAccessService = builder.dataAccessService;
@@ -48,7 +48,7 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
     }
 
     @Override
-    public IKVECSRequest createRequestFromReceivedMessage(KVAdminMessage receivedMessage,
+    public IKVECSRequest createRequestFromReceivedMessage(IKVAdminMessage receivedMessage,
             ICallbackRegister callbackRegister) {
         IKVECSRequest request = null;
         StatusType status = receivedMessage.getStatus();
@@ -126,8 +126,8 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
         private ICommunicationApi communicationApi;
         private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
         private ReplicationTransfererFactory replicationTransfererFactory;
-        private IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer;
-        private IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer;
+        private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
+        private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
         public Builder dataAccessService(IReplicableDataAccessService dataAccessService) {
             this.dataAccessService = dataAccessService;
@@ -152,13 +152,13 @@ public class KVECSRequestFactory implements IRequestFactory<KVAdminMessage, IKVE
         }
 
         public Builder transferMessageSerializer(
-                IMessageSerializer<SerializedMessage, KVTransferMessage> transferMessageSerializer) {
+                IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer) {
             this.transferMessageSerializer = transferMessageSerializer;
             return this;
         }
 
         public Builder transferMessageDeserializer(
-                IMessageDeserializer<KVTransferMessage, SerializedMessage> transferMessageDeserializer) {
+                IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer) {
             this.transferMessageDeserializer = transferMessageDeserializer;
             return this;
         }

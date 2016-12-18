@@ -49,7 +49,7 @@ public class InitializeKVServer implements IKVECSRequest {
         LOGGER.debug("Executing initialize KVServer request.");
         dataAccessService.setRingMetadata(ringMetadata);
         dataAccessService.setManagedHashRanges(readRanges, writeRange);
-        if (replicaConnectionInfos != null) {
+        if (replicaConnectionInfos != null && !replicaConnectionInfos.isEmpty()) {
             IReplicationTransferer replicationTransferer = replicationTransfererFactory
                     .createReplicationTransferer(replicaConnectionInfos);
             dataAccessService.setReplicationTransferer(replicationTransferer);

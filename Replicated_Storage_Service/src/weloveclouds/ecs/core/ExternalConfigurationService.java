@@ -23,12 +23,12 @@ import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
 
-import weloveclouds.client.utils.CustomStringJoiner;
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.monitoring.statsd.IStatsdClient;
 import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.utils.ListUtils;
 import weloveclouds.ecs.contexts.EcsExecutionContext;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
@@ -234,9 +234,9 @@ public class ExternalConfigurationService implements Observer {
         List<AbstractRetryableTask> failedTasks = (List<AbstractRetryableTask>) obj;
 
         if (failedTasks.isEmpty()) {
-            displayToUser(CustomStringJoiner.join(" ", batch.toString(), "Ended successfully."));
+            displayToUser(StringUtils.join(" ", batch.toString(), "Ended successfully."));
         } else {
-            displayToUser(CustomStringJoiner.join(" ", batch.toString(), "Ended with",
+            displayToUser(StringUtils.join(" ", batch.toString(), "Ended with",
                     String.valueOf(failedTasks.size()), "failed tasks."));
         }
 

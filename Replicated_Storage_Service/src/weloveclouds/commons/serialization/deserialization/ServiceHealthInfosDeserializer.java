@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import java.util.regex.Matcher;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
+import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.status.ServiceStatus;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;

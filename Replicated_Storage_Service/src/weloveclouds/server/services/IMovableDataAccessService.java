@@ -7,9 +7,9 @@ import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.server.services.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.models.DataAccessServiceStatus;
-import weloveclouds.server.store.PutType;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.store.models.PutType;
 
 /**
  * A common interface to those {@link IDataAccessService} implementations whose underlying storage

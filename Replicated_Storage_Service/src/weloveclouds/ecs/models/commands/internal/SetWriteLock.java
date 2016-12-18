@@ -1,19 +1,21 @@
 package weloveclouds.ecs.models.commands.internal;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
+
 import weloveclouds.commons.exceptions.ClientSideException;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
 import static weloveclouds.ecs.models.repository.NodeStatus.WRITELOCKED;
-import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
-import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 
 /**
  * Created by Benoit on 2016-11-22.
@@ -25,19 +27,18 @@ public class SetWriteLock extends AbstractEcsNetworkCommand {
         this.targetedNode = setWriteLockBuilder.targetedNode;
         this.messageSerializer = setWriteLockBuilder.messageSerializer;
         this.messageDeserializer = setWriteLockBuilder.messageDeserializer;
-        this.errorMessage = CustomStringJoiner.join(" ", "Unable to set write lock on node:",
-                targetedNode.toString());
+        this.errorMessage =
+                StringUtils.join(" ", "Unable to set write lock on node:", targetedNode.toString());
     }
 
     @Override
     public void execute() throws ClientSideException {
         try {
             communicationApi.connectTo(targetedNode.getEcsChannelConnectionInfo());
-            KVAdminMessage message = new KVAdminMessage.Builder()
-                    .status(StatusType.LOCKWRITE)
-                    .build();
+            KVAdminMessage message =
+                    new KVAdminMessage.Builder().status(StatusType.LOCKWRITE).build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
-            KVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
+            IKVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             } else {
@@ -45,26 +46,26 @@ public class SetWriteLock extends AbstractEcsNetworkCommand {
             }
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);
-        }finally {
+        } finally {
             try {
                 communicationApi.disconnect();
-            }catch(UnableToDisconnectException ex){
-                //LOG
+            } catch (UnableToDisconnectException ex) {
+                // LOG
             }
         }
     }
 
     @Override
     public String toString() {
-        return CustomStringJoiner.join(" ", "Command: SetWriteLock", "Targeted node:", targetedNode
-                .toString());
+        return StringUtils.join(" ", "Command: SetWriteLock", "Targeted node:",
+                targetedNode.toString());
     }
 
     public static class Builder {
         private ICommunicationApi communicationApi;
         private StorageNode targetedNode;
-        private IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer;
-        private IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer;
+        private IMessageSerializer<SerializedMessage, IKVAdminMessage> messageSerializer;
+        private IMessageDeserializer<IKVAdminMessage, SerializedMessage> messageDeserializer;
 
         public Builder communicationApi(ICommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
@@ -76,12 +77,14 @@ public class SetWriteLock extends AbstractEcsNetworkCommand {
             return this;
         }
 
-        public Builder messageSerializer(IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer) {
+        public Builder messageSerializer(
+                IMessageSerializer<SerializedMessage, IKVAdminMessage> messageSerializer) {
             this.messageSerializer = messageSerializer;
             return this;
         }
 
-        public Builder messageDeserializer(IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer) {
+        public Builder messageDeserializer(
+                IMessageDeserializer<IKVAdminMessage, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
             return this;
         }

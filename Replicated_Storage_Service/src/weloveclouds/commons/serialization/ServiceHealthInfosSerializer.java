@@ -2,7 +2,6 @@ package weloveclouds.commons.serialization;
 
 import com.google.inject.Inject;
 
-import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;

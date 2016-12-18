@@ -3,7 +3,7 @@ package weloveclouds.ecs.models.commands.internal.ssh;
 import java.util.ArrayList;
 import java.util.List;
 
-import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.commands.ICommand;
 import weloveclouds.ecs.models.repository.StorageNode;
@@ -35,6 +35,6 @@ public abstract class AbstractRemoteCommand extends AbstractCommand<String>
         ArrayList<String> commandAndArguments = new ArrayList<>();
         commandAndArguments.add(COMMAND);
         commandAndArguments.addAll(arguments);
-        return CustomStringJoiner.join(ARGUMENTS_DELIMITER, commandAndArguments);
+        return StringUtils.join(ARGUMENTS_DELIMITER, commandAndArguments);
     }
 }
