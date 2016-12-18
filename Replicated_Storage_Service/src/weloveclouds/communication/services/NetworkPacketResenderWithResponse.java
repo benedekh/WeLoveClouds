@@ -24,6 +24,7 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
     private static final Logger LOGGER = Logger.getLogger(NetworkPacketResenderWithResponse.class);
 
     private volatile byte[] response;
+    private Thread senderThread;
 
     private volatile Status executionStatus;
     private Thread receiverThread;
@@ -49,6 +50,7 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
     }
 
     private void initializePacketReceiverThread(PacketReceiver packetReceiver) {
+        senderThread = Thread.currentThread();
         receiverThread = new Thread(packetReceiver);
         LOGGER.info("Starting packet receiver thread.");
         receiverThread.start();
@@ -73,9 +75,7 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
                     ++numberOfAttemptsSoFar;
                 }
             } catch (InterruptedException ex) {
-                receiverThread.interrupt();
-                LOGGER.error(ex);
-                throw new IOException("Resend unexpectedly stopped.");
+                LOGGER.debug(ex);
             }
         }
 
@@ -108,9 +108,7 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
                     ++numberOfAttemptsSoFar;
                 }
             } catch (InterruptedException ex) {
-                receiverThread.interrupt();
-                LOGGER.error(ex);
-                throw new IOException("Resend unexpectedly stopped.");
+                LOGGER.debug(ex);
             }
         }
 
@@ -131,6 +129,7 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
         if (argument instanceof byte[]) {
             response = (byte[]) argument;
             executionStatus = Status.COMPLETED;
+            senderThread.interrupt();
         }
     }
 
