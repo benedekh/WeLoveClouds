@@ -39,32 +39,32 @@ public class SimulatedMovableDataAccessService implements IMovableDataAccessServ
     }
 
     @Override
-    public PutType putEntry(KVEntry entry) throws StorageException {
+    public synchronized PutType putEntry(KVEntry entry) throws StorageException {
         return putEntry(entry, true);
     }
 
     @Override
-    public PutType putEntryWithoutAuthorization(KVEntry entry) throws StorageException {
+    public synchronized PutType putEntryWithoutAuthorization(KVEntry entry) throws StorageException {
         return putEntry(entry, false);
     }
 
     @Override
-    public void removeEntry(String key) throws StorageException {
+    public synchronized void removeEntry(String key) throws StorageException {
         removeEntry(key, true);
     }
 
     @Override
-    public void removeEntryWithoutAuthorization(String key) throws StorageException {
+    public synchronized void removeEntryWithoutAuthorization(String key) throws StorageException {
         removeEntry(key, false);
     }
 
     @Override
-    public void putEntries(Set<MovableStorageUnit> fromStorageUnits) throws StorageException {
+    public synchronized void putEntries(Set<MovableStorageUnit> fromStorageUnits) throws StorageException {
         // left empty on purpose
     }
 
     @Override
-    public void setServiceStatus(DataAccessServiceStatus serviceNewStatus)
+    public synchronized void setServiceStatus(DataAccessServiceStatus serviceNewStatus)
             throws UninitializedServiceException {
         if (!isServiceInitialized()) {
             throw new UninitializedServiceException();
@@ -85,17 +85,17 @@ public class SimulatedMovableDataAccessService implements IMovableDataAccessServ
     }
 
     @Override
-    public void setRingMetadata(RingMetadata ringMetadata) {
+    public synchronized void setRingMetadata(RingMetadata ringMetadata) {
         this.ringMetadata = ringMetadata;
     }
 
     @Override
-    public RingMetadata getRingMetadata() {
+    public synchronized RingMetadata getRingMetadata() {
         return ringMetadata;
     }
 
     @Override
-    public void setManagedHashRanges(Set<HashRange> readRanges, HashRange writeRange) {
+    public synchronized void setManagedHashRanges(Set<HashRange> readRanges, HashRange writeRange) {
         if (readRanges != null) {
             this.readRanges.clear();
             this.readRanges.addAll(readRanges);
@@ -104,12 +104,12 @@ public class SimulatedMovableDataAccessService implements IMovableDataAccessServ
     }
 
     @Override
-    public boolean isServiceInitialized() {
+    public synchronized boolean isServiceInitialized() {
         return ringMetadata != null && readRanges != null;
     }
 
     @Override
-    public SimulatedMovableDataAccessService getSimulatedDataAccessService() {
+    public synchronized SimulatedMovableDataAccessService getSimulatedDataAccessService() {
         return this;
     }
 
