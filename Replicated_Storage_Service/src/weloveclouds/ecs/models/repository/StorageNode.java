@@ -18,8 +18,6 @@ import static weloveclouds.ecs.models.repository.NodeStatus.*;
  * Created by Benoit on 2016-11-16.
  */
 public class StorageNode extends AbstractNode {
-    private static final int NO_CONNECTION = 0;
-
     private NodeStatus metadataStatus;
     private NodeStatus status;
     private HashRange previousHashRange;
