@@ -100,7 +100,7 @@ public class HealthMonitoringService extends AbstractServer<KVHeartbeatMessage> 
                     logger.debug(CustomStringJoiner.join(" ", "Message received:",
                             receivedMessage.toString()));
                     distributedSystemAccessService.updateServiceHealthWith(receivedMessage
-                            .getNodeHealthInfos());
+                            .getServicesHealthInfos());
                     connection.kill();
                 }
             } catch (Throwable e) {

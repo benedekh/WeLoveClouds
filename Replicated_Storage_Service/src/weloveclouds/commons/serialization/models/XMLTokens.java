@@ -18,4 +18,8 @@ public class XMLTokens {
     public static final String NODE_HEALTH_INFOS = "HEALTH_INFOS";
     public static final String REPLICAS = "REPLICAS";
     public static final String REPLICA = "REPLICA";
+    public static final String STATUS = "STATUS";
+    public static final String SERVICES = "SERVICES";
+    public static final String SERVICE = "SERVICE";
+    public static final String PRIORITY = "PRIORITY";
 }

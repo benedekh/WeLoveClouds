@@ -12,7 +12,7 @@ import weloveclouds.commons.serialization.models.XMLRootNode;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.kvstore.serialization.helper.ISerializer;
-import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 import static weloveclouds.commons.serialization.models.XMLTokens.CHILD_HASH_RANGES;
 import static weloveclouds.commons.serialization.models.XMLTokens.CHILD_HASH_RANGE;
@@ -31,14 +31,14 @@ public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, Stora
     private ISerializer<String, ServerConnectionInfo> serverConnectionInfoISerializer;
     private ISerializer<String, Hash> hashSerializer;
     private ISerializer<String, HashRange> hashRangeSerializer;
-    private ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosSerializer;
+    private ISerializer<AbstractXMLNode, ServiceHealthInfos> nodeHealthInfosSerializer;
 
     @Inject
     public StorageNodeSerializer(ISerializer<String, ServerConnectionInfo>
                                          serverConnectionInfoISerializer,
                                  ISerializer<String, Hash> hashSerializer,
                                  ISerializer<String, HashRange> hashRangeSerializer,
-                                 ISerializer<AbstractXMLNode, NodeHealthInfos>
+                                 ISerializer<AbstractXMLNode, ServiceHealthInfos>
                                          nodeHealthInfosSerializer) {
         this.serverConnectionInfoISerializer = serverConnectionInfoISerializer;
         this.hashRangeSerializer = hashRangeSerializer;

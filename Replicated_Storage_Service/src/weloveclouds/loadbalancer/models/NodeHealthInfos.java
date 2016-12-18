@@ -1,60 +1,45 @@
 package weloveclouds.loadbalancer.models;
 
-import weloveclouds.communication.models.ServerConnectionInfo;
+import java.util.ArrayList;
+import java.util.List;
+
+import weloveclouds.commons.status.ServerStatus;
 
 /**
- * Created by Benoit on 2016-12-05.
+ * Created by Benoit on 2016-12-17.
  */
-public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
-    private String serverName;
-    private ServerConnectionInfo serverConnectionInfo;
-    private int numberOfActiveConnections;
+public class NodeHealthInfos {
+    private String nodeName;
+    private ServerStatus nodeStatus;
+    private List<ServiceHealthInfos> servicesHealthInfos;
 
-    protected NodeHealthInfos(Builder nodeHealthInfosBuilder) {
-        this.serverName = nodeHealthInfosBuilder.serverName;
-        this.serverConnectionInfo = nodeHealthInfosBuilder.serverConnectionInfo;
-        this.numberOfActiveConnections = nodeHealthInfosBuilder.numberOfActiveConnections;
-    }
-
-    public ServerConnectionInfo getServerConnectionInfo() {
-        return serverConnectionInfo;
-    }
-
-    public String getServerName() {
-        return serverName;
-    }
-
-    public int getNumberOfActiveConnections() {
-        return numberOfActiveConnections;
-    }
-
-    @Override
-    public int compareTo(NodeHealthInfos otherNodeHealtInfos) {
-        if (numberOfActiveConnections == otherNodeHealtInfos.getNumberOfActiveConnections())
-            return 0;
-        else if (numberOfActiveConnections > otherNodeHealtInfos.getNumberOfActiveConnections())
-            return 1;
-        else
-            return -1;
+    protected NodeHealthInfos(Builder builder) {
+        this.nodeName = builder.nodeName;
+        this.nodeStatus = builder.nodeStatus;
+        this.servicesHealthInfos = builder.servicesHealthInfos;
     }
 
     public static class Builder {
-        private ServerConnectionInfo serverConnectionInfo;
-        private String serverName;
-        private int numberOfActiveConnections;
+        private String nodeName;
+        private ServerStatus nodeStatus;
+        private List<ServiceHealthInfos> servicesHealthInfos;
 
-        public Builder serverConnectionInfo(ServerConnectionInfo serverConnectionInfo) {
-            this.serverConnectionInfo = serverConnectionInfo;
+        public Builder() {
+            servicesHealthInfos = new ArrayList<>();
+        }
+
+        public Builder nodeName(String nodeName) {
+            this.nodeName = nodeName;
             return this;
         }
 
-        public Builder numberOfActiveConnections(int numberOfActiveConnections) {
-            this.numberOfActiveConnections = numberOfActiveConnections;
+        public Builder nodeStatus(ServerStatus serverStatus) {
+            this.nodeStatus = nodeStatus;
             return this;
         }
 
-        public Builder serverName(String serverName) {
-            this.serverName = serverName;
+        public Builder addServiceHealtInfos(ServiceHealthInfos serviceHealthInfos) {
+            this.servicesHealthInfos.add(serviceHealthInfos);
             return this;
         }
 

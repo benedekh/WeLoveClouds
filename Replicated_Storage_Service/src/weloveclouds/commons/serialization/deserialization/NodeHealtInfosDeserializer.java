@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
-import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
@@ -18,7 +18,7 @@ import static weloveclouds.commons.serialization.models.XMLTokens.SERVER_CONNECT
 /**
  * Created by Benoit on 2016-12-09.
  */
-public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos, String> {
+public class NodeHealtInfosDeserializer implements IDeserializer<ServiceHealthInfos, String> {
     IDeserializer<ServerConnectionInfo, String> serverConnectionInfoStringDeserializer;
 
     @Inject
@@ -28,12 +28,12 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
     }
 
     @Override
-    public NodeHealthInfos deserialize(String serializedNodeHealthInfos)
+    public ServiceHealthInfos deserialize(String serializedNodeHealthInfos)
             throws DeserializationException {
         try {
-            return new NodeHealthInfos.Builder()
-                    .serverName(deserializeNameFrom(serializedNodeHealthInfos))
-                    .serverConnectionInfo(
+            return new ServiceHealthInfos.Builder()
+                    .serviceName(deserializeNameFrom(serializedNodeHealthInfos))
+                    .serviceEnpoint(
                             deserializeServerConnectionInfoFrom(serializedNodeHealthInfos))
                     .numberOfActiveConnections(
                             deserializeActiveConnectionNumberFrom(serializedNodeHealthInfos))

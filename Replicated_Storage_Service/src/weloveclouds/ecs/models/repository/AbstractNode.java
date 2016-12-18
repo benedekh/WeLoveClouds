@@ -2,7 +2,7 @@ package weloveclouds.ecs.models.repository;
 
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 /**
  * Created by Benoit on 2016-12-09.
@@ -11,7 +11,7 @@ public abstract class AbstractNode {
     protected String name;
     protected ServerConnectionInfo serverConnectionInfo;
     protected ServerConnectionInfo ecsChannelConnectionInfo;
-    protected NodeHealthInfos healthInfos;
+    protected ServiceHealthInfos healthInfos;
     protected Hash hashKey;
 
     public String getName() {
@@ -30,7 +30,7 @@ public abstract class AbstractNode {
         return ecsChannelConnectionInfo;
     }
 
-    public NodeHealthInfos getHealthInfos() {
+    public ServiceHealthInfos getHealthInfos() {
         return healthInfos;
     }
 

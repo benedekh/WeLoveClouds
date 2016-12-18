@@ -9,7 +9,7 @@ import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtil;
-import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
 
@@ -39,9 +39,9 @@ public class StorageNode extends AbstractNode {
         this.previousHashRange = storageNodeBuilder.previousHashRange;
 
         if (storageNodeBuilder.healthInfos == null) {
-            this.healthInfos = new NodeHealthInfos.Builder()
-                    .serverName(name)
-                    .serverConnectionInfo(serverConnectionInfo)
+            this.healthInfos = new ServiceHealthInfos.Builder()
+                    .serviceName(name)
+                    .serviceEnpoint(serverConnectionInfo)
                     .numberOfActiveConnections(NO_CONNECTION)
                     .build();
         } else {
@@ -50,7 +50,7 @@ public class StorageNode extends AbstractNode {
     }
 
 
-    public void updateHealthInfos(NodeHealthInfos healthInfos) {
+    public void updateHealthInfos(ServiceHealthInfos healthInfos) {
         this.healthInfos = healthInfos;
     }
 
@@ -137,7 +137,7 @@ public class StorageNode extends AbstractNode {
         private String name;
         private ServerConnectionInfo serverConnectionInfo;
         private ServerConnectionInfo ecsChannelConnectionInfo;
-        private NodeHealthInfos healthInfos;
+        private ServiceHealthInfos healthInfos;
         private Hash hashKey;
         private HashRange previousHashRange;
         private HashRange hashRange;
@@ -164,7 +164,7 @@ public class StorageNode extends AbstractNode {
             return this;
         }
 
-        public Builder healthInfos(NodeHealthInfos nodeHealthInfos) {
+        public Builder healthInfos(ServiceHealthInfos nodeHealthInfos) {
             this.healthInfos = nodeHealthInfos;
             return this;
         }
