@@ -56,12 +56,18 @@ public class KVTransactionMessageDeserializer
                 String serializedTransactionMessage = transactionMessageMatcher.group(XML_NODE);
 
                 if (StringUtils.stringIsNotEmpty(serializedTransactionMessage)) {
-                    IKVTransferMessage transferMessage =
-                            deserializeTransferPayload(serializedTransactionMessage);
+                    IKVTransferMessage transferMessage = null;
+                    try {
+                        transferMessage = new KVTransferMessageProxy(
+                                deserializeTransferPayload(serializedTransactionMessage));
+                    } catch (DeserializationException ex) {
+                        LOGGER.error(ex);
+                    }
+
                     KVTransactionMessage transactionMessage = new KVTransactionMessage.Builder()
                             .status(deserializeStatus(serializedTransactionMessage))
                             .transactionId(deserializeTransactionId(serializedTransactionMessage))
-                            .transferPayload(new KVTransferMessageProxy(transferMessage)).build();
+                            .transferPayload(transferMessage).build();
                     deserialized = new KVTransactionMessageProxy(transactionMessage);
                     LOGGER.debug(StringUtils.join(" ", "Deserialized KVTransactionMessage is:",
                             deserialized));

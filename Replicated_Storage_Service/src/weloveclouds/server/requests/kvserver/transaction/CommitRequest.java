@@ -28,7 +28,7 @@ public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
     @Override
     public IKVTransactionMessage execute() {
         LOGGER.debug(StringUtils.join("", "Commit phase for transaction (", transactionId,
-                ") on reciever side."));
+                ") on receiver side."));
 
         synchronized (transactionLog) {
             TransactionStatus recentStatus = transactionLog.get(transactionId);
@@ -43,10 +43,11 @@ public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
                             transactionLog.put(transactionId, TransactionStatus.COMMITTED);
                         }
                         LOGGER.debug(StringUtils.join("", "Committed for transaction (",
-                                transactionId, ") on reciever side."));
+                                transactionId, ") on receiver side."));
                         return createTransactionResponse(transactionId,
                                 StatusType.RESPONSE_COMMITTED);
                     } catch (Exception ex) {
+                        ex.printStackTrace();
                         LOGGER.error(ex);
                         return new AbortRequest.Builder().transactionLog(transactionLog)
                                 .ongoingTransactions(ongoingTransactions)
@@ -54,7 +55,7 @@ public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
                     }
                 default:
                     LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (",
-                            transactionId, ") on reciever side."));
+                            transactionId, ") on receiver side."));
                     return createTransactionResponse(transactionId, recentStatus.getResponseType());
             }
         }

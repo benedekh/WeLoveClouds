@@ -72,7 +72,7 @@ public class ServerFactory {
         return new Server.Builder<IKVTransactionMessage, IKVTransactionRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
                 .requestFactory(new TransactionServiceFactory()
-                        .createTransactionRecieverService(dataAccessService))
+                        .createTransactionReceiverService(dataAccessService))
                 .communicationApiFactory(new CommunicationApiFactory())
                 .messageSerializer(new KVTransactionMessageSerializer())
                 .messageDeserializer(new KVTransactionMessageDeserializer()).build();

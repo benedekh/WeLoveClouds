@@ -18,7 +18,7 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
 
     private static final Duration WAIT_BEFORE_ABORT = new Duration(20 * 1000);
     private static final Logger LOGGER = Logger.getLogger(InitRequest.class);
-    
+
     private IKVTransferMessage transferMessage;
 
     protected InitRequest(Builder builder) {
@@ -29,7 +29,7 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
     @Override
     public IKVTransactionMessage execute() {
         LOGGER.debug(StringUtils.join("", "Init phase for transaction (", transactionId,
-                ") on reciever side."));
+                ") on receiver side."));
 
         synchronized (transactionLog) {
             if (!transactionLog.containsKey(transactionId)) {
@@ -40,7 +40,7 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
                 TransactionStatus recentStatus = transactionLog.get(transactionId);
                 if (recentStatus != TransactionStatus.INIT) {
                     LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (",
-                            transactionId, ") on reciever side."));
+                            transactionId, ") on receiver side."));
                     return createTransactionResponse(transactionId,
                             StatusType.RESPONSE_GENERATE_NEW_ID);
                 }
@@ -48,16 +48,16 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
         }
 
         LOGGER.debug(StringUtils.join("", "Init_Ready for transaction (", transactionId,
-                ") on reciever side."));
+                ") on receiver side."));
         return createTransactionResponse(transactionId, StatusType.RESPONSE_INIT_READY);
     }
-    
+
     @Override
     public IKVTransactionRequest validate() throws IllegalArgumentException {
         super.validate();
-        if (!transactionLog.containsKey(transactionId)) {
-            LOGGER.error(StringUtils.join("", "Unknown transaction ID: ", transactionId));
-            throw new IllegalRequestException(createUnknownIDTransactionResponse(transactionId));
+        if (transferMessage == null) {
+            LOGGER.error("Transfer message is null.");
+            throw new IllegalRequestException(createUnknownIDTransactionResponse(null));
         }
         return this;
     }
@@ -66,19 +66,20 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
         AbortRequest abortRequest = new AbortRequest.Builder().transactionLog(transactionLog)
                 .ongoingTransactions(ongoingTransactions).timedAbortRequests(timedAbortRequests)
                 .transactionId(transactionId).build();
-        timedAbortRequests.put(transactionId,
-                new TimedAbortRequest(abortRequest, WAIT_BEFORE_ABORT));
+        TimedAbortRequest timedAbort = new TimedAbortRequest(abortRequest, WAIT_BEFORE_ABORT);
+        timedAbortRequests.put(transactionId, timedAbort);
+        timedAbort.start();
     }
 
     public static class Builder extends AbstractRequest.Builder<Builder> {
 
         private IKVTransferMessage transferMessage;
-        
-        public Builder transferMessage(IKVTransferMessage transferMessage){
+
+        public Builder transferMessage(IKVTransferMessage transferMessage) {
             this.transferMessage = transferMessage;
             return this;
         }
-        
+
         public InitRequest build() {
             return new InitRequest(this);
         }

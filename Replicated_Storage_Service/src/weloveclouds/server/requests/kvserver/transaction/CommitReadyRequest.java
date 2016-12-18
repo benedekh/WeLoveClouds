@@ -28,7 +28,7 @@ public class CommitReadyRequest extends AbstractRequest<CommitReadyRequest.Build
     @Override
     public IKVTransactionMessage execute() {
         LOGGER.debug(StringUtils.join("", "Commit_ready phase for transaction (", transactionId,
-                ") on reciever side."));
+                ") on receiver side."));
 
         synchronized (transactionLog) {
             TransactionStatus recentStatus = transactionLog.get(transactionId);
@@ -53,7 +53,7 @@ public class CommitReadyRequest extends AbstractRequest<CommitReadyRequest.Build
                     }
                 default:
                     LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (",
-                            transactionId, ") on reciever side."));
+                            transactionId, ") on receiver side."));
                     return createTransactionResponse(transactionId, recentStatus.getResponseType());
             }
         }

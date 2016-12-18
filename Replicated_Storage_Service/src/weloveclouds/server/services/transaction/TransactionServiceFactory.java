@@ -12,7 +12,7 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.server.requests.kvserver.transaction.IKVTransactionRequest;
-import weloveclouds.server.requests.kvserver.transaction.TransactionRecieverService;
+import weloveclouds.server.requests.kvserver.transaction.TransactionReceiverService;
 import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
 import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
 import weloveclouds.server.requests.kvserver.transfer.KVTransferRequestFactory;
@@ -32,10 +32,10 @@ public class TransactionServiceFactory {
                 .transactionMessageSerializer(new KVTransactionMessageSerializer()).build();
     }
 
-    public IRequestFactory<IKVTransactionMessage, IKVTransactionRequest> createTransactionRecieverService(
+    public IRequestFactory<IKVTransactionMessage, IKVTransactionRequest> createTransactionReceiverService(
             IMovableDataAccessService dataAccessService) {
         SimulatedMovableDataAccessService simulatedDAS = new SimulatedMovableDataAccessService();
-        return new TransactionRecieverService.Builder()
+        return new TransactionReceiverService.Builder()
                 .ongoingTransactions(new ConcurrentHashMap<UUID, IKVTransferMessage>())
                 .timedAbortRequests(new ConcurrentHashMap<UUID, TimedAbortRequest>())
                 .transactionLog(new ConcurrentHashMap<UUID, TransactionStatus>())

@@ -23,9 +23,9 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
 
     private static final Logger LOGGER = Logger.getLogger(NetworkPacketResenderWithResponse.class);
 
-    private byte[] response;
+    private volatile byte[] response;
 
-    private Status executionStatus;
+    private volatile Status executionStatus;
     private Thread receiverThread;
 
     public NetworkPacketResenderWithResponse(int maxNumberOfAttempts, byte[] packet,

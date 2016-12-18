@@ -22,7 +22,7 @@ public class AbortRequest extends AbstractRequest<AbortRequest.Builder> {
     @Override
     public IKVTransactionMessage execute() {
         LOGGER.debug(StringUtils.join("", "Abort phase for transaction (", transactionId,
-                ") on reciever side."));
+                ") on receiver side."));
 
         synchronized (transactionLog) {
             if (transactionLog.get(transactionId) != TransactionStatus.ABORTED) {
@@ -33,7 +33,7 @@ public class AbortRequest extends AbstractRequest<AbortRequest.Builder> {
         }
 
         LOGGER.debug(StringUtils.join("", "Aborted  for transaction (", transactionId,
-                ") on reciever side."));
+                ") on receiver side."));
         return createTransactionResponse(transactionId, StatusType.RESPONSE_ABORTED);
     }
 

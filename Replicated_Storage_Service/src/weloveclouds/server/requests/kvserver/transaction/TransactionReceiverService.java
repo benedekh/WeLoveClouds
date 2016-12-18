@@ -3,17 +3,22 @@ package weloveclouds.server.requests.kvserver.transaction;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
+
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
 import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
 
-public class TransactionRecieverService
+public class TransactionReceiverService
         implements IRequestFactory<IKVTransactionMessage, IKVTransactionRequest> {
+
+    private static final Logger LOGGER = Logger.getLogger(TransactionReceiverService.class);
 
     private Map<UUID, TransactionStatus> transactionLog;
     private Map<UUID, IKVTransferMessage> ongoingTransactions;
@@ -22,7 +27,7 @@ public class TransactionRecieverService
     private IRequestFactory<IKVTransferMessage, IKVTransferRequest> simulatedDASBehavior;
     private IRequestFactory<IKVTransferMessage, IKVTransferRequest> realDASBehavior;
 
-    protected TransactionRecieverService(Builder builder) {
+    protected TransactionReceiverService(Builder builder) {
         this.transactionLog = builder.transactionLog;
         this.ongoingTransactions = builder.ongoingTransactions;
         this.timedAbortRequests = builder.timedAbortRequests;
@@ -33,8 +38,9 @@ public class TransactionRecieverService
     @Override
     public IKVTransactionRequest createRequestFromReceivedMessage(
             IKVTransactionMessage receivedMessage, ICallbackRegister callbackRegister) {
-        IKVTransactionRequest request = null;
         StatusType status = receivedMessage.getStatus();
+        LOGGER.debug(StringUtils.join("", "Request status: ", status));
+        IKVTransactionRequest request = null;
 
         switch (status) {
             case ABORT:
@@ -47,7 +53,8 @@ public class TransactionRecieverService
                 request = new InitRequest.Builder().transactionLog(transactionLog)
                         .ongoingTransactions(ongoingTransactions)
                         .timedAbortRequests(timedAbortRequests)
-                        .transactionId(receivedMessage.getTransactionId()).build();
+                        .transactionId(receivedMessage.getTransactionId())
+                        .transferMessage(receivedMessage.getTransferPayload()).build();
                 break;
             case COMMIT:
                 request = new CommitRequest.Builder().transactionLog(transactionLog)
@@ -102,12 +109,12 @@ public class TransactionRecieverService
 
         public Builder realDASBehavior(
                 IRequestFactory<IKVTransferMessage, IKVTransferRequest> realDASBehavior) {
-            this.simulatedDASBehavior = realDASBehavior;
+            this.realDASBehavior = realDASBehavior;
             return this;
         }
 
-        public TransactionRecieverService build() {
-            return new TransactionRecieverService(this);
+        public TransactionReceiverService build() {
+            return new TransactionReceiverService(this);
         }
     }
 
