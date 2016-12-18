@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.joda.time.DateTime;
-import org.joda.time.Seconds;
+import org.joda.time.Duration;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.communication.models.ServerConnectionInfo;
@@ -17,7 +17,7 @@ import weloveclouds.server.services.transaction.ITransactionSenderService;
 public class ReplicationService implements IReplicationService, Runnable {
 
     private static final int MAX_NUMBER_OF_WAITING_REQUESTS = 20;
-    private static final Seconds MAX_WAITING_TIME = Seconds.seconds(2);
+    private static final Duration MAX_WAITING_TIME = new Duration(2 * 1000);
 
     private Queue<AbstractReplicationRequest<?, ?>> awaitingRequests;
     private ITransactionSenderService transactionSenderService;
@@ -117,8 +117,9 @@ public class ReplicationService implements IReplicationService, Runnable {
     }
 
     private boolean enoughTimeElapsed(DateTime sinceStart) {
-        Seconds elapsedTime = Seconds.secondsBetween(sinceStart, DateTime.now());
-        return elapsedTime.equals(MAX_WAITING_TIME) || elapsedTime.isGreaterThan(MAX_WAITING_TIME);
+        DateTime now = DateTime.now();
+        long elapsedMilliseconds = now.getMillis() - sinceStart.getMillis();
+        return elapsedMilliseconds >= MAX_WAITING_TIME.getMillis();
     }
 
     private boolean hasEnoughWaitingRequests() {

@@ -12,7 +12,7 @@ import weloveclouds.communication.api.ICommunicationApi;
  */
 public class NetworkPacketResenderFactory {
 
-    private static final Duration MINIMAL_INTERVAL = new Duration(300);
+    private static final Duration MINIMAL_INTERVAL = new Duration(500);
 
     /**
      * Creates a {@link NetworkPacketResender} which uses {@link ExponentialBackoffIntervalComputer}
