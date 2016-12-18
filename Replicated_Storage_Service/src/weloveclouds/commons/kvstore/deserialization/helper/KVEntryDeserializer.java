@@ -25,10 +25,16 @@ public class KVEntryDeserializer implements IDeserializer<KVEntry, String> {
 
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
-                deserialized =
-                        new KVEntry(deserializeField(from, KEY), deserializeField(from, VALUE));
+                String key = deserializeField(from, KEY);
+                String value = deserializeField(from, VALUE);
+
+                if (key == null && value == null) {
+                    return deserialized;
+                }
+
+                deserialized = new KVEntry(key, value);
             } catch (Exception ex) {
-                new DeserializationException(ex.getMessage());
+                throw new DeserializationException(ex.getMessage());
             }
         }
 
@@ -41,12 +47,8 @@ public class KVEntryDeserializer implements IDeserializer<KVEntry, String> {
             String deserialized = fieldMatcher.group(XML_NODE);
             if (StringUtils.stringIsNotEmpty(deserialized)) {
                 return deserialized;
-            } else {
-                return null;
             }
-        } else {
-            throw new DeserializationException(
-                    StringUtils.join("", "Unable to extract ", token, " from:", from));
         }
+        return null;
     }
 }

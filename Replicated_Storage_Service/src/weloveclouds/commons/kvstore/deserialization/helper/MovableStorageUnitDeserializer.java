@@ -31,7 +31,6 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 Map<String, String> deserializedEntries = new HashMap<>();
-
                 Matcher entriesMatcher = getRegexFromToken(KV_ENTRY).matcher(from);
                 while (entriesMatcher.find()) {
                     KVEntry deserializedEntry =
@@ -39,16 +38,10 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
                     deserializedEntries.put(deserializedEntry.getKey(),
                             deserializedEntry.getValue());
                 }
-
-                if (deserializedEntries.isEmpty()) {
-                    throw new DeserializationException(StringUtils.join("",
-                            "Unable to extract storage unit entries from:", from));
-                }
-
                 deserialized =
                         new MovableStorageUnit(deserializedEntries, PathUtils.createDummyPath());
             } catch (Exception ex) {
-                new DeserializationException(ex.getMessage());
+                throw new DeserializationException(ex.getMessage());
             }
         }
 

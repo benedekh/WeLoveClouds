@@ -1,7 +1,7 @@
 package weloveclouds.commons.utils;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -15,7 +15,8 @@ public class StringUtils {
      * Joins fragments (by calling their {@link #toString()} method) using the delimiter string into
      * one string.
      */
-    public static String join(String delimiter, Object... fragments) {
+    @SafeVarargs
+    public static <T> String join(String delimiter, T... fragments) {
         return join(delimiter, Arrays.asList(fragments));
     }
 
@@ -23,7 +24,7 @@ public class StringUtils {
      * Joins fragments (by calling their {@link #toString()} method) using the delimiter string into
      * one string.
      */
-    public static String join(String delimiter, List<Object> fragments) {
+    public static <T> String join(String delimiter, Collection<T> fragments) {
         if (fragments != null && fragments.size() > 0) {
             StringBuffer buffer = new StringBuffer();
             for (Object fragment : fragments) {

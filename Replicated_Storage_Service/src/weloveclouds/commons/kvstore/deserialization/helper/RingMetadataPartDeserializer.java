@@ -35,12 +35,19 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
 
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
-                deserialized = new RingMetadataPart.Builder()
-                        .connectionInfo(deserializeConnectionInfo(from))
-                        .readRanges(deserializeReadRanges(from))
-                        .writeRange(deserializeWriteRange(from)).build();
+                ServerConnectionInfo connectionInfo = deserializeConnectionInfo(from);
+                Set<HashRange> readRanges = deserializeReadRanges(from);
+                HashRange writeRange = deserializeWriteRange(from);
+
+                if (connectionInfo == null && (readRanges == null || readRanges.isEmpty())
+                        && writeRange == null) {
+                    return deserialized;
+                }
+
+                deserialized = new RingMetadataPart.Builder().connectionInfo(connectionInfo)
+                        .readRanges(readRanges).writeRange(writeRange).build();
             } catch (Exception ex) {
-                new DeserializationException(ex.getMessage());
+                throw new DeserializationException(ex.getMessage());
             }
         }
 
@@ -52,30 +59,24 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
         Matcher connectionInfoMatcher = getRegexFromToken(CONNECTION_INFO).matcher(from);
         if (connectionInfoMatcher.find()) {
             return connectionInfoDeserializer.deserialize(connectionInfoMatcher.group(XML_NODE));
-        } else {
-            throw new DeserializationException(
-                    StringUtils.join("", "Unable to extract connection info from:", from));
         }
+        return null;
     }
 
     private Set<HashRange> deserializeReadRanges(String from) throws DeserializationException {
         Matcher readRangesMatcher = getRegexFromToken(READ_RANGES).matcher(from);
         if (readRangesMatcher.find()) {
             return hashRangesDeserializer.deserialize(readRangesMatcher.group(XML_NODE));
-        } else {
-            throw new DeserializationException(
-                    StringUtils.join("", "Unable to extract read ranges from:", from));
         }
+        return null;
     }
 
     private HashRange deserializeWriteRange(String from) throws DeserializationException {
         Matcher writeRangeMatcher = getRegexFromToken(WRITE_RANGE).matcher(from);
         if (writeRangeMatcher.find()) {
             return hashRangeDeserializer.deserialize(writeRangeMatcher.group(XML_NODE));
-        } else {
-            throw new DeserializationException(
-                    StringUtils.join("", "Unable to extract write range from:", from));
         }
+        return null;
     }
 
 }

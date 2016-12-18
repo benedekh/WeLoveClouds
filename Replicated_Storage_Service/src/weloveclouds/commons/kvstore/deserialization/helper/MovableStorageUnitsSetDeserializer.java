@@ -36,8 +36,11 @@ public class MovableStorageUnitsSetDeserializer
                     deserialized.add(storageUnitDeserializer
                             .deserialize(storageUnitMatcher.group(XML_NODE)));
                 }
+                if(deserialized.isEmpty()){
+                    return null;
+                }
             } catch (Exception ex) {
-                new DeserializationException(ex.getMessage());
+                throw new DeserializationException(ex.getMessage());
             }
         }
 
