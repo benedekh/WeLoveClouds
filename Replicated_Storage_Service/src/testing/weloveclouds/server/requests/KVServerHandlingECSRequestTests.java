@@ -54,7 +54,7 @@ public class KVServerHandlingECSRequestTests {
     @Before
     public void init() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo =
-                new ServerConnectionInfo.Builder().ipAddress(SERVER_IP_ADDRESS).port(30002).build();
+                new ServerConnectionInfo.Builder().ipAddress(SERVER_IP_ADDRESS).port(30000).build();
         serverCommunication =
                 new KVCommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
         serverCommunication.connect();
@@ -142,7 +142,7 @@ public class KVServerHandlingECSRequestTests {
                 new HashSet<>(Arrays.asList(server2, server3));
 
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.INITKVSERVER)
-                .ringMetadata(ringMetadata).targetServerInfo(part2).build();
+                .ringMetadata(ringMetadata).targetServerInfo(part1).build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
         IKVAdminMessage response =
@@ -219,9 +219,9 @@ public class KVServerHandlingECSRequestTests {
     public void testMoveData() throws UnknownHostException, UnableToSendContentToServerException,
             ConnectionClosedException, DeserializationException {
         ServerConnectionInfo targetServer = new ServerConnectionInfo.Builder()
-                .ipAddress("localhost").port(SERVER1_KVSERVER_REQUEST_ACCEPTING_PORT).build();
-        HashRange targetRange = new HashRange.Builder().begin(HashingUtils.getHash("b"))
-                .end(HashingUtils.getHash("b")).build();
+                .ipAddress("localhost").port(50003).build();
+        HashRange targetRange = new HashRange.Builder().begin(HashingUtils.getHash("a"))
+                .end(HashingUtils.getHash("a")).build();
         RingMetadataPart target = new RingMetadataPart.Builder().connectionInfo(targetServer)
                 .writeRange(targetRange).build();
 

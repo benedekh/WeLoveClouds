@@ -38,7 +38,7 @@ public class CommitReadyRequest extends AbstractRequest<CommitReadyRequest.Build
                         IKVTransferMessage transferMessage = ongoingTransactions.get(transactionId);
                         if (transferMessage != null) {
                             simulatedDASBehavior.createRequestFromReceivedMessage(transferMessage,
-                                    new EmptyCallbackRegister());
+                                    new EmptyCallbackRegister()).validate().execute();
                             transactionLog.put(transactionId, TransactionStatus.COMMIT_READY);
                         }
                         LOGGER.debug(StringUtils.join("", "Commit_Ready for transaction (",

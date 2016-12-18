@@ -7,14 +7,12 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.KVTransactionMessageDeserializer;
-import weloveclouds.commons.kvstore.deserialization.KVTransferMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.KVTransactionMessageSerializer;
-import weloveclouds.commons.kvstore.serialization.KVTransferMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
@@ -93,12 +91,11 @@ public class ServerFactory {
         CommunicationApiFactory communicationApiFactory = new CommunicationApiFactory();
         return new Server.Builder<IKVAdminMessage, IKVECSRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
-                .requestFactory(new KVECSRequestFactory.Builder()
-                        .dataAccessService(dataAccessService)
-                        .communicationApiFactory(communicationApiFactory)
-                        .storageUnitsTransporterFactory(new StorageUnitsTransporterFactory())
-                        .transferMessageSerializer(new KVTransferMessageSerializer())
-                        .transferMessageDeserializer(new KVTransferMessageDeserializer()).build())
+                .requestFactory(
+                        new KVECSRequestFactory.Builder().dataAccessService(dataAccessService)
+                                .storageUnitsTransporterFactory(
+                                        new StorageUnitsTransporterFactory())
+                                .build())
                 .communicationApiFactory(communicationApiFactory)
                 .messageSerializer(new KVAdminMessageSerializer())
                 .messageDeserializer(new KVAdminMessageDeserializer()).build();

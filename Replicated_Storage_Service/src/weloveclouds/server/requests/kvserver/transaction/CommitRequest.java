@@ -39,7 +39,7 @@ public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
                         IKVTransferMessage transferMessage = ongoingTransactions.get(transactionId);
                         if (transferMessage != null) {
                             realDASBehavior.createRequestFromReceivedMessage(transferMessage,
-                                    new EmptyCallbackRegister());
+                                    new EmptyCallbackRegister()).validate().execute();
                             transactionLog.put(transactionId, TransactionStatus.COMMITTED);
                         }
                         LOGGER.debug(StringUtils.join("", "Committed for transaction (",

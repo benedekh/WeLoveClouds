@@ -4,15 +4,9 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
-import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
-import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporterFactory;
 import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 
@@ -28,19 +22,11 @@ public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKV
     private static final Logger LOGGER = Logger.getLogger(KVECSRequestFactory.class);
 
     private IReplicableDataAccessService dataAccessService;
-    private ICommunicationApi communicationApi;
-
     private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
-
-    private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
-    private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
     protected KVECSRequestFactory(Builder builder) {
         this.dataAccessService = builder.dataAccessService;
-        this.communicationApi = builder.communicationApi;
         this.storageUnitsTransporterFactory = builder.storageUnitsTransporterFactory;
-        this.transferMessageSerializer = builder.transferMessageSerializer;
-        this.transferMessageDeserializer = builder.transferMessageDeserializer;
     }
 
     @Override
@@ -72,18 +58,12 @@ public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKV
                 break;
             case COPYDATA:
                 request = new CopyDataToDestination.Builder().dataAccessService(dataAccessService)
-                        .communicationApi(communicationApi)
                         .targetServerInfo(receivedMessage.getTargetServerInfo())
-                        .transferMessageSerializer(transferMessageSerializer)
-                        .transferMessageDeserializer(transferMessageDeserializer)
                         .storageUnitsTransporterFactory(storageUnitsTransporterFactory).build();
                 break;
             case MOVEDATA:
                 request = new MoveDataToDestination.Builder().dataAccessService(dataAccessService)
-                        .communicationApi(communicationApi)
                         .targetServerInfo(receivedMessage.getTargetServerInfo())
-                        .transferMessageSerializer(transferMessageSerializer)
-                        .transferMessageDeserializer(transferMessageDeserializer)
                         .storageUnitsTransporterFactory(storageUnitsTransporterFactory).build();
                 break;
             case REMOVERANGE:
@@ -117,36 +97,16 @@ public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKV
      */
     public static class Builder {
         private IReplicableDataAccessService dataAccessService;
-        private ICommunicationApi communicationApi;
         private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
-        private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
-        private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
         public Builder dataAccessService(IReplicableDataAccessService dataAccessService) {
             this.dataAccessService = dataAccessService;
             return this;
         }
 
-        public Builder communicationApiFactory(CommunicationApiFactory communicationApiFactory) {
-            this.communicationApi = communicationApiFactory.createCommunicationApiV1();
-            return this;
-        }
-
         public Builder storageUnitsTransporterFactory(
                 StorageUnitsTransporterFactory storageUnitsTransporterFactory) {
             this.storageUnitsTransporterFactory = storageUnitsTransporterFactory;
-            return this;
-        }
-
-        public Builder transferMessageSerializer(
-                IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer) {
-            this.transferMessageSerializer = transferMessageSerializer;
-            return this;
-        }
-
-        public Builder transferMessageDeserializer(
-                IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer) {
-            this.transferMessageDeserializer = transferMessageDeserializer;
             return this;
         }
 
