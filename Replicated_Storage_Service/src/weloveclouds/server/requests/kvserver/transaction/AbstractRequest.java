@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
+import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
 import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
 
 public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
@@ -19,11 +20,13 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
     protected UUID transactionId;
     protected Map<UUID, TransactionStatus> transactionLog;
     protected Map<UUID, IKVTransactionMessage> ongoingTransactions;
+    protected Map<UUID, TimedAbortRequest> timedAbortRequests;
 
     protected AbstractRequest(Builder<E> builder) {
         this.transactionLog = builder.transactionLog;
         this.ongoingTransactions = builder.ongoingTransactions;
         this.transactionId = builder.transactionId;
+        this.timedAbortRequests = builder.timedAbortRequests;
     }
 
     @Override
@@ -35,10 +38,19 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         return this;
     }
 
+    protected void haltTimedAbortRequest() {
+        TimedAbortRequest timedAbortRequest = timedAbortRequests.get(transactionId);
+        if (timedAbortRequest != null) {
+            timedAbortRequests.remove(transactionId);
+            timedAbortRequest.interrupt();
+        }
+    }
+
     public abstract static class Builder<E extends Builder<E>> {
         private UUID transactionId;
         private Map<UUID, TransactionStatus> transactionLog;
         private Map<UUID, IKVTransactionMessage> ongoingTransactions;
+        private Map<UUID, TimedAbortRequest> timedAbortRequests;
 
         @SuppressWarnings("unchecked")
         public E transactionId(UUID transactionId) {
@@ -55,6 +67,12 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         @SuppressWarnings("unchecked")
         public E ongoingTransactions(Map<UUID, IKVTransactionMessage> ongoingTransactions) {
             this.ongoingTransactions = ongoingTransactions;
+            return (E) this;
+        }
+
+        @SuppressWarnings("unchecked")
+        public E timedAbortRequests(Map<UUID, TimedAbortRequest> timedAbortRequests) {
+            this.timedAbortRequests = timedAbortRequests;
             return (E) this;
         }
 

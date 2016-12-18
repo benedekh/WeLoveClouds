@@ -44,13 +44,7 @@ public class CommitTask extends TransactionCoordinatorTask<CommitTask.Builder> {
 
     public static class Builder extends TransactionCoordinatorTask.Builder<Builder> {
 
-        @Override
-        protected Builder getThis() {
-            return this;
-        }
-
-        @Override
-        public TransactionCoordinatorTask<Builder> build() {
+        public CommitTask build() {
             return new CommitTask(this);
         }
     }

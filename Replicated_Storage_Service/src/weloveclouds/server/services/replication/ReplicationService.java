@@ -19,7 +19,7 @@ public class ReplicationService implements IReplicationService, Runnable {
     private static final int MAX_NUMBER_OF_WAITING_REQUESTS = 20;
     private static final Seconds MAX_WAITING_TIME = Seconds.seconds(2);
 
-    private volatile Queue<AbstractReplicationRequest<?, ?>> awaitingRequests;
+    private Queue<AbstractReplicationRequest<?, ?>> awaitingRequests;
     private ITransactionSenderService transactionSenderService;
     private ReplicationRequestFactory replicationFactory;
 

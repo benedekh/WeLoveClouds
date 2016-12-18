@@ -65,30 +65,29 @@ public abstract class TransactionCoordinatorTask<E extends TransactionCoordinato
         private Set<SenderTransaction> transactions;
         private ExecutorService executorService;
 
-        public Builder<E> successorForSuccess(ITransactionTask successorForSuccess) {
+        @SuppressWarnings("unchecked")
+        public E successorForSuccess(ITransactionTask successorForSuccess) {
             this.successorForSuccess = successorForSuccess;
-            return getThis();
+            return (E) this;
         }
 
-        public Builder<E> successorForFail(ITransactionTask successorForFail) {
+        @SuppressWarnings("unchecked")
+        public E successorForFail(ITransactionTask successorForFail) {
             this.successorForFail = successorForFail;
-            return getThis();
+            return (E) this;
         }
 
-        public Builder<E> transactions(Set<SenderTransaction> transactions) {
+        @SuppressWarnings("unchecked")
+        public E transactions(Set<SenderTransaction> transactions) {
             this.transactions = transactions;
-            return getThis();
+            return (E) this;
         }
 
-        public Builder<E> executorService(ExecutorService executorService) {
+        @SuppressWarnings("unchecked")
+        public E executorService(ExecutorService executorService) {
             this.executorService = executorService;
-            return getThis();
+            return (E) this;
         }
-
-
-        protected abstract E getThis();
-
-        public abstract ITransactionTask build();
 
     }
 }

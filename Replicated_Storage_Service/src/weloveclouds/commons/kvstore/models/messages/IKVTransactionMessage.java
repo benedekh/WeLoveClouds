@@ -1,9 +1,6 @@
 package weloveclouds.commons.kvstore.models.messages;
 
-import java.util.Set;
 import java.util.UUID;
-
-import weloveclouds.communication.models.ServerConnectionInfo;
 
 public interface IKVTransactionMessage {
 
@@ -12,7 +9,6 @@ public interface IKVTransactionMessage {
         COMMIT_READY, /* Are you ready for a commit? */
         COMMIT, /* Commit the transaction */
         ABORT, /* Abort the transaction */
-        HELP, /* Send me the status of the transaction */
         RESPONSE_INIT_READY, /* I am ready for a new transaction */
         RESPONSE_GENERATE_NEW_ID, /* Not ready for the transaction, need transaction ID is needed */
         RESPONSE_COMMIT_READY, /* I am ready to commit */
@@ -24,8 +20,6 @@ public interface IKVTransactionMessage {
     public StatusType getStatus();
 
     public UUID getTransactionId();
-
-    public Set<ServerConnectionInfo> getParticipantConnectionInfos();
 
     public IKVTransferMessage getTransferPayload();
 

@@ -12,7 +12,6 @@ import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.commons.utils.SetUtils;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
@@ -55,13 +54,9 @@ public class TransactionSenderService implements ITransactionSenderService {
             for (ServerConnectionInfo connectionInfo : participantConnectionInfos) {
                 try {
                     Connection connection = connectionFactory.createConnectionFrom(connectionInfo);
-                    Set<ServerConnectionInfo> otherParticipants =
-                            SetUtils.removeValueFromSet(participantConnectionInfos, connectionInfo);
-
                     SenderTransaction senderTransaction = new SenderTransaction.Builder()
                             .connection(connection).communicationApi(communicationApi)
                             .transactionId(transactionId).transferMessage(transferMessage)
-                            .otherParticipants(otherParticipants)
                             .transactionMessageSerializer(transactionMessageSerializer)
                             .transactionMessageDeserializer(transactionMessageDeserializer).build();
                     transactions.add(senderTransaction);

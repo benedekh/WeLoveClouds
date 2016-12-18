@@ -1,23 +1,19 @@
 package weloveclouds.commons.kvstore.models.messages;
 
-import java.util.Set;
 import java.util.UUID;
 
 import weloveclouds.commons.kvstore.models.messages.proxy.KVTransactionMessageProxy;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.communication.models.ServerConnectionInfo;
 
 public class KVTransactionMessage implements IKVTransactionMessage {
 
     private StatusType status;
     private UUID transactionId;
-    private Set<ServerConnectionInfo> participantConnectionInfos;
     private IKVTransferMessage transferPayload;
 
     protected KVTransactionMessage(Builder builder) {
         this.status = builder.status;
         this.transactionId = builder.transactionId;
-        this.participantConnectionInfos = builder.participantConnectionInfos;
         this.transferPayload = builder.transferPayload;
     }
 
@@ -32,11 +28,6 @@ public class KVTransactionMessage implements IKVTransactionMessage {
     }
 
     @Override
-    public Set<ServerConnectionInfo> getParticipantConnectionInfos() {
-        return participantConnectionInfos;
-    }
-
-    @Override
     public IKVTransferMessage getTransferPayload() {
         return transferPayload;
     }
@@ -45,8 +36,6 @@ public class KVTransactionMessage implements IKVTransactionMessage {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((participantConnectionInfos == null) ? 0
-                : participantConnectionInfos.hashCode());
         result = prime * result + ((transactionId == null) ? 0 : transactionId.hashCode());
         result = prime * result + ((transferPayload == null) ? 0 : transferPayload.hashCode());
         return result;
@@ -68,13 +57,6 @@ public class KVTransactionMessage implements IKVTransactionMessage {
             return false;
         }
         KVTransactionMessage other = (KVTransactionMessage) obj;
-        if (participantConnectionInfos == null) {
-            if (other.participantConnectionInfos != null) {
-                return false;
-            }
-        } else if (!participantConnectionInfos.equals(other.participantConnectionInfos)) {
-            return false;
-        }
         if (transactionId == null) {
             if (other.transactionId != null) {
                 return false;
@@ -95,15 +77,12 @@ public class KVTransactionMessage implements IKVTransactionMessage {
     @Override
     public String toString() {
         return StringUtils.join(" ", "{ Message status:", status, ", Transaction ID:",
-                transactionId, ", Participant connection infos: ",
-                StringUtils.setToString(participantConnectionInfos), ", Transfer payload: ",
-                transferPayload, "}");
+                transactionId, ", Transfer payload: ", transferPayload, "}");
     }
 
     public static class Builder {
         private StatusType status;
         private UUID transactionId;
-        private Set<ServerConnectionInfo> participantConnectionInfos;
         private IKVTransferMessage transferPayload;
 
         public Builder status(StatusType status) {
@@ -113,12 +92,6 @@ public class KVTransactionMessage implements IKVTransactionMessage {
 
         public Builder transactionId(UUID transactionId) {
             this.transactionId = transactionId;
-            return this;
-        }
-
-        public Builder participantConnectionInfos(
-                Set<ServerConnectionInfo> participantConnectionInfos) {
-            this.participantConnectionInfos = participantConnectionInfos;
             return this;
         }
 

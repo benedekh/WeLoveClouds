@@ -44,13 +44,7 @@ public class AbortTask extends TransactionCoordinatorTask<AbortTask.Builder> {
 
     public static class Builder extends TransactionCoordinatorTask.Builder<Builder> {
 
-        @Override
-        protected Builder getThis() {
-            return this;
-        }
-
-        @Override
-        public TransactionCoordinatorTask<Builder> build() {
+        public AbortTask build() {
             return new AbortTask(this);
         }
     }

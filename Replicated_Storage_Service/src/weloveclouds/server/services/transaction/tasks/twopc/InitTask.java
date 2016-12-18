@@ -79,13 +79,7 @@ public class InitTask extends TransactionCoordinatorTask<InitTask.Builder> {
 
     public static class Builder extends TransactionCoordinatorTask.Builder<Builder> {
 
-        @Override
-        protected Builder getThis() {
-            return this;
-        }
-
-        @Override
-        public TransactionCoordinatorTask<Builder> build() {
+        public InitTask build() {
             return new InitTask(this);
         }
     }

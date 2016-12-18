@@ -8,21 +8,24 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.Status
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
 import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
 
-public class TransactionReceiverService
+public class TransactionRecieverService
         implements IRequestFactory<IKVTransactionMessage, IKVTransactionRequest> {
 
     private Map<UUID, TransactionStatus> transactionLog;
     private Map<UUID, IKVTransactionMessage> ongoingTransactions;
+    private Map<UUID, TimedAbortRequest> timedAbortRequests;
 
     private IRequestFactory<IKVTransferMessage, IKVTransferRequest> simulatedDASBehavior;
     private IRequestFactory<IKVTransferMessage, IKVTransferRequest> realDASBehavior;
 
-    protected TransactionReceiverService(Builder builder) {
+    protected TransactionRecieverService(Builder builder) {
         this.transactionLog = builder.transactionLog;
         this.ongoingTransactions = builder.ongoingTransactions;
+        this.timedAbortRequests = builder.timedAbortRequests;
         this.simulatedDASBehavior = builder.simulatedDASBehavior;
         this.realDASBehavior = builder.realDASBehavior;
     }
@@ -37,16 +40,19 @@ public class TransactionReceiverService
             case ABORT:
                 request = new AbortRequest.Builder().transactionLog(transactionLog)
                         .ongoingTransactions(ongoingTransactions)
+                        .timedAbortRequests(timedAbortRequests)
                         .transactionId(receivedMessage.getTransactionId()).build();
                 break;
             case INIT:
                 request = new InitRequest.Builder().transactionLog(transactionLog)
                         .ongoingTransactions(ongoingTransactions)
+                        .timedAbortRequests(timedAbortRequests)
                         .transactionId(receivedMessage.getTransactionId()).build();
                 break;
             case COMMIT:
                 request = new CommitRequest.Builder().transactionLog(transactionLog)
                         .ongoingTransactions(ongoingTransactions)
+                        .timedAbortRequests(timedAbortRequests)
                         .transactionId(receivedMessage.getTransactionId())
                         .realDASBehavior(realDASBehavior).build();
                 break;
@@ -69,6 +75,7 @@ public class TransactionReceiverService
     public static class Builder {
         private Map<UUID, TransactionStatus> transactionLog;
         private Map<UUID, IKVTransactionMessage> ongoingTransactions;
+        private Map<UUID, TimedAbortRequest> timedAbortRequests;
         private IRequestFactory<IKVTransferMessage, IKVTransferRequest> simulatedDASBehavior;
         private IRequestFactory<IKVTransferMessage, IKVTransferRequest> realDASBehavior;
 
@@ -79,6 +86,11 @@ public class TransactionReceiverService
 
         public Builder ongoingTransactions(Map<UUID, IKVTransactionMessage> ongoingTransactions) {
             this.ongoingTransactions = ongoingTransactions;
+            return this;
+        }
+
+        public Builder timedAbortRequests(Map<UUID, TimedAbortRequest> timedAbortRequests) {
+            this.timedAbortRequests = timedAbortRequests;
             return this;
         }
 
@@ -94,8 +106,8 @@ public class TransactionReceiverService
             return this;
         }
 
-        public TransactionReceiverService build() {
-            return new TransactionReceiverService(this);
+        public TransactionRecieverService build() {
+            return new TransactionRecieverService(this);
         }
     }
 

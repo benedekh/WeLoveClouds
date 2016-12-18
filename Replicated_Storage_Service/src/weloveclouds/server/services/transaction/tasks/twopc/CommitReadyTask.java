@@ -45,13 +45,7 @@ public class CommitReadyTask extends TransactionCoordinatorTask<CommitReadyTask.
 
     public static class Builder extends TransactionCoordinatorTask.Builder<Builder> {
 
-        @Override
-        protected Builder getThis() {
-            return this;
-        }
-
-        @Override
-        public TransactionCoordinatorTask<Builder> build() {
+        public CommitReadyTask build() {
             return new CommitReadyTask(this);
         }
     }

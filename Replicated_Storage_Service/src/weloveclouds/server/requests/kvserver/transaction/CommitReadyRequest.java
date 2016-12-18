@@ -5,10 +5,12 @@ import static weloveclouds.server.requests.kvserver.transaction.utils.KVTransact
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
 
@@ -25,33 +27,45 @@ public class CommitReadyRequest extends AbstractRequest<CommitReadyRequest.Build
 
     @Override
     public IKVTransactionMessage execute() {
-        if (!transactionLog.containsKey(transactionId)
-                || !ongoingTransactions.containsKey(transactionId)) {
-            return createUnknownIDTransactionResponse(transactionId);
-        } else {
-            TransactionStatus recentStatus = transactionLog.get(transactionId);
-            IKVTransactionMessage transactionMessage = ongoingTransactions.get(transactionId);
-            // TODO handle if status is HELP_NEEDED
-            switch (recentStatus) {
-                case INIT:
-                    try {
+        LOGGER.debug(StringUtils.join("", "Commit_ready phase for transaction (", transactionId,
+                ") on reciever side."));
+
+        TransactionStatus recentStatus = transactionLog.get(transactionId);
+        switch (recentStatus) {
+            case INIT:
+                try {
+                    IKVTransactionMessage transactionMessage =
+                            ongoingTransactions.get(transactionId);
+                    if (transactionMessage != null) {
                         simulatedDASBehavior.createRequestFromReceivedMessage(
                                 transactionMessage.getTransferPayload(), null);
                         transactionLog.put(transactionId, TransactionStatus.COMMIT_READY);
-                        return createTransactionResponse(transactionId,
-                                StatusType.RESPONSE_COMMIT_READY);
-                    } catch (Exception ex) {
-                        LOGGER.error(ex);
-                        return createTransactionResponse(transactionId,
-                                StatusType.RESPONSE_ABORTED);
                     }
-                case COMMIT_READY:
+                    LOGGER.debug(StringUtils.join("", "Commit_Ready for transaction (",
+                            transactionId, ") on reciever side."));
                     return createTransactionResponse(transactionId,
                             StatusType.RESPONSE_COMMIT_READY);
-                default:
-                    return createTransactionResponse(transactionId, StatusType.RESPONSE_ABORTED);
-            }
+                } catch (Exception ex) {
+                    LOGGER.error(ex);
+                    return new AbortRequest.Builder().transactionLog(transactionLog)
+                            .ongoingTransactions(ongoingTransactions).transactionId(transactionId)
+                            .build().execute();
+                }
+            default:
+                LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (", transactionId,
+                        ") on reciever side."));
+                return createTransactionResponse(transactionId, recentStatus.getResponseType());
         }
+    }
+
+    @Override
+    public IKVTransactionRequest validate() throws IllegalArgumentException {
+        super.validate();
+        if (!transactionLog.containsKey(transactionId)) {
+            LOGGER.error(StringUtils.join("", "Unknown transaction ID: ", transactionId));
+            throw new IllegalRequestException(createUnknownIDTransactionResponse(transactionId));
+        }
+        return this;
     }
 
     public static class Builder extends AbstractRequest.Builder<Builder> {

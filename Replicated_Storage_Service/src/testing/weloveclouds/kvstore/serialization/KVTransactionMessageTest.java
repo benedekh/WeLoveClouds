@@ -24,10 +24,9 @@ import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.PathUtils;
-import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
-public class KVTransactionMessageTest extends TestCase{
+public class KVTransactionMessageTest extends TestCase {
     private static IMessageDeserializer<IKVTransactionMessage, SerializedMessage> transactionMessageDeserializer =
             new KVTransactionMessageDeserializer();
     private static IMessageSerializer<SerializedMessage, IKVTransactionMessage> transactionMessageSerializer =
@@ -56,18 +55,9 @@ public class KVTransactionMessageTest extends TestCase{
                         .status(StatusType.TRANSFER_ENTRIES).putableEntry(putableEntry)
                         .removableKey(removableKey).responseMessage(responseMessage).build();
 
-        ServerConnectionInfo connectionInfo1 =
-                new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
-        ServerConnectionInfo connectionInfo2 =
-                new ServerConnectionInfo.Builder().ipAddress("localhost").port(8081).build();
-
-        Set<ServerConnectionInfo> participantConnectionInfos =
-                new HashSet<>(Arrays.asList(connectionInfo1, connectionInfo2));
-
-        KVTransactionMessage transactionMessage = new KVTransactionMessage.Builder()
-                .status(IKVTransactionMessage.StatusType.INIT).transactionId(UUID.randomUUID())
-                .participantConnectionInfos(participantConnectionInfos)
-                .transferPayload(transferMessage).build();
+        KVTransactionMessage transactionMessage =
+                new KVTransactionMessage.Builder().status(IKVTransactionMessage.StatusType.INIT)
+                        .transactionId(UUID.randomUUID()).transferPayload(transferMessage).build();
 
         SerializedMessage serializedMessage =
                 transactionMessageSerializer.serialize(transactionMessage);

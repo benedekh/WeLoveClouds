@@ -49,9 +49,8 @@ public class XMLTokens {
     public static final String TRANSACTION_ID = "TRANSACTION_ID";
     public static final String UUID = "UUID";
     public static final String ID = "ID";
-    public static final String PARTICIPANT_CONNECTION_INFOS = "PARTICIPANT_CONNECTION_INFOS";
     public static final String TRANSFER_MESSAGE = "TRANSFER_MESSAGE";
-    
+
     public static final String KVTRANSFER_MESSAGE = "KVTRANSFER_MESSAGE";
     public static final String REMOVABLE_KEY = "REMOVABLE_KEY";
     public static final String PUTABLE_ENTRY = "PUTABLE_ENTRY";
