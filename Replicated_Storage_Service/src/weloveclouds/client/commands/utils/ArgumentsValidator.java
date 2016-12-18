@@ -1,7 +1,5 @@
 package weloveclouds.client.commands.utils;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,6 +8,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.client.commands.ClientCommand;
 import weloveclouds.client.commands.LogLevel;
 import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -53,9 +52,8 @@ public class ArgumentsValidator {
 
         if (isNullOrEmpty(arguments) || arguments.length != REQUIRED_CLI_ARGUMENT_NUMBER) {
             logWarning(command);
-            throw new IllegalArgumentException(
-                    join("", String.valueOf(REQUIRED_CLI_ARGUMENT_NUMBER),
-                            " argument is needed: <client name>"));
+            throw new IllegalArgumentException(StringUtils.join("", REQUIRED_CLI_ARGUMENT_NUMBER,
+                    " argument is needed: <client name>"));
         } else if (arguments[CLI_CLIENT_NAME_INDEX].isEmpty()) {
             logWarning(command);
             throw new IllegalArgumentException("Client name cannot be empty.");
@@ -81,9 +79,8 @@ public class ArgumentsValidator {
                     "Command need arguments (<IP address> and <port>) only.");
         } else if (remoteServer.getPort() < NETWORK_PORT_LOWER_LIMIT
                 || remoteServer.getPort() > NETWORK_PORT_UPPER_LIMIT) {
-            String message = join("", "Port should be in the range [",
-                    String.valueOf(NETWORK_PORT_LOWER_LIMIT), ",",
-                    String.valueOf(NETWORK_PORT_UPPER_LIMIT) + "].");
+            String message = StringUtils.join("", "Port should be in the range [",
+                    NETWORK_PORT_LOWER_LIMIT, ",", NETWORK_PORT_UPPER_LIMIT, "].");
             logWarning(command);
             throw new IllegalArgumentException(message);
         }
@@ -148,7 +145,7 @@ public class ArgumentsValidator {
         if (key.length > limit) {
             logWarning(commandName);
             throw new IllegalArgumentException(
-                    join(" ", "Max", fieldName, "size is", String.valueOf(limit), "bytes."));
+                    StringUtils.join(" ", "Max", fieldName, "size is", limit, "bytes."));
         }
     }
 
@@ -164,9 +161,9 @@ public class ArgumentsValidator {
     public static void validateLogLevelArguments(String[] arguments)
             throws IllegalArgumentException {
         String command = "logLevel";
-        String message = join(" ",
+        String message = StringUtils.join(" ",
                 "Log level is not recognized. It should be capitalized and should be one of the followings:",
-                join(",", logLevels));
+                StringUtils.join(",", logLevels));
 
         if (isNullOrEmpty(arguments) || arguments.length != LOG_LEVEL_NUMBER_OF_ARGUMENTS) {
             logWarning(command);
@@ -230,7 +227,7 @@ public class ArgumentsValidator {
      * @param command which command sent the warning
      */
     private static void logWarning(String command) {
-        String warning = join(" ", command, "command is invalid.");
+        String warning = StringUtils.join(" ", command, "command is invalid.");
         LOGGER.warn(warning);
     }
 }

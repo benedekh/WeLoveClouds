@@ -1,7 +1,5 @@
 package weloveclouds.server.client.commands.utils;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.commands.LogLevel;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.client.commands.ServerCommand;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
@@ -72,8 +71,7 @@ public class ArgumentsValidator {
         String command = "cliArguments";
         if (isNullOrEmpty(arguments) || arguments.length != REQUIRED_CLI_ARGUMENT_NUMBER) {
             logWarning(command);
-            throw new IllegalArgumentException(join("",
-                    String.valueOf(REQUIRED_CLI_ARGUMENT_NUMBER),
+            throw new IllegalArgumentException(StringUtils.join("", REQUIRED_CLI_ARGUMENT_NUMBER,
                     " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level> <server name>"));
         } else {
             validateCacheSizeArguments(new String[] {arguments[CLI_CACHE_SIZE_INDEX]});
@@ -82,9 +80,9 @@ public class ArgumentsValidator {
             validatePort(command, arguments[CLI_KVECS_PORT_INDEX]);
             if (!validLogLevels.contains(arguments[CLI_LOG_LEVEL_INDEX])) {
                 logWarning(command);
-                throw new IllegalArgumentException(join(" ",
+                throw new IllegalArgumentException(StringUtils.join(" ",
                         "Log level is not recognized. It should be capitalized and should be one of the followings:",
-                        join(",", validLogLevels)));
+                        StringUtils.join(",", validLogLevels)));
             }
             DisplacementStrategy displacementStrategy = StrategyFactory
                     .createDisplacementStrategy(arguments[CLI_DISPLACEMENT_STRATEGY_INDEX]);
@@ -232,9 +230,8 @@ public class ArgumentsValidator {
             int port = Integer.parseInt(portAsString);
 
             if (port < PORT_LOWER_LIMIT || port > PORT_UPPER_LIMIT) {
-                String message =
-                        join("", "Port should be in the range [", String.valueOf(PORT_LOWER_LIMIT),
-                                ",", String.valueOf(PORT_UPPER_LIMIT) + "].");
+                String message = StringUtils.join("", "Port should be in the range [",
+                        PORT_LOWER_LIMIT, ",", PORT_UPPER_LIMIT, "].");
                 logWarning(command);
                 throw new IllegalArgumentException(message);
             }
@@ -255,9 +252,9 @@ public class ArgumentsValidator {
     public static void validateLogLevelArguments(String[] arguments)
             throws IllegalArgumentException {
         String command = "logLevel";
-        String message = join(" ",
+        String message = StringUtils.join(" ",
                 "Log level is not recognized. It should be capitalized and should be one of the followings:",
-                join(",", validLogLevels));
+                StringUtils.join(",", validLogLevels));
 
         if (isNullOrEmpty(arguments) || arguments.length != LOG_LEVEL_NUMBER_OF_ARGUMENTS) {
             logWarning(command);
@@ -279,9 +276,9 @@ public class ArgumentsValidator {
     public static void validateStrategyArguments(String[] arguments)
             throws IllegalArgumentException {
         String command = "strategy";
-        String message = join(" ",
+        String message = StringUtils.join(" ",
                 "Strategy is not recognized. It should be capitalized and should be one of the followings:",
-                join(",", validStrategyNames));
+                StringUtils.join(",", validStrategyNames));
 
         if (isNullOrEmpty(arguments) || arguments.length != STRATEGY_NUMBER_OF_ARGUMENTS) {
             logWarning(command);
@@ -318,7 +315,7 @@ public class ArgumentsValidator {
      * @param command which command sent the warning
      */
     private static void logWarning(String command) {
-        LOGGER.warn(join(" ", command, "command is invalid."));
+        LOGGER.warn(StringUtils.join(" ", command, "command is invalid."));
     }
 
 }

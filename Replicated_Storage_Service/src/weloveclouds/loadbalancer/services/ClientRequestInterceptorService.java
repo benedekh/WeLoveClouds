@@ -36,18 +36,14 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
 
     @Inject
     public ClientRequestInterceptorService(CommunicationApiFactory communicationApiFactory,
-                                           ServerSocketFactory serverSocketFactory,
-                                           IMessageSerializer<SerializedMessage, KVMessage>
-                                                   messageSerializer,
-                                           IMessageDeserializer<KVMessage, SerializedMessage>
-                                                   messageDeserializer,
-                                           @ClientRequestsInterceptorPort int port,
-                                           DistributedSystemAccessService
-                                                   distributedSystemAccessService,
-                                           ICacheService<String, String> cacheService) throws
-            IOException {
-        super(communicationApiFactory, serverSocketFactory, messageSerializer,
-                messageDeserializer, port);
+            ServerSocketFactory serverSocketFactory,
+            IMessageSerializer<SerializedMessage, KVMessage> messageSerializer,
+            IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer,
+            @ClientRequestsInterceptorPort int port,
+            DistributedSystemAccessService distributedSystemAccessService,
+            ICacheService<String, String> cacheService) throws IOException {
+        super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
+                port);
         this.logger = Logger.getLogger(ClientRequestInterceptorService.class);
         this.distributedSystemAccessService = distributedSystemAccessService;
         this.cacheService = cacheService;
@@ -62,11 +58,8 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
             while (status == RUNNING) {
                 ConnectionHandler connectionHandler = new ConnectionHandler(
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
-                        new Connection.Builder().socket(socket.accept()).build(),
-                        messageSerializer,
-                        messageDeserializer,
-                        distributedSystemAccessService,
-                        cacheService);
+                        new Connection.Builder().socket(socket.accept()).build(), messageSerializer,
+                        messageDeserializer, distributedSystemAccessService, cacheService);
                 connectionHandler.handleConnection();
             }
         } catch (IOException ex) {
@@ -83,12 +76,11 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
         private ICacheService<String, String> cacheService;
 
         public ConnectionHandler(IConcurrentCommunicationApi communicationApi,
-                                 Connection connection,
-                                 IMessageSerializer<SerializedMessage, KVMessage> messageSerializer,
-                                 IMessageDeserializer<KVMessage, SerializedMessage>
-                                         messageDeserializer,
-                                 DistributedSystemAccessService distributedSystemAccessService,
-                                 ICacheService<String, String> cacheService) {
+                Connection connection,
+                IMessageSerializer<SerializedMessage, KVMessage> messageSerializer,
+                IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer,
+                DistributedSystemAccessService distributedSystemAccessService,
+                ICacheService<String, String> cacheService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;
@@ -110,24 +102,24 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
                     KVMessage deserializedMessage =
                             messageDeserializer.deserialize(receivedMessage);
 
-                    logger.debug(StringUtils.join(" ", "Message received:",
-                            deserializedMessage.toString()));
+                    logger.debug(StringUtils.join(" ", "Message received:", deserializedMessage));
 
                     switch (deserializedMessage.getStatus()) {
                         case GET:
                             try {
                                 String value = cacheService.get(deserializedMessage.getKey());
-                                communicationApi.send(messageSerializer
-                                        .serialize(new KVMessage.Builder()
-                                                .status(GET_SUCCESS)
-                                                .key(deserializedMessage.getKey())
-                                                .value(value)
-                                                .build()).getBytes(), connection);
+                                communicationApi.send(
+                                        messageSerializer.serialize(
+                                                new KVMessage.Builder().status(GET_SUCCESS)
+                                                        .key(deserializedMessage.getKey())
+                                                        .value(value).build())
+                                                .getBytes(),
+                                        connection);
                             } catch (UnableToFindRequestedKeyException ex) {
                                 transferDestination = distributedSystemAccessService
                                         .getReadServerFor(deserializedMessage.getKey());
-                                communicationApi.send(transferMessageToServerAndGetResponse
-                                        (receivedMessage, transferDestination), connection);
+                                communicationApi.send(transferMessageToServerAndGetResponse(
+                                        receivedMessage, transferDestination), connection);
                             }
                             break;
                         case PUT:
@@ -135,20 +127,20 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
                                     deserializedMessage.getValue());
                             transferDestination = distributedSystemAccessService
                                     .getWriteServerFor(deserializedMessage.getKey());
-                            communicationApi.send(transferMessageToServerAndGetResponse
-                                    (receivedMessage, transferDestination), connection);
+                            communicationApi.send(transferMessageToServerAndGetResponse(
+                                    receivedMessage, transferDestination), connection);
                             break;
                         case DELETE:
                             cacheService.delete(deserializedMessage.getKey());
                             transferDestination = distributedSystemAccessService
                                     .getWriteServerFor(deserializedMessage.getKey());
-                            communicationApi.send(transferMessageToServerAndGetResponse
-                                    (receivedMessage, transferDestination), connection);
+                            communicationApi.send(transferMessageToServerAndGetResponse(
+                                    receivedMessage, transferDestination), connection);
                         default:
                             transferDestination = distributedSystemAccessService
                                     .getWriteServerFor(deserializedMessage.getKey());
-                            communicationApi.send(transferMessageToServerAndGetResponse
-                                    (receivedMessage, transferDestination), connection);
+                            communicationApi.send(transferMessageToServerAndGetResponse(
+                                    receivedMessage, transferDestination), connection);
                             break;
                     }
                 }
@@ -160,11 +152,9 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
         }
 
         private byte[] transferMessageToServerAndGetResponse(byte[] rawMessage,
-                                                             StorageNode destination)
-                throws ClientSideException {
+                StorageNode destination) throws ClientSideException {
             byte[] serverResponse;
-            ICommunicationApi communicationApi =
-                    communicationApiFactory.createCommunicationApiV1();
+            ICommunicationApi communicationApi = communicationApiFactory.createCommunicationApiV1();
             communicationApi.connectTo(destination.getServerConnectionInfo());
             communicationApi.send(rawMessage);
             serverResponse = communicationApi.receive();

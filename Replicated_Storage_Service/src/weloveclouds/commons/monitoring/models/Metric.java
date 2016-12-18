@@ -18,7 +18,7 @@ public class Metric {
     }
 
     public String toString() {
-        return StringUtils.join(METRIC_PART_DELIMITER, service.toString(), name);
+        return StringUtils.join(METRIC_PART_DELIMITER, service, name);
     }
 
     public static class Builder {

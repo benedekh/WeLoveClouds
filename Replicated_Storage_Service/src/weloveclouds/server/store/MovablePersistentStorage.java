@@ -64,7 +64,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      */
     public Set<MovableStorageUnit> filterEntries(HashRange range) {
         LOGGER.debug(StringUtils.join(" ", "Filtering storage units according to range filter (",
-                range.toString(), ") started."));
+                range, ") started."));
 
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
         Set<MovableStorageUnit> toBeCopied = new HashSet<>();
@@ -73,8 +73,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             toBeCopied.add(new MovableStorageUnit(storageUnit).copyEntries(range));
         }
 
-        LOGGER.debug(StringUtils.join(" ", String.valueOf(toBeCopied.size()),
-                " storage units are filtered."));
+        LOGGER.debug(StringUtils.join(" ", toBeCopied.size(), " storage units are filtered."));
         return toBeCopied;
     }
 
@@ -86,7 +85,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      */
     public void removeEntries(HashRange range) throws StorageException {
         LOGGER.debug(StringUtils.join(" ", "Removing storage units according to range filter (",
-                range.toString(), ") started."));
+                range, ") started."));
 
 
         Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
@@ -180,7 +179,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             for (PersistedStorageUnit hasFreeSpace : collectNotFullStorageUnits()) {
                 putStorageUnitIntoFreeSpaceCache(hasFreeSpace);
             }
-            LOGGER.debug(StringUtils.join(" ", String.valueOf(unitsWithFreeSpace.size()),
+            LOGGER.debug(StringUtils.join(" ", unitsWithFreeSpace.size(),
                     " storage units have free space after defragmentation."));
 
         }

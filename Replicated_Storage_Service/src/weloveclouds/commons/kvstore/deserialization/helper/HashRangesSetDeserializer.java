@@ -29,19 +29,16 @@ public class HashRangesSetDeserializer implements IDeserializer<Set<HashRange>, 
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 deserialized = new HashSet<>();
-
                 Matcher hashRangesMatcher = getRegexFromToken(HASH_RANGE).matcher(from);
                 while (hashRangesMatcher.find()) {
                     deserialized.add(
                             hashRangeDeserializer.deserialize(hashRangesMatcher.group(XML_NODE)));
                 }
-
                 if (deserialized.isEmpty()) {
-                    throw new DeserializationException(
-                            StringUtils.join("", "Unable to extract hash ranges from:", from));
+                    return null;
                 }
             } catch (Exception ex) {
-                new DeserializationException(ex.getMessage());
+                throw new DeserializationException(ex.getMessage());
             }
         }
 

@@ -36,8 +36,11 @@ public class ServerConnectionInfosSetDeserializer
                     deserialized.add(connectionInfoDeserializer
                             .deserialize(connectionInfosMatcher.group(XML_NODE)));
                 }
+                if (deserialized.isEmpty()) {
+                    return null;
+                }
             } catch (Exception ex) {
-                new DeserializationException(ex.getMessage());
+                throw new DeserializationException(ex.getMessage());
             }
         }
 

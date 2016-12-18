@@ -4,7 +4,6 @@ import static weloveclouds.commons.serialization.models.XMLTokens.BEGIN;
 import static weloveclouds.commons.serialization.models.XMLTokens.END;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.util.regex.Matcher;
 
@@ -29,10 +28,16 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
 
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
-                deserialized = new HashRange.Builder().begin(deserializeHash(from, BEGIN))
-                        .end(deserializeHash(from, END)).build();
+                Hash begin = deserializeHash(from, BEGIN);
+                Hash end = deserializeHash(from, END);
+                
+                if (begin == null && end == null) {
+                    return deserialized;
+                }
+                
+                deserialized = new HashRange.Builder().begin(begin).end(end).build();
             } catch (Exception ex) {
-                new DeserializationException(ex.getMessage());
+                throw new DeserializationException(ex.getMessage());
             }
         }
 
@@ -43,10 +48,8 @@ public class HashRangeDeserializer implements IDeserializer<HashRange, String> {
         Matcher hashFieldMatcher = getRegexFromToken(token).matcher(from);
         if (hashFieldMatcher.find()) {
             return hashDeserializer.deserialize(hashFieldMatcher.group(XML_NODE));
-        } else {
-            throw new DeserializationException(
-                    join("", "Unable to extract ", token, " hash range from:", from));
         }
+        return null;
     }
 
 }

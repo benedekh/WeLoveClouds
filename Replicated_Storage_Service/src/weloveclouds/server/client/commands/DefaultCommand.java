@@ -1,9 +1,9 @@
 package weloveclouds.server.client.commands;
 
-import weloveclouds.commons.exceptions.ServerSideException;
-
-import static weloveclouds.commons.utils.StringUtils.join;
 import static weloveclouds.server.client.commands.utils.HelpMessageGenerator.generateHelpMessage;
+
+import weloveclouds.commons.exceptions.ServerSideException;
+import weloveclouds.commons.utils.StringUtils;
 
 
 /**
@@ -19,7 +19,8 @@ public class DefaultCommand extends AbstractServerCommand {
 
     @Override
     public void execute() throws ServerSideException {
-        throw new ServerSideException(join(" ", "Unable to find command.", generateHelpMessage()));
+        throw new ServerSideException(
+                StringUtils.join(" ", "Unable to find command.", generateHelpMessage()));
     }
 
     @Override

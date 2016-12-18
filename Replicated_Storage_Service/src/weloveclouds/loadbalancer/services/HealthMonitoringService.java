@@ -31,17 +31,14 @@ public class HealthMonitoringService extends AbstractServer<KVHeartbeatMessage> 
 
     @Inject
     public HealthMonitoringService(CommunicationApiFactory communicationApiFactory,
-                                   ServerSocketFactory serverSocketFactory,
-                                   IMessageSerializer<SerializedMessage, KVHeartbeatMessage>
-                                           messageSerializer,
-                                   IMessageDeserializer<KVHeartbeatMessage, SerializedMessage>
-                                           messageDeserializer,
-                                   @HealthMonitoringServicePort int port,
-                                   DistributedSystemAccessService distributedSystemAccessService,
-                                   EcsNotificationService ecsNotificationService)
-            throws IOException {
-        super(communicationApiFactory, serverSocketFactory, messageSerializer,
-                messageDeserializer, port);
+            ServerSocketFactory serverSocketFactory,
+            IMessageSerializer<SerializedMessage, KVHeartbeatMessage> messageSerializer,
+            IMessageDeserializer<KVHeartbeatMessage, SerializedMessage> messageDeserializer,
+            @HealthMonitoringServicePort int port,
+            DistributedSystemAccessService distributedSystemAccessService,
+            EcsNotificationService ecsNotificationService) throws IOException {
+        super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
+                port);
         this.distributedSystemAccessService = distributedSystemAccessService;
         this.logger = Logger.getLogger(this.getClass());
     }
@@ -55,10 +52,8 @@ public class HealthMonitoringService extends AbstractServer<KVHeartbeatMessage> 
             while (status == RUNNING) {
                 ConnectionHandler connectionHandler = new ConnectionHandler(
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
-                        new Connection.Builder().socket(socket.accept()).build(),
-                        messageSerializer,
-                        messageDeserializer,
-                        distributedSystemAccessService);
+                        new Connection.Builder().socket(socket.accept()).build(), messageSerializer,
+                        messageDeserializer, distributedSystemAccessService);
                 connectionHandler.handleConnection();
             }
         } catch (IOException ex) {
@@ -73,13 +68,10 @@ public class HealthMonitoringService extends AbstractServer<KVHeartbeatMessage> 
     private class ConnectionHandler extends AbstractConnectionHandler<KVHeartbeatMessage> {
         private DistributedSystemAccessService distributedSystemAccessService;
 
-        ConnectionHandler(IConcurrentCommunicationApi communicationApi,
-                          Connection connection,
-                          IMessageSerializer<SerializedMessage, KVHeartbeatMessage>
-                                  messageSerializer,
-                          IMessageDeserializer<KVHeartbeatMessage, SerializedMessage>
-                                  messageDeserializer, DistributedSystemAccessService
-                                  distributedSystemAccessService) {
+        ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection connection,
+                IMessageSerializer<SerializedMessage, KVHeartbeatMessage> messageSerializer,
+                IMessageDeserializer<KVHeartbeatMessage, SerializedMessage> messageDeserializer,
+                DistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;
@@ -97,10 +89,9 @@ public class HealthMonitoringService extends AbstractServer<KVHeartbeatMessage> 
                 while (connection.isConnected()) {
                     KVHeartbeatMessage receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
-                    logger.debug(StringUtils.join(" ", "Message received:",
-                            receivedMessage.toString()));
-                    distributedSystemAccessService.updateServiceHealthWith(receivedMessage
-                            .getNodeHealthInfos());
+                    logger.debug(StringUtils.join(" ", "Message received:", receivedMessage));
+                    distributedSystemAccessService
+                            .updateServiceHealthWith(receivedMessage.getNodeHealthInfos());
                     connection.kill();
                 }
             } catch (Throwable e) {

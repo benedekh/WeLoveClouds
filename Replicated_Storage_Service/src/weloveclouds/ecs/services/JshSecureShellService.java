@@ -1,19 +1,17 @@
 package weloveclouds.ecs.services;
 
+import static weloveclouds.ecs.models.ssh.AuthenticationMethod.PRIVATE_KEY;
+
+import java.util.Properties;
+
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import weloveclouds.ecs.configuration.providers.AuthConfigurationProvider;
-import weloveclouds.ecs.exceptions.authentication.InvalidAuthenticationInfosException;
 import weloveclouds.ecs.exceptions.ssh.SecureShellServiceException;
 import weloveclouds.ecs.models.commands.internal.ssh.AbstractRemoteCommand;
-
-import static weloveclouds.ecs.models.ssh.AuthenticationMethod.*;
 
 /**
  * Created by Benoit on 2016-11-16.

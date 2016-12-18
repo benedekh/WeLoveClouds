@@ -31,21 +31,17 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 Set<RingMetadataPart> metadataParts = new HashSet<>();
-
                 Matcher metadataPartMatcher = getRegexFromToken(RING_METADATA_PART).matcher(from);
                 while (metadataPartMatcher.find()) {
                     metadataParts.add(metadataPartDeserializer
                             .deserialize(metadataPartMatcher.group(XML_NODE)));
                 }
-
                 if (metadataParts.isEmpty()) {
-                    throw new DeserializationException(StringUtils.join("",
-                            "Unable to extract ring metadata parts from:", from));
+                    return null;
                 }
-
                 deserialized = new RingMetadata(metadataParts);
             } catch (Exception ex) {
-                new DeserializationException(ex.getMessage());
+                throw new DeserializationException(ex.getMessage());
             }
         }
 

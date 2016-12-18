@@ -24,7 +24,7 @@ public class SocketFactory {
      * @throws IOException see {@link Socket}
      */
     public Socket createTcpSocketFromInfo(ServerConnectionInfo connectionInfo) throws IOException {
-        LOGGER.debug(StringUtils.join(" ", "Creating socket for", connectionInfo.toString()));
+        LOGGER.debug(StringUtils.join(" ", "Creating socket for", connectionInfo));
         return new Socket(connectionInfo.getIpAddress(), connectionInfo.getPort());
     }
 }

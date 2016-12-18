@@ -25,8 +25,8 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
         this.targetedNode = releaseWriteLockBuilder.targetedNode;
         this.messageSerializer = releaseWriteLockBuilder.messageSerializer;
         this.messageDeserializer = releaseWriteLockBuilder.messageDeserializer;
-        this.errorMessage = StringUtils.join(" ", "Unable to release write lock on node:",
-                targetedNode.toString());
+        this.errorMessage =
+                StringUtils.join(" ", "Unable to release write lock on node:", targetedNode);
     }
 
     @Override
@@ -55,8 +55,7 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Command: ReleaseWriteLock", "Targeted node:",
-                targetedNode.toString());
+        return StringUtils.join(" ", "Command: ReleaseWriteLock", "Targeted node:", targetedNode);
     }
 
     public static class Builder {

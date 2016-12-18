@@ -1,7 +1,5 @@
 package weloveclouds.ecs.core;
 
-import java.net.URISyntaxException;
-
 /**
  * Created by Benoit on 2016-11-20.
  */

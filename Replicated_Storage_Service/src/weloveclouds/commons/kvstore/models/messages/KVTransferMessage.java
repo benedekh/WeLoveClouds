@@ -117,10 +117,9 @@ public class KVTransferMessage implements IKVTransferMessage {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Message status:", status == null ? null : status.toString(),
-                ", Storage units:", StringUtils.setToString(storageUnits), ", Putable entry: ",
-                putableEntry == null ? null : putableEntry.toString(), ", Removable key: ",
-                removableKey, ", Response message: ", responseMessage);
+        return StringUtils.join(" ", "Message status:", status, ", Storage units:",
+                StringUtils.setToString(storageUnits), ", Putable entry: ", putableEntry,
+                ", Removable key: ", removableKey, ", Response message: ", responseMessage);
     }
 
     /**

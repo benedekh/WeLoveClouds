@@ -30,8 +30,8 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand {
         this.targetedNode = initNodeMetadataBuilder.targetedNode;
         this.messageSerializer = initNodeMetadataBuilder.messageSerializer;
         this.messageDeserializer = initNodeMetadataBuilder.messageDeserializer;
-        this.errorMessage = StringUtils.join(" ", "Unable to initialize metadata on node:",
-                targetedNode.toString());
+        this.errorMessage =
+                StringUtils.join(" ", "Unable to initialize metadata on node:", targetedNode);
     }
 
     @Override
@@ -65,8 +65,7 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Command: InitNodeMetadata", "Targeted node:",
-                targetedNode.toString());
+        return StringUtils.join(" ", "Command: InitNodeMetadata", "Targeted node:", targetedNode);
     }
 
     public static class Builder {

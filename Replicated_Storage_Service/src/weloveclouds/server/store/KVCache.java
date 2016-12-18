@@ -74,7 +74,7 @@ public class KVCache implements IDataAccessService, Observer {
                 incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
             }
 
-            LOGGER.debug(StringUtils.join(" ", entry.toString(), "was added to cache."));
+            LOGGER.debug(StringUtils.join(" ", entry, "was added to cache."));
             displacementStrategy.put(key);
 
             return response;

@@ -173,7 +173,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      */
     private IKVMessage convertToKVMessage(byte[] packet) throws Exception {
         IKVMessage response = messageDeserializer.deserialize(packet);
-        LOGGER.debug(StringUtils.join(" ", response.toString(), "is received."));
+        LOGGER.debug(StringUtils.join(" ", response, "is received."));
         return response;
     }
 

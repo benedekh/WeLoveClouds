@@ -36,7 +36,7 @@ public class DataAccessService implements IDataAccessService {
         // implicit notification will go the cache as well
         // throw the persistent store
         PutType response = persistentStorage.putEntry(entry);
-        LOGGER.debug(StringUtils.join(" ", entry.toString(), "is stored."));
+        LOGGER.debug(StringUtils.join(" ", entry, "is stored."));
         return response;
     }
 

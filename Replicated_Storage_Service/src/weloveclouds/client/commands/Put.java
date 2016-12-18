@@ -1,18 +1,16 @@
 package weloveclouds.client.commands;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.commands.utils.ArgumentsValidator;
 import weloveclouds.client.commands.utils.PutCommandUtils;
 import weloveclouds.commons.exceptions.ClientSideException;
-import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
 /**
  * Put command which means the client would like to send a key along with a value to the server.
@@ -62,13 +60,13 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     userOutputWriter.writeLine("Key removed successfully.");
                     break;
                 case DELETE_ERROR:
-                    userOutputWriter
-                            .writeLine(join(" ", "Error during key remove:", response.getValue()));
+                    userOutputWriter.writeLine(
+                            StringUtils.join(" ", "Error during key remove:", response.getValue()));
                     break;
                 case SERVER_NOT_RESPONSIBLE:
                     try {
-                        LOGGER.error(join(" ", "Server is not responsible for the key:", key,
-                                ". Updating ring metadata information."));
+                        LOGGER.error(StringUtils.join(" ", "Server is not responsible for the key:",
+                                key, ". Updating ring metadata information."));
 
                         RingMetadata ringMetadata =
                                 ringMetadataDeserializer.deserialize(response.getValue());

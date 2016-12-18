@@ -25,9 +25,8 @@ public class HashDeserializer implements IDeserializer<Hash, String> {
 
             // length check
             if (parts.length != NUMBER_OF_HASH_PARTS) {
-                throw new DeserializationException(
-                        StringUtils.join("", "Hash must consist of exactly ",
-                                String.valueOf(NUMBER_OF_HASH_PARTS), " parts."));
+                throw new DeserializationException(StringUtils.join("",
+                        "Hash must consist of exactly ", NUMBER_OF_HASH_PARTS, " parts."));
             }
 
             int i = 0;

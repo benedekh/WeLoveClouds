@@ -159,7 +159,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
                     try {
                         LOGGER.debug(StringUtils.join(" ",
                                 "Trying to connect with the most recent connection details:",
-                                recentConnectionInfo.toString()));
+                                recentConnectionInfo));
 
                         connectTo(recentConnectionInfo);
                     } catch (Exception ex) {

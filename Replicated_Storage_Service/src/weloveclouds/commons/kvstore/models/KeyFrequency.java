@@ -71,7 +71,7 @@ public class KeyFrequency implements Comparable<KeyFrequency> {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "{", key, ": frequency ->", String.valueOf(frequency), "}");
+        return StringUtils.join(" ", "{", key, ": frequency ->", frequency, "}");
     }
 
 }

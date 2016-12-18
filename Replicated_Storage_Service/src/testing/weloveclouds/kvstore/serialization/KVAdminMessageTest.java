@@ -52,7 +52,7 @@ public class KVAdminMessageTest extends TestCase {
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
         RingMetadataPart metadataPart1 =
                 new RingMetadataPart.Builder().connectionInfo(connectionInfo1)
-                        .readRanges(readRanges).writeRange(writeRange).build();
+                        .writeRange(writeRange).build();
 
         ServerConnectionInfo connectionInfo2 =
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8082).build();

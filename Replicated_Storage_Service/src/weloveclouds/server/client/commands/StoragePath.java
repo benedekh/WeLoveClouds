@@ -1,7 +1,5 @@
 package weloveclouds.server.client.commands;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,6 +7,7 @@ import java.nio.file.Paths;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.ServerSideException;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.client.commands.utils.ArgumentsValidator;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
 import weloveclouds.server.store.KVPersistentStorage;
@@ -43,7 +42,7 @@ public class StoragePath extends AbstractServerCommand {
             Path path = Paths.get(arguments[STORAGE_PATH_INDEX]);
             context.setStoragePath(path);
 
-            String statusMessage = join(" ", "Latest storage path:", path.toString());
+            String statusMessage = StringUtils.join(" ", "Latest storage path:", path);
             userOutputWriter.writeLine(statusMessage);
             LOGGER.debug(statusMessage);
         } catch (IOException ex) {

@@ -21,9 +21,9 @@ public class HelpMessageGenerator {
         buffer.append("Starts a server which will can accept Key-Value pairs and store them in both a persistent storage and a cache.\n");
         buffer.append("\n");
         buffer.append("First, the user shall set how big the cache would be.\n");
-        buffer.append(StringUtils.join("","Second, the user shall set on which port should the server be available to the KVClients. Default value is: ", String.valueOf(KVServerPortConstants.KVCLIENT_REQUESTS_PORT) ,"\n"));
-        buffer.append(StringUtils.join("","Third, the user shall set on which port should the server be available to the KVCServers. Default value is: ", String.valueOf(KVServerPortConstants.KVSERVER_REQUESTS_PORT) ,"\n"));
-        buffer.append(StringUtils.join("","Fourth, the user shall set on which port should the server be available to the KVECS. Default value is: ", String.valueOf(KVServerPortConstants.KVECS_REQUESTS_PORT) ,"\n"));
+        buffer.append(StringUtils.join("","Second, the user shall set on which port should the server be available to the KVClients. Default value is: ", KVServerPortConstants.KVCLIENT_REQUESTS_PORT, "\n"));
+        buffer.append(StringUtils.join("","Third, the user shall set on which port should the server be available to the KVCServers. Default value is: ", KVServerPortConstants.KVSERVER_REQUESTS_PORT, "\n"));
+        buffer.append(StringUtils.join("","Fourth, the user shall set on which port should the server be available to the KVECS. Default value is: ", KVServerPortConstants.KVECS_REQUESTS_PORT, "\n"));
         buffer.append("Fifth, the user shall set the path for the persistent storage. Beware, the path has to exist in the file system.\n");
         buffer.append("Sixth, the user shall set the cache displacement startegy. Possible values: FIFO, LFU, LRU.\n");
         buffer.append("Fifth, the user shall can start the server.\n");
