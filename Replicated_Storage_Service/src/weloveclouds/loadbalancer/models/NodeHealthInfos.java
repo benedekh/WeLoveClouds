@@ -65,7 +65,7 @@ public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
             return this;
         }
 
-        public Builder nodeStatus(NodeStatus serverStatus) {
+        public Builder nodeStatus(NodeStatus nodeStatus) {
             this.nodeStatus = nodeStatus;
             return this;
         }

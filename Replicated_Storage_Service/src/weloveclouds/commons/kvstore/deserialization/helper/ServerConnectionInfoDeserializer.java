@@ -17,7 +17,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * A deserializer which converts a {@link String} to a {@link ServerConnectionInfo}.
- * 
+ *
  * @author Benedek
  */
 public class ServerConnectionInfoDeserializer
@@ -32,7 +32,7 @@ public class ServerConnectionInfoDeserializer
                 deserialized = new ServerConnectionInfo.Builder()
                         .ipAddress(deserializeIpAddress(from)).port(deserializePort(from)).build();
             } catch (Exception ex) {
-                new DeserializationException(ex.getMessage());
+                throw new DeserializationException(ex.getMessage());
             }
         }
         return deserialized;
@@ -67,5 +67,4 @@ public class ServerConnectionInfoDeserializer
             throw new DeserializationException(join("", "Unable to extract port from:", from));
         }
     }
-
 }

@@ -32,15 +32,20 @@ public class ServiceHealthInfosDeserializer implements IDeserializer<ServiceHeal
     @Override
     public ServiceHealthInfos deserialize(String serializedServiceInfos) throws
             DeserializationException {
-        return new ServiceHealthInfos.Builder()
-                .serviceName(deserializeServiceNameFrom(serializedServiceInfos))
-                .serviceStatus(deserializeServiceStatusFrom(serializedServiceInfos))
-                .servicePriority(deserializeServicePriorityFrom(serializedServiceInfos))
-                .serviceEnpoint(serverConnectionInfoDeserializer
-                        .deserialize(serializedServiceInfos))
-                .numberOfActiveConnections(
-                        deserializeNumberOfActiveConnections(serializedServiceInfos))
-                .build();
+        try {
+            return new ServiceHealthInfos.Builder()
+                    .serviceName(deserializeServiceNameFrom(serializedServiceInfos))
+                    .serviceStatus(deserializeServiceStatusFrom(serializedServiceInfos))
+                    .servicePriority(deserializeServicePriorityFrom(serializedServiceInfos))
+                    .serviceEnpoint(serverConnectionInfoDeserializer
+                            .deserialize(serializedServiceInfos))
+                    .numberOfActiveConnections(
+                            deserializeNumberOfActiveConnections(serializedServiceInfos))
+                    .build();
+        } catch (Exception e) {
+            throw new DeserializationException("Unable to deserialize service health info from: "
+                    + serializedServiceInfos + "with cause: " + e.getMessage());
+        }
     }
 
     private String deserializeServiceNameFrom(String serializedServiceHealthInfos)
