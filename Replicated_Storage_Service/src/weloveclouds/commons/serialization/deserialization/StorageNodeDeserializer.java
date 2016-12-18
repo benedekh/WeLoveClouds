@@ -11,6 +11,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
@@ -23,13 +24,13 @@ import static weloveclouds.commons.serialization.models.XMLTokens.*;
 public class StorageNodeDeserializer implements IDeserializer<StorageNode, String> {
     IDeserializer<ServerConnectionInfo, String> serverConnectionInfoDeserializer;
     IDeserializer<HashRange, String> hashRangeDeserializer;
-    IDeserializer<ServiceHealthInfos, String> nodeHealthInfosDeserializer;
+    IDeserializer<NodeHealthInfos, String> nodeHealthInfosDeserializer;
 
     @Inject
     public StorageNodeDeserializer(IDeserializer<ServerConnectionInfo, String>
                                            serverConnectionInfoDeserializer,
                                    IDeserializer<HashRange, String> hashRangeDeserializer,
-                                   IDeserializer<ServiceHealthInfos, String>
+                                   IDeserializer<NodeHealthInfos, String>
                                            nodeHealthInfosDeserializer) {
         this.serverConnectionInfoDeserializer = serverConnectionInfoDeserializer;
         this.hashRangeDeserializer = hashRangeDeserializer;
@@ -87,7 +88,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         }
     }
 
-    private ServiceHealthInfos deserializeHealthInfosFrom(String serializedNode) throws
+    private NodeHealthInfos deserializeHealthInfosFrom(String serializedNode) throws
             DeserializationException {
         Matcher healthInfosMatcher = getRegexFromToken(NODE_HEALTH_INFOS).matcher(serializedNode);
         if (healthInfosMatcher.find()) {

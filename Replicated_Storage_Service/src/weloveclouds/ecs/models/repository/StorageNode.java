@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import weloveclouds.client.utils.CustomStringJoiner;
+import weloveclouds.commons.status.ServerStatus;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtil;
+import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
+import static weloveclouds.ecs.models.repository.NodeStatus.*;
 
 /**
  * Created by Benoit on 2016-11-16.
@@ -19,8 +21,8 @@ import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
 public class StorageNode extends AbstractNode {
     private static final int NO_CONNECTION = 0;
 
-    private StorageNodeStatus metadataStatus;
-    private StorageNodeStatus status;
+    private NodeStatus metadataStatus;
+    private NodeStatus status;
     private HashRange previousHashRange;
     private HashRange hashRange;
     private List<StorageNode> replicas;
@@ -39,18 +41,17 @@ public class StorageNode extends AbstractNode {
         this.previousHashRange = storageNodeBuilder.previousHashRange;
 
         if (storageNodeBuilder.healthInfos == null) {
-            this.healthInfos = new ServiceHealthInfos.Builder()
-                    .serviceName(name)
-                    .serviceEnpoint(serverConnectionInfo)
-                    .numberOfActiveConnections(NO_CONNECTION)
+            this.healthInfos = new NodeHealthInfos.Builder()
+                    .nodeName(name)
+                    .nodeStatus(HALTED)
+                    .servicesHealtInfos(new ArrayList<>())
                     .build();
         } else {
             this.healthInfos = storageNodeBuilder.healthInfos;
         }
     }
 
-
-    public void updateHealthInfos(ServiceHealthInfos healthInfos) {
+    public void updateHealthInfos(NodeHealthInfos healthInfos) {
         this.healthInfos = healthInfos;
     }
 
@@ -64,19 +65,19 @@ public class StorageNode extends AbstractNode {
         this.metadataStatus = SYNCHRONIZED;
     }
 
-    public StorageNodeStatus getMetadataStatus() {
+    public NodeStatus getMetadataStatus() {
         return metadataStatus;
     }
 
-    public void setMetadataStatus(StorageNodeStatus metadataStatus) {
+    public void setMetadataStatus(NodeStatus metadataStatus) {
         this.metadataStatus = metadataStatus;
     }
 
-    public StorageNodeStatus getStatus() {
+    public NodeStatus getStatus() {
         return status;
     }
 
-    public void setStatus(StorageNodeStatus status) {
+    public void setStatus(NodeStatus status) {
         this.status = status;
     }
 
@@ -137,7 +138,7 @@ public class StorageNode extends AbstractNode {
         private String name;
         private ServerConnectionInfo serverConnectionInfo;
         private ServerConnectionInfo ecsChannelConnectionInfo;
-        private ServiceHealthInfos healthInfos;
+        private NodeHealthInfos healthInfos;
         private Hash hashKey;
         private HashRange previousHashRange;
         private HashRange hashRange;
@@ -164,7 +165,7 @@ public class StorageNode extends AbstractNode {
             return this;
         }
 
-        public Builder healthInfos(ServiceHealthInfos nodeHealthInfos) {
+        public Builder healthInfos(NodeHealthInfos nodeHealthInfos) {
             this.healthInfos = nodeHealthInfos;
             return this;
         }

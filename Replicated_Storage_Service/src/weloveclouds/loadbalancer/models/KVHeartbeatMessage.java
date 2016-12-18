@@ -6,7 +6,7 @@ package weloveclouds.loadbalancer.models;
 public class KVHeartbeatMessage {
     private NodeHealthInfos nodeHealthInfos;
 
-    protected KVHeartbeatMessage(NodeHealthInfos nodeHealthInfos) {
+    public KVHeartbeatMessage(NodeHealthInfos nodeHealthInfos) {
         this.nodeHealthInfos = nodeHealthInfos;
     }
 

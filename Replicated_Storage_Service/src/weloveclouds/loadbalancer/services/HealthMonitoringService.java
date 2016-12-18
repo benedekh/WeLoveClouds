@@ -22,7 +22,6 @@ import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
 
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
-
 /**
  * Created by Benoit on 2016-12-05.
  */
@@ -100,7 +99,7 @@ public class HealthMonitoringService extends AbstractServer<KVHeartbeatMessage> 
                     logger.debug(CustomStringJoiner.join(" ", "Message received:",
                             receivedMessage.toString()));
                     distributedSystemAccessService.updateServiceHealthWith(receivedMessage
-                            .getServicesHealthInfos());
+                            .getNodeHealthInfos());
                     connection.kill();
                 }
             } catch (Throwable e) {

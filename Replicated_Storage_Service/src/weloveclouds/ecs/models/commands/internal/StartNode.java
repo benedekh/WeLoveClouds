@@ -11,7 +11,7 @@ import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.RUNNING;
+import static weloveclouds.ecs.models.repository.NodeStatus.RUNNING;
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 

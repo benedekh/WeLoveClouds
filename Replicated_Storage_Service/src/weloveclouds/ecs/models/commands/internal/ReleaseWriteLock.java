@@ -5,7 +5,7 @@ import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.ecs.models.repository.StorageNodeStatus;
+import weloveclouds.ecs.models.repository.NodeStatus;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
@@ -41,7 +41,7 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             } else {
-                targetedNode.setStatus(StorageNodeStatus.INITIALIZED);
+                targetedNode.setStatus(NodeStatus.INITIALIZED);
             }
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);

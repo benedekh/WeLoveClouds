@@ -7,10 +7,10 @@ import static weloveclouds.ecs.core.EcsStatus.SHUTDOWNING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STARTING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STOPPING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.UNINITIALIZED;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.IDLE;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.REMOVED;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.RUNNING;
+import static weloveclouds.ecs.models.repository.NodeStatus.IDLE;
+import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
+import static weloveclouds.ecs.models.repository.NodeStatus.REMOVED;
+import static weloveclouds.ecs.models.repository.NodeStatus.RUNNING;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import weloveclouds.ecs.exceptions.ServiceBootstrapException;
 import weloveclouds.ecs.models.repository.EcsRepository;
 import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.ecs.models.repository.StorageNodeStatus;
+import weloveclouds.ecs.models.repository.NodeStatus;
 import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
@@ -131,7 +131,7 @@ public class ExternalConfigurationService implements Observer {
 
     public void shutDown() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
-            List<StorageNodeStatus> activeNodeStatus = Arrays.asList(INITIALIZED, RUNNING);
+            List<NodeStatus> activeNodeStatus = Arrays.asList(INITIALIZED, RUNNING);
             AbstractBatchTasks<AbstractRetryableTask> nodeShutdownBatch = ecsBatchFactory
                     .createShutdownNodeBatchFor(repository.getNodeWithStatus(activeNodeStatus));
 

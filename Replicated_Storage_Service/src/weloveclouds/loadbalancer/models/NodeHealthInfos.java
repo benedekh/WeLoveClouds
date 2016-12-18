@@ -3,14 +3,14 @@ package weloveclouds.loadbalancer.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import weloveclouds.commons.status.ServerStatus;
+import weloveclouds.ecs.models.repository.NodeStatus;
 
 /**
  * Created by Benoit on 2016-12-17.
  */
-public class NodeHealthInfos {
+public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
     private String nodeName;
-    private ServerStatus nodeStatus;
+    private NodeStatus nodeStatus;
     private List<ServiceHealthInfos> servicesHealthInfos;
 
     protected NodeHealthInfos(Builder builder) {
@@ -19,9 +19,41 @@ public class NodeHealthInfos {
         this.servicesHealthInfos = builder.servicesHealthInfos;
     }
 
+    public String getNodeName() {
+        return nodeName;
+    }
+
+    public NodeStatus getNodeStatus() {
+        return nodeStatus;
+    }
+
+    public List<ServiceHealthInfos> getServicesHealthInfos() {
+        return servicesHealthInfos;
+    }
+
+    private double getHealthIndice() {
+        double healthIndice = 0;
+
+        for (ServiceHealthInfos serviceHealthInfos : getServicesHealthInfos()) {
+            healthIndice += (serviceHealthInfos.getServicePriority() *
+                    serviceHealthInfos.getNumberOfActiveConnections());
+        }
+        return healthIndice;
+    }
+
+    @Override
+    public int compareTo(NodeHealthInfos otherServiceHealtInfos) {
+        if (getHealthIndice() == otherServiceHealtInfos.getHealthIndice())
+            return 0;
+        else if (getHealthIndice() > otherServiceHealtInfos.getHealthIndice())
+            return 1;
+        else
+            return -1;
+    }
+
     public static class Builder {
         private String nodeName;
-        private ServerStatus nodeStatus;
+        private NodeStatus nodeStatus;
         private List<ServiceHealthInfos> servicesHealthInfos;
 
         public Builder() {
@@ -33,13 +65,18 @@ public class NodeHealthInfos {
             return this;
         }
 
-        public Builder nodeStatus(ServerStatus serverStatus) {
+        public Builder nodeStatus(NodeStatus serverStatus) {
             this.nodeStatus = nodeStatus;
             return this;
         }
 
         public Builder addServiceHealtInfos(ServiceHealthInfos serviceHealthInfos) {
             this.servicesHealthInfos.add(serviceHealthInfos);
+            return this;
+        }
+
+        public Builder servicesHealtInfos(List<ServiceHealthInfos> servicesHealthInfos) {
+            this.servicesHealthInfos = servicesHealthInfos;
             return this;
         }
 

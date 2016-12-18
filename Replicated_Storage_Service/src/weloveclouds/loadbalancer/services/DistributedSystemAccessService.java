@@ -11,6 +11,7 @@ import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsib
 import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForWritingException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.services.DistributedService;
+import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 /**
@@ -21,11 +22,11 @@ public class DistributedSystemAccessService {
     private DistributedService distributedService;
     private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
 
-    public void updateServiceHealthWith(ServiceHealthInfos serverHealthInfos) {
+    public void updateServiceHealthWith(NodeHealthInfos nodeHealthInfos) {
         try {
             reentrantReadWriteLock.writeLock().lock();
-            distributedService.getNodeFrom(serverHealthInfos.getServiceEndpoint())
-                    .updateHealthInfos(serverHealthInfos);
+            distributedService.getNodeFrom(nodeHealthInfos.getNodeName())
+                    .updateHealthInfos(nodeHealthInfos);
         } finally {
             reentrantReadWriteLock.writeLock().unlock();
         }

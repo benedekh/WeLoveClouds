@@ -9,6 +9,7 @@ import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.serialization.models.SerializedMessage;
 import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
+import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 import static weloveclouds.commons.kvstore.serialization.models.SerializedMessage.MESSAGE_ENCODING;
@@ -21,10 +22,10 @@ import static weloveclouds.commons.serialization.models.XMLTokens.NODE_HEALTH_IN
  */
 public class KVHeartbeatMessageDeserializer implements
         IMessageDeserializer<KVHeartbeatMessage, SerializedMessage> {
-    private IDeserializer<ServiceHealthInfos, String> healthInfosDeserializer;
+    private IDeserializer<NodeHealthInfos, String> healthInfosDeserializer;
 
     @Inject
-    public KVHeartbeatMessageDeserializer(IDeserializer<ServiceHealthInfos, String>
+    public KVHeartbeatMessageDeserializer(IDeserializer<NodeHealthInfos, String>
                                                   healthInfosDeserializer) {
         this.healthInfosDeserializer = healthInfosDeserializer;
     }

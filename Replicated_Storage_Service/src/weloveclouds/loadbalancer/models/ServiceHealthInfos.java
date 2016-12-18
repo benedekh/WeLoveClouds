@@ -6,7 +6,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * Created by Benoit on 2016-12-05.
  */
-public class ServiceHealthInfos implements Comparable<ServiceHealthInfos> {
+public class ServiceHealthInfos {
     private String serviceName;
     private ServiceStatus serviceStatus;
     private ServerConnectionInfo serviceEndpoint;
@@ -39,16 +39,6 @@ public class ServiceHealthInfos implements Comparable<ServiceHealthInfos> {
 
     public int getServicePriority() {
         return servicePriority;
-    }
-
-    @Override
-    public int compareTo(ServiceHealthInfos otherServiceHealtInfos) {
-        if (numberOfActiveConnections == otherServiceHealtInfos.getNumberOfActiveConnections())
-            return 0;
-        else if (numberOfActiveConnections > otherServiceHealtInfos.getNumberOfActiveConnections())
-            return 1;
-        else
-            return -1;
     }
 
     public static class Builder {
