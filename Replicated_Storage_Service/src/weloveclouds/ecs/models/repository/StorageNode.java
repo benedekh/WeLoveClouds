@@ -10,6 +10,7 @@ import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 import static weloveclouds.ecs.models.repository.NodeStatus.*;
 
@@ -42,7 +43,6 @@ public class StorageNode extends AbstractNode {
             this.healthInfos = new NodeHealthInfos.Builder()
                     .nodeName(name)
                     .nodeStatus(HALTED)
-                    .servicesHealtInfos(new ArrayList<>())
                     .build();
         } else {
             this.healthInfos = storageNodeBuilder.healthInfos;

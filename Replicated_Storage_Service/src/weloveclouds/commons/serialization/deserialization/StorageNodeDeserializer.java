@@ -1,4 +1,4 @@
-package weloveclouds.commons.loadbalancer.deserialization;
+package weloveclouds.commons.serialization.deserialization;
 
 import com.google.inject.Inject;
 
