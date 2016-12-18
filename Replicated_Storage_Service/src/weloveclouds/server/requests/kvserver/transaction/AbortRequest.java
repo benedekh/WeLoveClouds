@@ -24,10 +24,12 @@ public class AbortRequest extends AbstractRequest<AbortRequest.Builder> {
         LOGGER.debug(StringUtils.join("", "Abort phase for transaction (", transactionId,
                 ") on reciever side."));
 
-        if (transactionLog.get(transactionId) != TransactionStatus.ABORTED) {
-            ongoingTransactions.remove(transactionId);
-            transactionLog.put(transactionId, TransactionStatus.ABORTED);
-            super.haltTimedAbortRequest();
+        synchronized (transactionLog) {
+            if (transactionLog.get(transactionId) != TransactionStatus.ABORTED) {
+                ongoingTransactions.remove(transactionId);
+                transactionLog.put(transactionId, TransactionStatus.ABORTED);
+                super.haltTimedAbortRequest();
+            }
         }
 
         LOGGER.debug(StringUtils.join("", "Aborted  for transaction (", transactionId,

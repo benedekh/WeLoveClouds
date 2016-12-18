@@ -30,31 +30,33 @@ public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
         LOGGER.debug(StringUtils.join("", "Commit phase for transaction (", transactionId,
                 ") on reciever side."));
 
-        TransactionStatus recentStatus = transactionLog.get(transactionId);
-        switch (recentStatus) {
-            case COMMIT_READY:
-                try {
-                    super.haltTimedAbortRequest();
-                    IKVTransactionMessage transactionMessage =
-                            ongoingTransactions.get(transactionId);
-                    if (transactionMessage != null) {
-                        realDASBehavior.createRequestFromReceivedMessage(
-                                transactionMessage.getTransferPayload(), null);
-                        transactionLog.put(transactionId, TransactionStatus.COMMITTED);
+        synchronized (transactionLog) {
+            TransactionStatus recentStatus = transactionLog.get(transactionId);
+            switch (recentStatus) {
+                case COMMIT_READY:
+                    try {
+                        super.haltTimedAbortRequest();
+                        IKVTransferMessage transferMessage = ongoingTransactions.get(transactionId);
+                        if (transferMessage != null) {
+                            realDASBehavior.createRequestFromReceivedMessage(transferMessage,
+                                    new EmptyCallbackRegister());
+                            transactionLog.put(transactionId, TransactionStatus.COMMITTED);
+                        }
+                        LOGGER.debug(StringUtils.join("", "Committed for transaction (",
+                                transactionId, ") on reciever side."));
+                        return createTransactionResponse(transactionId,
+                                StatusType.RESPONSE_COMMITTED);
+                    } catch (Exception ex) {
+                        LOGGER.error(ex);
+                        return new AbortRequest.Builder().transactionLog(transactionLog)
+                                .ongoingTransactions(ongoingTransactions)
+                                .transactionId(transactionId).build().execute();
                     }
-                    LOGGER.debug(StringUtils.join("", "Committed for transaction (", transactionId,
-                            ") on reciever side."));
-                    return createTransactionResponse(transactionId, StatusType.RESPONSE_COMMITTED);
-                } catch (Exception ex) {
-                    LOGGER.error(ex);
-                    return new AbortRequest.Builder().transactionLog(transactionLog)
-                            .ongoingTransactions(ongoingTransactions).transactionId(transactionId)
-                            .build().execute();
-                }
-            default:
-                LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (", transactionId,
-                        ") on reciever side."));
-                return createTransactionResponse(transactionId, recentStatus.getResponseType());
+                default:
+                    LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (",
+                            transactionId, ") on reciever side."));
+                    return createTransactionResponse(transactionId, recentStatus.getResponseType());
+            }
         }
     }
 

@@ -30,31 +30,32 @@ public class CommitReadyRequest extends AbstractRequest<CommitReadyRequest.Build
         LOGGER.debug(StringUtils.join("", "Commit_ready phase for transaction (", transactionId,
                 ") on reciever side."));
 
-        TransactionStatus recentStatus = transactionLog.get(transactionId);
-        switch (recentStatus) {
-            case INIT:
-                try {
-                    IKVTransactionMessage transactionMessage =
-                            ongoingTransactions.get(transactionId);
-                    if (transactionMessage != null) {
-                        simulatedDASBehavior.createRequestFromReceivedMessage(
-                                transactionMessage.getTransferPayload(), null);
-                        transactionLog.put(transactionId, TransactionStatus.COMMIT_READY);
+        synchronized (transactionLog) {
+            TransactionStatus recentStatus = transactionLog.get(transactionId);
+            switch (recentStatus) {
+                case INIT:
+                    try {
+                        IKVTransferMessage transferMessage = ongoingTransactions.get(transactionId);
+                        if (transferMessage != null) {
+                            simulatedDASBehavior.createRequestFromReceivedMessage(transferMessage,
+                                    new EmptyCallbackRegister());
+                            transactionLog.put(transactionId, TransactionStatus.COMMIT_READY);
+                        }
+                        LOGGER.debug(StringUtils.join("", "Commit_Ready for transaction (",
+                                transactionId, ") on reciever side."));
+                        return createTransactionResponse(transactionId,
+                                StatusType.RESPONSE_COMMIT_READY);
+                    } catch (Exception ex) {
+                        LOGGER.error(ex);
+                        return new AbortRequest.Builder().transactionLog(transactionLog)
+                                .ongoingTransactions(ongoingTransactions)
+                                .transactionId(transactionId).build().execute();
                     }
-                    LOGGER.debug(StringUtils.join("", "Commit_Ready for transaction (",
+                default:
+                    LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (",
                             transactionId, ") on reciever side."));
-                    return createTransactionResponse(transactionId,
-                            StatusType.RESPONSE_COMMIT_READY);
-                } catch (Exception ex) {
-                    LOGGER.error(ex);
-                    return new AbortRequest.Builder().transactionLog(transactionLog)
-                            .ongoingTransactions(ongoingTransactions).transactionId(transactionId)
-                            .build().execute();
-                }
-            default:
-                LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (", transactionId,
-                        ") on reciever side."));
-                return createTransactionResponse(transactionId, recentStatus.getResponseType());
+                    return createTransactionResponse(transactionId, recentStatus.getResponseType());
+            }
         }
     }
 

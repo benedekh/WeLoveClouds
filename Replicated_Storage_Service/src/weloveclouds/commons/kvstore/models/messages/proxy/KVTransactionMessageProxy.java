@@ -28,7 +28,7 @@ public class KVTransactionMessageProxy implements IKVTransactionMessage {
     @Override
     public IKVTransferMessage getTransferPayload() {
         switch (getStatus()) {
-            case COMMIT_READY:
+            case INIT:
                 return message.getTransferPayload();
             default:
                 throw new IllegalAccessException(getStatus().toString(), "getTransferPayload");

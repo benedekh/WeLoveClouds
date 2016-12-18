@@ -8,7 +8,8 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.IllegalRequestException;
-import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
+import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
 import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
 
@@ -19,7 +20,7 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
 
     protected UUID transactionId;
     protected Map<UUID, TransactionStatus> transactionLog;
-    protected Map<UUID, IKVTransactionMessage> ongoingTransactions;
+    protected Map<UUID, IKVTransferMessage> ongoingTransactions;
     protected Map<UUID, TimedAbortRequest> timedAbortRequests;
 
     protected AbstractRequest(Builder<E> builder) {
@@ -49,7 +50,7 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
     public abstract static class Builder<E extends Builder<E>> {
         private UUID transactionId;
         private Map<UUID, TransactionStatus> transactionLog;
-        private Map<UUID, IKVTransactionMessage> ongoingTransactions;
+        private Map<UUID, IKVTransferMessage> ongoingTransactions;
         private Map<UUID, TimedAbortRequest> timedAbortRequests;
 
         @SuppressWarnings("unchecked")
@@ -65,7 +66,7 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         }
 
         @SuppressWarnings("unchecked")
-        public E ongoingTransactions(Map<UUID, IKVTransactionMessage> ongoingTransactions) {
+        public E ongoingTransactions(Map<UUID, IKVTransferMessage> ongoingTransactions) {
             this.ongoingTransactions = ongoingTransactions;
             return (E) this;
         }
@@ -74,6 +75,14 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         public E timedAbortRequests(Map<UUID, TimedAbortRequest> timedAbortRequests) {
             this.timedAbortRequests = timedAbortRequests;
             return (E) this;
+        }
+    }
+
+    protected class EmptyCallbackRegister implements ICallbackRegister {
+
+        @Override
+        public void registerCallback(Runnable callback) {
+            // left empty on purpose
         }
 
     }

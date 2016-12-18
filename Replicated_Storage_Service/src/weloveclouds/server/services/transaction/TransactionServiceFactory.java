@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import weloveclouds.commons.kvstore.deserialization.KVTransactionMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.serialization.KVTransactionMessageSerializer;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.communication.CommunicationApiFactory;
@@ -35,7 +36,7 @@ public class TransactionServiceFactory {
             IMovableDataAccessService dataAccessService) {
         SimulatedMovableDataAccessService simulatedDAS = new SimulatedMovableDataAccessService();
         return new TransactionRecieverService.Builder()
-                .ongoingTransactions(new ConcurrentHashMap<UUID, IKVTransactionMessage>())
+                .ongoingTransactions(new ConcurrentHashMap<UUID, IKVTransferMessage>())
                 .timedAbortRequests(new ConcurrentHashMap<UUID, TimedAbortRequest>())
                 .transactionLog(new ConcurrentHashMap<UUID, TransactionStatus>())
                 .simulatedDASBehavior(new KVTransferRequestFactory(simulatedDAS))

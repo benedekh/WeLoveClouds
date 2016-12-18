@@ -1,12 +1,15 @@
 package weloveclouds.server.requests.kvserver.transaction;
 
 import static weloveclouds.server.requests.kvserver.transaction.utils.KVTransactionMessageFactory.createTransactionResponse;
+import static weloveclouds.server.requests.kvserver.transaction.utils.KVTransactionMessageFactory.createUnknownIDTransactionResponse;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 
+import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
 import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
@@ -15,9 +18,12 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
 
     private static final Duration WAIT_BEFORE_ABORT = new Duration(20 * 1000);
     private static final Logger LOGGER = Logger.getLogger(InitRequest.class);
+    
+    private IKVTransferMessage transferMessage;
 
     protected InitRequest(Builder builder) {
         super(builder);
+        this.transferMessage = builder.transferMessage;
     }
 
     @Override
@@ -25,22 +31,35 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
         LOGGER.debug(StringUtils.join("", "Init phase for transaction (", transactionId,
                 ") on reciever side."));
 
-        if (!transactionLog.containsKey(transactionId)) {
-            transactionLog.put(transactionId, TransactionStatus.INIT);
-            createTimedAbortRequest();
-        } else {
-            TransactionStatus recentStatus = transactionLog.get(transactionId);
-            if (recentStatus != TransactionStatus.INIT) {
-                LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (", transactionId,
-                        ") on reciever side."));
-                return createTransactionResponse(transactionId,
-                        StatusType.RESPONSE_GENERATE_NEW_ID);
+        synchronized (transactionLog) {
+            if (!transactionLog.containsKey(transactionId)) {
+                transactionLog.put(transactionId, TransactionStatus.INIT);
+                ongoingTransactions.put(transactionId, transferMessage);
+                createTimedAbortRequest();
+            } else {
+                TransactionStatus recentStatus = transactionLog.get(transactionId);
+                if (recentStatus != TransactionStatus.INIT) {
+                    LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (",
+                            transactionId, ") on reciever side."));
+                    return createTransactionResponse(transactionId,
+                            StatusType.RESPONSE_GENERATE_NEW_ID);
+                }
             }
         }
 
         LOGGER.debug(StringUtils.join("", "Init_Ready for transaction (", transactionId,
                 ") on reciever side."));
         return createTransactionResponse(transactionId, StatusType.RESPONSE_INIT_READY);
+    }
+    
+    @Override
+    public IKVTransactionRequest validate() throws IllegalArgumentException {
+        super.validate();
+        if (!transactionLog.containsKey(transactionId)) {
+            LOGGER.error(StringUtils.join("", "Unknown transaction ID: ", transactionId));
+            throw new IllegalRequestException(createUnknownIDTransactionResponse(transactionId));
+        }
+        return this;
     }
 
     private void createTimedAbortRequest() {
@@ -53,6 +72,13 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
 
     public static class Builder extends AbstractRequest.Builder<Builder> {
 
+        private IKVTransferMessage transferMessage;
+        
+        public Builder transferMessage(IKVTransferMessage transferMessage){
+            this.transferMessage = transferMessage;
+            return this;
+        }
+        
         public InitRequest build() {
             return new InitRequest(this);
         }

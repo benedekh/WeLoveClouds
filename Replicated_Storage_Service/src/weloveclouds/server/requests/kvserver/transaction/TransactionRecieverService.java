@@ -16,7 +16,7 @@ public class TransactionRecieverService
         implements IRequestFactory<IKVTransactionMessage, IKVTransactionRequest> {
 
     private Map<UUID, TransactionStatus> transactionLog;
-    private Map<UUID, IKVTransactionMessage> ongoingTransactions;
+    private Map<UUID, IKVTransferMessage> ongoingTransactions;
     private Map<UUID, TimedAbortRequest> timedAbortRequests;
 
     private IRequestFactory<IKVTransferMessage, IKVTransferRequest> simulatedDASBehavior;
@@ -74,7 +74,7 @@ public class TransactionRecieverService
 
     public static class Builder {
         private Map<UUID, TransactionStatus> transactionLog;
-        private Map<UUID, IKVTransactionMessage> ongoingTransactions;
+        private Map<UUID, IKVTransferMessage> ongoingTransactions;
         private Map<UUID, TimedAbortRequest> timedAbortRequests;
         private IRequestFactory<IKVTransferMessage, IKVTransferRequest> simulatedDASBehavior;
         private IRequestFactory<IKVTransferMessage, IKVTransferRequest> realDASBehavior;
@@ -84,7 +84,7 @@ public class TransactionRecieverService
             return this;
         }
 
-        public Builder ongoingTransactions(Map<UUID, IKVTransactionMessage> ongoingTransactions) {
+        public Builder ongoingTransactions(Map<UUID, IKVTransferMessage> ongoingTransactions) {
             this.ongoingTransactions = ongoingTransactions;
             return this;
         }
