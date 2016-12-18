@@ -1,17 +1,15 @@
 package weloveclouds.client.commands;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.client.commands.utils.ArgumentsValidator;
 import weloveclouds.commons.exceptions.ClientSideException;
-import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
 
 /**
@@ -52,12 +50,13 @@ public class Get extends AbstractKVCommunicationApiCommand {
                             "was sucessfully got for key."));
                     break;
                 case GET_ERROR:
-                    userOutputWriter.writeLine(join(" ", "Error during key get:", responseValue));
+                    userOutputWriter.writeLine(
+                            StringUtils.join(" ", "Error during key get:", responseValue));
                     break;
                 case SERVER_NOT_RESPONSIBLE:
                     try {
-                        LOGGER.error(join(" ", "Server is not responsible for the key:", key,
-                                ". Updating ring metadata information."));
+                        LOGGER.error(StringUtils.join(" ", "Server is not responsible for the key:",
+                                key, ". Updating ring metadata information."));
 
                         RingMetadata ringMetadata =
                                 ringMetadataDeserializer.deserialize(response.getValue());

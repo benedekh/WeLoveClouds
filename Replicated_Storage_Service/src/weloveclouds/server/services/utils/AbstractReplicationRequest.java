@@ -44,8 +44,7 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
 
     @Override
     public void run() {
-        logger.debug(StringUtils.join(" ", "Starting replicating (", payload.toString(), ") on",
-                connection.toString()));
+        logger.debug(StringUtils.join(" ", "Starting replicating (", payload, ") on", connection));
 
         try (Connection conn = connection) {
             KVTransferMessage transferMessage = createTransferMessageFrom(payload);
@@ -58,12 +57,12 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
                 throw new IOException(responseMessage.getResponseMessage());
             }
         } catch (Exception ex) {
-            logger.error(StringUtils.join(" ", "Exception (", ex.toString(),
-                    ") occured while replicating on", connection.toString()));
+            logger.error(StringUtils.join(" ", "Exception (", ex, ") occured while replicating on",
+                    connection));
         }
 
-        logger.debug(StringUtils.join(" ", "Replicating (", payload.toString(), ") on",
-                connection.toString(), " finished"));
+        logger.debug(
+                StringUtils.join(" ", "Replicating (", payload, ") on", connection, " finished"));
     }
 
     /**

@@ -53,8 +53,7 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
                 try {
                     M receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
-                    logger.debug(
-                            StringUtils.join(" ", "Message received:", receivedMessage.toString()));
+                    logger.debug(StringUtils.join(" ", "Message received:", receivedMessage));
 
                     response =
                             requestFactory.createRequestFromReceivedMessage(receivedMessage, this)
@@ -70,8 +69,7 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
                         try {
                             communicationApi.send(messageSerializer.serialize(response).getBytes(),
                                     connection);
-                            logger.debug(
-                                    StringUtils.join(" ", "Sent response:", response.toString()));
+                            logger.debug(StringUtils.join(" ", "Sent response:", response));
                         } catch (IOException e) {
                             logger.error(e);
                         }

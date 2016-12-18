@@ -1,7 +1,5 @@
 package weloveclouds.server.store;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -16,8 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.utils.PathUtils;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.services.DataAccessService;
 import weloveclouds.server.services.IDataAccessService;
 import weloveclouds.server.store.exceptions.StorageException;
@@ -77,8 +75,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             }
         }
 
-        LOGGER.debug(
-                StringUtils.join(" ", entry.toString(), "is persisted to permanent storage unit."));
+        LOGGER.debug(StringUtils.join(" ", entry, "is persisted to permanent storage unit."));
         notifyObservers(entry);
 
         return response;
@@ -94,7 +91,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         PersistedStorageUnit storageUnit = storageUnits.get(key);
         String value = storageUnit.getValue(key);
 
-        LOGGER.debug(join("", "Value <", value, "> is read for key <", key, "> ."));
+        LOGGER.debug(StringUtils.join("", "Value <", value, "> is read for key <", key, "> ."));
         return value;
     }
 
@@ -153,11 +150,11 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 for (String key : storageUnit.getKeys()) {
                     storageUnits.put(key, storageUnit);
                     LOGGER.debug(StringUtils.join(" ", "Key", key,
-                            "is put in the persistent store metastore from path", path.toString()));
+                            "is put in the persistent store metastore from path", path));
                 }
                 putStorageUnitIntoFreeSpaceCache(storageUnit);
             } catch (StorageException ex) {
-                LOGGER.error(join(" ", file.toString(), ex.getMessage()));
+                LOGGER.error(StringUtils.join(" ", file, ex));
             }
         }
         LOGGER.debug("Initializing persistent store finished.");

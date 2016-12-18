@@ -142,7 +142,7 @@ public class KVServer {
                 Logger.getRootLogger().setLevel(logLevel);
             }
         } catch (IOException ex) {
-            System.err.println(StringUtils.join(" ", "Log file cannot be created on path ",
+            System.err.println(StringUtils.join(" ", "Log file cannot be created on path",
                     DEFAULT_LOG_PATH, "due to an error:", ex.getMessage()));
         }
     }

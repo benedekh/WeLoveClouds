@@ -63,9 +63,8 @@ public class ReplicationTransferer implements IReplicationTransferer {
                         .payload(entry).messageSerializer(transferMessageSerializer)
                         .messageDeserializer(transferMessageDeserializer).build());
             } catch (IOException ex) {
-                LOGGER.error(StringUtils.join(" ", "Exception (", ex.toString(),
-                        ") occured while replicating PUT (", entry.toString(), ") on",
-                        connectionInfo.toString()));
+                LOGGER.error(StringUtils.join(" ", "Exception (", ex,
+                        ") occured while replicating PUT (", entry, ") on", connectionInfo));
             }
         }
 
@@ -84,9 +83,8 @@ public class ReplicationTransferer implements IReplicationTransferer {
                         .payload(key).messageSerializer(transferMessageSerializer)
                         .messageDeserializer(transferMessageDeserializer).build());
             } catch (IOException ex) {
-                LOGGER.error(StringUtils.join(" ", "Exception (", ex.toString(),
-                        ") occured while replicating DELETE (", key, ") on",
-                        connectionInfo.toString()));
+                LOGGER.error(StringUtils.join(" ", "Exception (", ex,
+                        ") occured while replicating DELETE (", key, ") on", connectionInfo));
             }
         }
 

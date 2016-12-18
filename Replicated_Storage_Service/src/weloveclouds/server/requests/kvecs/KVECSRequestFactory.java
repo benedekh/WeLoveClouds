@@ -1,7 +1,5 @@
 package weloveclouds.server.requests.kvecs;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
@@ -12,6 +10,7 @@ import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporterFactory;
@@ -108,7 +107,7 @@ public class KVECSRequestFactory implements IRequestFactory<IKVAdminMessage, IKV
                 break;
             default:
                 String errorMessage = "Unrecognized command for KVAdmin message";
-                LOGGER.error(join(" ", errorMessage, receivedMessage.toString()));
+                LOGGER.error(StringUtils.join(" ", errorMessage, receivedMessage));
                 request = new DefaultRequest(errorMessage);
                 break;
         }

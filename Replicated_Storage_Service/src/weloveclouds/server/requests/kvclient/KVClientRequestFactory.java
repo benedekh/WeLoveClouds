@@ -1,7 +1,5 @@
 package weloveclouds.server.requests.kvclient;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.hashing.models.RingMetadata;
@@ -11,6 +9,7 @@ import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.services.IMovableDataAccessService;
 
 /**
@@ -62,7 +61,7 @@ public class KVClientRequestFactory implements IRequestFactory<IKVMessage, IKVCl
                 break;
             default:
                 String errorMessage = "Unrecognized command for KV message";
-                LOGGER.error(join(" ", errorMessage, receivedMessage.toString()));
+                LOGGER.error(StringUtils.join(" ", errorMessage, receivedMessage));
                 request = new DefaultRequest(receivedMessage.getKey(), errorMessage);
                 break;
         }

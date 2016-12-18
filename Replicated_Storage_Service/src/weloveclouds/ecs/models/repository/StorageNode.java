@@ -129,7 +129,7 @@ public class StorageNode extends AbstractNode {
     }
 
     public String toString() {
-        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status.name());
+        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status);
     }
 
     public static class Builder {
@@ -157,8 +157,7 @@ public class StorageNode extends AbstractNode {
             this.serverConnectionInfo = serverConnectionInfo;
             this.ecsChannelConnectionInfo = new ServerConnectionInfo.Builder()
                     .ipAddress(serverConnectionInfo.getIpAddress())
-                    .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT)
-                    .build();
+                    .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT).build();
             this.hashKey = HashingUtils.getHash(serverConnectionInfo.toString());
             return this;
         }

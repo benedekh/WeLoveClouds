@@ -31,8 +31,8 @@ public class UpdateMetadata extends AbstractEcsNetworkCommand {
         this.targetedNode = updateMetadataBuider.targetedNode;
         this.messageSerializer = updateMetadataBuider.messageSerializer;
         this.messageDeserializer = updateMetadataBuider.messageDeserializer;
-        this.errorMessage = StringUtils.join(" ", "Unable to update metadata on node:",
-                targetedNode.toString());
+        this.errorMessage =
+                StringUtils.join(" ", "Unable to update metadata on node:", targetedNode);
     }
 
     @Override
@@ -64,8 +64,7 @@ public class UpdateMetadata extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Command: UpdateMetadata", "Targeted node:",
-                targetedNode.toString());
+        return StringUtils.join(" ", "Command: UpdateMetadata", "Targeted node:", targetedNode);
     }
 
     public static class Builder {

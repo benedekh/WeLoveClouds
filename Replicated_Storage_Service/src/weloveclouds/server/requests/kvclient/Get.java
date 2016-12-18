@@ -58,7 +58,7 @@ public class Get implements IKVClientRequest {
         } catch (StorageException e) {
             response = createKVMessage(GET_ERROR, key, e.getMessage());
         } finally {
-            LOGGER.debug(StringUtils.join(" ", "Result:", response.toString()));
+            LOGGER.debug(StringUtils.join(" ", "Result:", response));
         }
         return response;
     }

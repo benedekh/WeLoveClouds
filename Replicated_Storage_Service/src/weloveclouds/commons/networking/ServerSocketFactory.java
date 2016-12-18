@@ -22,7 +22,7 @@ public class ServerSocketFactory {
      * @throws IOException if the socket cannot be created
      */
     public ServerSocket createServerSocketFromPort(int port) throws IOException {
-        LOGGER.info(StringUtils.join(" ", "Creating server socket on port", String.valueOf(port)));
+        LOGGER.info(StringUtils.join(" ", "Creating server socket on port", port));
         return new ServerSocket(port);
     }
 }

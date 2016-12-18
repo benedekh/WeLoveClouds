@@ -85,9 +85,9 @@ public class Hash implements Comparable<Hash> {
         final int GREATER = 1;
 
         if (hash.length != other.hash.length) {
-            throw new IllegalArgumentException(StringUtils.join(" ",
-                    "Two objects need to have the same length. This:", String.valueOf(hash.length),
-                    "Other:", String.valueOf(other.hash.length)));
+            throw new IllegalArgumentException(
+                    StringUtils.join(" ", "Two objects need to have the same length. This:",
+                            hash.length, "Other:", other.hash.length));
         }
 
         for (int i = 0; i < hash.length; ++i) {

@@ -28,7 +28,7 @@ public class SetWriteLock extends AbstractEcsNetworkCommand {
         this.messageSerializer = setWriteLockBuilder.messageSerializer;
         this.messageDeserializer = setWriteLockBuilder.messageDeserializer;
         this.errorMessage =
-                StringUtils.join(" ", "Unable to set write lock on node:", targetedNode.toString());
+                StringUtils.join(" ", "Unable to set write lock on node:", targetedNode);
     }
 
     @Override
@@ -57,8 +57,7 @@ public class SetWriteLock extends AbstractEcsNetworkCommand {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Command: SetWriteLock", "Targeted node:",
-                targetedNode.toString());
+        return StringUtils.join(" ", "Command: SetWriteLock", "Targeted node:", targetedNode);
     }
 
     public static class Builder {

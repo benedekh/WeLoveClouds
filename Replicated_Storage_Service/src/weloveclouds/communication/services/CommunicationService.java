@@ -76,7 +76,7 @@ public class CommunicationService implements ICommunicationService {
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
-        LOGGER.debug(StringUtils.join(" ", "Trying to connect to", remoteServer.toString()));
+        LOGGER.debug(StringUtils.join(" ", "Trying to connect to", remoteServer));
         connectionToEndpoint = connectionFactory.createConnectionFrom(remoteServer);
 
         // create shutdown hook to automatically close the connection
@@ -137,8 +137,8 @@ public class CommunicationService implements ICommunicationService {
                     buffer = smaller;
                 }
 
-                LOGGER.debug(StringUtils.join(" ", "Received", String.valueOf(readBytes),
-                        "bytes from the connection."));
+                LOGGER.debug(
+                        StringUtils.join(" ", "Received", readBytes, "bytes from the connection."));
                 baosBuffer.write(buffer);
 
                 byte[] contentReceivedSoFar = baosBuffer.toByteArray();

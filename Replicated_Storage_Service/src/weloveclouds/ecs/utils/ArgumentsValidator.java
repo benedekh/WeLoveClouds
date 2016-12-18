@@ -1,6 +1,5 @@
 package weloveclouds.ecs.utils;
 
-
 import java.util.Arrays;
 import java.util.List;
 

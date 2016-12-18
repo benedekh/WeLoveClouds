@@ -36,9 +36,7 @@ public class KVMessage implements IKVMessage {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Message status:",
-                status == null ? null : status.toString(), ", KVEntry:",
-                entry == null ? null : entry.toString());
+        return StringUtils.join(" ", "Message status:", status, ", KVEntry:", entry);
     }
 
     @Override

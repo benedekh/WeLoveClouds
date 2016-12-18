@@ -59,7 +59,7 @@ public class HashRange {
 
     @Override
     public String toString() {
-        return StringUtils.join("", "(", begin.toString(), ",", end.toString(), ")");
+        return StringUtils.join("", "(", begin, ",", end, ")");
     }
 
     @Override

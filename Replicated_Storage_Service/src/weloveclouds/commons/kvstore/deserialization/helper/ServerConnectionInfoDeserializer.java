@@ -4,7 +4,6 @@ import static weloveclouds.commons.serialization.models.XMLTokens.IP_ADDRESS;
 import static weloveclouds.commons.serialization.models.XMLTokens.PORT;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -23,14 +22,23 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 public class ServerConnectionInfoDeserializer
         implements IDeserializer<ServerConnectionInfo, String> {
 
+    private static final int FAULTY_PORT = -1;
+
     @Override
     public ServerConnectionInfo deserialize(String from) throws DeserializationException {
         ServerConnectionInfo deserialized = null;
 
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
-                deserialized = new ServerConnectionInfo.Builder()
-                        .ipAddress(deserializeIpAddress(from)).port(deserializePort(from)).build();
+                InetAddress ipAddress = deserializeIpAddress(from);
+                int port = deserializePort(from);
+
+                if (ipAddress == null && port == FAULTY_PORT) {
+                    return deserialized;
+                }
+
+                deserialized =
+                        new ServerConnectionInfo.Builder().ipAddress(ipAddress).port(port).build();
             } catch (Exception ex) {
                 throw new DeserializationException(ex.getMessage());
             }
@@ -45,13 +53,11 @@ public class ServerConnectionInfoDeserializer
             try {
                 return InetAddress.getByName(ipAddressStr);
             } catch (UnknownHostException ex) {
-                throw new DeserializationException(
-                        join(": ", "Host referred by IP address is unknown", ipAddressStr));
+                throw new DeserializationException(StringUtils.join(": ",
+                        "Host referred by IP address is unknown", ipAddressStr));
             }
-        } else {
-            throw new DeserializationException(
-                    join("", "Unable to extract ip address from:", from));
         }
+        return null;
     }
 
     private int deserializePort(String from) throws DeserializationException {
@@ -61,10 +67,9 @@ public class ServerConnectionInfoDeserializer
             try {
                 return Integer.valueOf(portStr);
             } catch (NumberFormatException ex) {
-                throw new DeserializationException(join("", "Port is NaN: ", portStr));
+                throw new DeserializationException(StringUtils.join("", "Port is NaN: ", portStr));
             }
-        } else {
-            throw new DeserializationException(join("", "Unable to extract port from:", from));
         }
+        return FAULTY_PORT;
     }
 }

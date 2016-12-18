@@ -1,9 +1,9 @@
 package weloveclouds.client.commands.utils;
 
-import static weloveclouds.commons.utils.StringUtils.join;
-
 import java.util.Arrays;
 import java.util.List;
+
+import weloveclouds.commons.utils.StringUtils;
 
 /**
  * Utility class for the Put command
@@ -19,7 +19,7 @@ public class PutCommandUtils {
     public static String mergeValuesToOneString(int startIndex, String[] arguments) {
         List<String> argList = Arrays.asList(arguments);
         List<String> valueElements = argList.subList(startIndex, argList.size());
-        String mergedValues = join(" ", valueElements);
+        String mergedValues = StringUtils.join(" ", valueElements);
 
         // to preserve the really empty entry value
         if (mergedValues != null && mergedValues.trim().isEmpty()) {
