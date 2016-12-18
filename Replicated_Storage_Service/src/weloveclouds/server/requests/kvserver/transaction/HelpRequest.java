@@ -24,13 +24,7 @@ public class HelpRequest extends AbstractRequest<HelpRequest.Builder> {
 
     public static class Builder extends AbstractRequest.Builder<Builder> {
 
-        @Override
-        protected Builder getThis() {
-            return this;
-        }
-
-        @Override
-        public AbstractRequest<Builder> build() {
+        public HelpRequest build() {
             return new HelpRequest(this);
         }
     }

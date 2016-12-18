@@ -28,13 +28,7 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
 
     public static class Builder extends AbstractRequest.Builder<Builder> {
 
-        @Override
-        protected Builder getThis() {
-            return this;
-        }
-
-        @Override
-        public AbstractRequest<Builder> build() {
+        public InitRequest build() {
             return new InitRequest(this);
         }
     }

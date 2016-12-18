@@ -44,7 +44,8 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * @return the storage units of those entries whose keys are in the given range
      * @throws StorageException if the service was not initialized yet
      */
-    public Set<MovableStorageUnit> filterEntries(HashRange range) throws UninitializedServiceException;
+    public Set<MovableStorageUnit> filterEntries(HashRange range)
+            throws UninitializedServiceException;
 
     /**
      * Removes those entries from the persistent storage whose keys are in the specified range.
@@ -100,5 +101,10 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * @return true if the data access service is initialized, false otherwise
      */
     public boolean isServiceInitialized();
+
+    /**
+     * @return the simulated version of the data access service
+     */
+    public SimulatedMovableDataAccessService getSimulatedDataAccessService();
 
 }

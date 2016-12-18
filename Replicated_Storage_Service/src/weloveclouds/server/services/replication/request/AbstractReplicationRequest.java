@@ -35,19 +35,17 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
         protected T payload;
         protected IMessageSerializer<SerializedMessage, IKVTransferMessage> messageSerializer;
 
-        public Builder<T, E> payload(T payload) {
+        @SuppressWarnings("unchecked")
+        public E payload(T payload) {
             this.payload = payload;
-            return getThis();
+            return (E) this;
         }
 
-        public Builder<T, E> messageSerializer(
+        @SuppressWarnings("unchecked")
+        public E messageSerializer(
                 IMessageSerializer<SerializedMessage, IKVTransferMessage> messageSerializer) {
             this.messageSerializer = messageSerializer;
-            return getThis();
+            return (E) this;
         }
-
-        protected abstract E getThis();
-
-        public abstract AbstractReplicationRequest<T, E> build();
     }
 }

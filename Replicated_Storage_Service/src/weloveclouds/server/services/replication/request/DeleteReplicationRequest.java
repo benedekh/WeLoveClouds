@@ -40,12 +40,6 @@ public class DeleteReplicationRequest
      */
     public static class Builder extends AbstractReplicationRequest.Builder<String, Builder> {
 
-        @Override
-        protected Builder getThis() {
-            return this;
-        }
-
-        @Override
         public DeleteReplicationRequest build() {
             return new DeleteReplicationRequest(this);
         }

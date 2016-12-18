@@ -43,11 +43,12 @@ import weloveclouds.server.store.models.PutType;
  * 
  * @author Benedek
  */
-public class MovableDataAccessService extends DataAccessService
-        implements IMovableDataAccessService {
+public class MovableDataAccessService<E extends MovableDataAccessService.Builder<E>>
+        extends DataAccessService implements IMovableDataAccessService {
 
     private static final Logger LOGGER = Logger.getLogger(MovableDataAccessService.class);
 
+    private SimulatedMovableDataAccessService simulatedDataAccessService;
     private MovablePersistentStorage movablePersistentStorage;
 
     private DataAccessServiceStatus servicePreviousStatus;
@@ -56,10 +57,11 @@ public class MovableDataAccessService extends DataAccessService
     private Set<HashRange> readRanges;
     private volatile HashRange writeRange;
     private volatile RingMetadata ringMetadata;
-    
-    public MovableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage) {
-        super(cache, persistentStorage);
-        this.movablePersistentStorage = persistentStorage;
+
+    protected MovableDataAccessService(Builder<E> builder) {
+        super(builder.cache, builder.persistentStorage);
+        this.movablePersistentStorage = builder.persistentStorage;
+        this.simulatedDataAccessService = builder.simulatedDataAccessService;
         this.servicePreviousStatus = DataAccessServiceStatus.STOPPED;
         this.serviceRecentStatus = DataAccessServiceStatus.STOPPED;
         this.readRanges = new HashSet<>();
@@ -197,6 +199,7 @@ public class MovableDataAccessService extends DataAccessService
             case WRITELOCK_ACTIVE:
                 serviceRecentStatus = serviceNewStatus;
         }
+        simulatedDataAccessService.setServiceStatus(serviceNewStatus);
 
         LOGGER.debug(StringUtils.join(" ", "Recent service status is:", serviceRecentStatus));
     }
@@ -204,6 +207,7 @@ public class MovableDataAccessService extends DataAccessService
     @Override
     public synchronized void setRingMetadata(RingMetadata ringMetadata) {
         this.ringMetadata = ringMetadata;
+        simulatedDataAccessService.setRingMetadata(ringMetadata);
     }
 
     @Override
@@ -218,11 +222,17 @@ public class MovableDataAccessService extends DataAccessService
             this.readRanges.addAll(readRanges);
         }
         this.writeRange = writeRange;
+        simulatedDataAccessService.setManagedHashRanges(readRanges, writeRange);
     }
 
     @Override
     public synchronized boolean isServiceInitialized() {
         return ringMetadata != null && readRanges != null;
+    }
+
+    @Override
+    public SimulatedMovableDataAccessService getSimulatedDataAccessService() {
+        return simulatedDataAccessService;
     }
 
     /**
@@ -342,7 +352,7 @@ public class MovableDataAccessService extends DataAccessService
      */
     private void checkIfServiceHasWritePrivilegeFor(String key)
             throws KeyIsNotManagedByServiceException {
-        if (writeRange == null || !writeRange.contains(HashingUtils.getHash(key))) {
+        if (key == null || writeRange == null || !writeRange.contains(HashingUtils.getHash(key))) {
             LOGGER.error(StringUtils.join("", "Service does not have WRITE privilege for key (",
                     key, ")."));
             throw new KeyIsNotManagedByServiceException();
@@ -355,7 +365,7 @@ public class MovableDataAccessService extends DataAccessService
      */
     private void checkIfServiceHasReadPrivilegeFor(String key)
             throws KeyIsNotManagedByServiceException {
-        if (readRanges != null) {
+        if (key != null && readRanges != null) {
             for (HashRange range : readRanges) {
                 if (range.contains(HashingUtils.getHash(key))) {
                     return;
@@ -365,6 +375,35 @@ public class MovableDataAccessService extends DataAccessService
         LOGGER.error(
                 StringUtils.join("", "Service does not have WRITE privilege for key (", key, ")."));
         throw new KeyIsNotManagedByServiceException();
+    }
+
+    public static class Builder<E extends Builder<E>> {
+        private KVCache cache;
+        private MovablePersistentStorage persistentStorage;
+        private SimulatedMovableDataAccessService simulatedDataAccessService;
+
+        @SuppressWarnings("unchecked")
+        public E cache(KVCache cache) {
+            this.cache = cache;
+            return (E) this;
+        }
+
+        @SuppressWarnings("unchecked")
+        public E persistentStorage(MovablePersistentStorage persistentStorage) {
+            this.persistentStorage = persistentStorage;
+            return (E) this;
+        }
+
+        @SuppressWarnings("unchecked")
+        public E simulatedDataAccessService(
+                SimulatedMovableDataAccessService simulatedDataAccessService) {
+            this.simulatedDataAccessService = simulatedDataAccessService;
+            return (E) this;
+        }
+
+        public MovableDataAccessService<E> build() {
+            return new MovableDataAccessService<>(this);
+        }
     }
 
 }

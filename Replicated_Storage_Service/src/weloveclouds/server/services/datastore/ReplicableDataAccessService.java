@@ -5,8 +5,6 @@ import java.util.Set;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.services.replication.IReplicationService;
-import weloveclouds.server.store.KVCache;
-import weloveclouds.server.store.MovablePersistentStorage;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.PutType;
 
@@ -16,15 +14,15 @@ import weloveclouds.server.store.models.PutType;
  * 
  * @author Benedek
  */
-public class ReplicableDataAccessService extends MovableDataAccessService
+public class ReplicableDataAccessService
+        extends MovableDataAccessService<ReplicableDataAccessService.Builder>
         implements IReplicableDataAccessService {
 
     private volatile IReplicationService replicationService;
 
-    public ReplicableDataAccessService(KVCache cache, MovablePersistentStorage persistentStorage,
-            IReplicationService replicationService) {
-        super(cache, persistentStorage);
-        this.replicationService = replicationService;
+    protected ReplicableDataAccessService(Builder builder) {
+        super(builder);
+        this.replicationService = builder.replicationService;
     }
 
     @Override
@@ -51,4 +49,17 @@ public class ReplicableDataAccessService extends MovableDataAccessService
         }
     }
 
+    public static class Builder extends MovableDataAccessService.Builder<Builder> {
+        private IReplicationService replicationService;
+
+        public Builder replicationService(IReplicationService replicationService) {
+            this.replicationService = replicationService;
+            return this;
+        }
+
+        public ReplicableDataAccessService build() {
+            return new ReplicableDataAccessService(this);
+        }
+
+    }
 }

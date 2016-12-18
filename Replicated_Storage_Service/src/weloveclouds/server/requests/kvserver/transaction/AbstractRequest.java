@@ -40,25 +40,24 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         private Map<UUID, TransactionStatus> transactionLog;
         private Map<UUID, IKVTransactionMessage> ongoingTransactions;
 
-        public Builder<E> transactionId(UUID transactionId) {
+        @SuppressWarnings("unchecked")
+        public E transactionId(UUID transactionId) {
             this.transactionId = transactionId;
-            return getThis();
+            return (E) this;
         }
 
-        public Builder<E> transactionLog(Map<UUID, TransactionStatus> transactionLog) {
+        @SuppressWarnings("unchecked")
+        public E transactionLog(Map<UUID, TransactionStatus> transactionLog) {
             this.transactionLog = transactionLog;
-            return getThis();
+            return (E) this;
         }
 
-        public Builder<E> ongoingTransactions(
-                Map<UUID, IKVTransactionMessage> ongoingTransactions) {
+        @SuppressWarnings("unchecked")
+        public E ongoingTransactions(Map<UUID, IKVTransactionMessage> ongoingTransactions) {
             this.ongoingTransactions = ongoingTransactions;
-            return getThis();
+            return (E) this;
         }
 
-        protected abstract E getThis();
-
-        public abstract AbstractRequest<E> build();
     }
 
 }

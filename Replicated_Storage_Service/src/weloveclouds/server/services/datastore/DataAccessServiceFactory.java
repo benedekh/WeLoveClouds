@@ -34,13 +34,15 @@ public class DataAccessServiceFactory {
      * @param initializationContext the parameters for the initialization
      * @return a {@link MovableDataAccessService} which is already initialized by the parameters
      */
-    public MovableDataAccessService createInitializedMovableDataAccessService(
+    public MovableDataAccessService<?> createInitializedMovableDataAccessService(
             DataAccessServiceInitializationContext initializationContext) {
         LOGGER.debug("Creating an initialized MovableDataAccessService.");
-        return new MovableDataAccessService(
-                new KVCache(initializationContext.getCacheSize(),
-                        initializationContext.getDisplacementStrategy()),
-                new MovablePersistentStorage(initializationContext.getStorageRootFolderPath()));
+        return new MovableDataAccessService.Builder<>()
+                .cache(new KVCache(initializationContext.getCacheSize(),
+                        initializationContext.getDisplacementStrategy()))
+                .persistentStorage(new MovablePersistentStorage(
+                        initializationContext.getStorageRootFolderPath()))
+                .simulatedDataAccessService(new SimulatedMovableDataAccessService()).build();
     }
 
     /**
@@ -54,11 +56,13 @@ public class DataAccessServiceFactory {
             DataAccessServiceInitializationContext initializationContext,
             ReplicationService replicationService) {
         LOGGER.debug("Creating an initialized ReplicableDataAccessService.");
-        return new ReplicableDataAccessService(
-                new KVCache(initializationContext.getCacheSize(),
-                        initializationContext.getDisplacementStrategy()),
-                new MovablePersistentStorage(initializationContext.getStorageRootFolderPath()),
-                replicationService);
+        return new ReplicableDataAccessService.Builder()
+                .cache(new KVCache(initializationContext.getCacheSize(),
+                        initializationContext.getDisplacementStrategy()))
+                .persistentStorage(new MovablePersistentStorage(
+                        initializationContext.getStorageRootFolderPath()))
+                .simulatedDataAccessService(new SimulatedMovableDataAccessService())
+                .replicationService(replicationService).build();
     }
 
 }

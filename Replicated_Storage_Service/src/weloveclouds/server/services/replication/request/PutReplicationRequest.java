@@ -40,12 +40,6 @@ public class PutReplicationRequest
      */
     public static class Builder extends AbstractReplicationRequest.Builder<KVEntry, Builder> {
 
-        @Override
-        protected Builder getThis() {
-            return this;
-        }
-
-        @Override
         public PutReplicationRequest build() {
             return new PutReplicationRequest(this);
         }

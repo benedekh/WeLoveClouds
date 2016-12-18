@@ -22,13 +22,7 @@ public class AbortRequest extends AbstractRequest<AbortRequest.Builder> {
 
     public static class Builder extends AbstractRequest.Builder<Builder> {
 
-        @Override
-        protected Builder getThis() {
-            return this;
-        }
-
-        @Override
-        public AbstractRequest<Builder> build() {
+        public AbortRequest build() {
             return new AbortRequest(this);
         }
     }
