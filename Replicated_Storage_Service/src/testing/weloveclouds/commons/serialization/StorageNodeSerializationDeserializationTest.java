@@ -27,6 +27,8 @@ import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
+import static org.fest.assertions.Assertions.*;
+
 /**
  * Created by Benoit on 2016-12-18.
  */
@@ -40,7 +42,7 @@ public class StorageNodeSerializationDeserializationTest {
     private static final int REPLICA1_PORT = 5001;
 
     private static final String REPLICA2_NAME = "TROOPER";
-    private static final String REPLICA2_IP = "127.0.0.2";
+    private static final String REPLICA2_IP = "127.0.0.3";
     private static final int REPLICA2_PORT = 5002;
 
     private ISerializer<AbstractXMLNode, ServiceHealthInfos> serviceHealthInfosSerializer;
@@ -119,6 +121,13 @@ public class StorageNodeSerializationDeserializationTest {
         String serializedStorageNode = storageNodeSerializer.serialize(storageNode).toString();
         StorageNode deserializedStorageNode = storageNodeDeserializer.deserialize
                 (serializedStorageNode);
-        deserializedStorageNode.getName();
+        assertThat(deserializedStorageNode.getName()).isEqualTo(STORAGE_NODE_NAME);
+        assertThat(deserializedStorageNode.getPort()).isEqualTo(STORAGE_NODE_PORT);
+        assertThat(deserializedStorageNode.getHashRange()).isEqualTo(storageNodeHashRange);
+        assertThat(deserializedStorageNode.getReplicas().size()).isEqualTo(2);
+        assertThat(deserializedStorageNode.getChildHashRanges().size()).isEqualTo(2);
+        assertThat(deserializedStorageNode.getChildHashRanges()).containsOnly(childHashRange1,
+                childHashRange2);
+        assertThat(deserializedStorageNode.getIpAddress()).isEqualTo("/" + STORAGE_NODE_IP);
     }
 }

@@ -90,6 +90,9 @@ public class NodeHealtInfosDeserializer implements IDeserializer<NodeHealthInfos
                 serviceHealthInfosList.add(serviceHealthInfosDeserializer.deserialize
                         (serializedService));
             }
+        } else {
+            throw new DeserializationException("Unable to deserialize services health infos from " +
+                    ":" + serializedNodeHealthInfos);
         }
         return serviceHealthInfosList;
     }
