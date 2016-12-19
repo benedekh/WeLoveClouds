@@ -23,19 +23,19 @@ import static weloveclouds.commons.serialization.models.XMLTokens.REPLICAS;
  * Created by Benoit on 2016-12-08.
  */
 public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, StorageNode> {
-    private ISerializer<AbstractXMLNode, ServerConnectionInfo> serverConnectionInfoISerializer;
+    private ISerializer<AbstractXMLNode, ServerConnectionInfo> serverConnectionInfoSerializer;
     private ISerializer<AbstractXMLNode, HashRange> hashRangeSerializer;
     private ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosSerializer;
     private ISerializer<String, Hash> hashSerializer;
 
     @Inject
     public StorageNodeSerializer(ISerializer<AbstractXMLNode, ServerConnectionInfo>
-                                         serverConnectionInfoISerializer,
+                                         serverConnectionInfoSerializer,
                                  ISerializer<String, Hash> hashSerializer,
                                  ISerializer<AbstractXMLNode, HashRange> hashRangeSerializer,
                                  ISerializer<AbstractXMLNode, NodeHealthInfos>
                                          nodeHealthInfosSerializer) {
-        this.serverConnectionInfoISerializer = serverConnectionInfoISerializer;
+        this.serverConnectionInfoSerializer = serverConnectionInfoSerializer;
         this.hashRangeSerializer = hashRangeSerializer;
         this.hashSerializer = hashSerializer;
         this.nodeHealthInfosSerializer = nodeHealthInfosSerializer;
@@ -45,7 +45,7 @@ public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, Stora
     public AbstractXMLNode serialize(StorageNode nodeToSerialize) {
         return new XMLRootNode.Builder().token(NODE)
                 .addInnerNode(new XMLNode(NAME, nodeToSerialize.getName()))
-                .addInnerNode(serverConnectionInfoISerializer
+                .addInnerNode(serverConnectionInfoSerializer
                         .serialize(nodeToSerialize.getServerConnectionInfo()))
                 .addInnerNode(new XMLNode(HASH_KEY, hashSerializer.serialize(nodeToSerialize
                         .getHashKey())))
@@ -61,7 +61,7 @@ public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, Stora
 
         for (StorageNode replica : replicas) {
             replicasXML.addInnerNode(
-                    serverConnectionInfoISerializer.serialize(replica.getServerConnectionInfo()));
+                    serverConnectionInfoSerializer.serialize(replica.getServerConnectionInfo()));
         }
         return replicasXML.build();
     }
