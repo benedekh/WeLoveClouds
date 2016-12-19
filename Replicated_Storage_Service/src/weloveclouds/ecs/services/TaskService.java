@@ -22,9 +22,6 @@ import static weloveclouds.commons.monitoring.statsd.IStatsdClient.SINGLE_EVENT;
 import static weloveclouds.ecs.models.tasks.Status.RUNNING;
 import static weloveclouds.ecs.workers.WorkerStatus.ERROR;
 
-/**
- * Created by Benoit on 2016-11-19.
- */
 public class TaskService implements ITaskService, Observer {
     private static final Logger LOGGER = Logger.getLogger(TaskService.class);
     private static final IStatsdClient STATSD_CLIENT = StatsdClientFactory

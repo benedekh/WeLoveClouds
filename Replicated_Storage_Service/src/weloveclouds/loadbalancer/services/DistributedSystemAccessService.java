@@ -12,6 +12,7 @@ import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsib
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 /**
  * Created by Benoit on 2016-12-03.
@@ -21,11 +22,11 @@ public class DistributedSystemAccessService {
     private DistributedService distributedService;
     private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
 
-    public void updateServiceHealthWith(NodeHealthInfos serverHealthInfos) {
+    public void updateServiceHealthWith(NodeHealthInfos nodeHealthInfos) {
         try {
             reentrantReadWriteLock.writeLock().lock();
-            distributedService.getNodeFrom(serverHealthInfos.getServerConnectionInfo())
-                    .updateHealthInfos(serverHealthInfos);
+            distributedService.getNodeFrom(nodeHealthInfos.getNodeName())
+                    .updateHealthInfos(nodeHealthInfos);
         } finally {
             reentrantReadWriteLock.writeLock().unlock();
         }

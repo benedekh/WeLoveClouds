@@ -1,6 +1,5 @@
 package weloveclouds.commons.serialization.utils;
 
-
 import java.util.regex.Pattern;
 
 import weloveclouds.commons.utils.StringUtils;
@@ -12,7 +11,7 @@ public class XMLPatternUtils {
     public static final String XML_NODE = "group";
 
     public static Pattern getRegexFromToken(String token) {
-        return Pattern.compile(createStartTokenFrom(token) + "(?<" + XML_NODE + ">.+?)"
+        return Pattern.compile(createStartTokenFrom(token) + "(?<" + XML_NODE + ">.*?)"
                 + createEndTokenFrom(token));
     }
 

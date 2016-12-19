@@ -27,7 +27,7 @@ import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NU
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES;
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NUMBER_OF_NODE_START_RETRIES;
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NUMBER_OF_NODE_STOP_RETRIES;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.WRITELOCKED;
+import static weloveclouds.ecs.models.repository.NodeStatus.WRITELOCKED;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.ADD_NODE;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.REMOVE_NODE;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.SERVICE_INITIALISATION;

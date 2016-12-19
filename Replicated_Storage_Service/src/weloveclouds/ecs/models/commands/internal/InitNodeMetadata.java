@@ -2,8 +2,6 @@ package weloveclouds.ecs.models.commands.internal;
 
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.INITKVSERVER;
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.SYNCHRONIZED;
 
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.commons.hashing.models.RingMetadata;
@@ -12,6 +10,10 @@ import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
+
+import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
+import static weloveclouds.ecs.models.repository.NodeStatus.SYNCHRONIZED;
+
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.ICommunicationApi;
@@ -51,7 +53,6 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand {
                 targetedNode.setStatus(INITIALIZED);
                 targetedNode.setMetadataStatus(SYNCHRONIZED);
             }
-
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);
         } finally {

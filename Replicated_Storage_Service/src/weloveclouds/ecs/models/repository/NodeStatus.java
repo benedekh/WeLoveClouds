@@ -3,6 +3,6 @@ package weloveclouds.ecs.models.repository;
 /**
  * Created by Benoit on 2016-11-19.
  */
-public enum StorageNodeStatus {
+public enum NodeStatus {
     IDLE, RUNNING, HALTED, INITIALIZED, SYNCHRONIZED, UNSYNCHRONIZED, WRITELOCKED, REMOVED
 }

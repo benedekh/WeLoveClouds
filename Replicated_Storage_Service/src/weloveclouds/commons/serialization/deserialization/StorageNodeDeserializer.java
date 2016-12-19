@@ -1,4 +1,4 @@
-package weloveclouds.commons.loadbalancer.deserialization;
+package weloveclouds.commons.serialization.deserialization;
 
 import com.google.inject.Inject;
 
@@ -12,6 +12,7 @@ import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
@@ -66,7 +67,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
     private ServerConnectionInfo deserializeServerConnectionInfoFrom(String serializedNode) throws
             DeserializationException {
         Matcher serverConnectionInfoMatcher =
-                getRegexFromToken(CONNECTION_INFOS).matcher(serializedNode);
+                getRegexFromToken(CONNECTION_INFO).matcher(serializedNode);
         if (serverConnectionInfoMatcher.find()) {
             return serverConnectionInfoDeserializer
                     .deserialize(serverConnectionInfoMatcher.group(XML_NODE));
@@ -105,7 +106,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         List<HashRange> childHashRangeList = new ArrayList<>();
 
         if (childHashRangesMatcher.find()) {
-            Matcher childHashRangeMatcher = getRegexFromToken(CHILD_HASH_RANGE)
+            Matcher childHashRangeMatcher = getRegexFromToken(HASH_RANGE)
                     .matcher(childHashRangesMatcher.group(XML_NODE));
             while (childHashRangeMatcher.find()) {
                 childHashRangeList.add(hashRangeDeserializer
@@ -124,7 +125,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         List<StorageNode> replicaList = new ArrayList<>();
 
         if (replicasMatcher.find()) {
-            Matcher replicaMatcher = getRegexFromToken(REPLICA)
+            Matcher replicaMatcher = getRegexFromToken(CONNECTION_INFO)
                     .matcher(replicasMatcher.group(XML_NODE));
             while (replicaMatcher.find()) {
                 String serializedReplica = replicaMatcher.group(XML_NODE);

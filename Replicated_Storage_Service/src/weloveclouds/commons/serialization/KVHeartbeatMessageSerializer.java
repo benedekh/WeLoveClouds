@@ -1,4 +1,4 @@
-package weloveclouds.commons.loadbalancer.serialization;
+package weloveclouds.commons.serialization;
 
 import com.google.inject.Inject;
 
@@ -17,19 +17,20 @@ import static weloveclouds.commons.serialization.models.XMLTokens.KVHEARTBEAT_ME
  */
 public class KVHeartbeatMessageSerializer implements
         IMessageSerializer<SerializedMessage, KVHeartbeatMessage> {
-    private ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosSerializer;
+
+    private ISerializer<AbstractXMLNode, NodeHealthInfos> nodeNodeHealthInfosSerializer;
 
     @Inject
     public KVHeartbeatMessageSerializer(ISerializer<AbstractXMLNode, NodeHealthInfos>
-                                                nodeHealthInfosSerializer) {
-        this.nodeHealthInfosSerializer = nodeHealthInfosSerializer;
+                                                nodeNodeHealthInfosSerializer) {
+        this.nodeNodeHealthInfosSerializer = nodeNodeHealthInfosSerializer;
     }
 
     @Override
     public SerializedMessage serialize(KVHeartbeatMessage unserializedMessage) {
         return new SerializedMessage(new XMLRootNode.Builder()
                 .token(KVHEARTBEAT_MESSAGE)
-                .addInnerNode(nodeHealthInfosSerializer
+                .addInnerNode(nodeNodeHealthInfosSerializer
                         .serialize(unserializedMessage.getNodeHealthInfos()))
                 .build()
                 .toString());
