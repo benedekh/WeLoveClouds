@@ -16,7 +16,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * A deserializer which converts a {@link String} to a {@link ServerConnectionInfo}.
- * 
+ *
  * @author Benedek
  */
 public class ServerConnectionInfoDeserializer
@@ -72,5 +72,4 @@ public class ServerConnectionInfoDeserializer
         }
         return FAULTY_PORT;
     }
-
 }

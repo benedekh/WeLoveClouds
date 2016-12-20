@@ -9,15 +9,17 @@ public class XMLTokens {
     public static final String TOPOLOGY = "TOPOLOGY";
     public static final String ORDERED_NODES = "ORDERED_NODES";
     public static final String NODE = "NODE";
-    public static final String CONNECTION_INFOS = "CONNECTION_INFOS";
     public static final String NAME = "NAME";
     public static final String HASH_KEY = "HASH_KEY";
     public static final String HASH_RANGE = "HASH_RANGE";
     public static final String CHILD_HASH_RANGES = "CHILD_HASH_RANGES";
-    public static final String CHILD_HASH_RANGE = "CHILD_HASH_RANGE";
     public static final String NODE_HEALTH_INFOS = "HEALTH_INFOS";
     public static final String REPLICAS = "REPLICAS";
-    public static final String REPLICA = "REPLICA";
+    public static final String CONNECTION_INFOS = "CONNECTION_INFOS";
+
+    public static final String SERVICES = "SERVICES";
+    public static final String SERVICE = "SERVICE";
+    public static final String PRIORITY = "PRIORITY";
 
     public static final String HASH_RANGES = "HASH_RANGES";
     public static final String HASH = "HASH";

@@ -10,17 +10,16 @@ import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.*;
+import static weloveclouds.ecs.models.repository.NodeStatus.*;
 
 /**
  * Created by Benoit on 2016-11-16.
  */
 public class StorageNode extends AbstractNode {
-    private static final int NO_CONNECTION = 0;
-
-    private StorageNodeStatus metadataStatus;
-    private StorageNodeStatus status;
+    private NodeStatus metadataStatus;
+    private NodeStatus status;
     private HashRange previousHashRange;
     private HashRange hashRange;
     private List<StorageNode> replicas;
@@ -39,14 +38,14 @@ public class StorageNode extends AbstractNode {
         this.previousHashRange = storageNodeBuilder.previousHashRange;
 
         if (storageNodeBuilder.healthInfos == null) {
-            this.healthInfos = new NodeHealthInfos.Builder().serverName(name)
-                    .serverConnectionInfo(serverConnectionInfo)
-                    .numberOfActiveConnections(NO_CONNECTION).build();
+            this.healthInfos = new NodeHealthInfos.Builder()
+                    .nodeName(name)
+                    .nodeStatus(HALTED)
+                    .build();
         } else {
             this.healthInfos = storageNodeBuilder.healthInfos;
         }
     }
-
 
     public void updateHealthInfos(NodeHealthInfos healthInfos) {
         this.healthInfos = healthInfos;
@@ -62,19 +61,19 @@ public class StorageNode extends AbstractNode {
         this.metadataStatus = SYNCHRONIZED;
     }
 
-    public StorageNodeStatus getMetadataStatus() {
+    public NodeStatus getMetadataStatus() {
         return metadataStatus;
     }
 
-    public void setMetadataStatus(StorageNodeStatus metadataStatus) {
+    public void setMetadataStatus(NodeStatus metadataStatus) {
         this.metadataStatus = metadataStatus;
     }
 
-    public StorageNodeStatus getStatus() {
+    public NodeStatus getStatus() {
         return status;
     }
 
-    public void setStatus(StorageNodeStatus status) {
+    public void setStatus(NodeStatus status) {
         this.status = status;
     }
 

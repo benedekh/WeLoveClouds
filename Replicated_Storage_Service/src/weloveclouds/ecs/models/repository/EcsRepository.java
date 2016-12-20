@@ -3,8 +3,8 @@ package weloveclouds.ecs.models.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.UNSYNCHRONIZED;
+import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
+import static weloveclouds.ecs.models.repository.NodeStatus.UNSYNCHRONIZED;
 
 /**
  * Created by Benoit on 2016-11-16.
@@ -28,11 +28,11 @@ public class EcsRepository {
         return storageNodes.size();
     }
 
-    public int getNumberOfNodesWithStatus(StorageNodeStatus status) {
+    public int getNumberOfNodesWithStatus(NodeStatus status) {
         return getNodesWithStatus(status).size();
     }
 
-    public List<StorageNode> getNodesWithStatus(StorageNodeStatus status) {
+    public List<StorageNode> getNodesWithStatus(NodeStatus status) {
         List<StorageNode> nodes = new ArrayList<>();
 
         for (StorageNode storageNode : getStorageNodes()) {
@@ -43,17 +43,17 @@ public class EcsRepository {
         return nodes;
     }
 
-    public List<StorageNode> getNodeWithStatus(List<StorageNodeStatus> status) {
+    public List<StorageNode> getNodeWithStatus(List<NodeStatus> status) {
         List<StorageNode> nodes = new ArrayList<>();
 
-        for (StorageNodeStatus nodeStatus : status) {
+        for (NodeStatus nodeStatus : status) {
             nodes.addAll(getNodesWithStatus(nodeStatus));
         }
 
         return nodes;
     }
 
-    public List<StorageNode> getNodesWithMetadataStatus(StorageNodeStatus status) {
+    public List<StorageNode> getNodesWithMetadataStatus(NodeStatus status) {
         List<StorageNode> nodes = new ArrayList<>();
 
         for (StorageNode storageNode : getStorageNodes()) {

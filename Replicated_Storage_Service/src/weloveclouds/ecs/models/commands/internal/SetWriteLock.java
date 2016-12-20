@@ -1,7 +1,6 @@
 package weloveclouds.ecs.models.commands.internal;
 
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.WRITELOCKED;
 
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
@@ -15,6 +14,8 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.ecs.models.repository.StorageNode;
+
+import static weloveclouds.ecs.models.repository.NodeStatus.WRITELOCKED;
 
 /**
  * Created by Benoit on 2016-11-22.

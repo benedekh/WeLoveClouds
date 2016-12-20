@@ -7,7 +7,7 @@ import weloveclouds.ecs.exceptions.ssh.SecureShellServiceException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.services.ISecureShellService;
 
-import static weloveclouds.ecs.models.repository.StorageNodeStatus.INITIALIZED;
+import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
 
 /**
  * Created by Benoit on 2016-11-16.

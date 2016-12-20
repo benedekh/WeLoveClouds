@@ -1,12 +1,11 @@
 package weloveclouds.commons.kvstore.models.messages.proxy;
 
-import weloveclouds.commons.exceptions.IllegalAccessException;
 import java.util.Set;
 
+import weloveclouds.commons.exceptions.IllegalAccessException;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage.StatusType;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
 

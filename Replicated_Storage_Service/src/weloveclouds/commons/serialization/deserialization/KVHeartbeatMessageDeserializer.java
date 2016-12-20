@@ -1,4 +1,4 @@
-package weloveclouds.commons.loadbalancer.deserialization;
+package weloveclouds.commons.serialization.deserialization;
 
 import com.google.inject.Inject;
 
@@ -10,6 +10,7 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;

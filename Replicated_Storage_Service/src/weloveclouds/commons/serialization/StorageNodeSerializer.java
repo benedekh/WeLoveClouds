@@ -1,4 +1,4 @@
-package weloveclouds.commons.loadbalancer.serialization;
+package weloveclouds.commons.serialization;
 
 import com.google.inject.Inject;
 
@@ -6,7 +6,6 @@ import java.util.List;
 
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
-import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
@@ -15,32 +14,28 @@ import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.commons.serialization.models.XMLTokens.CHILD_HASH_RANGES;
-import static weloveclouds.commons.serialization.models.XMLTokens.CHILD_HASH_RANGE;
 import static weloveclouds.commons.serialization.models.XMLTokens.HASH_KEY;
-import static weloveclouds.commons.serialization.models.XMLTokens.HASH_RANGE;
 import static weloveclouds.commons.serialization.models.XMLTokens.NAME;
 import static weloveclouds.commons.serialization.models.XMLTokens.NODE;
 import static weloveclouds.commons.serialization.models.XMLTokens.REPLICAS;
-import static weloveclouds.commons.serialization.models.XMLTokens.REPLICA;
-import static weloveclouds.commons.serialization.models.XMLTokens.CONNECTION_INFOS;
 
 /**
  * Created by Benoit on 2016-12-08.
  */
 public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, StorageNode> {
-    private ISerializer<String, ServerConnectionInfo> serverConnectionInfoISerializer;
-    private ISerializer<String, Hash> hashSerializer;
-    private ISerializer<String, HashRange> hashRangeSerializer;
+    private ISerializer<AbstractXMLNode, ServerConnectionInfo> serverConnectionInfoSerializer;
+    private ISerializer<AbstractXMLNode, HashRange> hashRangeSerializer;
     private ISerializer<AbstractXMLNode, NodeHealthInfos> nodeHealthInfosSerializer;
+    private ISerializer<String, Hash> hashSerializer;
 
     @Inject
-    public StorageNodeSerializer(ISerializer<String, ServerConnectionInfo>
-                                         serverConnectionInfoISerializer,
+    public StorageNodeSerializer(ISerializer<AbstractXMLNode, ServerConnectionInfo>
+                                         serverConnectionInfoSerializer,
                                  ISerializer<String, Hash> hashSerializer,
-                                 ISerializer<String, HashRange> hashRangeSerializer,
+                                 ISerializer<AbstractXMLNode, HashRange> hashRangeSerializer,
                                  ISerializer<AbstractXMLNode, NodeHealthInfos>
                                          nodeHealthInfosSerializer) {
-        this.serverConnectionInfoISerializer = serverConnectionInfoISerializer;
+        this.serverConnectionInfoSerializer = serverConnectionInfoSerializer;
         this.hashRangeSerializer = hashRangeSerializer;
         this.hashSerializer = hashSerializer;
         this.nodeHealthInfosSerializer = nodeHealthInfosSerializer;
@@ -50,12 +45,11 @@ public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, Stora
     public AbstractXMLNode serialize(StorageNode nodeToSerialize) {
         return new XMLRootNode.Builder().token(NODE)
                 .addInnerNode(new XMLNode(NAME, nodeToSerialize.getName()))
-                .addInnerNode(new XMLNode(CONNECTION_INFOS, serverConnectionInfoISerializer
-                        .serialize(nodeToSerialize.getServerConnectionInfo())))
-                .addInnerNode(new XMLNode(HASH_KEY, hashSerializer
-                        .serialize(nodeToSerialize.getHashKey())))
-                .addInnerNode(new XMLNode(HASH_RANGE, hashRangeSerializer
-                        .serialize(nodeToSerialize.getHashRange())))
+                .addInnerNode(serverConnectionInfoSerializer
+                        .serialize(nodeToSerialize.getServerConnectionInfo()))
+                .addInnerNode(new XMLNode(HASH_KEY, hashSerializer.serialize(nodeToSerialize
+                        .getHashKey())))
+                .addInnerNode(hashRangeSerializer.serialize(nodeToSerialize.getHashRange()))
                 .addInnerNode(nodeHealthInfosSerializer.serialize(nodeToSerialize.getHealthInfos()))
                 .addInnerNode(serializeReplicas(nodeToSerialize.getReplicas()))
                 .addInnerNode(serializeChildHashRanges(nodeToSerialize.getChildHashRanges()))
@@ -66,8 +60,8 @@ public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, Stora
         XMLRootNode.Builder replicasXML = new XMLRootNode.Builder().token(REPLICAS);
 
         for (StorageNode replica : replicas) {
-            replicasXML.addInnerNode(new XMLNode(REPLICA, serverConnectionInfoISerializer
-                    .serialize(replica.getServerConnectionInfo())));
+            replicasXML.addInnerNode(
+                    serverConnectionInfoSerializer.serialize(replica.getServerConnectionInfo()));
         }
         return replicasXML.build();
     }
@@ -76,8 +70,7 @@ public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, Stora
         XMLRootNode.Builder childHashRangeXML = new XMLRootNode.Builder().token(CHILD_HASH_RANGES);
 
         for (HashRange childHashRange : childHashRanges) {
-            childHashRangeXML.addInnerNode(new XMLNode(CHILD_HASH_RANGE, hashRangeSerializer
-                    .serialize(childHashRange)));
+            childHashRangeXML.addInnerNode(hashRangeSerializer.serialize(childHashRange));
         }
         return childHashRangeXML.build();
     }

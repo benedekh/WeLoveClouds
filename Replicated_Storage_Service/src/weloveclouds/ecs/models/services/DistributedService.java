@@ -79,6 +79,18 @@ public class DistributedService {
         return this.topology.getNodes();
     }
 
+    public StorageNode getNodeFrom(String name) {
+        StorageNode storageNode = null;
+
+        for (StorageNode node : getParticipatingNodes()) {
+            if (node.getName().equals(name)) {
+                storageNode = node;
+                break;
+            }
+        }
+        return storageNode;
+    }
+
     public StorageNode getNodeFrom(ServerConnectionInfo serverConnectionInfo) {
         StorageNode storageNode = null;
 
