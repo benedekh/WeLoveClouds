@@ -10,10 +10,10 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.server.services.transaction.SenderTransaction;
 
-public abstract class TransactionCoordinatorTask<E extends TransactionCoordinatorTask.Builder<E>>
+public abstract class TransactionTask<E extends TransactionTask.Builder<E>>
         implements ITransactionTask {
 
-    private static final Logger LOGGER = Logger.getLogger(TransactionCoordinatorTask.class);
+    private static final Logger LOGGER = Logger.getLogger(TransactionTask.class);
 
     private ITransactionTask successorForSuccess;
     private ITransactionTask successorForFail;
@@ -21,7 +21,7 @@ public abstract class TransactionCoordinatorTask<E extends TransactionCoordinato
     protected Set<SenderTransaction> transactions;
     protected ExecutorService executorService;
 
-    protected TransactionCoordinatorTask(Builder<E> builder) {
+    protected TransactionTask(Builder<E> builder) {
         this.successorForSuccess = builder.successorForSuccess;
         this.successorForFail = builder.successorForFail;
         this.transactions = builder.transactions;

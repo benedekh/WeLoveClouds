@@ -13,6 +13,7 @@ import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
+import weloveclouds.server.services.transaction.TransactionServiceFactory;
 
 public class TransactionReceiverService
         implements IRequestFactory<IKVTransactionMessage, IKVTransactionRequest> {
@@ -20,11 +21,14 @@ public class TransactionReceiverService
     private static final Logger LOGGER = Logger.getLogger(TransactionReceiverService.class);
 
     private Map<UUID, ReceivedTransactionContext> transactionLog;
+    private TransactionServiceFactory transactionServiceFactory;
+
     private IRequestFactory<IKVTransferMessage, IKVTransferRequest> simulatedDASBehavior;
     private IRequestFactory<IKVTransferMessage, IKVTransferRequest> realDASBehavior;
 
     protected TransactionReceiverService(Builder builder) {
         this.transactionLog = builder.transactionLog;
+        this.transactionServiceFactory = builder.transactionServiceFactory;
         this.simulatedDASBehavior = builder.simulatedDASBehavior;
         this.realDASBehavior = builder.realDASBehavior;
     }
@@ -44,7 +48,9 @@ public class TransactionReceiverService
             case INIT:
                 request = new InitRequest.Builder().transactionLog(transactionLog)
                         .transactionId(receivedMessage.getTransactionId())
-                        .transferMessage(receivedMessage.getTransferPayload()).build();
+                        .transferMessage(receivedMessage.getTransferPayload())
+                        .otherParticipants(receivedMessage.getOtherParticipants())
+                        .transactionServiceFactory(transactionServiceFactory).build();
                 break;
             case COMMIT:
                 request = new CommitRequest.Builder().transactionLog(transactionLog)
@@ -67,6 +73,7 @@ public class TransactionReceiverService
 
     public static class Builder {
         private Map<UUID, ReceivedTransactionContext> transactionLog;
+        private TransactionServiceFactory transactionServiceFactory;
         private IRequestFactory<IKVTransferMessage, IKVTransferRequest> simulatedDASBehavior;
         private IRequestFactory<IKVTransferMessage, IKVTransferRequest> realDASBehavior;
 
@@ -84,6 +91,12 @@ public class TransactionReceiverService
         public Builder realDASBehavior(
                 IRequestFactory<IKVTransferMessage, IKVTransferRequest> realDASBehavior) {
             this.realDASBehavior = realDASBehavior;
+            return this;
+        }
+
+        public Builder transactionServiceFactory(
+                TransactionServiceFactory transactionServiceFactory) {
+            this.transactionServiceFactory = transactionServiceFactory;
             return this;
         }
 

@@ -26,13 +26,17 @@ public class AbortRequest extends AbstractRequest<AbortRequest.Builder> {
                 ") on receiver side."));
 
         ReceivedTransactionContext transaction = transactionLog.get(transactionId);
-        if (transaction.getTransactionStatus() != TransactionStatus.ABORTED) {
+        TransactionStatus recentStatus = transaction.getTransactionStatus();
+        if (!transaction.isCompleted()) {
             transaction.setAborted();
+            LOGGER.debug(StringUtils.join("", "Aborted  for transaction (", transactionId,
+                    ") on receiver side."));
+            return createTransactionResponse(transactionId, StatusType.RESPONSE_ABORTED);
+        } else {
+            LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (", transactionId,
+                    ") on receiver side."));
+            return createTransactionResponse(transactionId, recentStatus.getResponseType());
         }
-
-        LOGGER.debug(StringUtils.join("", "Aborted  for transaction (", transactionId,
-                ") on receiver side."));
-        return createTransactionResponse(transactionId, StatusType.RESPONSE_ABORTED);
     }
 
     @Override

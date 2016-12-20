@@ -16,18 +16,20 @@ import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransact
 import weloveclouds.server.requests.kvserver.transfer.KVTransferRequestFactory;
 import weloveclouds.server.services.datastore.IMovableDataAccessService;
 import weloveclouds.server.services.datastore.SimulatedMovableDataAccessService;
-import weloveclouds.server.services.transaction.flow.TwoPCExecutionFlow;
+import weloveclouds.server.services.transaction.flow.ITransactionExecutionFlow;
+import weloveclouds.server.services.transaction.flow.twopc.TwoPCCoordinatorExecutionFlow;
+import weloveclouds.server.services.transaction.flow.twopc.TwoPCReceiverSideRestorationFlow;
 
 public class TransactionServiceFactory {
 
+    public ITransactionSenderService create2PCReceiverSideRestorationService(
+            ReceivedTransactionContext transactionContext) {
+        return createTransactionSenderService(
+                new TwoPCReceiverSideRestorationFlow(transactionContext));
+    }
+
     public ITransactionSenderService create2PCTransactionSenderService() {
-        return new TransactionSenderService.Builder()
-                .communicationApi(
-                        new CommunicationApiFactory().createConcurrentCommunicationApiV1())
-                .connectionFactory(new ConnectionFactory(new SocketFactory()))
-                .transactionExecutor(new TwoPCExecutionFlow())
-                .transactionMessageDeserializer(new KVTransactionMessageDeserializer())
-                .transactionMessageSerializer(new KVTransactionMessageSerializer()).build();
+        return createTransactionSenderService(new TwoPCCoordinatorExecutionFlow());
     }
 
     public IRequestFactory<IKVTransactionMessage, IKVTransactionRequest> createTransactionReceiverService(
@@ -35,8 +37,21 @@ public class TransactionServiceFactory {
         SimulatedMovableDataAccessService simulatedDAS = new SimulatedMovableDataAccessService();
         return new TransactionReceiverService.Builder()
                 .transactionLog(new ConcurrentHashMap<UUID, ReceivedTransactionContext>())
+                .transactionServiceFactory(this)
                 .simulatedDASBehavior(new KVTransferRequestFactory(simulatedDAS))
                 .realDASBehavior(new KVTransferRequestFactory(dataAccessService)).build();
     }
+
+    private ITransactionSenderService createTransactionSenderService(
+            ITransactionExecutionFlow executionFlow) {
+        return new TransactionSenderService.Builder()
+                .communicationApi(
+                        new CommunicationApiFactory().createConcurrentCommunicationApiV1())
+                .connectionFactory(new ConnectionFactory(new SocketFactory()))
+                .transactionExecutionFlow(executionFlow)
+                .transactionMessageDeserializer(new KVTransactionMessageDeserializer())
+                .transactionMessageSerializer(new KVTransactionMessageSerializer()).build();
+    }
+
 
 }

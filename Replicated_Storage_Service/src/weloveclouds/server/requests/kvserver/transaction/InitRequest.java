@@ -3,28 +3,35 @@ package weloveclouds.server.requests.kvserver.transaction;
 import static weloveclouds.server.requests.kvserver.transaction.utils.KVTransactionMessageFactory.createTransactionResponse;
 import static weloveclouds.server.requests.kvserver.transaction.utils.KVTransactionMessageFactory.createUnknownIDTransactionResponse;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
 
 import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
 import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatus;
-import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
+import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbort;
+import weloveclouds.server.requests.kvserver.transaction.utils.TimedHelp;
+import weloveclouds.server.services.transaction.TransactionServiceFactory;
 
 public class InitRequest extends AbstractRequest<InitRequest.Builder> {
 
-    private static final Duration WAIT_BEFORE_ABORT = new Duration(20 * 1000);
     private static final Logger LOGGER = Logger.getLogger(InitRequest.class);
 
     private IKVTransferMessage transferMessage;
+    private Set<ServerConnectionInfo> otherParticipants;
+    private TransactionServiceFactory transactionServiceFactory;
 
     protected InitRequest(Builder builder) {
         super(builder);
         this.transferMessage = builder.transferMessage;
+        this.otherParticipants = builder.otherParticipants;
+        this.transactionServiceFactory = builder.transactionServiceFactory;
     }
 
     @Override
@@ -36,8 +43,9 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
             synchronized (transactionLog) {
                 if (!transactionLog.containsKey(transactionId)) {
                     ReceivedTransactionContext transaction = createTransactionContext();
+                    transaction.setTimedRestoration(createTimedHelpRequest(transaction));
                     transactionLog.put(transactionId, transaction);
-                    transaction.scheduleAbortRequest();
+                    transaction.scheduleTimedRestoration();
                 }
             }
         } else {
@@ -66,20 +74,39 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
         return this;
     }
 
+    private TimedAbort createTimedAbortRequest(ReceivedTransactionContext transaction) {
+        return new TimedAbort(transaction);
+    }
+
+    private TimedHelp createTimedHelpRequest(ReceivedTransactionContext transaction) {
+        return new TimedHelp.Builder().transaction(transaction)
+                .transactionServiceFactory(transactionServiceFactory).build();
+    }
+
     private ReceivedTransactionContext createTransactionContext() {
-        AbortRequest abortRequest = new AbortRequest.Builder().transactionLog(transactionLog)
-                .transactionId(transactionId).build();
-        TimedAbortRequest timedAbort = new TimedAbortRequest(abortRequest, WAIT_BEFORE_ABORT);
-        return new ReceivedTransactionContext.Builder().transactionStatus(TransactionStatus.INIT)
-                .transferMessage(transferMessage).timedAbortRequest(timedAbort).build();
+        return new ReceivedTransactionContext.Builder().transactionId(transactionId)
+                .transactionStatus(TransactionStatus.INIT).otherParticipants(otherParticipants)
+                .transferMessage(transferMessage).build();
     }
 
     public static class Builder extends AbstractRequest.Builder<Builder> {
-
         private IKVTransferMessage transferMessage;
+        private Set<ServerConnectionInfo> otherParticipants;
+        private TransactionServiceFactory transactionServiceFactory;
 
         public Builder transferMessage(IKVTransferMessage transferMessage) {
             this.transferMessage = transferMessage;
+            return this;
+        }
+
+        public Builder otherParticipants(Set<ServerConnectionInfo> otherParticipants) {
+            this.otherParticipants = otherParticipants;
+            return this;
+        }
+
+        public Builder transactionServiceFactory(
+                TransactionServiceFactory transactionServiceFactory) {
+            this.transactionServiceFactory = transactionServiceFactory;
             return this;
         }
 
@@ -87,5 +114,4 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
             return new InitRequest(this);
         }
     }
-
 }

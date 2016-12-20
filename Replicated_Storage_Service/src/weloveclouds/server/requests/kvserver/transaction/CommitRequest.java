@@ -39,7 +39,7 @@ public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
                 try {
                     try (CloseableLock lock = new CloseableLock(transaction.getLock())) {
                         if (transaction.getTransactionStatus() != TransactionStatus.COMMITTED) {
-                            transaction.stopAbortRequest();
+                            transaction.stopTimedRestoration();
                             IKVTransferMessage transferMessage = transaction.getTransferMessage();
                             if (transferMessage != null) {
                                 realDASBehavior.createRequestFromReceivedMessage(transferMessage,

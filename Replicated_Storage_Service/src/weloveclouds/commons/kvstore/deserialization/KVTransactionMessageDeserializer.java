@@ -2,18 +2,21 @@ package weloveclouds.commons.kvstore.deserialization;
 
 import static weloveclouds.commons.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 import static weloveclouds.commons.serialization.models.XMLTokens.KVTRANSACTION_MESSAGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.OTHER_PARTICIPANTS;
 import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
 import static weloveclouds.commons.serialization.models.XMLTokens.TRANSACTION_ID;
 import static weloveclouds.commons.serialization.models.XMLTokens.TRANSFER_MESSAGE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfosSetDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.TransferMessageDeserializer;
 import weloveclouds.commons.kvstore.deserialization.helper.UUIDDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
@@ -26,6 +29,7 @@ import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.communication.models.ServerConnectionInfo;
 
 public class KVTransactionMessageDeserializer
         implements IMessageDeserializer<IKVTransactionMessage, SerializedMessage> {
@@ -35,6 +39,8 @@ public class KVTransactionMessageDeserializer
     private IDeserializer<UUID, String> transactionIdDeserializer = new UUIDDeserializer();
     private IDeserializer<IKVTransferMessage, String> transferMessageDeserializer =
             new TransferMessageDeserializer();
+    private IDeserializer<Set<ServerConnectionInfo>, String> otherParticipantsDeserializer =
+            new ServerConnectionInfosSetDeserializer();
 
     @Override
     public IKVTransactionMessage deserialize(SerializedMessage serializedMessage)
@@ -67,7 +73,10 @@ public class KVTransactionMessageDeserializer
                     KVTransactionMessage transactionMessage = new KVTransactionMessage.Builder()
                             .status(deserializeStatus(serializedTransactionMessage))
                             .transactionId(deserializeTransactionId(serializedTransactionMessage))
-                            .transferPayload(transferMessage).build();
+                            .transferPayload(transferMessage)
+                            .otherParticipants(
+                                    deserializeOtherParticipants(serializedTransactionMessage))
+                            .build();
                     deserialized = new KVTransactionMessageProxy(transactionMessage);
                     LOGGER.debug(StringUtils.join(" ", "Deserialized KVTransactionMessage is:",
                             deserialized));
@@ -115,6 +124,16 @@ public class KVTransactionMessageDeserializer
         Matcher transferMessageMatcher = getRegexFromToken(TRANSFER_MESSAGE).matcher(from);
         if (transferMessageMatcher.find()) {
             return transferMessageDeserializer.deserialize(transferMessageMatcher.group(XML_NODE));
+        }
+        return null;
+    }
+
+    private Set<ServerConnectionInfo> deserializeOtherParticipants(String from)
+            throws DeserializationException {
+        Matcher otherParticipantsMatcher = getRegexFromToken(OTHER_PARTICIPANTS).matcher(from);
+        if (otherParticipantsMatcher.find()) {
+            return otherParticipantsDeserializer
+                    .deserialize(otherParticipantsMatcher.group(XML_NODE));
         }
         return null;
     }
