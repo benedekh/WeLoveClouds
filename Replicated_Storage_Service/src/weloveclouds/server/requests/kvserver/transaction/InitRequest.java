@@ -11,8 +11,9 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
+import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatus;
 import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
-import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
 
 public class InitRequest extends AbstractRequest<InitRequest.Builder> {
 
@@ -31,19 +32,22 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
         LOGGER.debug(StringUtils.join("", "Init phase for transaction (", transactionId,
                 ") on receiver side."));
 
-        synchronized (transactionLog) {
-            if (!transactionLog.containsKey(transactionId)) {
-                transactionLog.put(transactionId, TransactionStatus.INIT);
-                ongoingTransactions.put(transactionId, transferMessage);
-                createTimedAbortRequest();
-            } else {
-                TransactionStatus recentStatus = transactionLog.get(transactionId);
-                if (recentStatus != TransactionStatus.INIT) {
-                    LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (",
-                            transactionId, ") on receiver side."));
-                    return createTransactionResponse(transactionId,
-                            StatusType.RESPONSE_GENERATE_NEW_ID);
+        if (!transactionLog.containsKey(transactionId)) {
+            synchronized (transactionLog) {
+                if (!transactionLog.containsKey(transactionId)) {
+                    ReceivedTransactionContext transaction = createTransactionContext();
+                    transactionLog.put(transactionId, transaction);
+                    transaction.scheduleAbortRequest();
                 }
+            }
+        } else {
+            TransactionStatus recentStatus =
+                    transactionLog.get(transactionId).getTransactionStatus();
+            if (recentStatus != TransactionStatus.INIT) {
+                LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (", transactionId,
+                        ") on receiver side."));
+                return createTransactionResponse(transactionId,
+                        StatusType.RESPONSE_GENERATE_NEW_ID);
             }
         }
 
@@ -62,13 +66,12 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
         return this;
     }
 
-    private void createTimedAbortRequest() {
+    private ReceivedTransactionContext createTransactionContext() {
         AbortRequest abortRequest = new AbortRequest.Builder().transactionLog(transactionLog)
-                .ongoingTransactions(ongoingTransactions).timedAbortRequests(timedAbortRequests)
                 .transactionId(transactionId).build();
         TimedAbortRequest timedAbort = new TimedAbortRequest(abortRequest, WAIT_BEFORE_ABORT);
-        timedAbortRequests.put(transactionId, timedAbort);
-        timedAbort.start();
+        return new ReceivedTransactionContext.Builder().transactionStatus(TransactionStatus.INIT)
+                .transferMessage(transferMessage).timedAbortRequest(timedAbort).build();
     }
 
     public static class Builder extends AbstractRequest.Builder<Builder> {

@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import weloveclouds.commons.kvstore.deserialization.KVTransactionMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
-import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.serialization.KVTransactionMessageSerializer;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.communication.CommunicationApiFactory;
@@ -13,8 +12,7 @@ import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.server.requests.kvserver.transaction.IKVTransactionRequest;
 import weloveclouds.server.requests.kvserver.transaction.TransactionReceiverService;
-import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
-import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
+import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
 import weloveclouds.server.requests.kvserver.transfer.KVTransferRequestFactory;
 import weloveclouds.server.services.datastore.IMovableDataAccessService;
 import weloveclouds.server.services.datastore.SimulatedMovableDataAccessService;
@@ -36,9 +34,7 @@ public class TransactionServiceFactory {
             IMovableDataAccessService dataAccessService) {
         SimulatedMovableDataAccessService simulatedDAS = new SimulatedMovableDataAccessService();
         return new TransactionReceiverService.Builder()
-                .ongoingTransactions(new ConcurrentHashMap<UUID, IKVTransferMessage>())
-                .timedAbortRequests(new ConcurrentHashMap<UUID, TimedAbortRequest>())
-                .transactionLog(new ConcurrentHashMap<UUID, TransactionStatus>())
+                .transactionLog(new ConcurrentHashMap<UUID, ReceivedTransactionContext>())
                 .simulatedDASBehavior(new KVTransferRequestFactory(simulatedDAS))
                 .realDASBehavior(new KVTransferRequestFactory(dataAccessService)).build();
     }
