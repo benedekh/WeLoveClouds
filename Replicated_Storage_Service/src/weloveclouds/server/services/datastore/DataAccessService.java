@@ -32,7 +32,7 @@ public class DataAccessService implements IDataAccessService {
     }
 
     @Override
-    public synchronized PutType putEntry(KVEntry entry) throws StorageException {
+    public PutType putEntry(KVEntry entry) throws StorageException {
         // implicit notification will go the cache as well
         // throw the persistent store
         PutType response = persistentStorage.putEntry(entry);
@@ -41,8 +41,7 @@ public class DataAccessService implements IDataAccessService {
     }
 
     @Override
-    public synchronized String getValue(String key)
-            throws StorageException, ValueNotFoundException {
+    public String getValue(String key) throws StorageException, ValueNotFoundException {
         String value = null;
         try {
             value = cache.getValue(key);
@@ -58,7 +57,7 @@ public class DataAccessService implements IDataAccessService {
     }
 
     @Override
-    public synchronized void removeEntry(String key) throws StorageException {
+    public void removeEntry(String key) throws StorageException {
         // implicit notification will go the cache as well
         // throw the persistent store
         persistentStorage.removeEntry(key);

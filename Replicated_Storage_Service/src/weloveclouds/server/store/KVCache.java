@@ -9,10 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.services.datastore.DataAccessService;
 import weloveclouds.server.services.datastore.IDataAccessService;
@@ -36,6 +38,7 @@ public class KVCache implements IDataAccessService, Observer {
     private int capacity;
 
     private DisplacementStrategy displacementStrategy;
+    private ReentrantReadWriteLock accessLock;
 
     /**
      * @param maxSize how many entries can be stored in the cache
@@ -48,53 +51,56 @@ public class KVCache implements IDataAccessService, Observer {
 
         this.cache = new HashMap<>();
         this.currentSize = 0;
+        this.accessLock = new ReentrantReadWriteLock();
     }
 
     @Override
-    public synchronized PutType putEntry(KVEntry entry) throws StorageException {
-        PutType response;
-        try {
-            String key = entry.getKey();
-            String value = entry.getValue();
+    public PutType putEntry(KVEntry entry) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+            PutType response;
+            try {
+                String key = entry.getKey();
+                String value = entry.getValue();
 
-            if (cache.containsKey(key)) {
-                cache.put(key, value);
-                response = PutType.UPDATE;
-                incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(),
-                        SUCCESS);
-            } else {
-                if (currentSize == capacity) {
-                    String displacedKey = displacementStrategy.displaceKey();
-                    removeEntry(displacedKey);
+                if (cache.containsKey(key)) {
+                    cache.put(key, value);
+                    response = PutType.UPDATE;
+                    incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(),
+                            SUCCESS);
+                } else {
+                    if (currentSize == capacity) {
+                        String displacedKey = displacementStrategy.displaceKey();
+                        removeEntry(displacedKey);
+                    }
+
+                    cache.put(key, value);
+                    currentSize++;
+                    response = PutType.INSERT;
+                    incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(),
+                            MISS);
                 }
 
-                cache.put(key, value);
-                currentSize++;
-                response = PutType.INSERT;
+                LOGGER.debug(StringUtils.join(" ", entry, "was added to cache."));
+                displacementStrategy.put(key);
+
+                return response;
+            } catch (NullPointerException ex) {
                 incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
+                String errorMessage = "Key or value is null when adding element to cache.";
+                LOGGER.error(errorMessage);
+                throw new StorageException(errorMessage);
+            } catch (IllegalArgumentException ex) {
+                incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
+                LOGGER.error(ex);
+                throw new StorageException(
+                        "Some property of the key or value prevents it from being stored in the cache.");
             }
-
-            LOGGER.debug(StringUtils.join(" ", entry, "was added to cache."));
-            displacementStrategy.put(key);
-
-            return response;
-        } catch (NullPointerException ex) {
-            incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
-            String errorMessage = "Key or value is null when adding element to cache.";
-            LOGGER.error(errorMessage);
-            throw new StorageException(errorMessage);
-        } catch (IllegalArgumentException ex) {
-            incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
-            LOGGER.error(ex);
-            throw new StorageException(
-                    "Some property of the key or value prevents it from being stored in the cache.");
         }
     }
 
     @Override
-    public synchronized String getValue(String key)
-            throws StorageException, ValueNotFoundException {
-        try {
+    public String getValue(String key) throws StorageException, ValueNotFoundException {
+        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
             String value = cache.get(key);
             if (value == null) {
                 incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
@@ -115,8 +121,8 @@ public class KVCache implements IDataAccessService, Observer {
     }
 
     @Override
-    public synchronized void removeEntry(String key) throws StorageException {
-        try {
+    public void removeEntry(String key) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             String removed = cache.remove(key);
             if (removed != null) {
                 currentSize--;
@@ -136,8 +142,8 @@ public class KVCache implements IDataAccessService, Observer {
     }
 
     @Override
-    public synchronized void update(Observable target, Object value) {
-        try {
+    public void update(Observable target, Object value) {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             if (value instanceof KVEntry) {
                 putEntry((KVEntry) value);
             } else if (value instanceof String) {

@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.MovableStorageUnit;
@@ -37,22 +38,24 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @param fromStorageUnits from where the entries will be copied
      */
     public void putEntries(Set<MovableStorageUnit> fromStorageUnits) throws StorageException {
-        LOGGER.debug("Putting storage units from parameter data structure started.");
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+            LOGGER.debug("Putting storage units from parameter data structure started.");
 
-        for (MovableStorageUnit storageUnit : fromStorageUnits) {
-            Path path = PathUtils.generateUniqueFilePath(rootPath, FILE_EXTENSION);
-            storageUnit.setPath(path);
-            storageUnit.save();
+            for (MovableStorageUnit storageUnit : fromStorageUnits) {
+                Path path = PathUtils.generateUniqueFilePath(rootPath, FILE_EXTENSION);
+                storageUnit.setPath(path);
+                storageUnit.save();
 
-            for (String key : storageUnit.getKeys()) {
-                storageUnits.put(key, storageUnit);
-                notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
+                for (String key : storageUnit.getKeys()) {
+                    storageUnits.put(key, storageUnit);
+                    notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
+                }
+
+                putStorageUnitIntoFreeSpaceCache(storageUnit);
             }
 
-            putStorageUnitIntoFreeSpaceCache(storageUnit);
+            LOGGER.debug("Putting storage units from parameter data structure finished.");
         }
-
-        LOGGER.debug("Putting storage units from parameter data structure finished.");
     }
 
     /**
@@ -63,18 +66,20 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @throws StorageException if an error occurs
      */
     public Set<MovableStorageUnit> filterEntries(HashRange range) {
-        LOGGER.debug(StringUtils.join(" ", "Filtering storage units according to range filter (",
-                range, ") started."));
+        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+            LOGGER.debug(StringUtils.join(" ",
+                    "Filtering storage units according to range filter (", range, ") started."));
 
-        Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
-        Set<MovableStorageUnit> toBeCopied = new HashSet<>();
+            Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
+            Set<MovableStorageUnit> toBeCopied = new HashSet<>();
 
-        for (PersistedStorageUnit storageUnit : storedUnits) {
-            toBeCopied.add(new MovableStorageUnit(storageUnit).copyEntries(range));
+            for (PersistedStorageUnit storageUnit : storedUnits) {
+                toBeCopied.add(new MovableStorageUnit(storageUnit).copyEntries(range));
+            }
+
+            LOGGER.debug(StringUtils.join(" ", toBeCopied.size(), " storage units are filtered."));
+            return toBeCopied;
         }
-
-        LOGGER.debug(StringUtils.join(" ", toBeCopied.size(), " storage units are filtered."));
-        return toBeCopied;
     }
 
     /**
@@ -84,39 +89,40 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @throws StorageException if an error occurs
      */
     public void removeEntries(HashRange range) throws StorageException {
-        LOGGER.debug(StringUtils.join(" ", "Removing storage units according to range filter (",
-                range, ") started."));
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+            LOGGER.debug(StringUtils.join(" ", "Removing storage units according to range filter (",
+                    range, ") started."));
 
+            Set<String> keysToBeRemoved = new HashSet<>();
+            Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
+            for (PersistedStorageUnit persistedUnit : storedUnits) {
+                try {
+                    MovableStorageUnit storageUnit = new MovableStorageUnit(persistedUnit);
+                    Set<String> removedKeys = storageUnit.removeEntries(range);
 
-        Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
-        Set<String> keysToBeRemoved = new HashSet<>();
+                    if (!removedKeys.isEmpty()) {
+                        if (storageUnit.isEmpty()) {
+                            removeStorageUnit(storageUnit);
+                        } else {
+                            putStorageUnitIntoFreeSpaceCache(storageUnit);
+                        }
 
-        for (PersistedStorageUnit persistedUnit : storedUnits) {
-            try {
-                MovableStorageUnit storageUnit = new MovableStorageUnit(persistedUnit);
-                Set<String> removedKeys = storageUnit.removeEntries(range);
-
-                if (!removedKeys.isEmpty()) {
-                    if (storageUnit.isEmpty()) {
-                        removeStorageUnit(storageUnit);
-                    } else {
-                        putStorageUnitIntoFreeSpaceCache(storageUnit);
+                        keysToBeRemoved.addAll(removedKeys);
                     }
-
-                    keysToBeRemoved.addAll(removedKeys);
+                } catch (IOException e) {
+                    LOGGER.error(e);
+                    throw new StorageException(
+                            "Storage unit cannot be removed due to an IO Error.");
                 }
-            } catch (IOException e) {
-                LOGGER.error(e);
-                throw new StorageException("Storage unit cannot be removed due to an IO Error.");
             }
-        }
 
-        for (String key : keysToBeRemoved) {
-            removeKeyFromStore(key);
-        }
+            for (String key : keysToBeRemoved) {
+                removeKeyFromStore(key);
+            }
 
-        LOGGER.debug(StringUtils.join(" ", String.valueOf(keysToBeRemoved.size()),
-                "storage units were removed from the persistent storage according to the range filter."));
+            LOGGER.debug(StringUtils.join(" ", String.valueOf(keysToBeRemoved.size()),
+                    "storage units were removed from the persistent storage according to the range filter."));
+        }
     }
 
     /**
@@ -124,67 +130,66 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * accordingly after the operation is finished.
      */
     public void defragment() {
-        LOGGER.debug("Defragmentation started.");
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+            LOGGER.debug("Defragmentation started.");
+            Iterator<PersistedStorageUnit> storageUnitIterator =
+                    collectNotFullStorageUnits().iterator();
+            try {
+                PersistedStorageUnit willBeCompacted = storageUnitIterator.next();
 
-        Iterator<PersistedStorageUnit> storageUnitIterator =
-                collectNotFullStorageUnits().iterator();
+                while (storageUnitIterator.hasNext()) {
+                    PersistedStorageUnit afterThatWillBeCompacted = storageUnitIterator.next();
 
-        try {
-            PersistedStorageUnit willBeCompacted = storageUnitIterator.next();
+                    MovableStorageUnit storageUnit = new MovableStorageUnit(willBeCompacted);
+                    MovableStorageUnit otherUnit = new MovableStorageUnit(afterThatWillBeCompacted);
+                    Set<String> movedKeys = storageUnit.moveEntriesFrom(otherUnit);
 
-            while (storageUnitIterator.hasNext()) {
-                PersistedStorageUnit afterThatWillBeCompacted = storageUnitIterator.next();
-
-                MovableStorageUnit storageUnit = new MovableStorageUnit(willBeCompacted);
-                MovableStorageUnit otherUnit = new MovableStorageUnit(afterThatWillBeCompacted);
-                Set<String> movedKeys = storageUnit.moveEntriesFrom(otherUnit);
-
-                try {
-                    // save the storage units
-                    storageUnit.save();
-                    otherUnit.save();
-                } catch (StorageException ex) {
-                    LOGGER.error(ex);
-                }
-
-                // update references for the moved keys
-                for (String movedKey : movedKeys) {
-                    storageUnits.put(movedKey, storageUnit);
-                }
-
-                if (storageUnit.isFull()) {
-                    removeStorageUnitFromFreeSpaceCache(storageUnit);
-                } else {
-                    // if it is not full, then move data from the forthcoming storage units
-                    afterThatWillBeCompacted =
-                            defragmentFromCurrent(storageUnit, storageUnitIterator);
-                }
-
-                if (otherUnit.isEmpty()) {
                     try {
-                        removeStorageUnit(otherUnit);
-                    } catch (IOException ex) {
+                        // save the storage units
+                        storageUnit.save();
+                        otherUnit.save();
+                    } catch (StorageException ex) {
                         LOGGER.error(ex);
                     }
+
+                    // update references for the moved keys
+                    for (String movedKey : movedKeys) {
+                        storageUnits.put(movedKey, storageUnit);
+                    }
+
+                    if (storageUnit.isFull()) {
+                        removeStorageUnitFromFreeSpaceCache(storageUnit);
+                    } else {
+                        // if it is not full, then move data from the forthcoming storage units
+                        afterThatWillBeCompacted =
+                                defragmentFromCurrent(storageUnit, storageUnitIterator);
+                    }
+
+                    if (otherUnit.isEmpty()) {
+                        try {
+                            removeStorageUnit(otherUnit);
+                        } catch (IOException ex) {
+                            LOGGER.error(ex);
+                        }
+                    }
+                    willBeCompacted = afterThatWillBeCompacted;
                 }
-                willBeCompacted = afterThatWillBeCompacted;
-            }
-        } catch (NoSuchElementException ex) {
-            // iterator is over
-            LOGGER.error(ex);
-        } finally {
-            unitsWithFreeSpace.clear();
+            } catch (NoSuchElementException ex) {
+                // iterator is over
+                LOGGER.error(ex);
+            } finally {
+                unitsWithFreeSpace.clear();
 
-            LOGGER.debug("Refreshing the data structure which stores the free stroage units.");
-            for (PersistedStorageUnit hasFreeSpace : collectNotFullStorageUnits()) {
-                putStorageUnitIntoFreeSpaceCache(hasFreeSpace);
-            }
-            LOGGER.debug(StringUtils.join(" ", unitsWithFreeSpace.size(),
-                    " storage units have free space after defragmentation."));
+                LOGGER.debug("Refreshing the data structure which stores the free stroage units.");
+                for (PersistedStorageUnit hasFreeSpace : collectNotFullStorageUnits()) {
+                    putStorageUnitIntoFreeSpaceCache(hasFreeSpace);
+                }
+                LOGGER.debug(StringUtils.join(" ", unitsWithFreeSpace.size(),
+                        " storage units have free space after defragmentation."));
 
+            }
+            LOGGER.debug("Defragmentation finished.");
         }
-
-        LOGGER.debug("Defragmentation finished.");
     }
 
     /**

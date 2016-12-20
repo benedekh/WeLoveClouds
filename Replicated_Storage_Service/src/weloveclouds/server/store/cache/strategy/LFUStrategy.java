@@ -5,10 +5,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KeyFrequency;
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.exceptions.StorageException;
 
@@ -22,9 +24,11 @@ public class LFUStrategy implements DisplacementStrategy {
     private static final Logger LOGGER = Logger.getLogger(LFUStrategy.class);
 
     private Map<String, KeyFrequency> keyFrequencyPairs;
+    private ReentrantReadWriteLock accessLock;
 
     public LFUStrategy() {
         this.keyFrequencyPairs = new HashMap<>();
+        this.accessLock = new ReentrantReadWriteLock();
     }
 
     @Override
@@ -33,8 +37,8 @@ public class LFUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized String displaceKey() throws StorageException {
-        try {
+    public String displaceKey() throws StorageException {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             // order by frequency, the least frequent will be the first
             SortedSet<KeyFrequency> sorted = new TreeSet<>(keyFrequencyPairs.values());
             KeyFrequency first = sorted.first();
@@ -51,8 +55,8 @@ public class LFUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized void put(String key) {
-        try {
+    public void put(String key) {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             KeyFrequency keyFrequency = new KeyFrequency(key, 0);
             keyFrequencyPairs.put(key, keyFrequency);
             LOGGER.debug(StringUtils.join(" ", key, "is added to the LFU strategy store."));
@@ -62,8 +66,8 @@ public class LFUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized void get(String key) {
-        try {
+    public void get(String key) {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             KeyFrequency keyFrequency = keyFrequencyPairs.get(key);
             keyFrequency.increaseFrequencyByOne();
             LOGGER.debug(
@@ -74,8 +78,8 @@ public class LFUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized void remove(String key) {
-        try {
+    public void remove(String key) {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             KeyFrequency removed = keyFrequencyPairs.remove(key);
             if (removed != null) {
                 LOGGER.debug(StringUtils.join(" ", key, "is removed from the LFU strategy store."));

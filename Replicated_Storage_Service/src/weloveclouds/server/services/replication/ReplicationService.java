@@ -53,7 +53,7 @@ public class ReplicationService implements IReplicationService, Runnable {
             halted = true;
         }
         awaitingRequests.clear();
-        this.replicaConnectionInfos.clear();
+        replicaConnectionInfos.clear();
     }
 
     @Override
@@ -160,6 +160,4 @@ public class ReplicationService implements IReplicationService, Runnable {
             return new ReplicationService(this);
         }
     }
-
-
 }
