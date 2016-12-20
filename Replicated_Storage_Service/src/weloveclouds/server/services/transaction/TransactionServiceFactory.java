@@ -10,6 +10,8 @@ import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.models.ConnectionFactory;
+import weloveclouds.server.requests.kvserver.transaction.AbortRequest;
+import weloveclouds.server.requests.kvserver.transaction.CommitRequest;
 import weloveclouds.server.requests.kvserver.transaction.IKVTransactionRequest;
 import weloveclouds.server.requests.kvserver.transaction.TransactionReceiverService;
 import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
@@ -23,9 +25,9 @@ import weloveclouds.server.services.transaction.flow.twopc.TwoPCReceiverSideRest
 public class TransactionServiceFactory {
 
     public ITransactionSenderService create2PCReceiverSideRestorationService(
-            ReceivedTransactionContext transactionContext) {
+            AbortRequest abortRequest, CommitRequest commitRequest) {
         return createTransactionSenderService(
-                new TwoPCReceiverSideRestorationFlow(transactionContext));
+                new TwoPCReceiverSideRestorationFlow(abortRequest, commitRequest));
     }
 
     public ITransactionSenderService create2PCTransactionSenderService() {

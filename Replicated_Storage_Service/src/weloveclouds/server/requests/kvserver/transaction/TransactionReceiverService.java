@@ -48,8 +48,7 @@ public class TransactionReceiverService
             case INIT:
                 request = new InitRequest.Builder().transactionLog(transactionLog)
                         .transactionId(receivedMessage.getTransactionId())
-                        .transferMessage(receivedMessage.getTransferPayload())
-                        .otherParticipants(receivedMessage.getOtherParticipants())
+                        .transactionMessage(receivedMessage).realDASBehavior(realDASBehavior)
                         .transactionServiceFactory(transactionServiceFactory).build();
                 break;
             case COMMIT:

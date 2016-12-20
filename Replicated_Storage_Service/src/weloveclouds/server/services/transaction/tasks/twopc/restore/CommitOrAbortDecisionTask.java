@@ -11,39 +11,35 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
+import weloveclouds.server.requests.kvserver.transaction.AbortRequest;
+import weloveclouds.server.requests.kvserver.transaction.CommitRequest;
 import weloveclouds.server.services.transaction.tasks.ITransactionTask;
 
 public class CommitOrAbortDecisionTask implements ITransactionTask {
 
     private static final Logger LOGGER = Logger.getLogger(CommitOrAbortDecisionTask.class);
 
-    private ReceivedTransactionContext transaction;
+    private AbortRequest abortRequest;
+    private CommitRequest commitRequest;
     private Set<Future<StatusType>> responseFutures;
 
-    public CommitOrAbortDecisionTask(ReceivedTransactionContext transaction,
-            Set<Future<StatusType>> responseFutures) {
-        this.transaction = transaction;
-        this.responseFutures = responseFutures;
+    protected CommitOrAbortDecisionTask(Builder builder) {
+        this.abortRequest = builder.abortRequest;
+        this.commitRequest = builder.commitRequest;
+        this.responseFutures = builder.responseFutures;
     }
 
     @Override
     public void execute() throws InterruptedException, ExecutionException {
-        LOGGER.error(StringUtils.join("", "CommitOrAbortDecision phase for transaction (",
-                transaction.getTransactionId(), ") started."));
+        LOGGER.error(StringUtils.join("", "CommitOrAbortDecision phase for transaction started."));
 
         Set<StatusType> responses = getResponses();
         if (responsesContainCommitted(responses)) {
-            transaction.setCommitted();
-            LOGGER.debug(StringUtils.join("", "Transaction (", transaction.getTransactionId(),
-                    ") is set committed."));
+            commitRequest.execute();
         } else if (responsesContainAborted(responses)) {
-            transaction.setAborted();
-            LOGGER.debug(StringUtils.join("", "Transaction (", transaction.getTransactionId(),
-                    ") is set aborted."));
+            abortRequest.execute();
         } else {
-            LOGGER.error(StringUtils.join("", "Transaction (", transaction.getTransactionId(),
-                    ") is neither committed nor aborted."));
+            LOGGER.error(StringUtils.join("", "Transaction is neither committed nor aborted."));
         }
     }
 
@@ -51,7 +47,7 @@ public class CommitOrAbortDecisionTask implements ITransactionTask {
         Set<StatusType> responses = new HashSet<>();
         for (Future<StatusType> responseFuture : responseFutures) {
             try {
-                responses.add(responseFuture.get(10, TimeUnit.MILLISECONDS));
+                responses.add(responseFuture.get(100, TimeUnit.MILLISECONDS));
             } catch (TimeoutException ex) {
                 // response not arrived beforehand
             } catch (Exception ex) {
@@ -67,6 +63,32 @@ public class CommitOrAbortDecisionTask implements ITransactionTask {
 
     private boolean responsesContainAborted(Set<StatusType> responses) {
         return responses.contains(StatusType.RESPONSE_ABORTED);
+    }
+
+    public static class Builder {
+        private AbortRequest abortRequest;
+        private CommitRequest commitRequest;
+        private Set<Future<StatusType>> responseFutures;
+
+        public Builder abortRequest(AbortRequest abortRequest) {
+            this.abortRequest = abortRequest;
+            return this;
+        }
+
+        public Builder commitRequest(CommitRequest commitRequest) {
+            this.commitRequest = commitRequest;
+            return this;
+        }
+
+        public Builder responseFutures(Set<Future<StatusType>> responseFutures) {
+            this.responseFutures = responseFutures;
+            return this;
+        }
+
+        public CommitOrAbortDecisionTask build() {
+            return new CommitOrAbortDecisionTask(this);
+        }
+
     }
 
 }
