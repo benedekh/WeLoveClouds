@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.server.requests.kvserver.transaction.utils.ITransactionRestorationRequest;
 
 public class ReceivedTransactionContext {
 
@@ -17,7 +18,7 @@ public class ReceivedTransactionContext {
     private volatile TransactionStatus transactionStatus;
     private IKVTransferMessage transferMessage;
     private Set<ServerConnectionInfo> otherParticipants;
-    private volatile Thread timedRestoration;
+    private volatile ITransactionRestorationRequest timedRestoration;
 
     protected ReceivedTransactionContext(Builder builder) {
         this.transactionId = builder.transactionId;
@@ -60,7 +61,7 @@ public class ReceivedTransactionContext {
         setCompleted(TransactionStatus.ABORTED);
     }
 
-    public void setTimedRestoration(Thread timedRestoration) {
+    public void setTimedRestoration(ITransactionRestorationRequest timedRestoration) {
         this.timedRestoration = timedRestoration;
     }
 
@@ -68,7 +69,7 @@ public class ReceivedTransactionContext {
         if (timedRestoration != null) {
             try (CloseableLock lock = new CloseableLock(accessLock)) {
                 if (timedRestoration != null) {
-                    timedRestoration.start();
+                    timedRestoration.schedule();
                 }
             }
         }
@@ -78,7 +79,7 @@ public class ReceivedTransactionContext {
         if (timedRestoration != null) {
             try (CloseableLock lock = new CloseableLock(accessLock)) {
                 if (timedRestoration != null) {
-                    timedRestoration.interrupt();
+                    timedRestoration.unschedule();
                     timedRestoration = null;
                 }
             }
@@ -112,7 +113,7 @@ public class ReceivedTransactionContext {
         private TransactionStatus transactionStatus;
         private IKVTransferMessage transferMessage;
         private Set<ServerConnectionInfo> otherParticipants;
-        private Thread timedRestoration;
+        private ITransactionRestorationRequest timedRestoration;
 
         public Builder transactionId(UUID transactionId) {
             this.transactionId = transactionId;
@@ -134,7 +135,7 @@ public class ReceivedTransactionContext {
             return this;
         }
 
-        public Builder timedRestoration(Thread timedRestoration) {
+        public Builder timedRestoration(ITransactionRestorationRequest timedRestoration) {
             this.timedRestoration = timedRestoration;
             return this;
         }

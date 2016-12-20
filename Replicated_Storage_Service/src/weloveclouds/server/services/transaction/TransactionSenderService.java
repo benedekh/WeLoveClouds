@@ -63,7 +63,6 @@ public class TransactionSenderService implements ITransactionSenderService {
                 } catch (IOException ex) {
                     LOGGER.error(StringUtils.join("", "Cannot create connection to (",
                             connectionInfo, ") for transferring (", transferMessage, ")"));
-                    return;
                 }
             }
             transactionExecutionFlow.executeTransactions(transactions);

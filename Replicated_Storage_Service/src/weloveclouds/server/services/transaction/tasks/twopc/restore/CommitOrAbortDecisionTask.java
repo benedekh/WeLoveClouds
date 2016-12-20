@@ -47,7 +47,7 @@ public class CommitOrAbortDecisionTask implements ITransactionTask {
         Set<StatusType> responses = new HashSet<>();
         for (Future<StatusType> responseFuture : responseFutures) {
             try {
-                responses.add(responseFuture.get(100, TimeUnit.MILLISECONDS));
+                responses.add(responseFuture.get(10, TimeUnit.MILLISECONDS));
             } catch (TimeoutException ex) {
                 // response not arrived beforehand
             } catch (Exception ex) {

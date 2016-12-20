@@ -4,8 +4,11 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.server.services.transaction.SenderTransaction;
@@ -14,6 +17,7 @@ public abstract class TransactionTask<E extends TransactionTask.Builder<E>>
         implements ITransactionTask {
 
     private static final Logger LOGGER = Logger.getLogger(TransactionTask.class);
+    private static final Duration MAX_WAITING_TIME_FOR_RESPONSE = new Duration(2 * 1000);
 
     private ITransactionTask successorForSuccess;
     private ITransactionTask successorForFail;
@@ -47,11 +51,19 @@ public abstract class TransactionTask<E extends TransactionTask.Builder<E>>
         }
     }
 
+    protected long getMaxWaitingTimeInMillis() {
+        return MAX_WAITING_TIME_FOR_RESPONSE.getMillis();
+    }
+
     protected boolean everyonesHasTheExpectedStatus(Set<Future<StatusType>> statuses,
             StatusType status) throws InterruptedException, ExecutionException {
         for (Future<StatusType> response : statuses) {
-            if (response.get() != status) {
-                return false;
+            try {
+                if (response.get(getMaxWaitingTimeInMillis(), TimeUnit.MILLISECONDS) != status) {
+                    return false;
+                }
+            } catch (TimeoutException ex) {
+                LOGGER.error(ex);
             }
         }
         return true;

@@ -38,7 +38,7 @@ public class PutEntry implements IKVTransferRequest {
         try {
             LOGGER.debug("Executing put entry request.");
             dataAccessService.putEntryWithoutAuthorization(entry);
-            LOGGER.debug("Remove entry request finished successfully.");
+            LOGGER.debug("Put entry request finished successfully.");
             return createSuccessKVTransferMessage();
         } catch (StorageException ex) {
             LOGGER.error(ex);

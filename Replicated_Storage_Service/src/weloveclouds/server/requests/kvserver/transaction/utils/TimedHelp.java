@@ -1,17 +1,23 @@
 package weloveclouds.server.requests.kvserver.transaction.utils;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.server.requests.kvserver.transaction.AbortRequest;
 import weloveclouds.server.requests.kvserver.transaction.CommitRequest;
 import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
 import weloveclouds.server.services.transaction.TransactionServiceFactory;
 
-public class TimedHelp extends Thread {
+public class TimedHelp extends Thread implements ITransactionRestorationRequest {
 
     private static Logger LOGGER = Logger.getLogger(TimedHelp.class);
-    private static final Duration WAIT_BEFORE_HELP = new Duration(2 * 1000);
+    private static final Duration WAIT_BEFORE_HELP = new Duration(60 * 1000);
+
+    private ReentrantLock interruptLock;
+    private Thread executor;
 
     private AbortRequest abortRequest;
     private CommitRequest commitRequest;
@@ -24,18 +30,36 @@ public class TimedHelp extends Thread {
         this.commitRequest = builder.commitRequest;
         this.transaction = builder.transaction;
         this.transactionServiceFactory = builder.transactionServiceFactory;
+        this.interruptLock = new ReentrantLock();
+    }
+
+    @Override
+    public void schedule() {
+        start();
+    }
+
+    @Override
+    public void unschedule() {
+        if (!Thread.currentThread().equals(executor)) {
+            try (CloseableLock lock = new CloseableLock(interruptLock)) {
+                interrupt();
+            }
+        }
     }
 
     @Override
     public void run() {
         try {
+            executor = Thread.currentThread();
             LOGGER.debug("Timed help request started.");
             Thread.sleep(WAIT_BEFORE_HELP.getMillis());
             LOGGER.debug("Executing timed help request.");
-            transactionServiceFactory
-                    .create2PCReceiverSideRestorationService(abortRequest, commitRequest)
-                    .executeEmptyTransactionsFor(transaction.getTransactionId(),
-                            transaction.getOtherParticipants());
+            try (CloseableLock lock = new CloseableLock(interruptLock)) {
+                transactionServiceFactory
+                        .create2PCReceiverSideRestorationService(abortRequest, commitRequest)
+                        .executeEmptyTransactionsFor(transaction.getTransactionId(),
+                                transaction.getOtherParticipants());
+            }
         } catch (InterruptedException ex) {
 
         } finally {
