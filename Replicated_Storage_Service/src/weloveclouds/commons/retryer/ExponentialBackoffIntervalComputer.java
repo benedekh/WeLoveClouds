@@ -24,18 +24,21 @@ public class ExponentialBackoffIntervalComputer implements IBackoffIntervalCompu
 
     public ExponentialBackoffIntervalComputer(Duration minimalInterval) {
         this.minimalInterval = minimalInterval;
-        this.maxAttemptNumber =
-                (int) Math.ceil(Math.log(MAX_INTERVAL.getMillis() / minimalInterval.getMillis()));
+        double orderOfMagnitude =
+                MAX_INTERVAL.getMillis() / Math.max(1, minimalInterval.getMillis());
+        this.maxAttemptNumber = (int) Math.ceil(Math.log10(orderOfMagnitude + 1) / Math.log10(2));
         this.numberGenerator = new Random();
     }
 
     @Override
     public Duration computeIntervalFrom(int attemptNumber) {
         if (attemptNumber >= maxAttemptNumber) {
+            LOGGER.debug(
+                    StringUtils.join("", "Interval in milliseconds: ", MAX_INTERVAL.getMillis()));
             return MAX_INTERVAL;
         }
 
-        int powerOfTwo = (int) Math.round(Math.max(2, Math.pow(2, attemptNumber)));
+        int powerOfTwo = (int) Math.max(2, Math.pow(2, attemptNumber));
         int drawnFactor = Math.max(1, numberGenerator.nextInt(powerOfTwo - 1));
         long intervalLength = drawnFactor * minimalInterval.getMillis();
 

@@ -8,14 +8,22 @@ import java.nio.file.Paths;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
+import weloveclouds.commons.serialization.KVHeartbeatMessageSerializer;
+import weloveclouds.commons.serialization.NodeHealthInfosSerializer;
+import weloveclouds.commons.serialization.ServiceHealthInfosSerializer;
 import weloveclouds.commons.utils.LogSetup;
 import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.server.client.commands.ServerCommandFactory;
 import weloveclouds.server.client.commands.utils.ArgumentsValidator;
 import weloveclouds.server.configuration.models.KVServerPortConstants;
 import weloveclouds.server.configuration.models.KVServerPortContext;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerFactory;
+import weloveclouds.server.monitoring.NodeHealthMonitor;
 import weloveclouds.server.services.datastore.DataAccessServiceFactory;
 import weloveclouds.server.services.datastore.IDataAccessService;
 import weloveclouds.server.services.datastore.IReplicableDataAccessService;
@@ -45,6 +53,8 @@ public class KVServer {
     private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 4;
     private static final int CLI_LOG_LEVEL_INDEX = 5;
     private static final int CLI_SERVER_NAME_INDEX = 6;
+    private static final int CLI_LOADBALANCER_IP_INDEX = 7;
+    private static final int CLI_LOADBALANCER_PORT_INDEX = 8;
 
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
@@ -98,7 +108,13 @@ public class KVServer {
                     new DataAccessServiceFactory().createInitializedReplicableDataAccessService(
                             initializationContext, replicationService);
 
-            createAndStartServers(portConfigurationContext, dataAccessService);
+            String loadbalancerIp = cliArguments[CLI_LOADBALANCER_IP_INDEX];
+            int loadbalancerPort = Integer.valueOf(cliArguments[CLI_LOADBALANCER_PORT_INDEX]);
+            ServerConnectionInfo loadbalancerConnectionInfo = new ServerConnectionInfo.Builder()
+                    .ipAddress(loadbalancerIp).port(loadbalancerPort).build();
+
+            createAndStartServers(portConfigurationContext, dataAccessService,
+                    loadbalancerConnectionInfo);
         } catch (Throwable ex) {
             LOGGER.error(ex);
         }
@@ -110,14 +126,25 @@ public class KVServer {
      * @param portConfigurationContext context object which contains the port configuration to serve
      *        the different requests (KVClient, KVServer, KVECS)
      * @param dataAccessService the data access service
+     * @param loadBalancerInfo connection information to the loadbalancer
      * @throws IOException if an error occurs
      */
     private static void createAndStartServers(KVServerPortContext portConfigurationContext,
-            IReplicableDataAccessService dataAccessService) throws IOException {
+            IReplicableDataAccessService dataAccessService, ServerConnectionInfo loadBalancerInfo)
+            throws IOException {
         ServerFactory serverFactory = new ServerFactory();
+
+        NodeHealthMonitor.Builder nodeHealthMonitorBuilder = new NodeHealthMonitor.Builder()
+                .communicationApi(new CommunicationApiFactory().createCommunicationApiV1())
+                .heartbeatSerializer(new KVHeartbeatMessageSerializer(new NodeHealthInfosSerializer(
+                        new ServiceHealthInfosSerializer(new ServerConnectionInfoSerializer()))))
+                .nodeHealthInfosBuilder(new NodeHealthInfos.Builder().nodeName(serverName))
+                .loadbalancerConnectionInfo(loadBalancerInfo);
+
         weloveclouds.server.core.KVServer kvServer = new weloveclouds.server.core.KVServer.Builder()
                 .serverFactory(serverFactory).portConfiguration(portConfigurationContext)
-                .dataAccessService(dataAccessService).build();
+                .dataAccessService(dataAccessService)
+                .nodeHealthMonitorBuilder(nodeHealthMonitorBuilder).build();
         kvServer.start();
     }
 
@@ -195,7 +222,11 @@ public class KVServer {
             KVServerPortContext portConfigurationContext = new KVServerPortContext.Builder()
                     .clientPort(port).serverPort(KVServerPortConstants.KVSERVER_REQUESTS_PORT)
                     .ecsPort(KVServerPortConstants.KVECS_REQUESTS_PORT).build();
-            createAndStartServers(portConfigurationContext, dataAccessService);
+            ServerConnectionInfo loadbalancerFakeConnectionInfo =
+                    new ServerConnectionInfo.Builder().ipAddress("localhost").port(8008).build();
+
+            createAndStartServers(portConfigurationContext, dataAccessService,
+                    loadbalancerFakeConnectionInfo);
         } catch (IOException e) {
             LOGGER.error(e);
         }

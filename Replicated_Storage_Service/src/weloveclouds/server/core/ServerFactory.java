@@ -17,6 +17,7 @@ import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
 import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.server.monitoring.ServiceHealthMonitor;
 import weloveclouds.server.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.requests.kvecs.IKVECSRequest;
@@ -42,10 +43,13 @@ public class ServerFactory {
      *
      * @param port where the server shall be started
      * @param dataAccessService that will be the data access service
+     * @param serviceHealthMonitor monitor to supervise the service status (e.g. number of active
+     *        connections)
      * @throws IOException if the server cannot be created on the referred port
      */
     public AbstractServer<?> createServerForKVClientRequests(int port,
-            IMovableDataAccessService dataAccessService) throws IOException {
+            IMovableDataAccessService dataAccessService, ServiceHealthMonitor serviceHealthMonitor)
+            throws IOException {
         LOGGER.debug("Creating Server for KVClient requests.");
         return new Server.Builder<IKVMessage, IKVClientRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
@@ -53,19 +57,22 @@ public class ServerFactory {
                         new KVClientRequestFactory(dataAccessService, new RingMetadataSerializer()))
                 .communicationApiFactory(new CommunicationApiFactory())
                 .messageSerializer(new KVMessageSerializer())
-                .messageDeserializer(new KVMessageDeserializer()).build();
+                .messageDeserializer(new KVMessageDeserializer())
+                .serviceHealthMonitor(serviceHealthMonitor).build();
     }
-
 
     /**
      * Create a Server which serves KVServer requests.
      *
      * @param port where the server shall be started
      * @param dataAccessService that will be the data access service
+     * @param healthMonitor monitor to supervise the service status (e.g. number of active
+     *        connections)
      * @throws IOException if the server cannot be created on the referred port
      */
     public AbstractServer<?> createServerForKVServerRequests(int port,
-            IMovableDataAccessService dataAccessService) throws IOException {
+            IMovableDataAccessService dataAccessService, ServiceHealthMonitor serviceHealthMonitor)
+            throws IOException {
         LOGGER.debug("Creating Server for KVServer requests.");
         return new Server.Builder<IKVTransactionMessage, IKVTransactionRequest>().port(port)
                 .serverSocketFactory(new ServerSocketFactory())
@@ -73,7 +80,8 @@ public class ServerFactory {
                         .createTransactionReceiverService(dataAccessService))
                 .communicationApiFactory(new CommunicationApiFactory())
                 .messageSerializer(new KVTransactionMessageSerializer())
-                .messageDeserializer(new KVTransactionMessageDeserializer()).build();
+                .messageDeserializer(new KVTransactionMessageDeserializer())
+                .serviceHealthMonitor(serviceHealthMonitor).build();
     }
 
     /**
@@ -81,12 +89,13 @@ public class ServerFactory {
      *
      * @param port where the server shall be started
      * @param dataAccessService that will be the data access service
+     * @param healthMonitor monitor to supervise the service status (e.g. number of active
+     *        connections)
      * @throws IOException if the server cannot be created on the referred port
      */
-
-
     public AbstractServer<?> createServerForKVECSRequests(int port,
-            IReplicableDataAccessService dataAccessService) throws IOException {
+            IReplicableDataAccessService dataAccessService,
+            ServiceHealthMonitor serviceHealthMonitor) throws IOException {
         LOGGER.debug("Creating Server for KVECS requests.");
         CommunicationApiFactory communicationApiFactory = new CommunicationApiFactory();
         return new Server.Builder<IKVAdminMessage, IKVECSRequest>().port(port)
@@ -98,6 +107,7 @@ public class ServerFactory {
                                 .build())
                 .communicationApiFactory(communicationApiFactory)
                 .messageSerializer(new KVAdminMessageSerializer())
-                .messageDeserializer(new KVAdminMessageDeserializer()).build();
+                .messageDeserializer(new KVAdminMessageDeserializer())
+                .serviceHealthMonitor(serviceHealthMonitor).build();
     }
 }

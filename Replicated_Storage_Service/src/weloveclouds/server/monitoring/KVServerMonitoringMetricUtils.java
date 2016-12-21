@@ -31,5 +31,9 @@ public class KVServerMonitoringMetricUtils {
                 executionTime);
     }
 
+    public static void recordGauge(String moduleName, String infix, int value) {
+        MONITORING_CLIENT.recordGaugeValue(new Metric.Builder().service(KV_SERVER)
+                .name(Arrays.asList(serverName, moduleName, infix)).build(), value);
+    }
 
 }

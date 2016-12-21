@@ -1,20 +1,30 @@
 package weloveclouds.server.client.commands;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.ServerSideException;
+import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
+import weloveclouds.commons.serialization.KVHeartbeatMessageSerializer;
+import weloveclouds.commons.serialization.NodeHealthInfosSerializer;
+import weloveclouds.commons.serialization.ServiceHealthInfosSerializer;
+import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.server.client.commands.utils.ArgumentsValidator;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
 import weloveclouds.server.core.KVServer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerFactory;
+import weloveclouds.server.monitoring.NodeHealthMonitor;
 import weloveclouds.server.services.datastore.DataAccessServiceFactory;
 import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 import weloveclouds.server.services.datastore.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.services.replication.ReplicationService;
 import weloveclouds.server.services.replication.ReplicationServiceFactory;
+
 
 /**
  * StartNode command which starts the {@link Server}} based on the configuration in
@@ -56,9 +66,21 @@ public class Start extends AbstractServerCommand {
                     dataAccessServiceFactory.createInitializedReplicableDataAccessService(
                             initializationContext, replicationService);
 
+            ServerConnectionInfo loadbalancerFakeConnectionInfo =
+                    new ServerConnectionInfo.Builder().ipAddress("localhost").port(8008).build();
+            NodeHealthMonitor.Builder nodeHealthMonitorBuilder = new NodeHealthMonitor.Builder()
+                    .communicationApi(new CommunicationApiFactory().createCommunicationApiV1())
+                    .heartbeatSerializer(new KVHeartbeatMessageSerializer(
+                            new NodeHealthInfosSerializer(new ServiceHealthInfosSerializer(
+                                    new ServerConnectionInfoSerializer()))))
+                    .nodeHealthInfosBuilder(
+                            new NodeHealthInfos.Builder().nodeName(UUID.randomUUID().toString()))
+                    .loadbalancerConnectionInfo(loadbalancerFakeConnectionInfo);
+
             KVServer kvServer = new KVServer.Builder().serverFactory(serverFactory)
                     .portConfiguration(context.getPortContext())
-                    .dataAccessService(dataAccessService).build();
+                    .dataAccessService(dataAccessService)
+                    .nodeHealthMonitorBuilder(nodeHealthMonitorBuilder).build();
             kvServer.start();
 
             context.setStarted(true);
