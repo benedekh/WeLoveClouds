@@ -17,7 +17,7 @@ import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
-import weloveclouds.commons.kvstore.models.messages.KVMessageProxy;
+import weloveclouds.commons.kvstore.models.messages.proxy.KVMessageProxy;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -44,7 +44,8 @@ public class KVMessageDeserializer implements IMessageDeserializer<IKVMessage, S
     public IKVMessage deserialize(byte[] serializedMessage) throws DeserializationException {
         LOGGER.debug("Deserializing KVMessage from byte[].");
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
-
+        IKVMessage deserialized = null;
+        
         try {
             Matcher kvMessageMatcher = getRegexFromToken(KVMESSAGE).matcher(serializedMessageStr);
             if (kvMessageMatcher.find()) {
@@ -52,12 +53,11 @@ public class KVMessageDeserializer implements IMessageDeserializer<IKVMessage, S
 
                 if (StringUtils.stringIsNotEmpty(serializedKVMessage)) {
                     KVEntry entry = deserializeKVEntry(serializedKVMessage);
-                    KVMessage deserialized =
+                    KVMessage kvMessage =
                             new KVMessage.Builder().status(deserializeStatus(serializedKVMessage))
                                     .key(entry.getKey()).value(entry.getValue()).build();
-
+                    deserialized = new KVMessageProxy(kvMessage);
                     LOGGER.debug(StringUtils.join(" ", "Deserialized KVMessage is:", deserialized));
-                    return new KVMessageProxy(deserialized);
                 } else {
                     throw new DeserializationException("KVMessage is empty.");
                 }
@@ -68,6 +68,8 @@ public class KVMessageDeserializer implements IMessageDeserializer<IKVMessage, S
         } catch (Exception ex) {
             throw new DeserializationException(ex.getMessage());
         }
+
+        return deserialized;
     }
 
     private StatusType deserializeStatus(String from) throws DeserializationException {

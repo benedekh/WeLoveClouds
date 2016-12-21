@@ -17,8 +17,11 @@ public class SerializationValidationTests {
         clientSuite.addTestSuite(KVEntryTest.class);
         clientSuite.addTestSuite(ServerConnectionInfoTest.class);
         clientSuite.addTestSuite(ServerConnectionInfosSetTest.class);
+        clientSuite.addTestSuite(UUIDTest.class);
         clientSuite.addTestSuite(KVAdminMessageTest.class);
         clientSuite.addTestSuite(KVMessageTest.class);
+        clientSuite.addTestSuite(KVTransactionMessageTest.class);
+        clientSuite.addTestSuite(TransferMessageTest.class);
         clientSuite.addTestSuite(KVTransferMessageTest.class);
         return clientSuite;
     }

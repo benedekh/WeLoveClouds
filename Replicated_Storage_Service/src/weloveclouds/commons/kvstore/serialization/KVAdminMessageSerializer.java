@@ -49,7 +49,7 @@ public class KVAdminMessageSerializer
     @Override
     public SerializedMessage serialize(IKVAdminMessage unserializedMessage) {
         LOGGER.debug("Serializing KVAdminMessage.");
-
+        
         StatusType status = unserializedMessage.getStatus();
         String message = new XMLRootNode.Builder().token(KVADMIN_MESSAGE)
                 .addInnerNode(new XMLNode(STATUS, status == null ? null : status.toString()))

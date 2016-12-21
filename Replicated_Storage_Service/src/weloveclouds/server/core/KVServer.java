@@ -15,7 +15,7 @@ import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 import weloveclouds.server.configuration.models.KVServerPortContext;
 import weloveclouds.server.monitoring.NodeHealthMonitor;
 import weloveclouds.server.monitoring.ServiceHealthMonitor;
-import weloveclouds.server.services.IReplicableDataAccessService;
+import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 
 
 /**

@@ -4,7 +4,7 @@ import java.nio.file.Path;
 
 import weloveclouds.server.client.commands.ServerCommand;
 import weloveclouds.server.core.Server;
-import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
+import weloveclouds.server.services.datastore.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 
 /**

@@ -18,7 +18,11 @@ public class XMLRootNode extends AbstractXMLNode {
     }
 
     public String getContentAsString() {
-        return StringUtils.join("", innerNodes);
+        if (!innerNodes.isEmpty()) {
+            return StringUtils.join("", innerNodes);
+        } else {
+            return "";
+        }
     }
 
     public static class Builder {

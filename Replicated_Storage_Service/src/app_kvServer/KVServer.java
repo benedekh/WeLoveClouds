@@ -24,10 +24,12 @@ import weloveclouds.server.configuration.models.KVServerPortContext;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerFactory;
 import weloveclouds.server.monitoring.NodeHealthMonitor;
-import weloveclouds.server.services.DataAccessServiceFactory;
-import weloveclouds.server.services.IDataAccessService;
-import weloveclouds.server.services.IReplicableDataAccessService;
-import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
+import weloveclouds.server.services.datastore.DataAccessServiceFactory;
+import weloveclouds.server.services.datastore.IDataAccessService;
+import weloveclouds.server.services.datastore.IReplicableDataAccessService;
+import weloveclouds.server.services.datastore.models.DataAccessServiceInitializationContext;
+import weloveclouds.server.services.replication.ReplicationService;
+import weloveclouds.server.services.replication.ReplicationServiceFactory;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
 
@@ -92,14 +94,19 @@ public class KVServer {
                             .displacementStrategy(displacementStrategy)
                             .rootFolderPath(PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER).build();
 
+            ReplicationServiceFactory replicationServiceFactory = new ReplicationServiceFactory();
+            ReplicationService replicationService =
+                    replicationServiceFactory.createReplicationServiceWith2PC();
+
             int kvClientPort = Integer.valueOf(cliArguments[CLI_KVCLIENT_PORT_INDEX]);
             int kvServerPort = Integer.valueOf(cliArguments[CLI_KVSERVER_PORT_INDEX]);
             int kvECSPort = Integer.valueOf(cliArguments[CLI_KVECS_PORT_INDEX]);
 
             KVServerPortContext portConfigurationContext = new KVServerPortContext.Builder()
                     .clientPort(kvClientPort).serverPort(kvServerPort).ecsPort(kvECSPort).build();
-            IReplicableDataAccessService dataAccessService = new DataAccessServiceFactory()
-                    .createInitializedReplicableDataAccessService(initializationContext);
+            IReplicableDataAccessService dataAccessService =
+                    new DataAccessServiceFactory().createInitializedReplicableDataAccessService(
+                            initializationContext, replicationService);
 
             String loadbalancerIp = cliArguments[CLI_LOADBALANCER_IP_INDEX];
             int loadbalancerPort = Integer.valueOf(cliArguments[CLI_LOADBALANCER_PORT_INDEX]);
@@ -204,8 +211,13 @@ public class KVServer {
                         .displacementStrategy(displacementStrategy)
                         .rootFolderPath(defaultStoragePath).build();
 
-        IReplicableDataAccessService dataAccessService = new DataAccessServiceFactory()
-                .createInitializedReplicableDataAccessService(initializationContext);
+        ReplicationServiceFactory replicationServiceFactory = new ReplicationServiceFactory();
+        ReplicationService replicationService =
+                replicationServiceFactory.createReplicationServiceWith2PC();
+
+        IReplicableDataAccessService dataAccessService =
+                new DataAccessServiceFactory().createInitializedReplicableDataAccessService(
+                        initializationContext, replicationService);
         try {
             KVServerPortContext portConfigurationContext = new KVServerPortContext.Builder()
                     .clientPort(port).serverPort(KVServerPortConstants.KVSERVER_REQUESTS_PORT)

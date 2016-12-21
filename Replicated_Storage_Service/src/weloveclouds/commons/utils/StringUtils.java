@@ -56,9 +56,9 @@ public class StringUtils {
                 sb.append(object);
                 sb.append(delimiter);
             }
-            int lengthAfterRemovingTheLastDelmiter = sb.length() - delimiter.length();
-            if (lengthAfterRemovingTheLastDelmiter > 0) {
-                sb.setLength(lengthAfterRemovingTheLastDelmiter);
+            int lengthAfterRemovingTheLastDelimiter = sb.length() - delimiter.length();
+            if (lengthAfterRemovingTheLastDelimiter > 0) {
+                sb.setLength(lengthAfterRemovingTheLastDelimiter);
             }
             sb.append("}");
 

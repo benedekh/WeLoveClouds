@@ -50,9 +50,8 @@ public class KVAdminMessageTest extends TestCase {
         Set<HashRange> readRanges = new HashSet<>(Arrays.asList(range1, writeRange));
         ServerConnectionInfo connectionInfo1 =
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8080).build();
-        RingMetadataPart metadataPart1 =
-                new RingMetadataPart.Builder().connectionInfo(connectionInfo1)
-                        .writeRange(writeRange).build();
+        RingMetadataPart metadataPart1 = new RingMetadataPart.Builder()
+                .connectionInfo(connectionInfo1).writeRange(writeRange).build();
 
         ServerConnectionInfo connectionInfo2 =
                 new ServerConnectionInfo.Builder().ipAddress("localhost").port(8082).build();

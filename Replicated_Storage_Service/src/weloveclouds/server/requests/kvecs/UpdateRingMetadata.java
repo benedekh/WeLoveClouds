@@ -13,9 +13,7 @@ import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
-import weloveclouds.server.services.IReplicableDataAccessService;
-import weloveclouds.server.services.utils.IReplicationTransferer;
-import weloveclouds.server.services.utils.ReplicationTransfererFactory;
+import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 
 /**
  * An update metadata request to the {@link IReplicableDataAccessService}, which defines in what
@@ -28,12 +26,11 @@ public class UpdateRingMetadata implements IKVECSRequest {
     private static final Logger LOGGER = Logger.getLogger(UpdateRingMetadata.class);
 
     private IReplicableDataAccessService dataAccessService;
+
     private RingMetadata ringMetadata;
     private Set<HashRange> readRanges;
     private HashRange writeRange;
-
     private Set<ServerConnectionInfo> replicaConnectionInfos;
-    private ReplicationTransfererFactory replicationTransfererFactory;
 
     protected UpdateRingMetadata(Builder builder) {
         this.dataAccessService = builder.dataAccessService;
@@ -41,7 +38,6 @@ public class UpdateRingMetadata implements IKVECSRequest {
         this.readRanges = builder.readRanges;
         this.writeRange = builder.writeRange;
         this.replicaConnectionInfos = builder.replicaConnectionInfos;
-        this.replicationTransfererFactory = builder.replicationTransfererFactory;
     }
 
     @Override
@@ -49,14 +45,7 @@ public class UpdateRingMetadata implements IKVECSRequest {
         LOGGER.debug("Executing update ring metadata request.");
         dataAccessService.setRingMetadata(ringMetadata);
         dataAccessService.setManagedHashRanges(readRanges, writeRange);
-
-        IReplicationTransferer replicationTransferer = null;
-        if (replicaConnectionInfos != null && !replicaConnectionInfos.isEmpty()) {
-            replicationTransferer = replicationTransfererFactory
-                    .createReplicationTransferer(replicaConnectionInfos);
-        }
-        dataAccessService.setReplicationTransferer(replicationTransferer);
-
+        dataAccessService.setReplicaConnectionInfos(replicaConnectionInfos);
         LOGGER.debug("Update ring metadata request finished successfully.");
         return createSuccessKVAdminMessage();
     }
@@ -100,7 +89,6 @@ public class UpdateRingMetadata implements IKVECSRequest {
         private Set<HashRange> readRanges;
         private HashRange writeRange;
         private Set<ServerConnectionInfo> replicaConnectionInfos;
-        private ReplicationTransfererFactory replicationTransfererFactory;
 
         /**
          * @param dataAccessService which is used for the data access
@@ -139,15 +127,6 @@ public class UpdateRingMetadata implements IKVECSRequest {
          */
         public Builder replicaConnectionInfos(Set<ServerConnectionInfo> replicaConnectionInfos) {
             this.replicaConnectionInfos = replicaConnectionInfos;
-            return this;
-        }
-
-        /**
-         * @param replicationTransfererFactory a factory to create replication transferer instances
-         */
-        public Builder replicationTransfererFactory(
-                ReplicationTransfererFactory replicationTransfererFactory) {
-            this.replicationTransfererFactory = replicationTransfererFactory;
             return this;
         }
 

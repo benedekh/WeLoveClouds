@@ -10,7 +10,7 @@ import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.server.services.IMovableDataAccessService;
+import weloveclouds.server.services.datastore.IMovableDataAccessService;
 
 /**
  * CommandFactory design pattern, which gives a common handling mechanism of different requests. It

@@ -15,10 +15,10 @@ import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
-import weloveclouds.server.services.IMovableDataAccessService;
-import weloveclouds.server.services.MovableDataAccessService;
-import weloveclouds.server.services.exceptions.KeyIsNotManagedByServiceException;
-import weloveclouds.server.services.exceptions.ServiceIsStoppedException;
+import weloveclouds.server.services.datastore.IMovableDataAccessService;
+import weloveclouds.server.services.datastore.MovableDataAccessService;
+import weloveclouds.server.services.datastore.exceptions.KeyIsNotManagedByServiceException;
+import weloveclouds.server.services.datastore.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
