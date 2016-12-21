@@ -37,6 +37,11 @@ public abstract class AbstractConnectionHandler<M>
         this.callbacks = new ArrayList<>();
         registerShutdownHookForConnection();
     }
+    
+    @Override
+    public void registerCallback(Runnable callback) {
+        callbacks.add(callback);
+    }
 
     /**
      * Registers a shutdown hook that will close the connection upon JVM exit.
@@ -86,10 +91,4 @@ public abstract class AbstractConnectionHandler<M>
         }
     }
 
-    @Override
-    public void registerCallback(Runnable callback) {
-        callbacks.add(callback);
-    }
-
-    public abstract void run();
 }
