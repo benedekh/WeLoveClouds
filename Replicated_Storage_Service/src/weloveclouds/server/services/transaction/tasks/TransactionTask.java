@@ -64,6 +64,7 @@ public abstract class TransactionTask<E extends TransactionTask.Builder<E>>
                 }
             } catch (TimeoutException ex) {
                 LOGGER.error(ex);
+                return false;
             }
         }
         return true;
