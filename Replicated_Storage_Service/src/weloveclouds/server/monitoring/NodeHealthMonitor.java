@@ -14,7 +14,6 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.repository.NodeStatus;
 import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
-import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 public class NodeHealthMonitor extends Thread {
 
@@ -22,6 +21,7 @@ public class NodeHealthMonitor extends Thread {
     private static final Duration WAIT_TIME_BEFORE_HEARTBEAT = new Duration(2 * 1000);
 
     private NodeHealthInfos.Builder nodeHealthInfosBuilder;
+    private List<ServiceHealthMonitor> serviceHealthMonitors;
 
     private ICommunicationApi communicationApi;
     private ServerConnectionInfo connectionInfo;
@@ -32,14 +32,11 @@ public class NodeHealthMonitor extends Thread {
         this.communicationApi = builder.communicationApi;
         this.connectionInfo = builder.connectionInfo;
         this.heartbeatSerializer = builder.heartbeatSerializer;
+        this.serviceHealthMonitors = builder.serviceHealthMonitors;
     }
 
     public void setNodeStatus(NodeStatus status) {
         nodeHealthInfosBuilder.nodeStatus(status);
-    }
-
-    public void setServiceHealthInfos(List<ServiceHealthInfos> serviceHealthInfos) {
-        nodeHealthInfosBuilder.servicesHealtInfos(serviceHealthInfos);
     }
 
     @Override
@@ -53,6 +50,10 @@ public class NodeHealthMonitor extends Thread {
 
         do {
             try {
+                for (ServiceHealthMonitor serviceHealthMonitor : serviceHealthMonitors) {
+                    nodeHealthInfosBuilder
+                            .addServiceHealtInfos(serviceHealthMonitor.getHealthInfos());
+                }
                 SerializedMessage message = heartbeatSerializer
                         .serialize(new KVHeartbeatMessage(nodeHealthInfosBuilder.build()));
                 communicationApi.send(message.getBytes());
@@ -71,6 +72,7 @@ public class NodeHealthMonitor extends Thread {
         private ICommunicationApi communicationApi;
         private ServerConnectionInfo connectionInfo;
         private IMessageSerializer<SerializedMessage, KVHeartbeatMessage> heartbeatSerializer;
+        private List<ServiceHealthMonitor> serviceHealthMonitors;
 
         public Builder nodeHealthInfosBuilder(NodeHealthInfos.Builder nodeHealthInfosBuilder) {
             this.nodeHealthInfosBuilder = nodeHealthInfosBuilder;
@@ -87,10 +89,14 @@ public class NodeHealthMonitor extends Thread {
             return this;
         }
 
-
         public Builder heartbeatSerializer(
                 IMessageSerializer<SerializedMessage, KVHeartbeatMessage> heartbeatSerializer) {
             this.heartbeatSerializer = heartbeatSerializer;
+            return this;
+        }
+
+        public Builder serviceHealthMonitors(List<ServiceHealthMonitor> serviceHealthMonitors) {
+            this.serviceHealthMonitors = serviceHealthMonitors;
             return this;
         }
 

@@ -127,16 +127,17 @@ public class KVServer {
             throws IOException {
         ServerFactory serverFactory = new ServerFactory();
 
-        NodeHealthMonitor nodeHealthMonitor = new NodeHealthMonitor.Builder()
+        NodeHealthMonitor.Builder nodeHealthMonitorBuilder = new NodeHealthMonitor.Builder()
                 .communicationApi(new CommunicationApiFactory().createCommunicationApiV1())
                 .heartbeatSerializer(new KVHeartbeatMessageSerializer(new NodeHealthInfosSerializer(
                         new ServiceHealthInfosSerializer(new ServerConnectionInfoSerializer()))))
                 .nodeHealthInfosBuilder(new NodeHealthInfos.Builder().nodeName(serverName))
-                .loadbalancerConnectionInfo(loadBalancerInfo).build();
+                .loadbalancerConnectionInfo(loadBalancerInfo);
 
         weloveclouds.server.core.KVServer kvServer = new weloveclouds.server.core.KVServer.Builder()
                 .serverFactory(serverFactory).portConfiguration(portConfigurationContext)
-                .dataAccessService(dataAccessService).nodeHealthMonitor(nodeHealthMonitor).build();
+                .dataAccessService(dataAccessService)
+                .nodeHealthMonitorBuilder(nodeHealthMonitorBuilder).build();
         kvServer.start();
     }
 

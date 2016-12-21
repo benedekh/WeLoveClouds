@@ -65,18 +65,18 @@ public class Start extends AbstractServerCommand {
 
             ServerConnectionInfo loadbalancerFakeConnectionInfo =
                     new ServerConnectionInfo.Builder().ipAddress("localhost").port(8008).build();
-            NodeHealthMonitor nodeHealthMonitor = new NodeHealthMonitor.Builder()
+            NodeHealthMonitor.Builder nodeHealthMonitorBuilder = new NodeHealthMonitor.Builder()
                     .communicationApi(new CommunicationApiFactory().createCommunicationApiV1())
                     .heartbeatSerializer(new KVHeartbeatMessageSerializer(
                             new NodeHealthInfosSerializer(new ServiceHealthInfosSerializer(
                                     new ServerConnectionInfoSerializer()))))
                     .nodeHealthInfosBuilder(
                             new NodeHealthInfos.Builder().nodeName(UUID.randomUUID().toString()))
-                    .loadbalancerConnectionInfo(loadbalancerFakeConnectionInfo).build();
+                    .loadbalancerConnectionInfo(loadbalancerFakeConnectionInfo);
 
             KVServer kvServer = new KVServer.Builder().serverFactory(serverFactory)
                     .portConfiguration(portContext).dataAccessService(dataAccessService)
-                    .nodeHealthMonitor(nodeHealthMonitor).build();
+                    .nodeHealthMonitorBuilder(nodeHealthMonitorBuilder).build();
             kvServer.start();
 
             context.setStarted(true);

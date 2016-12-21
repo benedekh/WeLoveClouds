@@ -46,7 +46,6 @@ public class KVServer {
         this.kvClientRequestsServer = builder.serverFactory.createServerForKVClientRequests(
                 kvClientPort, builder.dataAccessService, kvClientHealthMonitor);
 
-
         int kvServerPort = builder.portConfiguration.getKVServerPort();
         ServiceHealthMonitor kvServerHealthMonitor =
                 createServiceHealthMonitor(kvServerPort, "kvserver_requests", 2);
@@ -59,11 +58,10 @@ public class KVServer {
         this.kvECSRequestsServer = builder.serverFactory.createServerForKVECSRequests(kvECSPort,
                 builder.dataAccessService, kvECSHealthMonitor);
 
-        this.nodeHealthMonitor = builder.nodeHealthMonitor;
+        builder.nodeHealthMonitorBuilder.serviceHealthMonitors(
+                Arrays.asList(kvClientHealthMonitor, kvServerHealthMonitor, kvECSHealthMonitor));
+        this.nodeHealthMonitor = builder.nodeHealthMonitorBuilder.build();
         this.nodeHealthMonitor.setNodeStatus(NodeStatus.RUNNING);
-        this.nodeHealthMonitor.setServiceHealthInfos(Arrays.asList(
-                kvClientHealthMonitor.getHealthInfos(), kvServerHealthMonitor.getHealthInfos(),
-                kvECSHealthMonitor.getHealthInfos()));
 
         LOGGER.debug("Creating the servers for the different requests finished.");
     }
@@ -100,7 +98,7 @@ public class KVServer {
         private ServerFactory serverFactory;
         private KVServerPortContext portConfiguration;
         private IReplicableDataAccessService dataAccessService;
-        private NodeHealthMonitor nodeHealthMonitor;
+        private NodeHealthMonitor.Builder nodeHealthMonitorBuilder;
 
         public Builder serverFactory(ServerFactory serverFactory) {
             this.serverFactory = serverFactory;
@@ -117,8 +115,9 @@ public class KVServer {
             return this;
         }
 
-        public Builder nodeHealthMonitor(NodeHealthMonitor nodeHealthMonitor) {
-            this.nodeHealthMonitor = nodeHealthMonitor;
+        public Builder nodeHealthMonitorBuilder(
+                NodeHealthMonitor.Builder nodeHealthMonitorBuilder) {
+            this.nodeHealthMonitorBuilder = nodeHealthMonitorBuilder;
             return this;
         }
 
