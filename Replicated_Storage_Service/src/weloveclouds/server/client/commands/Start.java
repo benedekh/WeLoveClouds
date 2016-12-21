@@ -2,16 +2,25 @@ package weloveclouds.server.client.commands;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.ServerSideException;
+import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
+import weloveclouds.commons.serialization.KVHeartbeatMessageSerializer;
+import weloveclouds.commons.serialization.NodeHealthInfosSerializer;
+import weloveclouds.commons.serialization.ServiceHealthInfosSerializer;
+import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.server.client.commands.utils.ArgumentsValidator;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
 import weloveclouds.server.configuration.models.KVServerPortContext;
 import weloveclouds.server.core.KVServer;
 import weloveclouds.server.core.Server;
 import weloveclouds.server.core.ServerFactory;
+import weloveclouds.server.monitoring.NodeHealthMonitor;
 import weloveclouds.server.services.DataAccessServiceFactory;
 import weloveclouds.server.services.IReplicableDataAccessService;
 import weloveclouds.server.services.models.DataAccessServiceInitializationContext;
@@ -54,8 +63,20 @@ public class Start extends AbstractServerCommand {
             IReplicableDataAccessService dataAccessService = dataAccessServiceFactory
                     .createInitializedReplicableDataAccessService(initializationContext);
 
+            ServerConnectionInfo loadbalancerFakeConnectionInfo =
+                    new ServerConnectionInfo.Builder().ipAddress("localhost").port(8008).build();
+            NodeHealthMonitor nodeHealthMonitor = new NodeHealthMonitor.Builder()
+                    .communicationApi(new CommunicationApiFactory().createCommunicationApiV1())
+                    .heartbeatSerializer(new KVHeartbeatMessageSerializer(
+                            new NodeHealthInfosSerializer(new ServiceHealthInfosSerializer(
+                                    new ServerConnectionInfoSerializer()))))
+                    .nodeHealthInfosBuilder(
+                            new NodeHealthInfos.Builder().nodeName(UUID.randomUUID().toString()))
+                    .loadbalancerConnectionInfo(loadbalancerFakeConnectionInfo).build();
+
             KVServer kvServer = new KVServer.Builder().serverFactory(serverFactory)
-                    .portConfiguration(portContext).dataAccessService(dataAccessService).build();
+                    .portConfiguration(portContext).dataAccessService(dataAccessService)
+                    .nodeHealthMonitor(nodeHealthMonitor).build();
             kvServer.start();
 
             context.setStarted(true);

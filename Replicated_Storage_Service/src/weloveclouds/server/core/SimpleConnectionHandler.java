@@ -5,17 +5,18 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
-import weloveclouds.communication.api.IConcurrentCommunicationApi;
-import weloveclouds.communication.models.Connection;
+import weloveclouds.commons.networking.models.requests.IExecutable;
+import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.networking.models.requests.IValidatable;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.commons.networking.models.requests.IExecutable;
-import weloveclouds.commons.networking.models.requests.IRequestFactory;
-import weloveclouds.commons.networking.models.requests.IValidatable;
-import weloveclouds.commons.exceptions.IllegalRequestException;
+import weloveclouds.communication.api.IConcurrentCommunicationApi;
+import weloveclouds.communication.models.Connection;
+import weloveclouds.server.monitoring.ServiceHealthMonitor;
 
 /**
  * A handler for a client connected to the {@link Server}. It receives and interprets different
@@ -29,6 +30,7 @@ import weloveclouds.commons.exceptions.IllegalRequestException;
 public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<R>>
         extends AbstractConnectionHandler<M> {
     private IRequestFactory<M, R> requestFactory;
+    private ServiceHealthMonitor serviceHealthMonitor;
 
     public SimpleConnectionHandler(Builder<M, R> simpleConnectionBuilder) {
         super(simpleConnectionBuilder.communicationApi, simpleConnectionBuilder.connection,
@@ -36,6 +38,7 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
                 simpleConnectionBuilder.messageDeserializer);
         this.requestFactory = simpleConnectionBuilder.requestFactory;
         this.logger = Logger.getLogger(this.getClass());
+        this.serviceHealthMonitor = simpleConnectionBuilder.serviceHealthMonitor;
     }
 
     @Override
@@ -47,6 +50,8 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
     @Override
     public void run() {
         logger.info("Client is connected to server.");
+        serviceHealthMonitor.incrementConnections();
+
         try {
             while (connection.isConnected()) {
                 M response = null;
@@ -87,6 +92,7 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
         }
 
         logger.info("Client is disconnected.");
+        serviceHealthMonitor.decrementConnections();
     }
 
     /**
@@ -100,6 +106,7 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
         private Connection connection;
         private IMessageSerializer<SerializedMessage, M> messageSerializer;
         private IMessageDeserializer<M, SerializedMessage> messageDeserializer;
+        private ServiceHealthMonitor serviceHealthMonitor;
 
         public Builder<M, R> connection(Connection connection) {
             this.connection = connection;
@@ -125,6 +132,11 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
         public Builder<M, R> messageDeserializer(
                 IMessageDeserializer<M, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
+            return this;
+        }
+
+        public Builder<M, R> serviceHealthMonitor(ServiceHealthMonitor serviceHealthMonitor) {
+            this.serviceHealthMonitor = serviceHealthMonitor;
             return this;
         }
 
