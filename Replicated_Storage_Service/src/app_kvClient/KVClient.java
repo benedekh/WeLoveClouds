@@ -45,7 +45,7 @@ public class KVClient {
 
             ServerConnectionInfo bootstrapConnectionInfo =
                     new ServerConnectionInfo.Builder().ipAddress("localhost")
-                            .port(10000).build();
+                            .port(KVServerPortConstants.KVCLIENT_REQUESTS_PORT).build();
             IKVCommunicationApiV2 serverCommunication = new KVCommunicationApiFactory()
                     .createKVCommunicationApiV2(bootstrapConnectionInfo);
 
