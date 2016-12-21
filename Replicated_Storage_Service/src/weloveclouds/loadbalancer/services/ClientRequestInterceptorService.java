@@ -1,6 +1,7 @@
 package weloveclouds.loadbalancer.services;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import org.apache.log4j.Logger;
 
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 import weloveclouds.commons.exceptions.ClientSideException;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
@@ -30,18 +32,23 @@ import static weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType
 /**
  * Created by Benoit on 2016-12-03.
  */
-public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
+@Singleton
+public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> {
     private DistributedSystemAccessService distributedSystemAccessService;
     private ICacheService<String, String> cacheService;
 
     @Inject
     public ClientRequestInterceptorService(CommunicationApiFactory communicationApiFactory,
-            ServerSocketFactory serverSocketFactory,
-            IMessageSerializer<SerializedMessage, KVMessage> messageSerializer,
-            IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer,
-            @ClientRequestsInterceptorPort int port,
-            DistributedSystemAccessService distributedSystemAccessService,
-            ICacheService<String, String> cacheService) throws IOException {
+                                           ServerSocketFactory serverSocketFactory,
+                                           IMessageSerializer<SerializedMessage, IKVMessage>
+                                                   messageSerializer,
+                                           IMessageDeserializer<IKVMessage, SerializedMessage>
+                                                   messageDeserializer,
+                                           @ClientRequestsInterceptorPort int port,
+                                           DistributedSystemAccessService
+                                                   distributedSystemAccessService,
+                                           ICacheService<String, String> cacheService)
+            throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
         this.logger = Logger.getLogger(ClientRequestInterceptorService.class);
@@ -71,16 +78,16 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
         }
     }
 
-    private class ConnectionHandler extends AbstractConnectionHandler<KVMessage> {
+    private class ConnectionHandler extends AbstractConnectionHandler<IKVMessage> {
         private DistributedSystemAccessService distributedSystemAccessService;
         private ICacheService<String, String> cacheService;
 
-        public ConnectionHandler(IConcurrentCommunicationApi communicationApi,
-                Connection connection,
-                IMessageSerializer<SerializedMessage, KVMessage> messageSerializer,
-                IMessageDeserializer<KVMessage, SerializedMessage> messageDeserializer,
-                DistributedSystemAccessService distributedSystemAccessService,
-                ICacheService<String, String> cacheService) {
+        ConnectionHandler(IConcurrentCommunicationApi communicationApi,
+                          Connection connection,
+                          IMessageSerializer<SerializedMessage, IKVMessage> messageSerializer,
+                          IMessageDeserializer<IKVMessage, SerializedMessage> messageDeserializer,
+                          DistributedSystemAccessService distributedSystemAccessService,
+                          ICacheService<String, String> cacheService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;
@@ -99,7 +106,7 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
                 while (connection.isConnected()) {
                     StorageNode transferDestination;
                     byte[] receivedMessage = communicationApi.receiveFrom(connection);
-                    KVMessage deserializedMessage =
+                    IKVMessage deserializedMessage =
                             messageDeserializer.deserialize(receivedMessage);
 
                     logger.debug(StringUtils.join(" ", "Message received:", deserializedMessage));
@@ -152,7 +159,7 @@ public class ClientRequestInterceptorService extends AbstractServer<KVMessage> {
         }
 
         private byte[] transferMessageToServerAndGetResponse(byte[] rawMessage,
-                StorageNode destination) throws ClientSideException {
+                                                             StorageNode destination) throws ClientSideException {
             byte[] serverResponse;
             ICommunicationApi communicationApi = communicationApiFactory.createCommunicationApiV1();
             communicationApi.connectTo(destination.getServerConnectionInfo());

@@ -1,5 +1,8 @@
 package weloveclouds.loadbalancer.models.cache.strategies;
 
+import com.google.inject.Inject;
+
+import org.joda.time.Duration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +15,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import weloveclouds.loadbalancer.configuration.annotations.PopularityBasedDisplacementCapacity;
+import weloveclouds.loadbalancer.configuration.annotations.PopularityBasedDisplacementRunInterval;
 import weloveclouds.loadbalancer.models.cache.CachedKeyUsage;
 
 /**
@@ -24,8 +29,11 @@ public class PopularityBasedDisplacementStrategy<K> implements IDisplacementStra
     private ReentrantReadWriteLock reentrantReadWriteLock;
     private ScheduledExecutorService keyOrderingTask;
 
-    public PopularityBasedDisplacementStrategy(int maximumCapacity, int
-            timeBetweenKeyOrderingInSec) {
+    @Inject
+    public PopularityBasedDisplacementStrategy(@PopularityBasedDisplacementCapacity
+                                                       int maximumCapacity,
+                                               @PopularityBasedDisplacementRunInterval
+                                                       Duration timeBetweenKeyOrdering) {
         this.reentrantReadWriteLock = new ReentrantReadWriteLock();
         this.keyOrderingTask = Executors.newScheduledThreadPool(1);
         this.keyUsage = new LinkedHashMap<>(maximumCapacity);
@@ -43,10 +51,9 @@ public class PopularityBasedDisplacementStrategy<K> implements IDisplacementStra
                     });
                 } finally {
                     reentrantReadWriteLock.writeLock().unlock();
-
                 }
             }
-        }, 0, timeBetweenKeyOrderingInSec, TimeUnit.SECONDS);
+        }, 0, timeBetweenKeyOrdering.getStandardSeconds(), TimeUnit.SECONDS);
     }
 
     @Override

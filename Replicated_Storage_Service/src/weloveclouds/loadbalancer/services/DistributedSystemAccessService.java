@@ -1,5 +1,7 @@
 package weloveclouds.loadbalancer.services;
 
+import com.google.inject.Singleton;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -17,6 +19,7 @@ import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 /**
  * Created by Benoit on 2016-12-03.
  */
+@Singleton
 public class DistributedSystemAccessService {
     private static final int FIRST = 0;
     private DistributedService distributedService;

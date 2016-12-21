@@ -1,12 +1,14 @@
 package weloveclouds.loadbalancer.services;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
@@ -17,25 +19,28 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
+import weloveclouds.loadbalancer.models.EcsNotification;
 
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 /**
  * Created by Benoit on 2016-12-06.
  */
-public class EcsNotificationService extends AbstractServer<KVAdminMessage>
-        implements INotifier<Object> {
+@Singleton
+public class EcsNotificationService extends AbstractServer<IKVAdminMessage>
+        implements INotifier<EcsNotification> {
     private DistributedSystemAccessService distributedSystemAccessService;
 
     @Inject
     public EcsNotificationService(CommunicationApiFactory communicationApiFactory,
-            ServerSocketFactory serverSocketFactory,
-            IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
-            IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer,
-            @EcsNotificationServicePort int port,
-            DistributedSystemAccessService distributedSystemAccessService) throws IOException {
+                                  ServerSocketFactory serverSocketFactory,
+                                  IMessageSerializer<SerializedMessage, IKVAdminMessage>
+                                          messageSerializer,
+                                  IMessageDeserializer<IKVAdminMessage, SerializedMessage>
+                                          messageDeserializer,
+                                  @EcsNotificationServicePort int port,
+                                  DistributedSystemAccessService distributedSystemAccessService) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
     }
@@ -63,17 +68,18 @@ public class EcsNotificationService extends AbstractServer<KVAdminMessage>
     }
 
     @Override
-    public void notify(Object notification) {
+    public void notify(EcsNotification notification) {
 
     }
 
-    private class ConnectionHandler extends AbstractConnectionHandler<KVAdminMessage> {
+    private class ConnectionHandler extends AbstractConnectionHandler<IKVAdminMessage> {
         private DistributedSystemAccessService distributedSystemAccessService;
 
         ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection connection,
-                IMessageSerializer<SerializedMessage, KVAdminMessage> messageSerializer,
-                IMessageDeserializer<KVAdminMessage, SerializedMessage> messageDeserializer,
-                DistributedSystemAccessService distributedSystemAccessService) {
+                          IMessageSerializer<SerializedMessage, IKVAdminMessage> messageSerializer,
+                          IMessageDeserializer<IKVAdminMessage, SerializedMessage>
+                                  messageDeserializer,
+                          DistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;
@@ -89,7 +95,7 @@ public class EcsNotificationService extends AbstractServer<KVAdminMessage>
             logger.info("Client is connected to server.");
             try {
                 while (connection.isConnected()) {
-                    KVAdminMessage receivedMessage = messageDeserializer
+                    IKVAdminMessage receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
                     logger.debug(StringUtils.join(" ", "Message received:", receivedMessage));
                     distributedSystemAccessService
