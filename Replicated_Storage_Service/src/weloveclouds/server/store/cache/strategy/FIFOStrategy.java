@@ -3,9 +3,11 @@ package weloveclouds.server.store.cache.strategy;
 import java.util.ArrayDeque;
 import java.util.NoSuchElementException;
 import java.util.Queue;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.exceptions.StorageException;
 
@@ -19,9 +21,11 @@ public class FIFOStrategy implements DisplacementStrategy {
     private static final Logger LOGGER = Logger.getLogger(FIFOStrategy.class);
 
     private Queue<String> fifo;
+    private ReentrantReadWriteLock accessLock;
 
     public FIFOStrategy() {
         this.fifo = new ArrayDeque<>();
+        this.accessLock = new ReentrantReadWriteLock();
     }
 
     @Override
@@ -30,8 +34,8 @@ public class FIFOStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized String displaceKey() throws StorageException {
-        try {
+    public String displaceKey() throws StorageException {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             String displaced = fifo.remove();
             LOGGER.debug(
                     StringUtils.join(" ", displaced, "to be removed from cache by FIFO strategy."));
@@ -44,8 +48,8 @@ public class FIFOStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized void put(String key) {
-        try {
+    public void put(String key) {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             fifo.add(key);
             LOGGER.debug(StringUtils.join(" ", key, "is added to the FIFO strategy store."));
         } catch (NullPointerException ex) {
@@ -54,12 +58,14 @@ public class FIFOStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized void get(String key) {
-        // FIFO strategy does not update anything
+    public void get(String key) {
+        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+            // FIFO strategy does not update anything
+        }
     }
 
-    public synchronized void remove(String key) {
-        try {
+    public void remove(String key) {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             boolean isRemoved = fifo.remove(key);
             if (isRemoved) {
                 LOGGER.debug(

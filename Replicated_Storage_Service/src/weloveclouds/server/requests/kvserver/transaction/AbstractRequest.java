@@ -8,10 +8,8 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.IllegalRequestException;
-import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
-import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
-import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
+import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
 
 public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         implements IKVTransactionRequest {
@@ -19,15 +17,11 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
     private static Logger LOGGER = Logger.getLogger(AbstractRequest.class);
 
     protected UUID transactionId;
-    protected Map<UUID, TransactionStatus> transactionLog;
-    protected Map<UUID, IKVTransferMessage> ongoingTransactions;
-    protected Map<UUID, TimedAbortRequest> timedAbortRequests;
+    protected Map<UUID, ReceivedTransactionContext> transactionLog;
 
     protected AbstractRequest(Builder<E> builder) {
-        this.transactionLog = builder.transactionLog;
-        this.ongoingTransactions = builder.ongoingTransactions;
         this.transactionId = builder.transactionId;
-        this.timedAbortRequests = builder.timedAbortRequests;
+        this.transactionLog = builder.transactionLog;
     }
 
     @Override
@@ -39,19 +33,9 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         return this;
     }
 
-    protected void haltTimedAbortRequest() {
-        TimedAbortRequest timedAbortRequest = timedAbortRequests.get(transactionId);
-        if (timedAbortRequest != null) {
-            timedAbortRequests.remove(transactionId);
-            timedAbortRequest.interrupt();
-        }
-    }
-
     public abstract static class Builder<E extends Builder<E>> {
         private UUID transactionId;
-        private Map<UUID, TransactionStatus> transactionLog;
-        private Map<UUID, IKVTransferMessage> ongoingTransactions;
-        private Map<UUID, TimedAbortRequest> timedAbortRequests;
+        private Map<UUID, ReceivedTransactionContext> transactionLog;
 
         @SuppressWarnings("unchecked")
         public E transactionId(UUID transactionId) {
@@ -60,20 +44,8 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         }
 
         @SuppressWarnings("unchecked")
-        public E transactionLog(Map<UUID, TransactionStatus> transactionLog) {
+        public E transactionLog(Map<UUID, ReceivedTransactionContext> transactionLog) {
             this.transactionLog = transactionLog;
-            return (E) this;
-        }
-
-        @SuppressWarnings("unchecked")
-        public E ongoingTransactions(Map<UUID, IKVTransferMessage> ongoingTransactions) {
-            this.ongoingTransactions = ongoingTransactions;
-            return (E) this;
-        }
-
-        @SuppressWarnings("unchecked")
-        public E timedAbortRequests(Map<UUID, TimedAbortRequest> timedAbortRequests) {
-            this.timedAbortRequests = timedAbortRequests;
             return (E) this;
         }
     }

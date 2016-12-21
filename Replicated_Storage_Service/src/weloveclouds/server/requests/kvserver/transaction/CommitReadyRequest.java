@@ -10,8 +10,10 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
+import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
+import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatus;
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
 
 public class CommitReadyRequest extends AbstractRequest<CommitReadyRequest.Builder> {
@@ -30,32 +32,36 @@ public class CommitReadyRequest extends AbstractRequest<CommitReadyRequest.Build
         LOGGER.debug(StringUtils.join("", "Commit_ready phase for transaction (", transactionId,
                 ") on receiver side."));
 
-        synchronized (transactionLog) {
-            TransactionStatus recentStatus = transactionLog.get(transactionId);
-            switch (recentStatus) {
-                case INIT:
-                    try {
-                        IKVTransferMessage transferMessage = ongoingTransactions.get(transactionId);
-                        if (transferMessage != null) {
-                            simulatedDASBehavior.createRequestFromReceivedMessage(transferMessage,
-                                    new EmptyCallbackRegister()).validate().execute();
-                            transactionLog.put(transactionId, TransactionStatus.COMMIT_READY);
+        ReceivedTransactionContext transaction = transactionLog.get(transactionId);
+        TransactionStatus recentStatus = transaction.getTransactionStatus();
+        switch (recentStatus) {
+            case INIT:
+                try {
+                    try (CloseableLock lock = new CloseableLock(transaction.getLock())) {
+                        if (transaction.getTransactionStatus() != TransactionStatus.COMMIT_READY) {
+                            IKVTransferMessage transferMessage = transaction.getTransferMessage();
+                            if (transferMessage != null) {
+                                simulatedDASBehavior
+                                        .createRequestFromReceivedMessage(transferMessage,
+                                                new EmptyCallbackRegister())
+                                        .validate().execute();
+                                transaction.setCommitReady();
+                            }
+                            LOGGER.debug(StringUtils.join("", "Commit_Ready for transaction (",
+                                    transactionId, ") on reciever side."));
+                            return createTransactionResponse(transactionId,
+                                    StatusType.RESPONSE_COMMIT_READY);
                         }
-                        LOGGER.debug(StringUtils.join("", "Commit_Ready for transaction (",
-                                transactionId, ") on reciever side."));
-                        return createTransactionResponse(transactionId,
-                                StatusType.RESPONSE_COMMIT_READY);
-                    } catch (Exception ex) {
-                        LOGGER.error(ex);
-                        return new AbortRequest.Builder().transactionLog(transactionLog)
-                                .ongoingTransactions(ongoingTransactions)
-                                .transactionId(transactionId).build().execute();
                     }
-                default:
-                    LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (",
-                            transactionId, ") on receiver side."));
-                    return createTransactionResponse(transactionId, recentStatus.getResponseType());
-            }
+                } catch (Exception ex) {
+                    LOGGER.error(ex);
+                    return new AbortRequest.Builder().transactionLog(transactionLog)
+                            .transactionId(transactionId).build().execute();
+                }
+            default:
+                LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (", transactionId,
+                        ") on receiver side."));
+                return createTransactionResponse(transactionId, recentStatus.getResponseType());
         }
     }
 

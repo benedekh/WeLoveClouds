@@ -3,9 +3,11 @@ package weloveclouds.server.store.cache.strategy;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.NoSuchElementException;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.exceptions.StorageException;
 
@@ -19,9 +21,11 @@ public class LRUStrategy implements DisplacementStrategy {
     private static final Logger LOGGER = Logger.getLogger(LRUStrategy.class);
 
     private Deque<String> recentKeys;
+    private ReentrantReadWriteLock accessLock;
 
     public LRUStrategy() {
         this.recentKeys = new ArrayDeque<>();
+        this.accessLock = new ReentrantReadWriteLock();
     }
 
     @Override
@@ -30,8 +34,8 @@ public class LRUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized String displaceKey() throws StorageException {
-        try {
+    public String displaceKey() throws StorageException {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             // the last element of the queue is the least recently used one
             String displaced = recentKeys.removeLast();
             LOGGER.debug(
@@ -45,8 +49,8 @@ public class LRUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized void put(String key) {
-        try {
+    public void put(String key) {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             recentKeys.addFirst(key);
             LOGGER.debug(StringUtils.join(" ", key, "is added to the LRU strategy store."));
         } catch (NullPointerException ex) {
@@ -55,8 +59,8 @@ public class LRUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized void get(String key) {
-        try {
+    public void get(String key) {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             // move the element to the head of the queue
             // because it was most recently used
             recentKeys.remove(key);
@@ -69,8 +73,8 @@ public class LRUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public synchronized void remove(String key) {
-        try {
+    public void remove(String key) {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             boolean isRemoved = recentKeys.remove(key);
             if (isRemoved) {
                 LOGGER.debug(StringUtils.join(" ", key, "is removed from the LRU strategy store."));

@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
+import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatus;
 
 public class HelpRequest extends AbstractRequest<HelpRequest.Builder> {
 
@@ -20,7 +20,7 @@ public class HelpRequest extends AbstractRequest<HelpRequest.Builder> {
 
     @Override
     public IKVTransactionMessage execute() {
-        TransactionStatus recentStatus = transactionLog.get(transactionId);
+        TransactionStatus recentStatus = transactionLog.get(transactionId).getTransactionStatus();
         LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (", transactionId,
                 ") on reciever side."));
         return createTransactionResponse(transactionId, recentStatus.getResponseType());

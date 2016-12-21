@@ -13,6 +13,7 @@ import static weloveclouds.server.monitoring.MonitoringMetricConstants.SUCCESS;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.management.relation.Role;
 
@@ -24,6 +25,7 @@ import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.services.datastore.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.datastore.exceptions.ServiceIsStoppedException;
@@ -51,12 +53,14 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
     private SimulatedMovableDataAccessService simulatedDataAccessService;
     private MovablePersistentStorage movablePersistentStorage;
 
-    private DataAccessServiceStatus servicePreviousStatus;
+    private volatile DataAccessServiceStatus servicePreviousStatus;
     private volatile DataAccessServiceStatus serviceRecentStatus;
 
     private Set<HashRange> readRanges;
     private volatile HashRange writeRange;
     private volatile RingMetadata ringMetadata;
+
+    private ReentrantReadWriteLock configurationChangeLock;
 
     protected MovableDataAccessService(Builder<E> builder) {
         super(builder.cache, builder.persistentStorage);
@@ -65,169 +69,196 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
         this.servicePreviousStatus = DataAccessServiceStatus.STOPPED;
         this.serviceRecentStatus = DataAccessServiceStatus.STOPPED;
         this.readRanges = new HashSet<>();
+        this.configurationChangeLock = new ReentrantReadWriteLock();
     }
 
     @Override
-    public synchronized PutType putEntry(KVEntry entry) throws StorageException {
-        return putEntry(entry, true);
-    }
-
-    @Override
-    public synchronized PutType putEntryWithoutAuthorization(KVEntry entry)
-            throws StorageException {
-        return putEntry(entry, false);
-    }
-
-    @Override
-    public synchronized String getValue(String key)
-            throws StorageException, ValueNotFoundException {
-        if (!isServiceInitialized()) {
-            incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
-            LOGGER.error("Get request while the data acess service was uninitialized.");
-            throw new UninitializedServiceException();
+    public PutType putEntry(KVEntry entry) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            return putEntry(entry, true);
         }
+    }
 
-        switch (serviceRecentStatus) {
-            case STARTED:
-            case WRITELOCK_ACTIVE:
-                try {
-                    checkIfServiceHasReadPrivilegeFor(key);
-                } catch (KeyIsNotManagedByServiceException ex) {
-                    incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, NOT_RESPONSIBLE);
-                    throw ex;
-                }
+    @Override
+    public PutType putEntryWithoutAuthorization(KVEntry entry) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            return putEntry(entry, false);
+        }
+    }
 
-                try {
-                    Instant start = Instant.now();
-                    String value = super.getValue(key);
-                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
-                            new Duration(start, Instant.now()));
-                    incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, SUCCESS);
-                    return value;
-                } catch (StorageException ex) {
+    @Override
+    public String getValue(String key) throws StorageException, ValueNotFoundException {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            if (!isServiceInitialized()) {
+                incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
+                LOGGER.error("Get request while the data acess service was uninitialized.");
+                throw new UninitializedServiceException();
+            }
+            switch (serviceRecentStatus) {
+                case STARTED:
+                case WRITELOCK_ACTIVE:
+                    try {
+                        checkIfServiceHasReadPrivilegeFor(key);
+                    } catch (KeyIsNotManagedByServiceException ex) {
+                        incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, NOT_RESPONSIBLE);
+                        throw ex;
+                    }
+                    try {
+                        Instant start = Instant.now();
+                        String value = super.getValue(key);
+                        recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
+                                new Duration(start, Instant.now()));
+                        incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, SUCCESS);
+                        return value;
+                    } catch (StorageException ex) {
+                        incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
+                        throw ex;
+                    }
+                case STOPPED:
                     incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
-                    throw ex;
-                }
-            case STOPPED:
-                incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
+                    LOGGER.error(
+                            "Get request is rejected, because the data access service is stopped.");
+                    throw new ServiceIsStoppedException();
+                default:
+                    incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
+                    throw new StorageException("Unrecognized service status.");
+            }
+        }
+    }
+
+    @Override
+    public void removeEntry(String key) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            removeEntry(key, true);
+        }
+    }
+
+    @Override
+    public void removeEntryWithoutAuthorization(String key) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            removeEntry(key, false);
+        }
+    }
+
+    @Override
+    public void putEntries(Set<MovableStorageUnit> fromStorageUnits) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            if (!isServiceInitialized()) {
+                LOGGER.error("Put entries request while the data acess service was uninitialized.");
+                throw new UninitializedServiceException();
+            }
+
+            LOGGER.debug("Putting entries from other storage units started.");
+            movablePersistentStorage.putEntries(fromStorageUnits);
+            LOGGER.debug("Putting entries from other storage units finished.");
+        }
+    }
+
+    @Override
+    public Set<MovableStorageUnit> filterEntries(HashRange range)
+            throws UninitializedServiceException {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            if (!isServiceInitialized()) {
                 LOGGER.error(
-                        "Get request is rejected, because the data access service is stopped.");
-                throw new ServiceIsStoppedException();
-            default:
-                incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, ERROR);
-                throw new StorageException("Unrecognized service status.");
+                        "Filter entries request while the data acess service was uninitialized.");
+                throw new UninitializedServiceException();
+            }
+
+            LOGGER.debug(StringUtils.join(" ", "Filtering entries in range:", range));
+            return movablePersistentStorage.filterEntries(range);
         }
     }
 
     @Override
-    public synchronized void removeEntry(String key) throws StorageException {
-        removeEntry(key, true);
-    }
+    public void removeEntries(HashRange range) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            if (!isServiceInitialized()) {
+                LOGGER.error(
+                        "Remove entries request while the data acess service was uninitialized.");
+                throw new UninitializedServiceException();
+            }
 
-    @Override
-    public synchronized void removeEntryWithoutAuthorization(String key) throws StorageException {
-        removeEntry(key, false);
-    }
-
-    @Override
-    public synchronized void putEntries(Set<MovableStorageUnit> fromStorageUnits)
-            throws StorageException {
-        if (!isServiceInitialized()) {
-            LOGGER.error("Put entries request while the data acess service was uninitialized.");
-            throw new UninitializedServiceException();
+            LOGGER.debug(StringUtils.join(" ", "Removing entries in range:", range));
+            movablePersistentStorage.removeEntries(range);
+            LOGGER.debug("Removing entries finished.");
         }
-
-        LOGGER.debug("Putting entries from other storage units started.");
-        movablePersistentStorage.putEntries(fromStorageUnits);
-        LOGGER.debug("Putting entries from other storage units finished.");
     }
 
     @Override
-    public synchronized Set<MovableStorageUnit> filterEntries(HashRange range)
+    public void defragment() throws UninitializedServiceException {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            if (!isServiceInitialized()) {
+                LOGGER.error(
+                        "Defragmentation request while the data acess service was uninitialized.");
+                throw new UninitializedServiceException();
+            }
+
+            LOGGER.debug("Starting defragmentation.");
+            movablePersistentStorage.defragment();
+            LOGGER.debug("Defragmentation finished.");
+        }
+    }
+
+    @Override
+    public void setServiceStatus(DataAccessServiceStatus serviceNewStatus)
             throws UninitializedServiceException {
-        if (!isServiceInitialized()) {
-            LOGGER.error("Filter entries request while the data acess service was uninitialized.");
-            throw new UninitializedServiceException();
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.writeLock())) {
+            if (!isServiceInitialized()) {
+                LOGGER.error(
+                        "Set service status request while the data acess service was uninitialized.");
+                throw new UninitializedServiceException();
+            }
+
+            switch (serviceNewStatus) {
+                case WRITELOCK_INACTIVE:
+                    serviceRecentStatus = servicePreviousStatus;
+                    break;
+                case STARTED:
+                case STOPPED:
+                    serviceRecentStatus = serviceNewStatus;
+                    servicePreviousStatus = serviceRecentStatus;
+                    break;
+                case WRITELOCK_ACTIVE:
+                    serviceRecentStatus = serviceNewStatus;
+            }
+
+            simulatedDataAccessService.setServiceStatus(serviceNewStatus);
+            LOGGER.debug(StringUtils.join(" ", "Recent service status is:", serviceRecentStatus));
         }
-
-        LOGGER.debug(StringUtils.join(" ", "Filtering entries in range:", range));
-        return movablePersistentStorage.filterEntries(range);
     }
 
     @Override
-    public synchronized void removeEntries(HashRange range) throws StorageException {
-        if (!isServiceInitialized()) {
-            LOGGER.error("Remove entries request while the data acess service was uninitialized.");
-            throw new UninitializedServiceException();
+    public void setRingMetadata(RingMetadata ringMetadata) {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.writeLock())) {
+            this.ringMetadata = ringMetadata;
+            simulatedDataAccessService.setRingMetadata(ringMetadata);
         }
-
-        LOGGER.debug(StringUtils.join(" ", "Removing entries in range:", range));
-        movablePersistentStorage.removeEntries(range);
-        LOGGER.debug("Removing entries finished.");
     }
 
     @Override
-    public synchronized void defragment() throws UninitializedServiceException {
-        if (!isServiceInitialized()) {
-            LOGGER.error("Defragmentation request while the data acess service was uninitialized.");
-            throw new UninitializedServiceException();
+    public RingMetadata getRingMetadata() {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            return ringMetadata;
         }
-
-        LOGGER.debug("Starting defragmentation.");
-        movablePersistentStorage.defragment();
-        LOGGER.debug("Defragmentation finished.");
     }
 
     @Override
-    public synchronized void setServiceStatus(DataAccessServiceStatus serviceNewStatus)
-            throws UninitializedServiceException {
-        if (!isServiceInitialized()) {
-            LOGGER.error(
-                    "Set service status request while the data acess service was uninitialized.");
-            throw new UninitializedServiceException();
+    public void setManagedHashRanges(Set<HashRange> readRanges, HashRange writeRange) {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.writeLock())) {
+            if (readRanges != null) {
+                this.readRanges.clear();
+                this.readRanges.addAll(readRanges);
+            }
+            this.writeRange = writeRange;
+            simulatedDataAccessService.setManagedHashRanges(readRanges, writeRange);
         }
+    }
 
-        switch (serviceNewStatus) {
-            case WRITELOCK_INACTIVE:
-                serviceRecentStatus = servicePreviousStatus;
-                break;
-            case STARTED:
-            case STOPPED:
-                serviceRecentStatus = serviceNewStatus;
-                servicePreviousStatus = serviceRecentStatus;
-                break;
-            case WRITELOCK_ACTIVE:
-                serviceRecentStatus = serviceNewStatus;
+    @Override
+    public boolean isServiceInitialized() {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            return ringMetadata != null && readRanges != null;
         }
-        simulatedDataAccessService.setServiceStatus(serviceNewStatus);
-
-        LOGGER.debug(StringUtils.join(" ", "Recent service status is:", serviceRecentStatus));
-    }
-
-    @Override
-    public synchronized void setRingMetadata(RingMetadata ringMetadata) {
-        this.ringMetadata = ringMetadata;
-        simulatedDataAccessService.setRingMetadata(ringMetadata);
-    }
-
-    @Override
-    public synchronized RingMetadata getRingMetadata() {
-        return ringMetadata;
-    }
-
-    @Override
-    public synchronized void setManagedHashRanges(Set<HashRange> readRanges, HashRange writeRange) {
-        if (readRanges != null) {
-            this.readRanges.clear();
-            this.readRanges.addAll(readRanges);
-        }
-        this.writeRange = writeRange;
-        simulatedDataAccessService.setManagedHashRanges(readRanges, writeRange);
-    }
-
-    @Override
-    public synchronized boolean isServiceInitialized() {
-        return ringMetadata != null && readRanges != null;
     }
 
     @Override
@@ -245,48 +276,50 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
      */
     protected PutType putEntry(KVEntry entry, boolean coordinatorRoleIsExpected)
             throws StorageException {
-        if (!isServiceInitialized()) {
-            incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
-            LOGGER.error("Put request while the data acess service was uninitialized.");
-            throw new UninitializedServiceException();
-        }
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            if (!isServiceInitialized()) {
+                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
+                LOGGER.error("Put request while the data acess service was uninitialized.");
+                throw new UninitializedServiceException();
+            }
 
-        switch (serviceRecentStatus) {
-            case STARTED:
-                try {
-                    if (coordinatorRoleIsExpected) {
-                        checkIfServiceHasWritePrivilegeFor(entry.getKey());
-                    } else {
-                        checkIfServiceHasReadPrivilegeFor(entry.getKey());
+            switch (serviceRecentStatus) {
+                case STARTED:
+                    try {
+                        if (coordinatorRoleIsExpected) {
+                            checkIfServiceHasWritePrivilegeFor(entry.getKey());
+                        } else {
+                            checkIfServiceHasReadPrivilegeFor(entry.getKey());
+                        }
+                    } catch (KeyIsNotManagedByServiceException ex) {
+                        incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
+                        throw ex;
                     }
-                } catch (KeyIsNotManagedByServiceException ex) {
-                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, NOT_RESPONSIBLE);
-                    throw ex;
-                }
-                try {
-                    Instant start = Instant.now();
-                    PutType putType = super.putEntry(entry);
-                    recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
-                            new Duration(start, Instant.now()));
-                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, SUCCESS);
-                    return putType;
-                } catch (StorageException ex) {
+                    try {
+                        Instant start = Instant.now();
+                        PutType putType = super.putEntry(entry);
+                        recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
+                                new Duration(start, Instant.now()));
+                        incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, SUCCESS);
+                        return putType;
+                    } catch (StorageException ex) {
+                        incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
+                        throw ex;
+                    }
+                case STOPPED:
                     incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
-                    throw ex;
-                }
-            case STOPPED:
-                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
-                LOGGER.error(
-                        "Put request is rejected, because the data access service is stopped.");
-                throw new ServiceIsStoppedException();
-            case WRITELOCK_ACTIVE:
-                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
-                LOGGER.error(
-                        "Put request is rejected, because write lock is active on the data access service.");
-                throw new WriteLockIsActiveException();
-            default:
-                incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
-                throw new StorageException("Unrecognized service status.");
+                    LOGGER.error(
+                            "Put request is rejected, because the data access service is stopped.");
+                    throw new ServiceIsStoppedException();
+                case WRITELOCK_ACTIVE:
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
+                    LOGGER.error(
+                            "Put request is rejected, because write lock is active on the data access service.");
+                    throw new WriteLockIsActiveException();
+                default:
+                    incrementCounter(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, ERROR);
+                    throw new StorageException("Unrecognized service status.");
+            }
         }
     }
 
@@ -300,49 +333,51 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
      */
     protected void removeEntry(String key, boolean coordinatorRoleIsExpected)
             throws StorageException {
-        if (!isServiceInitialized()) {
-            incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
-            LOGGER.error("Remove request while the data acess service was uninitialized.");
-            throw new UninitializedServiceException();
-        }
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            if (!isServiceInitialized()) {
+                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
+                LOGGER.error("Remove request while the data acess service was uninitialized.");
+                throw new UninitializedServiceException();
+            }
 
-        switch (serviceRecentStatus) {
-            case STARTED:
-                try {
-                    if (coordinatorRoleIsExpected) {
-                        checkIfServiceHasWritePrivilegeFor(key);
-                    } else {
-                        checkIfServiceHasReadPrivilegeFor(key);
+            switch (serviceRecentStatus) {
+                case STARTED:
+                    try {
+                        if (coordinatorRoleIsExpected) {
+                            checkIfServiceHasWritePrivilegeFor(key);
+                        } else {
+                            checkIfServiceHasReadPrivilegeFor(key);
+                        }
+                    } catch (KeyIsNotManagedByServiceException ex) {
+                        incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
+                        throw ex;
                     }
-                } catch (KeyIsNotManagedByServiceException ex) {
-                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, NOT_RESPONSIBLE);
-                    throw ex;
-                }
 
-                try {
-                    Instant start = Instant.now();
-                    super.removeEntry(key);
-                    recordExecutionTime(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, EXEC_TIME,
-                            new Duration(start, Instant.now()));
-                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, SUCCESS);
-                } catch (StorageException ex) {
+                    try {
+                        Instant start = Instant.now();
+                        super.removeEntry(key);
+                        recordExecutionTime(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, EXEC_TIME,
+                                new Duration(start, Instant.now()));
+                        incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, SUCCESS);
+                    } catch (StorageException ex) {
+                        incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
+                        throw ex;
+                    }
+                    break;
+                case STOPPED:
                     incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
-                    throw ex;
-                }
-                break;
-            case STOPPED:
-                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
-                LOGGER.error(
-                        "Remove request is rejected, because the data access service is stopped.");
-                throw new ServiceIsStoppedException();
-            case WRITELOCK_ACTIVE:
-                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
-                LOGGER.error(
-                        "Remove request is rejected, because write lock is active on the data access service.");
-                throw new WriteLockIsActiveException();
-            default:
-                incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
-                throw new StorageException("Unrecognized service status.");
+                    LOGGER.error(
+                            "Remove request is rejected, because the data access service is stopped.");
+                    throw new ServiceIsStoppedException();
+                case WRITELOCK_ACTIVE:
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
+                    LOGGER.error(
+                            "Remove request is rejected, because write lock is active on the data access service.");
+                    throw new WriteLockIsActiveException();
+                default:
+                    incrementCounter(KVSTORE_MODULE_NAME, REMOVE_COMMAND_NAME, ERROR);
+                    throw new StorageException("Unrecognized service status.");
+            }
         }
     }
 

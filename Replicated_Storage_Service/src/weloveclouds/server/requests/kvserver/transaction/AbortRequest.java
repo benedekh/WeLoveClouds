@@ -9,7 +9,8 @@ import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
+import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
+import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatus;
 
 public class AbortRequest extends AbstractRequest<AbortRequest.Builder> {
 
@@ -24,12 +25,9 @@ public class AbortRequest extends AbstractRequest<AbortRequest.Builder> {
         LOGGER.debug(StringUtils.join("", "Abort phase for transaction (", transactionId,
                 ") on receiver side."));
 
-        synchronized (transactionLog) {
-            if (transactionLog.get(transactionId) != TransactionStatus.ABORTED) {
-                ongoingTransactions.remove(transactionId);
-                transactionLog.put(transactionId, TransactionStatus.ABORTED);
-                super.haltTimedAbortRequest();
-            }
+        ReceivedTransactionContext transaction = transactionLog.get(transactionId);
+        if (transaction.getTransactionStatus() != TransactionStatus.ABORTED) {
+            transaction.setAborted();
         }
 
         LOGGER.debug(StringUtils.join("", "Aborted  for transaction (", transactionId,

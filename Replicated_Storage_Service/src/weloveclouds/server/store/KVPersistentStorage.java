@@ -10,10 +10,12 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.services.datastore.DataAccessService;
@@ -38,93 +40,97 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     protected Queue<PersistedStorageUnit> unitsWithFreeSpace;
 
     protected Path rootPath;
+    protected ReentrantReadWriteLock accessLock;
 
     public KVPersistentStorage(Path rootPath) throws IllegalArgumentException {
         if (rootPath == null || !rootPath.toAbsolutePath().toFile().exists()) {
             throw new IllegalArgumentException("Root path does not exist.");
         }
 
+        this.rootPath = rootPath.toAbsolutePath();
         this.storageUnits = new ConcurrentHashMap<>();
         this.unitsWithFreeSpace = new ArrayDeque<>();
-
-        this.rootPath = rootPath.toAbsolutePath();
+        this.accessLock = new ReentrantReadWriteLock();
     }
 
     @Override
-    public synchronized PutType putEntry(KVEntry entry) throws StorageException {
-        String key = entry.getKey();
-        PutType response;
+    public PutType putEntry(KVEntry entry) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+            String key = entry.getKey();
+            PutType response;
 
-        if (key == null || entry.getValue() == null) {
-            throw new StorageException("Key and value cannot be null.");
-        } else if (storageUnits.containsKey(key)) {
-            response = PutType.UPDATE;
-            PersistedStorageUnit storageUnit = storageUnits.get(key);
-            putEntryIntoStorageUnit(storageUnit, entry);
-        } else {
-            response = PutType.INSERT;
-            // see if there is any storage unit with free spaces
-            if (!unitsWithFreeSpace.isEmpty()) {
-                // if there is, append the new record to it
-                PersistedStorageUnit storageUnit = unitsWithFreeSpace.peek();
+            if (key == null || entry.getValue() == null) {
+                throw new StorageException("Key and value cannot be null.");
+            } else if (storageUnits.containsKey(key)) {
+                response = PutType.UPDATE;
+                PersistedStorageUnit storageUnit = storageUnits.get(key);
                 putEntryIntoStorageUnit(storageUnit, entry);
             } else {
-                Path path = PathUtils.generateUniqueFilePath(rootPath, FILE_EXTENSION);
-                PersistedStorageUnit storageUnit = new PersistedStorageUnit(path);
-                putEntryIntoStorageUnit(storageUnit, entry);
-            }
-        }
-
-        LOGGER.debug(StringUtils.join(" ", entry, "is persisted to permanent storage unit."));
-        notifyObservers(entry);
-
-        return response;
-    }
-
-    @Override
-    public synchronized String getValue(String key)
-            throws StorageException, ValueNotFoundException {
-        if (!storageUnits.containsKey(key)) {
-            throw new ValueNotFoundException(key);
-        }
-
-        PersistedStorageUnit storageUnit = storageUnits.get(key);
-        String value = storageUnit.getValue(key);
-
-        LOGGER.debug(StringUtils.join("", "Value <", value, "> is read for key <", key, "> ."));
-        return value;
-    }
-
-    @Override
-    public synchronized void removeEntry(String key) throws StorageException {
-        try {
-            if (storageUnits.containsKey(key)) {
-                PersistedStorageUnit storageUnit = storageUnits.get(key);
-                storageUnit.removeEntry(key);
-
-                if (storageUnit.isEmpty()) {
-                    removeStorageUnit(storageUnit);
+                response = PutType.INSERT;
+                // see if there is any storage unit with free spaces
+                if (!unitsWithFreeSpace.isEmpty()) {
+                    // if there is, append the new record to it
+                    PersistedStorageUnit storageUnit = unitsWithFreeSpace.peek();
+                    putEntryIntoStorageUnit(storageUnit, entry);
                 } else {
-                    putStorageUnitIntoFreeSpaceCache(storageUnit);
+                    Path path = PathUtils.generateUniqueFilePath(rootPath, FILE_EXTENSION);
+                    PersistedStorageUnit storageUnit = new PersistedStorageUnit(path);
+                    putEntryIntoStorageUnit(storageUnit, entry);
                 }
             }
-        } catch (NullPointerException ex) {
-            String errorMessage = "Key cannot be null for removing from persistent storage.";
-            LOGGER.error(errorMessage);
-            throw new StorageException(errorMessage);
-        } catch (NoSuchFileException ex) {
-            storageUnits.remove(key);
-            String errorMessage = StringUtils.join(" ", "File for key", key,
-                    "was already removed from persistent storage.");
-            LOGGER.error(errorMessage);
-            throw new StorageException(errorMessage);
-        } catch (IOException e) {
-            LOGGER.error(e);
-            throw new StorageException(
-                    "File for key cannot be removed from persistent storage due to permission problems.");
-        }
 
-        removeKeyFromStore(key);
+            LOGGER.debug(StringUtils.join(" ", entry, "is persisted to permanent storage unit."));
+            notifyObservers(entry);
+
+            return response;
+        }
+    }
+
+    @Override
+    public String getValue(String key) throws StorageException, ValueNotFoundException {
+        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+            if (!storageUnits.containsKey(key)) {
+                throw new ValueNotFoundException(key);
+            }
+
+            PersistedStorageUnit storageUnit = storageUnits.get(key);
+            String value = storageUnit.getValue(key);
+
+            LOGGER.debug(StringUtils.join("", "Value <", value, "> is read for key <", key, "> ."));
+            return value;
+        }
+    }
+
+    @Override
+    public void removeEntry(String key) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+            try {
+                if (storageUnits.containsKey(key)) {
+                    PersistedStorageUnit storageUnit = storageUnits.get(key);
+                    storageUnit.removeEntry(key);
+                    if (storageUnit.isEmpty()) {
+                        removeStorageUnit(storageUnit);
+                    } else {
+                        putStorageUnitIntoFreeSpaceCache(storageUnit);
+                    }
+                }
+            } catch (NullPointerException ex) {
+                String errorMessage = "Key cannot be null for removing from persistent storage.";
+                LOGGER.error(errorMessage);
+                throw new StorageException(errorMessage);
+            } catch (NoSuchFileException ex) {
+                storageUnits.remove(key);
+                String errorMessage = StringUtils.join(" ", "File for key", key,
+                        "was already removed from persistent storage.");
+                LOGGER.error(errorMessage);
+                throw new StorageException(errorMessage);
+            } catch (IOException e) {
+                LOGGER.error(e);
+                throw new StorageException(
+                        "File for key cannot be removed from persistent storage due to permission problems.");
+            }
+            removeKeyFromStore(key);
+        }
     }
 
     @Override
@@ -138,26 +144,28 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      * on what paths.
      */
     public void loadStorageUnits() {
-        LOGGER.debug("Initializing persistent store with already stored keys.");
-        storageUnits.clear();
-        unitsWithFreeSpace.clear();
+        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+            LOGGER.debug("Initializing persistent store with already stored keys.");
+            storageUnits.clear();
+            unitsWithFreeSpace.clear();
 
-        for (File file : filterFilesInRootPath()) {
-            try {
-                Path path = file.toPath().toAbsolutePath();
-                PersistedStorageUnit storageUnit = loadStorageUnitFromPath(path);
-                // load the keys from the storage unit
-                for (String key : storageUnit.getKeys()) {
-                    storageUnits.put(key, storageUnit);
-                    LOGGER.debug(StringUtils.join(" ", "Key", key,
-                            "is put in the persistent store metastore from path", path));
+            for (File file : filterFilesInRootPath()) {
+                try {
+                    Path path = file.toPath().toAbsolutePath();
+                    PersistedStorageUnit storageUnit = loadStorageUnitFromPath(path);
+                    // load the keys from the storage unit
+                    for (String key : storageUnit.getKeys()) {
+                        storageUnits.put(key, storageUnit);
+                        LOGGER.debug(StringUtils.join(" ", "Key", key,
+                                "is put in the persistent store metastore from path", path));
+                    }
+                    putStorageUnitIntoFreeSpaceCache(storageUnit);
+                } catch (StorageException ex) {
+                    LOGGER.error(StringUtils.join(" ", file, ex));
                 }
-                putStorageUnitIntoFreeSpaceCache(storageUnit);
-            } catch (StorageException ex) {
-                LOGGER.error(StringUtils.join(" ", file, ex));
             }
+            LOGGER.debug("Initializing persistent store finished.");
         }
-        LOGGER.debug("Initializing persistent store finished.");
     }
 
     /**
@@ -198,7 +206,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      * 
      * @throws StorageException if any error occurs
      */
-    protected PersistedStorageUnit loadStorageUnitFromPath(Path path) throws StorageException {
+    private PersistedStorageUnit loadStorageUnitFromPath(Path path) throws StorageException {
         try {
             return PathUtils.<PersistedStorageUnit>loadFromFile(path);
         } catch (IOException ex) {
@@ -223,7 +231,6 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
             }
         });
     }
-
 
     /**
      * Puts the respective entry into a storage unit. In case the storage unit is full, it creates a

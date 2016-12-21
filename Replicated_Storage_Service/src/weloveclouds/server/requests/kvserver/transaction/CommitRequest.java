@@ -10,8 +10,10 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.server.requests.kvserver.transaction.utils.TransactionStatus;
+import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
+import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatus;
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
 
 public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
@@ -30,34 +32,36 @@ public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
         LOGGER.debug(StringUtils.join("", "Commit phase for transaction (", transactionId,
                 ") on receiver side."));
 
-        synchronized (transactionLog) {
-            TransactionStatus recentStatus = transactionLog.get(transactionId);
-            switch (recentStatus) {
-                case COMMIT_READY:
-                    try {
-                        super.haltTimedAbortRequest();
-                        IKVTransferMessage transferMessage = ongoingTransactions.get(transactionId);
-                        if (transferMessage != null) {
-                            realDASBehavior.createRequestFromReceivedMessage(transferMessage,
-                                    new EmptyCallbackRegister()).validate().execute();
-                            transactionLog.put(transactionId, TransactionStatus.COMMITTED);
+        ReceivedTransactionContext transaction = transactionLog.get(transactionId);
+        TransactionStatus recentStatus = transaction.getTransactionStatus();
+        switch (recentStatus) {
+            case COMMIT_READY:
+                try {
+                    try (CloseableLock lock = new CloseableLock(transaction.getLock())) {
+                        if (transaction.getTransactionStatus() != TransactionStatus.COMMITTED) {
+                            transaction.stopAbortRequest();
+                            IKVTransferMessage transferMessage = transaction.getTransferMessage();
+                            if (transferMessage != null) {
+                                realDASBehavior.createRequestFromReceivedMessage(transferMessage,
+                                        new EmptyCallbackRegister()).validate().execute();
+                                transaction.setCommitted();
+                            }
+                            LOGGER.debug(StringUtils.join("", "Committed for transaction (",
+                                    transactionId, ") on receiver side."));
+                            return createTransactionResponse(transactionId,
+                                    StatusType.RESPONSE_COMMITTED);
                         }
-                        LOGGER.debug(StringUtils.join("", "Committed for transaction (",
-                                transactionId, ") on receiver side."));
-                        return createTransactionResponse(transactionId,
-                                StatusType.RESPONSE_COMMITTED);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        LOGGER.error(ex);
-                        return new AbortRequest.Builder().transactionLog(transactionLog)
-                                .ongoingTransactions(ongoingTransactions)
-                                .transactionId(transactionId).build().execute();
                     }
-                default:
-                    LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (",
-                            transactionId, ") on receiver side."));
-                    return createTransactionResponse(transactionId, recentStatus.getResponseType());
-            }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    LOGGER.error(ex);
+                    return new AbortRequest.Builder().transactionLog(transactionLog)
+                            .transactionId(transactionId).build().execute();
+                }
+            default:
+                LOGGER.debug(StringUtils.join("", recentStatus, " for transaction (", transactionId,
+                        ") on receiver side."));
+                return createTransactionResponse(transactionId, recentStatus.getResponseType());
         }
     }
 
