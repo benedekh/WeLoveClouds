@@ -2,6 +2,7 @@ package testing;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import junit.framework.TestCase;
@@ -46,7 +47,7 @@ public class InteractionTest extends TestCase {
     }
 
     @Test
-    public void testPutDisconnected() {
+    public void putDisconnected() {
         kvClient.disconnect();
         String key = "foo";
         String value = "bar";

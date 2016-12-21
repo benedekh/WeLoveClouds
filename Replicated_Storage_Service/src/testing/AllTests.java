@@ -33,7 +33,6 @@ public class AllTests {
         clientSuite.addTestSuite(ConnectionTest.class);
         clientSuite.addTestSuite(InteractionTest.class);
         clientSuite.addTestSuite(HandledHashRangeTest.class);
-        clientSuite.addTestSuite(KVServerRequestFromKVClientValidationTests.class);
         clientSuite.addTestSuite(ArgumentsValidatorTest.class);
         clientSuite.addTestSuite(UserInputParserTest.class);
         clientSuite.addTestSuite(EcsArgumentsValidatorTest.class);
