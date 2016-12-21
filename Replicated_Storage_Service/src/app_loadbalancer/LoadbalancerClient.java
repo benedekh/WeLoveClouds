@@ -25,18 +25,15 @@ public class LoadbalancerClient {
 
     public static void main(String[] args) throws Exception {
         try {
-            new LogSetup(LOG_FILE, Level.OFF);
+            new LogSetup(LOG_FILE, Level.ALL);
             ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
 
             Injector injector = Guice.createInjector(new LoadBalancerModule());
             LoadBalancer loadBalancer = injector.getInstance(LoadBalancer.class);
             loadBalancer.start();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             userOutput.writeLine(ex.getMessage() + ex.getCause());
             LOGGER.error(ex.getMessage());
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            userOutput.writeLine("No ecs configuration file path provided.");
-            LOGGER.fatal("No ecs configuration file path provided.");
         }
     }
 }
