@@ -1,18 +1,8 @@
 package weloveclouds.loadbalancer.configuration.modules;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
 
-import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
-import weloveclouds.commons.kvstore.deserialization.KVMessageDeserializer;
-import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
-import weloveclouds.commons.kvstore.models.messages.IKVMessage;
-import weloveclouds.commons.kvstore.serialization.KVAdminMessageSerializer;
-import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
-import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.serialization.configuration.module.SerializationModule;
-import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.serialization.configuration.modules.SerializationModule;
 import weloveclouds.loadbalancer.configuration.annotations.ClientRequestsInterceptorPort;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
 import weloveclouds.loadbalancer.configuration.annotations.HealthMonitoringServicePort;

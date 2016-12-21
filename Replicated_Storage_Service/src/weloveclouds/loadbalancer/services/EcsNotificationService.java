@@ -43,11 +43,13 @@ public class EcsNotificationService extends AbstractServer<IKVAdminMessage>
                                   DistributedSystemAccessService distributedSystemAccessService) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
+        this.logger = Logger.getLogger(EcsNotificationService.class);
     }
 
     @Override
     public void run() {
         status = RUNNING;
+        logger.info("ECS notification service started with endpoint: " + serverSocket);
         try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
 

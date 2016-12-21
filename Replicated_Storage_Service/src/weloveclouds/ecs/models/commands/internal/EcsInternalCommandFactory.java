@@ -1,6 +1,5 @@
 package weloveclouds.ecs.models.commands.internal;
 
-
 import com.google.inject.Inject;
 
 import java.util.Arrays;
@@ -9,6 +8,7 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.models.ssh.SecureShellServiceFactory;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;

@@ -1,4 +1,4 @@
-package weloveclouds.commons.serialization.configuration.module;
+package weloveclouds.commons.serialization.configuration.modules;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
@@ -25,7 +25,6 @@ import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.loadbalancer.models.IKVHeartbeatMessage;
-import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 

@@ -53,6 +53,7 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
     @Override
     public void run() {
         status = RUNNING;
+        logger.info("Health monitoring service started with endpoint: " + serverSocket);
         try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
             nodeHealthWatcher.start();

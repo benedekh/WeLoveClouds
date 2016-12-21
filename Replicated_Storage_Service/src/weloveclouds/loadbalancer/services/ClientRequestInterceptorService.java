@@ -59,6 +59,7 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
     @Override
     public void run() {
         status = RUNNING;
+        logger.info("Client request interceptor started with endpoint: " + serverSocket);
         try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
 

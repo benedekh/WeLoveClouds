@@ -1,7 +1,5 @@
 package weloveclouds.loadbalancer.configuration.providers;
 
-import org.joda.time.Duration;
-
 /**
  * Created by Benoit on 2016-12-05.
  */

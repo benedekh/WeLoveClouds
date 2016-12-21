@@ -13,7 +13,7 @@ import weloveclouds.commons.context.ExecutionContext;
 import weloveclouds.commons.utils.LogSetup;
 import weloveclouds.ecs.client.Client;
 import weloveclouds.ecs.contexts.EcsExecutionContext;
-import weloveclouds.ecs.modules.client.EcsClientModule;
+import weloveclouds.ecs.configuration.modules.client.EcsClientModule;
 
 public class ECSClient {
     private static Logger LOGGER = Logger.getLogger(ECSClient.class);

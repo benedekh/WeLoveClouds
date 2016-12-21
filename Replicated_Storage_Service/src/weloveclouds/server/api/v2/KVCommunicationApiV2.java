@@ -63,7 +63,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
 
     @Override
     public IKVMessage put(String key, String value) throws Exception {
-        connectToTheRightServerBasedOnHashFor(key);
+        //connectToTheRightServerBasedOnHashFor(key);
 
         Instant start = Instant.now();
         try {

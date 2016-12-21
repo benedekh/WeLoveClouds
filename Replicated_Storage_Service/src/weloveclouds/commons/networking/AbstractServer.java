@@ -15,7 +15,7 @@ import static weloveclouds.commons.status.ServerStatus.HALTED;
 
 /**
  * Represents an abstract server which can accept connections on the referred port.
- * 
+ *
  * @author Benoit
  */
 public class AbstractServer<M> extends Thread {
@@ -34,7 +34,7 @@ public class AbstractServer<M> extends Thread {
                           ServerSocketFactory serverSocketFactory,
                           IMessageSerializer<SerializedMessage, M> messageSerializer,
                           IMessageDeserializer<M, SerializedMessage> messageDeserializer, int
-                                  port) throws IOException{
+                                  port) throws IOException {
         this.communicationApiFactory = communicationApiFactory;
         this.serverSocketFactory = serverSocketFactory;
         this.messageSerializer = messageSerializer;
@@ -83,5 +83,4 @@ public class AbstractServer<M> extends Thread {
             }
         }
     }
-
 }
