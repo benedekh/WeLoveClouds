@@ -1,6 +1,7 @@
 package weloveclouds.server.services.transaction;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -17,6 +18,7 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.models.ServerConnectionInfo;
 
 public class SenderTransaction implements AutoCloseable {
 
@@ -24,6 +26,7 @@ public class SenderTransaction implements AutoCloseable {
 
     private UUID transactionId;
     private IKVTransferMessage transferMessage;
+    private Set<ServerConnectionInfo> otherParticipants;
 
     private IConcurrentCommunicationApi communicationApi;
     private Connection connection;
@@ -34,6 +37,7 @@ public class SenderTransaction implements AutoCloseable {
     protected SenderTransaction(Builder builder) {
         this.transactionId = builder.transactionId;
         this.transferMessage = builder.transferMessage;
+        this.otherParticipants = builder.otherParticipants;
         this.communicationApi = builder.communicationApi;
         this.connection = builder.connection;
         this.transactionMessageSerializer = builder.transactionMessageSerializer;
@@ -67,20 +71,20 @@ public class SenderTransaction implements AutoCloseable {
     }
 
     private KVTransactionMessage createTransactionMessage(StatusType status) {
-        return createTransactionMessage(status, null);
+        return createTransactionMessage(status, null, null);
     }
 
     private KVTransactionMessage createTransactionMessage(StatusType status,
-            IKVTransferMessage transferMessage) {
+            IKVTransferMessage transferMessage, Set<ServerConnectionInfo> otherParticipants) {
         return new KVTransactionMessage.Builder().status(status).transactionId(transactionId)
-                .transferPayload(transferMessage).build();
+                .transferPayload(transferMessage).otherParticipants(otherParticipants).build();
     }
 
     public class Init implements Callable<StatusType> {
         @Override
         public StatusType call() throws Exception {
             KVTransactionMessage message =
-                    createTransactionMessage(StatusType.INIT, transferMessage);
+                    createTransactionMessage(StatusType.INIT, transferMessage, otherParticipants);
             return sendAndExpectForResponse(message);
         }
     }
@@ -109,9 +113,18 @@ public class SenderTransaction implements AutoCloseable {
         }
     }
 
+    public class Help implements Callable<StatusType> {
+        @Override
+        public StatusType call() throws Exception {
+            KVTransactionMessage message = createTransactionMessage(StatusType.HELP);
+            return sendAndExpectForResponse(message);
+        }
+    }
+
     public static class Builder {
         private UUID transactionId;
         private IKVTransferMessage transferMessage;
+        private Set<ServerConnectionInfo> otherParticipants;
         private IConcurrentCommunicationApi communicationApi;
         private Connection connection;
         private IMessageSerializer<SerializedMessage, IKVTransactionMessage> transactionMessageSerializer;
@@ -124,6 +137,11 @@ public class SenderTransaction implements AutoCloseable {
 
         public Builder transferMessage(IKVTransferMessage transferMessage) {
             this.transferMessage = transferMessage;
+            return this;
+        }
+
+        public Builder otherParticipants(Set<ServerConnectionInfo> otherParticipants) {
+            this.otherParticipants = otherParticipants;
             return this;
         }
 

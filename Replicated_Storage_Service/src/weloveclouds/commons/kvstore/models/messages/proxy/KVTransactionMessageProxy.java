@@ -1,11 +1,13 @@
 package weloveclouds.commons.kvstore.models.messages.proxy;
 
+import java.util.Set;
 import java.util.UUID;
 
 import weloveclouds.commons.exceptions.IllegalAccessException;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.KVTransactionMessage;
+import weloveclouds.communication.models.ServerConnectionInfo;
 
 public class KVTransactionMessageProxy implements IKVTransactionMessage {
 
@@ -32,6 +34,16 @@ public class KVTransactionMessageProxy implements IKVTransactionMessage {
                 return message.getTransferPayload();
             default:
                 throw new IllegalAccessException(getStatus().toString(), "getTransferPayload");
+        }
+    }
+
+    @Override
+    public Set<ServerConnectionInfo> getOtherParticipants() {
+        switch (getStatus()) {
+            case INIT:
+                return message.getOtherParticipants();
+            default:
+                throw new IllegalAccessException(getStatus().toString(), "getOtherParticipants");
         }
     }
 
@@ -73,5 +85,7 @@ public class KVTransactionMessageProxy implements IKVTransactionMessage {
     public String toString() {
         return message.toString();
     }
+
+
 
 }

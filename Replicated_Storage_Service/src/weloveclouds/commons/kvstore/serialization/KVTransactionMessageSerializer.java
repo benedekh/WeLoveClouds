@@ -1,6 +1,7 @@
 package weloveclouds.commons.kvstore.serialization;
 
 import static weloveclouds.commons.serialization.models.XMLTokens.KVTRANSACTION_MESSAGE;
+import static weloveclouds.commons.serialization.models.XMLTokens.OTHER_PARTICIPANTS;
 import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
 import static weloveclouds.commons.serialization.models.XMLTokens.TRANSACTION_ID;
 import static weloveclouds.commons.serialization.models.XMLTokens.TRANSFER_MESSAGE;
@@ -12,6 +13,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
+import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfosIterableSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.TransferMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.UUIDSerializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
@@ -21,6 +23,7 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
 import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.communication.models.ServerConnectionInfo;
 
 
 public class KVTransactionMessageSerializer
@@ -31,6 +34,8 @@ public class KVTransactionMessageSerializer
     private ISerializer<AbstractXMLNode, UUID> transactionIdSerializer = new UUIDSerializer();
     private ISerializer<AbstractXMLNode, IKVTransferMessage> transferMessageSerializer =
             new TransferMessageSerializer();
+    private ISerializer<AbstractXMLNode, Iterable<ServerConnectionInfo>> otherParticipantsSerializer =
+            new ServerConnectionInfosIterableSerializer();
 
     @Override
     public SerializedMessage serialize(IKVTransactionMessage unserializedMessage) {
@@ -45,6 +50,9 @@ public class KVTransactionMessageSerializer
                 .addInnerNode(new XMLNode(TRANSFER_MESSAGE,
                         transferMessageSerializer
                                 .serialize(unserializedMessage.getTransferPayload()).toString()))
+                .addInnerNode(new XMLNode(OTHER_PARTICIPANTS,
+                        otherParticipantsSerializer
+                                .serialize(unserializedMessage.getOtherParticipants()).toString()))
                 .build().toString();
 
         LOGGER.debug(

@@ -1,24 +1,36 @@
 package weloveclouds.server.requests.kvserver.transaction.models;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.utils.CloseableLock;
-import weloveclouds.server.requests.kvserver.transaction.utils.TimedAbortRequest;
+import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.server.requests.kvserver.transaction.utils.ITransactionRestorationRequest;
 
 public class ReceivedTransactionContext {
 
+    private final UUID transactionId;
+    private final ReentrantLock accessLock;
+
     private volatile TransactionStatus transactionStatus;
     private IKVTransferMessage transferMessage;
-    private volatile TimedAbortRequest timedAbortRequest;
-
-    private ReentrantLock accessLock;
+    private Set<ServerConnectionInfo> otherParticipants;
+    private volatile ITransactionRestorationRequest timedRestoration;
 
     protected ReceivedTransactionContext(Builder builder) {
+        this.transactionId = builder.transactionId;
         this.transactionStatus = builder.transactionStatus;
         this.transferMessage = builder.transferMessage;
-        this.timedAbortRequest = builder.timedAbortRequest;
+        this.otherParticipants = builder.otherParticipants;
+        this.timedRestoration = builder.timedRestoration;
         this.accessLock = new ReentrantLock();
+    }
+
+    public UUID getTransactionId() {
+        return transactionId;
     }
 
     public TransactionStatus getTransactionStatus() {
@@ -27,6 +39,10 @@ public class ReceivedTransactionContext {
 
     public IKVTransferMessage getTransferMessage() {
         return transferMessage;
+    }
+
+    public Set<ServerConnectionInfo> getOtherParticipants() {
+        return Collections.unmodifiableSet(otherParticipants);
     }
 
     public ReentrantLock getLock() {
@@ -45,18 +61,26 @@ public class ReceivedTransactionContext {
         setCompleted(TransactionStatus.ABORTED);
     }
 
-    public void scheduleAbortRequest() {
-        try (CloseableLock lock = new CloseableLock(accessLock)) {
-            timedAbortRequest.start();
+    public void setTimedRestoration(ITransactionRestorationRequest timedRestoration) {
+        this.timedRestoration = timedRestoration;
+    }
+
+    public void scheduleTimedRestoration() {
+        if (timedRestoration != null) {
+            try (CloseableLock lock = new CloseableLock(accessLock)) {
+                if (timedRestoration != null) {
+                    timedRestoration.schedule();
+                }
+            }
         }
     }
 
-    public void stopAbortRequest() {
-        if (timedAbortRequest != null) {
+    public void stopTimedRestoration() {
+        if (timedRestoration != null) {
             try (CloseableLock lock = new CloseableLock(accessLock)) {
-                if (timedAbortRequest != null) {
-                    timedAbortRequest.interrupt();
-                    timedAbortRequest = null;
+                if (timedRestoration != null) {
+                    timedRestoration.unschedule();
+                    timedRestoration = null;
                 }
             }
         }
@@ -66,8 +90,9 @@ public class ReceivedTransactionContext {
         if (!isCompleted()) {
             try (CloseableLock lock = new CloseableLock(accessLock)) {
                 if (!isCompleted()) {
-                    stopAbortRequest();
+                    stopTimedRestoration();
                     transferMessage = null;
+                    otherParticipants = null;
                     setStatus(status);
                 }
             }
@@ -78,15 +103,22 @@ public class ReceivedTransactionContext {
         transactionStatus = status;
     }
 
-    private boolean isCompleted() {
+    public boolean isCompleted() {
         return transactionStatus == TransactionStatus.COMMITTED
                 || transactionStatus == TransactionStatus.ABORTED;
     }
 
     public static class Builder {
+        private UUID transactionId;
         private TransactionStatus transactionStatus;
         private IKVTransferMessage transferMessage;
-        private TimedAbortRequest timedAbortRequest;
+        private Set<ServerConnectionInfo> otherParticipants;
+        private ITransactionRestorationRequest timedRestoration;
+
+        public Builder transactionId(UUID transactionId) {
+            this.transactionId = transactionId;
+            return this;
+        }
 
         public Builder transactionStatus(TransactionStatus transactionStatus) {
             this.transactionStatus = transactionStatus;
@@ -98,8 +130,13 @@ public class ReceivedTransactionContext {
             return this;
         }
 
-        public Builder timedAbortRequest(TimedAbortRequest timedAbortRequest) {
-            this.timedAbortRequest = timedAbortRequest;
+        public Builder otherParticipants(Set<ServerConnectionInfo> otherParticipants) {
+            this.otherParticipants = otherParticipants;
+            return this;
+        }
+
+        public Builder timedRestoration(ITransactionRestorationRequest timedRestoration) {
+            this.timedRestoration = timedRestoration;
             return this;
         }
 

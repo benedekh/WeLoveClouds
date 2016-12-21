@@ -9,9 +9,9 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.server.services.transaction.SenderTransaction;
-import weloveclouds.server.services.transaction.tasks.TransactionCoordinatorTask;
+import weloveclouds.server.services.transaction.tasks.TransactionTask;
 
-public class CommitTask extends TransactionCoordinatorTask<CommitTask.Builder> {
+public class CommitTask extends TransactionTask<CommitTask.Builder> {
 
     private static final Logger LOGGER = Logger.getLogger(CommitTask.class);
 
@@ -42,7 +42,7 @@ public class CommitTask extends TransactionCoordinatorTask<CommitTask.Builder> {
         return !everyonesHasTheExpectedStatus(responses, StatusType.RESPONSE_COMMITTED);
     }
 
-    public static class Builder extends TransactionCoordinatorTask.Builder<Builder> {
+    public static class Builder extends TransactionTask.Builder<Builder> {
 
         public CommitTask build() {
             return new CommitTask(this);

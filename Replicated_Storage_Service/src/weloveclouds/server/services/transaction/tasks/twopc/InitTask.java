@@ -5,18 +5,18 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.server.services.transaction.SenderTransaction;
-import weloveclouds.server.services.transaction.tasks.TransactionCoordinatorTask;
+import weloveclouds.server.services.transaction.tasks.TransactionTask;
 
-public class InitTask extends TransactionCoordinatorTask<InitTask.Builder> {
+public class InitTask extends TransactionTask<InitTask.Builder> {
 
     private static final Logger LOGGER = Logger.getLogger(InitTask.class);
-
-    private boolean isAlreadyExecuted;
 
     protected InitTask(Builder builder) {
         super(builder);
@@ -29,13 +29,7 @@ public class InitTask extends TransactionCoordinatorTask<InitTask.Builder> {
         Set<Future<StatusType>> futures = sendInitRequests();
         if (containsIDRegenerationNeeded(futures)) {
             regenerateTransactionId();
-            if (!isAlreadyExecuted) {
-                isAlreadyExecuted = true;
-                executeTask();
-            } else {
-                throw new ExecutionException(
-                        new Exception("Transaction initialization step was already executed."));
-            }
+            executeTask();
         }
         if (notEveryoneIsInitReady(futures)) {
             throw new ExecutionException(
@@ -56,8 +50,13 @@ public class InitTask extends TransactionCoordinatorTask<InitTask.Builder> {
     private boolean containsIDRegenerationNeeded(Set<Future<StatusType>> responses)
             throws InterruptedException, ExecutionException {
         for (Future<StatusType> response : responses) {
-            if (response.get() == StatusType.RESPONSE_GENERATE_NEW_ID) {
-                return true;
+            try {
+                if (response.get(getMaxWaitingTimeInMillis(),
+                        TimeUnit.MILLISECONDS) == StatusType.RESPONSE_GENERATE_NEW_ID) {
+                    return true;
+                }
+            } catch (TimeoutException ex) {
+                LOGGER.error(ex);
             }
         }
         return false;
@@ -77,7 +76,7 @@ public class InitTask extends TransactionCoordinatorTask<InitTask.Builder> {
         }
     }
 
-    public static class Builder extends TransactionCoordinatorTask.Builder<Builder> {
+    public static class Builder extends TransactionTask.Builder<Builder> {
 
         public InitTask build() {
             return new InitTask(this);
