@@ -8,10 +8,7 @@ import java.util.Set;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.kvstore.models.messages.KVTransactionMessage;
-import weloveclouds.communication.utils.detector.AbstractMessageFrameDetector;
-import weloveclouds.communication.utils.detector.KVAdminMessageFrameDetector;
-import weloveclouds.communication.utils.detector.KVMessageFrameDetector;
-import weloveclouds.communication.utils.detector.KVTransactionMessageFrameDetector;
+import weloveclouds.commons.serialization.models.XMLTokens;
 
 /**
  * Utility class which detects message frames ({@link KVMessage}, {@link KVAdminMessage},
@@ -22,15 +19,16 @@ import weloveclouds.communication.utils.detector.KVTransactionMessageFrameDetect
 public class MessageFramesDetector {
 
     private Queue<byte[]> messages;
-    private Set<AbstractMessageFrameDetector> frameDetectors;
+    private Set<MessageFrameDetector> frameDetectors;
 
     public MessageFramesDetector() {
         this.messages = new ArrayDeque<>();
         this.frameDetectors = new HashSet<>();
 
-        this.frameDetectors.add(new KVAdminMessageFrameDetector());
-        this.frameDetectors.add(new KVTransactionMessageFrameDetector());
-        this.frameDetectors.add(new KVMessageFrameDetector());
+        this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVADMIN_MESSAGE));
+        this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVTRANSACTION_MESSAGE));
+        this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVMESSAGE));
+        this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVHEARTBEAT_MESSAGE));
     }
 
     /**
@@ -54,10 +52,10 @@ public class MessageFramesDetector {
      *         message
      */
     public byte[] fillMessageQueue(byte[] messages) {
-        for (AbstractMessageFrameDetector frameDetector : frameDetectors) {
+        for (MessageFrameDetector frameDetector : frameDetectors) {
             this.messages.addAll(frameDetector.detectMessages(messages));
         }
-        for (AbstractMessageFrameDetector frameDetector : frameDetectors) {
+        for (MessageFrameDetector frameDetector : frameDetectors) {
             messages = frameDetector.removeMessages(messages);
         }
         return messages;

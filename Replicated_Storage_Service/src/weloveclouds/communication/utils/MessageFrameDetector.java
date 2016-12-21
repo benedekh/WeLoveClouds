@@ -1,4 +1,4 @@
-package weloveclouds.communication.utils.detector;
+package weloveclouds.communication.utils;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -8,14 +8,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.communication.utils.RegexpFactory;
 
-public abstract class AbstractMessageFrameDetector {
+public class MessageFrameDetector {
 
     private String regexp;
     private Pattern pattern;
 
-    public AbstractMessageFrameDetector(String tag) {
+    public MessageFrameDetector(String tag) {
         this.regexp = RegexpFactory.createRegexpForTag(tag);
         this.pattern = Pattern.compile(regexp);
     }
@@ -37,10 +36,10 @@ public abstract class AbstractMessageFrameDetector {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof AbstractMessageFrameDetector)) {
+        if (!(obj instanceof MessageFrameDetector)) {
             return false;
         }
-        AbstractMessageFrameDetector other = (AbstractMessageFrameDetector) obj;
+        MessageFrameDetector other = (MessageFrameDetector) obj;
         if (pattern == null) {
             if (other.pattern != null) {
                 return false;
