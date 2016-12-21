@@ -12,7 +12,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  */
 public interface IKVAdminMessage {
 
-    public enum StatusType {
+    enum StatusType {
         INITKVSERVER, /* Initialize the server with the context - request */
         START, /* StartNode the server for the client - request */
         STOP, /* Stop the server, but keep it alive - request */
@@ -24,40 +24,39 @@ public interface IKVAdminMessage {
         REMOVERANGE, /* Remove range from the server - request */
         UPDATE, /* Update the metadata structure - request */
         RESPONSE_SUCCESS, /* Request was executed successfully. */
-        RESPONSE_ERROR, /* There was an error during the execution. */
-        HEARTHBEAT;
+        RESPONSE_ERROR/* There was an error during the execution. */
     }
 
     /**
      * @return a status string that is used to identify request types, response types and error
-     *         types associated to the message
+     * types associated to the message
      */
-    public StatusType getStatus();
+    StatusType getStatus();
 
     /**
      * @return the ring metadata parts (<IP, port, <range, role>>) for each server
      */
-    public RingMetadata getRingMetadata();
+    RingMetadata getRingMetadata();
 
     /**
      * @return the IP+port of the target server to which entries denoted by the encapsulated
-     *         HashRange have to be transferred
+     * HashRange have to be transferred
      */
-    public RingMetadataPart getTargetServerInfo();
+    RingMetadataPart getTargetServerInfo();
 
     /**
      * @return connection information about the replicas, e.g. on which IP + port are they
-     *         accessible
+     * accessible
      */
-    public Set<ServerConnectionInfo> getReplicaConnectionInfos();
+    Set<ServerConnectionInfo> getReplicaConnectionInfos();
 
     /**
      * @return the range whose entries shall be removed from the server
      */
-    public HashRange getRemovableRange();
+    HashRange getRemovableRange();
 
     /**
      * @return if the message is a response then the message text can be obtained here
      */
-    public String getResponseMessage();
+    String getResponseMessage();
 }

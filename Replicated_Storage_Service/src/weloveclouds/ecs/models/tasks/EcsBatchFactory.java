@@ -17,6 +17,7 @@ import weloveclouds.ecs.models.commands.internal.StopNode;
 import weloveclouds.ecs.models.commands.internal.UpdateMetadata;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
 import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
 import weloveclouds.commons.hashing.models.RingMetadata;
@@ -47,8 +48,8 @@ public class EcsBatchFactory {
         this.ecsInternalCommandFactory = ecsInternalCommandFactory;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createInitNodeMetadataBatchWith(List<StorageNode> nodesToInitialize,
-                                                                                     int cacheSize, String displacementStrategy) {
+    public AbstractBatchTasks<AbstractRetryableTask> createInitNodeBatchWith(
+            List<StorageNode> nodesToInitialize, int cacheSize, String displacementStrategy) {
         AbstractBatchTasks<AbstractRetryableTask> nodeInitialisationBatch = new
                 BatchRetryableTasks(SERVICE_INITIALISATION);
         for (StorageNode storageNode : nodesToInitialize) {
@@ -143,13 +144,13 @@ public class EcsBatchFactory {
     }
 
     public AbstractBatchTasks<AbstractRetryableTask> createNodeMetadataInitialisationBatchWith
-            (List<StorageNode> nodesToInitialize, RingMetadata ringMetadata) {
+            (List<StorageNode> nodesToInitialize, DistributedService distributedService) {
         AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch = new
                 BatchRetryableTasks(UPDATING_METADATA);
 
         for (StorageNode storageNode : nodesToInitialize) {
             InitNodeMetadata taskCommand = ecsInternalCommandFactory
-                    .createInitNodeMetadataCommandWith(storageNode, ringMetadata);
+                    .createInitNodeMetadataCommandWith(storageNode, distributedService.getRingMetadata());
 
             nodeMetadataInitialisationBatch.addTask(
                     new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));

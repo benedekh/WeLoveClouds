@@ -1,11 +1,11 @@
-package weloveclouds.ecs.modules.client;
+package weloveclouds.ecs.configuration.modules.client;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
 import java.io.InputStream;
 
-import weloveclouds.ecs.modules.EcsModule;
+import weloveclouds.ecs.configuration.modules.EcsModule;
 
 /**
  * Created by Benoit on 2016-12-03.

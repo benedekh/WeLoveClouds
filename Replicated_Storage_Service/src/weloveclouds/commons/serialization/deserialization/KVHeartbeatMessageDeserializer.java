@@ -8,6 +8,7 @@ import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.loadbalancer.models.IKVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
@@ -21,7 +22,7 @@ import static weloveclouds.commons.serialization.models.XMLTokens.NODE_HEALTH_IN
  * Created by Benoit on 2016-12-09.
  */
 public class KVHeartbeatMessageDeserializer implements
-        IMessageDeserializer<KVHeartbeatMessage, SerializedMessage> {
+        IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage> {
     private IDeserializer<NodeHealthInfos, String> healthInfosDeserializer;
 
     @Inject
@@ -31,7 +32,7 @@ public class KVHeartbeatMessageDeserializer implements
     }
 
     @Override
-    public KVHeartbeatMessage deserialize(SerializedMessage serializedMessage)
+    public IKVHeartbeatMessage deserialize(SerializedMessage serializedMessage)
             throws DeserializationException {
         Matcher matcher = getRegexFromToken(NODE_HEALTH_INFOS)
                 .matcher(new String(serializedMessage.getBytes(), MESSAGE_ENCODING));
@@ -50,7 +51,7 @@ public class KVHeartbeatMessageDeserializer implements
     }
 
     @Override
-    public KVHeartbeatMessage deserialize(byte[] serializedMessage)
+    public IKVHeartbeatMessage deserialize(byte[] serializedMessage)
             throws DeserializationException {
         return deserialize(new SerializedMessage(new String(serializedMessage, MESSAGE_ENCODING)));
     }

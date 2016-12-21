@@ -22,6 +22,7 @@ public class SimpleRequestCache<K, V> implements ICache<K, V> {
             displacementStrategy) {
         this.cache = new LinkedHashMap<>();
         this.maximumCapacity = maximumCapacity;
+        this.displacementStrategy = displacementStrategy;
     }
 
     @Override

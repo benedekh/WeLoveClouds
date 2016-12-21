@@ -1,6 +1,7 @@
 package weloveclouds.loadbalancer.services;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import org.apache.log4j.Logger;
 
@@ -18,35 +19,44 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.loadbalancer.configuration.annotations.HealthMonitoringServicePort;
-import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
+import weloveclouds.loadbalancer.models.IKVHeartbeatMessage;
 
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 /**
  * Created by Benoit on 2016-12-05.
  */
-public class HealthMonitoringService extends AbstractServer<KVHeartbeatMessage> {
+@Singleton
+public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage> {
     private DistributedSystemAccessService distributedSystemAccessService;
+    private NodeHealthWatcher nodeHealthWatcher;
 
     @Inject
     public HealthMonitoringService(CommunicationApiFactory communicationApiFactory,
-            ServerSocketFactory serverSocketFactory,
-            IMessageSerializer<SerializedMessage, KVHeartbeatMessage> messageSerializer,
-            IMessageDeserializer<KVHeartbeatMessage, SerializedMessage> messageDeserializer,
-            @HealthMonitoringServicePort int port,
-            DistributedSystemAccessService distributedSystemAccessService,
-            EcsNotificationService ecsNotificationService) throws IOException {
+                                   ServerSocketFactory serverSocketFactory,
+                                   IMessageSerializer<SerializedMessage, IKVHeartbeatMessage>
+                                           messageSerializer,
+                                   IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage>
+                                           messageDeserializer,
+                                   @HealthMonitoringServicePort int port,
+                                   DistributedSystemAccessService distributedSystemAccessService,
+                                   EcsNotificationService ecsNotificationService,
+                                   NodeHealthWatcher nodeHealthWatcher)
+            throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
-        this.distributedSystemAccessService = distributedSystemAccessService;
         this.logger = Logger.getLogger(this.getClass());
+        this.distributedSystemAccessService = distributedSystemAccessService;
+        this.nodeHealthWatcher = nodeHealthWatcher;
     }
 
     @Override
     public void run() {
         status = RUNNING;
+        logger.info("Health monitoring service started with endpoint: " + serverSocket);
         try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
+            nodeHealthWatcher.start();
 
             while (status == RUNNING) {
                 ConnectionHandler connectionHandler = new ConnectionHandler(
@@ -64,13 +74,15 @@ public class HealthMonitoringService extends AbstractServer<KVHeartbeatMessage> 
         }
     }
 
-    private class ConnectionHandler extends AbstractConnectionHandler<KVHeartbeatMessage> {
+    private class ConnectionHandler extends AbstractConnectionHandler<IKVHeartbeatMessage> {
         private DistributedSystemAccessService distributedSystemAccessService;
 
         ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection connection,
-                IMessageSerializer<SerializedMessage, KVHeartbeatMessage> messageSerializer,
-                IMessageDeserializer<KVHeartbeatMessage, SerializedMessage> messageDeserializer,
-                DistributedSystemAccessService distributedSystemAccessService) {
+                          IMessageSerializer<SerializedMessage, IKVHeartbeatMessage>
+                                  messageSerializer,
+                          IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage>
+                                  messageDeserializer,
+                          DistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;
@@ -86,11 +98,12 @@ public class HealthMonitoringService extends AbstractServer<KVHeartbeatMessage> 
             logger.info("Client is connected to server.");
             try {
                 while (connection.isConnected()) {
-                    KVHeartbeatMessage receivedMessage = messageDeserializer
+                    IKVHeartbeatMessage receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
                     logger.debug(StringUtils.join(" ", "Message received:", receivedMessage));
                     distributedSystemAccessService
                             .updateServiceHealthWith(receivedMessage.getNodeHealthInfos());
+                    nodeHealthWatcher.registerHeartbeat(receivedMessage.getNodeHealthInfos());
                     connection.kill();
                 }
             } catch (Throwable e) {

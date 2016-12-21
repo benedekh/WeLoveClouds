@@ -11,10 +11,10 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by Benoit on 2016-12-05.
+ * Created by Benoit on 2016-12-21.
  */
 @BindingAnnotation
 @Target({FIELD, PARAMETER, METHOD})
 @Retention(RUNTIME)
-public @interface ClientRequestsInterceptorPort {
+public @interface PopularityBasedDisplacementRunInterval {
 }

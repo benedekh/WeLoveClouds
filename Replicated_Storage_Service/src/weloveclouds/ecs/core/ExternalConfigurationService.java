@@ -47,7 +47,7 @@ import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.RingMetadataHelper;
-
+import weloveclouds.loadbalancer.services.INotifier;
 
 /**
  * Created by Benoit on 2016-11-16.
@@ -63,12 +63,14 @@ public class ExternalConfigurationService implements Observer {
     private EcsRepository repository;
     private EcsRepositoryFactory ecsRepositoryFactory;
     private ITaskService taskService;
+    private INotifier<DistributedService> notificationService;
     private EcsBatchFactory ecsBatchFactory;
     private DistributedService distributedService;
 
     @Inject
     public ExternalConfigurationService(ITaskService taskService,
-            EcsRepositoryFactory ecsRepositoryFactory, EcsBatchFactory ecsBatchFactory)
+                                        EcsRepositoryFactory ecsRepositoryFactory,
+                                        EcsBatchFactory ecsBatchFactory)
             throws ServiceBootstrapException {
         this.taskService = taskService;
         this.ecsRepositoryFactory = ecsRepositoryFactory;
@@ -90,7 +92,7 @@ public class ExternalConfigurationService implements Observer {
                     (List<StorageNode>) ListUtils.getPreciseNumberOfRandomObjectsFrom(
                             repository.getNodesWithStatus(IDLE), numberOfNodes);
 
-            nodeInitialisationBatch = ecsBatchFactory.createInitNodeMetadataBatchWith(
+            nodeInitialisationBatch = ecsBatchFactory.createInitNodeBatchWith(
                     storageNodesToInitialize, cacheSize, displacementStrategy);
 
             nodeInitialisationBatch.addObserver(this);
@@ -205,8 +207,7 @@ public class ExternalConfigurationService implements Observer {
     private void initializeNodesWithMetadata() {
         AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch =
                 ecsBatchFactory.createNodeMetadataInitialisationBatchWith(
-                        repository.getNodesWithStatus(INITIALIZED),
-                        distributedService.getRingMetadata());
+                        repository.getNodesWithStatus(INITIALIZED), distributedService);
 
         nodeMetadataInitialisationBatch.addObserver(this);
         taskService.launchBatchTasks(nodeMetadataInitialisationBatch);

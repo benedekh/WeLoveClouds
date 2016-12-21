@@ -1,6 +1,5 @@
 package weloveclouds.server.api.v2;
 
-
 import static weloveclouds.client.monitoring.KVClientMonitoringMetricUtils.recordExecutionTime;
 import static weloveclouds.client.monitoring.MonitoringMetricConstants.GET_COMMAND_NAME;
 import static weloveclouds.client.monitoring.MonitoringMetricConstants.LATENCY;
@@ -42,7 +41,8 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
 
     /**
      * @param bootstrapConnectionInfo the initial connection information, which is used for deciding
-     *        which server to connect to first (before having any {@link RingMetadata}
+     *                                which server to connect to first (before having any {@link
+     *                                RingMetadata}
      */
     public KVCommunicationApiV2(ServerConnectionInfo bootstrapConnectionInfo) {
         this.communicationApi =
@@ -135,7 +135,7 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
      * value.
      *
      * @param key of an entry (<key, value> pair) whose hash has to be calculated to decide which
-     *        server to connect to
+     *            server to connect to
      */
     private void connectToTheRightServerBasedOnHashFor(String key) {
         Hash keyHash = HashingUtils.getHash(key);
@@ -170,7 +170,5 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
         } else {
             LOGGER.error("Server hash range metadata is empty.");
         }
-
     }
-
 }
