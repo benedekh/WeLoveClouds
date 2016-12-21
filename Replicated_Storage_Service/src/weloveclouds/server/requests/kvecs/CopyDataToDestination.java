@@ -11,18 +11,12 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
-import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporter;
 import weloveclouds.server.requests.kvecs.utils.StorageUnitsTransporterFactory;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
-import weloveclouds.server.services.IMovableDataAccessService;
-import weloveclouds.server.services.IReplicableDataAccessService;
+import weloveclouds.server.services.datastore.IMovableDataAccessService;
+import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
@@ -36,19 +30,12 @@ public class CopyDataToDestination implements IKVECSRequest {
     private static final Logger LOGGER = Logger.getLogger(CopyDataToDestination.class);
 
     private IMovableDataAccessService dataAccessService;
-
-    private ICommunicationApi communicationApi;
     private RingMetadataPart targetServerInfo;
-    private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
-    private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
     private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
 
     protected CopyDataToDestination(Builder builder) {
         this.dataAccessService = builder.dataAccessService;
         this.targetServerInfo = builder.targetServerInfo;
-        this.communicationApi = builder.communicationApi;
-        this.transferMessageSerializer = builder.transferMessageSerializer;
-        this.transferMessageDeserializer = builder.transferMessageDeserializer;
         this.storageUnitsTransporterFactory = builder.storageUnitsTransporterFactory;
     }
 
@@ -60,10 +47,8 @@ public class CopyDataToDestination implements IKVECSRequest {
             Set<MovableStorageUnit> filteredEntries = dataAccessService.filterEntries(hashRange);
 
             if (!filteredEntries.isEmpty()) {
-                StorageUnitsTransporter storageUnitsTransporter =
-                        storageUnitsTransporterFactory.createStorageUnitsTransporter(
-                                communicationApi, targetServerInfo.getConnectionInfo(),
-                                transferMessageSerializer, transferMessageDeserializer);
+                StorageUnitsTransporter storageUnitsTransporter = storageUnitsTransporterFactory
+                        .createStorageUnitsTransporter(targetServerInfo.getConnectionInfo());
                 storageUnitsTransporter.transferStorageUnits(filteredEntries);
                 LOGGER.debug("Copy data request finished successfully.");
             }
@@ -95,10 +80,7 @@ public class CopyDataToDestination implements IKVECSRequest {
     public static class Builder {
         private IReplicableDataAccessService dataAccessService;
         private RingMetadataPart targetServerInfo;
-        private ICommunicationApi communicationApi;
         private StorageUnitsTransporterFactory storageUnitsTransporterFactory;
-        private IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer;
-        private IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer;
 
         /**
          * @param dataAccessService a reference to the data access service
@@ -119,39 +101,11 @@ public class CopyDataToDestination implements IKVECSRequest {
         }
 
         /**
-         * @param communicationApi to communicate with the target server
-         */
-        public Builder communicationApi(ICommunicationApi communicationApi) {
-            this.communicationApi = communicationApi;
-            return this;
-        }
-
-        /**
          * @param storageUnitsTransporterFactory a factory to create {@link StorageUnitsTransporter}
          */
         public Builder storageUnitsTransporterFactory(
                 StorageUnitsTransporterFactory storageUnitsTransporterFactory) {
             this.storageUnitsTransporterFactory = storageUnitsTransporterFactory;
-            return this;
-        }
-
-        /**
-         * @param transferMessageSerializer to serialize {@link KVTransferMessage} into
-         *        {@link SerializedMessage}
-         */
-        public Builder transferMessageSerializer(
-                IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer) {
-            this.transferMessageSerializer = transferMessageSerializer;
-            return this;
-        }
-
-        /**
-         * @param transferMessageDeserializer to deserialize {@link KVTransferMessage} from
-         *        {@link SerializedMessage}
-         */
-        public Builder transferMessageDeserializer(
-                IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer) {
-            this.transferMessageDeserializer = transferMessageDeserializer;
             return this;
         }
 

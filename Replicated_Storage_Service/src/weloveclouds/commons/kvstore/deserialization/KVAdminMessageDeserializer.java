@@ -27,7 +27,7 @@ import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfos
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
-import weloveclouds.commons.kvstore.models.messages.KVAdminMessageProxy;
+import weloveclouds.commons.kvstore.models.messages.proxy.KVAdminMessageProxy;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -63,6 +63,7 @@ public class KVAdminMessageDeserializer
     public IKVAdminMessage deserialize(byte[] serializedMessage) throws DeserializationException {
         LOGGER.debug("Deserializing KVAdminMessage from byte[].");
         String serializedMessageStr = new String(serializedMessage, MESSAGE_ENCODING);
+        IKVAdminMessage deserialized = null;
 
         try {
             Matcher adminMessageMatcher =
@@ -71,7 +72,7 @@ public class KVAdminMessageDeserializer
                 String serializedAdminMessage = adminMessageMatcher.group(XML_NODE);
 
                 if (StringUtils.stringIsNotEmpty(serializedAdminMessage)) {
-                    KVAdminMessage deserialized = new KVAdminMessage.Builder()
+                    KVAdminMessage adminMessage = new KVAdminMessage.Builder()
                             .status(deserializeStatus(serializedAdminMessage))
                             .ringMetadata(deserializeRingMetadata(serializedAdminMessage))
                             .targetServerInfo(deserializeTargetServerInfo(serializedAdminMessage))
@@ -80,10 +81,9 @@ public class KVAdminMessageDeserializer
                             .removableRange(deserializeRemovableRange(serializedAdminMessage))
                             .responseMessage(deserializeResponseMessage(serializedAdminMessage))
                             .build();
-
+                    deserialized = new KVAdminMessageProxy(adminMessage);
                     LOGGER.debug(
                             StringUtils.join(" ", "Deserialized KVAdminMessage is:", deserialized));
-                    return new KVAdminMessageProxy(deserialized);
                 } else {
                     throw new DeserializationException("KVAdminMessage is empty.");
                 }
@@ -92,9 +92,10 @@ public class KVAdminMessageDeserializer
                         "Unable to extract KVAdminTransferMessage from:", serializedMessageStr));
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw new DeserializationException(ex.getMessage());
         }
+
+        return deserialized;
     }
 
     private StatusType deserializeStatus(String from) throws DeserializationException {

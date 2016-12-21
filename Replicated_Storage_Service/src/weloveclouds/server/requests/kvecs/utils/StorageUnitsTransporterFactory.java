@@ -1,12 +1,7 @@
 package weloveclouds.server.requests.kvecs.utils;
 
-import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
-import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
-import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.server.services.transaction.TransactionServiceFactory;
 
 /**
  * A factory to create a {@link StorageUnitsTransporter} instance.
@@ -18,19 +13,13 @@ public class StorageUnitsTransporterFactory {
     /**
      * A factory method to create a {@link StorageUnitsTransporter} instance based on its arguments.
      * 
-     * @param communicationApi to communicate with the target server
      * @param connectionInfo the IP + port of the destination
-     * @param transferMessageSerializer to serialize {@link KVTransferMessage} into
-     *        {@link SerializedMessage}
-     * @param transferMessageDeserializer to deserialize {@link KVTransferMessage} from
-     *        {@link SerializedMessage}
      */
-    public StorageUnitsTransporter createStorageUnitsTransporter(ICommunicationApi communicationApi,
-            ServerConnectionInfo connectionInfo,
-            IMessageSerializer<SerializedMessage, IKVTransferMessage> transferMessageSerializer,
-            IMessageDeserializer<IKVTransferMessage, SerializedMessage> transferMessageDeserializer) {
-        return new StorageUnitsTransporter.Builder().communicationApi(communicationApi)
-                .connectionInfo(connectionInfo).transferMessageSerializer(transferMessageSerializer)
-                .transferMessageDeserializer(transferMessageDeserializer).build();
+    public StorageUnitsTransporter createStorageUnitsTransporter(
+            ServerConnectionInfo connectionInfo) {
+        return new StorageUnitsTransporter.Builder().connectionInfo(connectionInfo)
+                .transactionService(
+                        new TransactionServiceFactory().create2PCTransactionSenderService())
+                .build();
     }
 }

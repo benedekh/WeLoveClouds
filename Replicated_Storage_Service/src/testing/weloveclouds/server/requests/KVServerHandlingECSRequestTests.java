@@ -218,10 +218,10 @@ public class KVServerHandlingECSRequestTests {
     @Test
     public void testMoveData() throws UnknownHostException, UnableToSendContentToServerException,
             ConnectionClosedException, DeserializationException {
-        ServerConnectionInfo targetServer = new ServerConnectionInfo.Builder()
-                .ipAddress("localhost").port(SERVER1_KVSERVER_REQUEST_ACCEPTING_PORT).build();
-        HashRange targetRange = new HashRange.Builder().begin(HashingUtils.getHash("b"))
-                .end(HashingUtils.getHash("b")).build();
+        ServerConnectionInfo targetServer =
+                new ServerConnectionInfo.Builder().ipAddress("localhost").port(50003).build();
+        HashRange targetRange = new HashRange.Builder().begin(HashingUtils.getHash("a"))
+                .end(HashingUtils.getHash("a")).build();
         RingMetadataPart target = new RingMetadataPart.Builder().connectionInfo(targetServer)
                 .writeRange(targetRange).build();
 

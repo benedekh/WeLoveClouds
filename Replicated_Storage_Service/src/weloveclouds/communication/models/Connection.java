@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import weloveclouds.commons.utils.StringUtils;
+
 /**
  * Represents a connection to a server. It contains the {@link #remoteServer} connection information
  * and the {@link #socket} through which the client is connected to the server.
@@ -101,6 +103,11 @@ public class Connection implements AutoCloseable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.join(" ", "{Connection info:" + remoteServer, ", port:", socket, "}");
     }
 
     /**

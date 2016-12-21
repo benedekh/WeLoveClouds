@@ -1,5 +1,7 @@
 package weloveclouds.server.client.commands.utils;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,7 +46,7 @@ public class ArgumentsValidator {
     private static final int STORAGE_PATH_NUMBER_OF_ARGUMENTS = 1;
     private static final int STORAGE_PATH_INDEX = 0;
 
-    private static final int REQUIRED_CLI_ARGUMENT_NUMBER = 7;
+    private static final int REQUIRED_CLI_ARGUMENT_NUMBER = 9;
     private static final int CLI_KVCLIENT_PORT_INDEX = 0;
     private static final int CLI_KVSERVER_PORT_INDEX = 1;
     private static final int CLI_KVECS_PORT_INDEX = 2;
@@ -52,6 +54,8 @@ public class ArgumentsValidator {
     private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 4;
     private static final int CLI_LOG_LEVEL_INDEX = 5;
     private static final int CLI_SERVER_NAME_INDEX = 6;
+    private static final int CLI_LOADBALANCER_IP_INDEX = 7;
+    private static final int CLI_LOADBALANCER_PORT_INDEX = 8;
 
     /**
      * Validate CLI arguments for the server starting. The arguments are valid, if:<br>
@@ -61,8 +65,10 @@ public class ArgumentsValidator {
      * (3) the argument at the position {@link #CLI_CACHE_SIZE_INDEX} is a valid cache size, and<br>
      * (4) the argument at the position {@link #CLI_DISPLACEMENT_STRATEGY_INDEX} is a valid
      * displacement strategy, and<br>
-     * (5) the argument at the position {@link #CLI_LOG_LEVEL_INDEX} is a valid log level and<br>
-     * (6) the argument at the position {@link #CLI_SERVER_NAME_INDEX} is a non-empty string
+     * (5) the argument at the position {@link #CLI_LOG_LEVEL_INDEX} is a valid log level, and<br>
+     * (7) the argument at the position {@link #CLI_LOADBALANCER_IP_INDEX} is a valid IP address,
+     * and<br>
+     * (7) the argument at the position {@link #CLI_LOADBALANCER_PORT_INDEX} is a valid port
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
@@ -72,12 +78,13 @@ public class ArgumentsValidator {
         if (isNullOrEmpty(arguments) || arguments.length != REQUIRED_CLI_ARGUMENT_NUMBER) {
             logWarning(command);
             throw new IllegalArgumentException(StringUtils.join("", REQUIRED_CLI_ARGUMENT_NUMBER,
-                    " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level> <server name>"));
+                    " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level> <server name> <loadbalancer IP address> <loadbalancer port"));
         } else {
             validateCacheSizeArguments(new String[] {arguments[CLI_CACHE_SIZE_INDEX]});
             validatePort(command, arguments[CLI_KVCLIENT_PORT_INDEX]);
             validatePort(command, arguments[CLI_KVSERVER_PORT_INDEX]);
             validatePort(command, arguments[CLI_KVECS_PORT_INDEX]);
+            validatePort(command, arguments[CLI_LOADBALANCER_PORT_INDEX]);
             if (!validLogLevels.contains(arguments[CLI_LOG_LEVEL_INDEX])) {
                 logWarning(command);
                 throw new IllegalArgumentException(StringUtils.join(" ",
@@ -94,6 +101,12 @@ public class ArgumentsValidator {
             if (arguments[CLI_SERVER_NAME_INDEX].isEmpty()) {
                 logWarning(command);
                 throw new IllegalArgumentException("Server name cannot be empty.");
+            }
+            try {
+                InetAddress.getByName(arguments[CLI_LOADBALANCER_IP_INDEX]);
+            } catch (UnknownHostException ex) {
+                logWarning(command);
+                throw new IllegalArgumentException("Loadbalancer IP address is unknown.");
             }
         }
     }

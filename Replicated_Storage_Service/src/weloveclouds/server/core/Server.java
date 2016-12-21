@@ -9,14 +9,16 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
-import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.models.Connection;
-import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.networking.models.requests.IExecutable;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.networking.models.requests.IValidatable;
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.status.ServiceStatus;
+import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.communication.models.Connection;
+import weloveclouds.server.monitoring.ServiceHealthMonitor;
 
 /**
  * A Server instance which accepts messages over the network and can handle multiple clients
@@ -29,17 +31,22 @@ import weloveclouds.commons.networking.models.requests.IValidatable;
 public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends AbstractServer<M> {
     private IRequestFactory<M, R> requestFactory;
 
+    private ServiceHealthMonitor serviceHealthMonitor;
+
     protected Server(Builder<M, R> serverBuilder) throws IOException {
         super(serverBuilder.communicationApiFactory, serverBuilder.serverSocketFactory,
                 serverBuilder.messageSerializer, serverBuilder.messageDeserializer,
                 serverBuilder.port);
         this.logger = Logger.getLogger(this.getClass());
         this.requestFactory = serverBuilder.requestFactory;
+        this.serviceHealthMonitor = serverBuilder.serviceHealthMonitor;
     }
 
     @Override
     public void run() {
         status = RUNNING;
+        serviceHealthMonitor.setServiceStatus(ServiceStatus.RUNNING);
+
         try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
 
@@ -50,14 +57,18 @@ public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends Abstr
                         .communicationApi(
                                 communicationApiFactory.createConcurrentCommunicationApiV1())
                         .messageSerializer(messageSerializer)
-                        .messageDeserializer(messageDeserializer).build().handleConnection();
+                        .messageDeserializer(messageDeserializer)
+                        .serviceHealthMonitor(serviceHealthMonitor).build().handleConnection();
             }
         } catch (IOException ex) {
+            serviceHealthMonitor.setServiceStatus(ServiceStatus.ERROR);
             logger.error(ex);
         } catch (Throwable ex) {
+            serviceHealthMonitor.setServiceStatus(ServiceStatus.ERROR);
             logger.fatal(ex);
         } finally {
             logger.info("Active server stopped.");
+            serviceHealthMonitor.setServiceStatus(ServiceStatus.HALTED);
         }
     }
 
@@ -74,6 +85,7 @@ public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends Abstr
         private IMessageSerializer<SerializedMessage, M> messageSerializer;
         private IMessageDeserializer<M, SerializedMessage> messageDeserializer;
         private int port;
+        private ServiceHealthMonitor serviceHealthMonitor;
 
         public Builder<M, R> serverSocketFactory(ServerSocketFactory serverSocketFactory) {
             this.serverSocketFactory = serverSocketFactory;
@@ -105,6 +117,11 @@ public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends Abstr
         public Builder<M, R> messageDeserializer(
                 IMessageDeserializer<M, SerializedMessage> messageDeserializer) {
             this.messageDeserializer = messageDeserializer;
+            return this;
+        }
+
+        public Builder<M, R> serviceHealthMonitor(ServiceHealthMonitor serviceHealthMonitor) {
+            this.serviceHealthMonitor = serviceHealthMonitor;
             return this;
         }
 

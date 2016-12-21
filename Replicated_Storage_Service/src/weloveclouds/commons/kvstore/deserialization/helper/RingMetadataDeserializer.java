@@ -27,7 +27,6 @@ public class RingMetadataDeserializer implements IDeserializer<RingMetadata, Str
     @Override
     public RingMetadata deserialize(String from) throws DeserializationException {
         RingMetadata deserialized = null;
-
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
                 Set<RingMetadataPart> metadataParts = new HashSet<>();

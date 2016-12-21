@@ -18,7 +18,7 @@ import static weloveclouds.commons.status.ServerStatus.HALTED;
  *
  * @author Benoit
  */
-public class AbstractServer<M> extends Thread {
+public abstract class AbstractServer<M> extends Thread {
     protected Logger logger;
     protected CommunicationApiFactory communicationApiFactory;
     protected ServerStatus status;
@@ -30,7 +30,7 @@ public class AbstractServer<M> extends Thread {
 
     private ServerShutdownHook shutdownHook;
 
-    public AbstractServer(CommunicationApiFactory communicationApiFactory,
+    protected AbstractServer(CommunicationApiFactory communicationApiFactory,
                           ServerSocketFactory serverSocketFactory,
                           IMessageSerializer<SerializedMessage, M> messageSerializer,
                           IMessageDeserializer<M, SerializedMessage> messageDeserializer, int
@@ -42,10 +42,6 @@ public class AbstractServer<M> extends Thread {
         this.port = port;
         this.serverSocket = serverSocketFactory.createServerSocketFromPort(port);
         this.status = HALTED;
-    }
-
-    protected ServerStatus getStatus() {
-        return status;
     }
 
     /**

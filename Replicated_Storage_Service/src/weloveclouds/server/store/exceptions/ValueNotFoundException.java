@@ -1,7 +1,7 @@
 package weloveclouds.server.store.exceptions;
 
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.server.services.DataAccessService;
+import weloveclouds.server.services.datastore.DataAccessService;
 
 /**
  * Thrown if no value was stored in {@link DataAccessService} for the respective key.

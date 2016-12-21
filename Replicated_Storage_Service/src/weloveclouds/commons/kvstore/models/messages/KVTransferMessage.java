@@ -3,6 +3,7 @@ package weloveclouds.commons.kvstore.models.messages;
 import java.util.Set;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.kvstore.models.messages.proxy.KVTransferMessageProxy;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
@@ -117,9 +118,9 @@ public class KVTransferMessage implements IKVTransferMessage {
 
     @Override
     public String toString() {
-        return StringUtils.join(" ", "Message status:", status, ", Storage units:",
+        return StringUtils.join("", "{ Message status: ", status, ", Storage units: ",
                 StringUtils.setToString(storageUnits), ", Putable entry: ", putableEntry,
-                ", Removable key: ", removableKey, ", Response message: ", responseMessage);
+                ", Removable key: ", removableKey, ", Response message: ", responseMessage, "}");
     }
 
     /**
