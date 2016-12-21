@@ -12,6 +12,7 @@ import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.repository.NodeStatus;
+import weloveclouds.loadbalancer.models.IKVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
@@ -25,7 +26,7 @@ public class NodeHealthMonitor extends Thread {
 
     private ICommunicationApi communicationApi;
     private ServerConnectionInfo connectionInfo;
-    private IMessageSerializer<SerializedMessage, KVHeartbeatMessage> heartbeatSerializer;
+    private IMessageSerializer<SerializedMessage, IKVHeartbeatMessage> heartbeatSerializer;
 
     public NodeHealthMonitor(Builder builder) {
         this.nodeHealthInfosBuilder = builder.nodeHealthInfosBuilder;
@@ -71,7 +72,7 @@ public class NodeHealthMonitor extends Thread {
         private NodeHealthInfos.Builder nodeHealthInfosBuilder;
         private ICommunicationApi communicationApi;
         private ServerConnectionInfo connectionInfo;
-        private IMessageSerializer<SerializedMessage, KVHeartbeatMessage> heartbeatSerializer;
+        private IMessageSerializer<SerializedMessage, IKVHeartbeatMessage> heartbeatSerializer;
         private List<ServiceHealthMonitor> serviceHealthMonitors;
 
         public Builder nodeHealthInfosBuilder(NodeHealthInfos.Builder nodeHealthInfosBuilder) {
@@ -90,7 +91,7 @@ public class NodeHealthMonitor extends Thread {
         }
 
         public Builder heartbeatSerializer(
-                IMessageSerializer<SerializedMessage, KVHeartbeatMessage> heartbeatSerializer) {
+                IMessageSerializer<SerializedMessage, IKVHeartbeatMessage> heartbeatSerializer) {
             this.heartbeatSerializer = heartbeatSerializer;
             return this;
         }
