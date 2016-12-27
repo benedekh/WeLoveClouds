@@ -54,7 +54,7 @@ public class KVServerHandlingECSRequestTests {
     @Before
     public void init() throws Exception {
         ServerConnectionInfo bootstrapConnectionInfo =
-                new ServerConnectionInfo.Builder().ipAddress(SERVER_IP_ADDRESS).port(30000).build();
+                new ServerConnectionInfo.Builder().ipAddress(SERVER_IP_ADDRESS).port(30002).build();
         serverCommunication =
                 new KVCommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
         serverCommunication.connect();
@@ -142,7 +142,7 @@ public class KVServerHandlingECSRequestTests {
                 new HashSet<>(Arrays.asList(server2, server3));
 
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.INITKVSERVER)
-                .ringMetadata(ringMetadata).targetServerInfo(part1).build();
+                .ringMetadata(ringMetadata).targetServerInfo(part2).build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
         IKVAdminMessage response =

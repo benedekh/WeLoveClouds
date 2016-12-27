@@ -39,8 +39,8 @@ public class KVServerRequestFromKVClientValidationTests extends TestCase {
 
     @Before
     public void setUp() throws Exception {
-        ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()
-                .ipAddress(SERVER_IP_ADDRESS).port(SERVER_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
+        ServerConnectionInfo bootstrapConnectionInfo =
+                new ServerConnectionInfo.Builder().ipAddress(SERVER_IP_ADDRESS).port(50004).build();
         serverCommunication =
                 new KVCommunicationApiFactory().createKVCommunicationApiV2(bootstrapConnectionInfo);
         serverCommunication.connect();
@@ -63,6 +63,50 @@ public class KVServerRequestFromKVClientValidationTests extends TestCase {
 
         IKVMessage response = kvmessageDeserializer.deserialize(serverCommunication.receive());
         Assert.assertEquals(StatusType.PUT_ERROR, response.getStatus());
+    }
+
+    @Test
+    public void testSendPutMessage() throws UnableToSendContentToServerException,
+            ConnectionClosedException, DeserializationException {
+        KVMessage message =
+                new KVMessage.Builder().status(StatusType.PUT).key("a").value("world").build();
+        serverCommunication.send(kvmessageSerializer.serialize(message).getBytes());
+
+        IKVMessage response = kvmessageDeserializer.deserialize(serverCommunication.receive());
+        Assert.assertEquals(StatusType.PUT_SUCCESS, response.getStatus());
+    }
+
+    @Test
+    public void testSendUpdateMessage() throws UnableToSendContentToServerException,
+            ConnectionClosedException, DeserializationException {
+        KVMessage message =
+                new KVMessage.Builder().status(StatusType.PUT).key("a").value("hello").build();
+        serverCommunication.send(kvmessageSerializer.serialize(message).getBytes());
+
+        IKVMessage response = kvmessageDeserializer.deserialize(serverCommunication.receive());
+        Assert.assertEquals(StatusType.PUT_UPDATE, response.getStatus());
+    }
+
+    @Test
+    public void testSendDeleteMessage() throws UnableToSendContentToServerException,
+            ConnectionClosedException, DeserializationException {
+        KVMessage message = new KVMessage.Builder().status(StatusType.PUT).key("a").build();
+        serverCommunication.send(kvmessageSerializer.serialize(message).getBytes());
+
+        IKVMessage response = kvmessageDeserializer.deserialize(serverCommunication.receive());
+        Assert.assertEquals(StatusType.DELETE_SUCCESS, response.getStatus());
+    }
+    
+    @Test
+    public void testSendGetMessage() throws UnableToSendContentToServerException,
+            ConnectionClosedException, DeserializationException {
+        KVMessage message =
+                new KVMessage.Builder().status(StatusType.GET).key("a").build();
+        serverCommunication.send(kvmessageSerializer.serialize(message).getBytes());
+
+        IKVMessage response = kvmessageDeserializer.deserialize(serverCommunication.receive());
+        Assert.assertEquals(StatusType.GET_SUCCESS, response.getStatus());
+        Assert.assertEquals("hello", response.getValue());
     }
 
     @Test
