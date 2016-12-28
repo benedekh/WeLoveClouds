@@ -2,6 +2,7 @@ package weloveclouds.communication;
 
 import java.io.IOException;
 import java.net.Socket;
+import javax.net.ssl.SSLSocket;
 
 import org.apache.log4j.Logger;
 
