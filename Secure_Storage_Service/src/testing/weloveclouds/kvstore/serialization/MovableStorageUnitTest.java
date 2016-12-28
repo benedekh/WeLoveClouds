@@ -1,8 +1,7 @@
 package testing.weloveclouds.kvstore.serialization;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ public class MovableStorageUnitTest extends TestCase {
     @Test
     public void testMovableStorageUnitSerializationAndDeserialization()
             throws DeserializationException, IOException {
-        Map<String, String> keyval = new HashMap<>();
+        ConcurrentHashMap<String, String> keyval = new ConcurrentHashMap<>();
         keyval.put("hello", "world");
         keyval.put("apple", "juice");
 
