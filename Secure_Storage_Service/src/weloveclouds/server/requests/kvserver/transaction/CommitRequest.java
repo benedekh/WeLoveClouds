@@ -15,6 +15,7 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
 import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatus;
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
+import weloveclouds.server.store.exceptions.StorageException;
 
 public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
 
@@ -42,8 +43,18 @@ public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
                             transaction.stopTimedRestoration();
                             IKVTransferMessage transferMessage = transaction.getTransferMessage();
                             if (transferMessage != null) {
-                                realDASBehavior.createRequestFromReceivedMessage(transferMessage,
-                                        new EmptyCallbackRegister()).validate().execute();
+                                IKVTransferMessage virtualResponse =
+                                        realDASBehavior
+                                                .createRequestFromReceivedMessage(transferMessage,
+                                                        new EmptyCallbackRegister())
+                                                .validate().execute();
+                                switch (virtualResponse.getStatus()) {
+                                    case RESPONSE_ERROR:
+                                        throw new StorageException(
+                                                virtualResponse.getResponseMessage());
+                                    default:
+                                        break;
+                                }
                                 transaction.setCommitted();
                             }
                             LOGGER.debug(StringUtils.join("", "Committed for transaction (",
