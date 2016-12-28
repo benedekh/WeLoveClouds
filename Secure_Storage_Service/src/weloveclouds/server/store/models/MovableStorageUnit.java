@@ -88,8 +88,7 @@ public class MovableStorageUnit extends PersistedStorageUnit {
      */
     public Set<String> moveEntriesFrom(PersistedStorageUnit otherUnit) {
         Set<String> movedKeys = new HashSet<>();
-        try (CloseableLock lockThis = new CloseableLock(accessLock);
-                CloseableLock lockOther = new CloseableLock(otherUnit.accessLock)) {
+        try (CloseableLock lockThis = new CloseableLock(accessLock)) {
             try (LoadAndSave loadThis = new LoadAndSave();
                     LoadAndSave loadOther = new LoadAndSave()) {
                 Iterator<String> otherKeysIterator = otherUnit.getKeys().iterator();

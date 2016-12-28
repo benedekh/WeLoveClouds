@@ -226,12 +226,8 @@ public class PersistedStorageUnit implements Serializable {
      */
     private void load() {
         try (CloseableLock lock = new CloseableLock(accessLock)) {
-            if (!(canBeSavedInMemory && entries != null)) {
+            if (entries == null) {
                 entries = PathUtils.<ConcurrentHashMap<String, String>>loadFromFile(getPath());
-                if (entries == null) {
-                    System.out.println("nill");
-
-                }
             }
         } catch (ClassNotFoundException | IOException e) {
             getLogger().error(e);
