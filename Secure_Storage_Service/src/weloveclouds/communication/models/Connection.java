@@ -115,18 +115,18 @@ public class Connection implements AutoCloseable {
      *
      * @author Benedek
      */
-    public static class Builder {
+    public static class Builder<B extends Builder> {
         private ServerConnectionInfo remoteServer;
         private Socket socket;
 
-        public Builder remoteServer(ServerConnectionInfo remoteServer) {
+        public B remoteServer(ServerConnectionInfo remoteServer) {
             this.remoteServer = remoteServer;
-            return this;
+            return (B) this;
         }
 
-        public Builder socket(Socket socket) {
+        public B socket(Socket socket) {
             this.socket = socket;
-            return this;
+            return (B) this;
         }
 
         public Connection build() {

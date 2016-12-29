@@ -8,8 +8,7 @@ import javax.net.ssl.SSLSocket;
  */
 public class SecureConnection extends Connection{
 
-    
-    protected SecureConnection(secureBuilder builder) {
+    protected SecureConnection(Builder builder) {
         super(builder);
     }
     
@@ -21,16 +20,20 @@ public class SecureConnection extends Connection{
      * @author hb
      *
      */
-    public static class secureBuilder extends Builder{
+    public static class Builder extends Connection.Builder<Builder>{
         
-        public secureBuilder remoteServer(ServerConnectionInfo remoteServer){
+        public SecureConnection.Builder remoteServer(ServerConnectionInfo remoteServer){
             super.remoteServer(remoteServer);
             return this;
         }
         
-        public secureBuilder sslSocket(SSLSocket sslSocket){
+        public SecureConnection.Builder sslSocket(SSLSocket sslSocket){
             super.socket(sslSocket);
             return this;
+        }
+        
+        public SecureConnection build(){
+            return new SecureConnection(this);
         }
     }
 

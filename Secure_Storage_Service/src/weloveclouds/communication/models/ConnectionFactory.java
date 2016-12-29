@@ -16,5 +16,10 @@ public class ConnectionFactory {
         return new Connection.Builder().remoteServer(connectionInfo)
                 .socket(socketFactory.createTcpSocketFromInfo(connectionInfo)).build();
     }
+    
+    public SecureConnection createSecureConnectionFrom(ServerConnectionInfo connectionInfo) throws IOException{
+        return new SecureConnection.Builder().remoteServer(connectionInfo)
+                .socket(socketFactory.createSSLSocketFromInfo(connectionInfo)).build();
+    }
 
 }
