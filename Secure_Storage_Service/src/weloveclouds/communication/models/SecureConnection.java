@@ -1,5 +1,6 @@
 package weloveclouds.communication.models;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 /**
  * Secure connection class, functionally identical to the {@link Connection} class, 
@@ -8,6 +9,8 @@ import javax.net.ssl.SSLSocket;
  */
 public class SecureConnection extends Connection{
 
+    private static SSLContext sslContext;
+    
     protected SecureConnection(Builder builder) {
         super(builder);
     }

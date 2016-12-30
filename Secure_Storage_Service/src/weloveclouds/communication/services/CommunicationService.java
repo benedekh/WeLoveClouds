@@ -1,9 +1,17 @@
 package weloveclouds.communication.services;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.log4j.Logger;
 
@@ -15,6 +23,7 @@ import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ConnectionFactory;
+import weloveclouds.communication.models.SecureConnection;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.utils.MessageFramesDetector;
 
@@ -28,18 +37,46 @@ public class CommunicationService implements ICommunicationService {
 
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
-
+    private KeyStore keystore;
+    private TrustManagerFactory trustManagerFactory;
     private ConnectionFactory connectionFactory;
-    private Connection connectionToEndpoint;
+    private SecureConnection connectionToEndpoint;// this is normally a vanilla connection object
     private Thread connectionShutdownHook;
-
     private MessageFramesDetector messageDetector;
+    private static final char[] PASSPHRASE = "weloveclouds".toCharArray();
+    /*this path will be temporary until I work out a better way of
+     * storing the key.
+     */
+    private static final String PATHTOKEY = "keystore.jks";  
 
     /**
      * @param connectionFactory a factory to create connections
      */
     public CommunicationService(ConnectionFactory connectionFactory) {
-        this.connectionToEndpoint = new Connection.Builder().build();
+        try {
+            this.keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            this.keystore.load(new FileInputStream(PATHTOKEY), PASSPHRASE);
+            LOGGER.debug("Keystore loaded");
+            this.trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            this.trustManagerFactory.init(this.keystore);
+            LOGGER.debug("Trust manager factory instantiated and initialized");
+        } catch (KeyStoreException ex) {
+            LOGGER.error(ex);
+            ex.printStackTrace();
+        } catch (NoSuchAlgorithmException ex){
+            LOGGER.error(ex);
+            ex.printStackTrace();
+        } catch (CertificateException ex) {
+            LOGGER.error(ex);
+            ex.printStackTrace();
+        } catch (FileNotFoundException ex) {
+            LOGGER.error(ex);
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            LOGGER.error(ex);
+            ex.printStackTrace();
+        }
+        this.connectionToEndpoint = new SecureConnection.Builder().build();
         this.connectionFactory = connectionFactory;
         this.messageDetector = new MessageFramesDetector();
     }
@@ -77,7 +114,7 @@ public class CommunicationService implements ICommunicationService {
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
         LOGGER.debug(StringUtils.join(" ", "Trying to connect to", remoteServer));
-        connectionToEndpoint = connectionFactory.createConnectionFrom(remoteServer);
+        connectionToEndpoint = connectionFactory.createSecureConnectionFrom(remoteServer);
 
         // create shutdown hook to automatically close the connection
         LOGGER.debug("Creating shutdown hook for connection.");

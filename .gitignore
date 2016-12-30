@@ -126,3 +126,12 @@
 
 #Keystore
 **/*.jks
+
+#project jar files
+ms5-client.jar
+ms5-ecs.jar
+ms5-server.jar
+ms5-loadbalancer.jar
+
+#Manifest files
+**/*.MF

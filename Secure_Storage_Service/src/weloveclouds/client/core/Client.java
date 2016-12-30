@@ -2,6 +2,11 @@ package weloveclouds.client.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.log4j.Logger;
 
@@ -31,6 +36,7 @@ public class Client {
     public Client(InputStream inputStream, CommandFactory commandFactory) {
         this.inputStream = inputStream;
         this.commandFactory = commandFactory;
+
     }
 
     /**
