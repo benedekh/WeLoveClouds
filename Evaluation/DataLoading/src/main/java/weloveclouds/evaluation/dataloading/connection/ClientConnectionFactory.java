@@ -10,6 +10,9 @@ import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.commons.kvstore.deserialization.helper.RingMetadataDeserializer;
 
+/**
+ * The type Client connection factory.
+ */
 public class ClientConnectionFactory {
 
     private static final String DEFAULT_IP_ADDRESS = "localhost";
@@ -17,6 +20,11 @@ public class ClientConnectionFactory {
 
     private static final Logger LOGGER = LogManager.getLogger(ClientConnectionFactory.class);
 
+    /**
+     * Create default client client connection.
+     *
+     * @return the client connection
+     */
     public static ClientConnection createDefaultClient() {
         try {
             ServerConnectionInfo bootstrapConnectionInfo = new ServerConnectionInfo.Builder()

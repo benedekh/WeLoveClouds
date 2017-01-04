@@ -5,13 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfoDeserializer;
 import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.NodeHealthInfosSerializer;
 import weloveclouds.commons.serialization.ServiceHealthInfosSerializer;
-import weloveclouds.commons.serialization.deserialization.NodeHealtInfosDeserializer;
-import weloveclouds.commons.serialization.deserialization.ServiceHealthInfosDeserializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.status.ServiceStatus;
 import weloveclouds.communication.models.ServerConnectionInfo;

@@ -19,8 +19,11 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.ecs.models.messaging.IKVEcsNotificationMessage;
+import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
 import weloveclouds.loadbalancer.models.EcsNotification;
+import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
@@ -29,7 +32,7 @@ import static weloveclouds.commons.status.ServerStatus.RUNNING;
  */
 @Singleton
 public class EcsNotificationService extends AbstractServer<IKVAdminMessage>
-        implements INotifier<EcsNotification> {
+        implements IEcsNotificationService {
     private DistributedSystemAccessService distributedSystemAccessService;
 
     @Inject
@@ -70,7 +73,17 @@ public class EcsNotificationService extends AbstractServer<IKVAdminMessage>
     }
 
     @Override
-    public void notify(EcsNotification notification) {
+    public void requestSystemScale() {
+
+    }
+
+    @Override
+    public void notifyUnresponsiveServer(String unresponsiveServerName) {
+
+    }
+
+    @Override
+    public void notify(IKVEcsNotificationMessage kvEcsNotificationMessage) {
 
     }
 

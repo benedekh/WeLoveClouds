@@ -104,13 +104,13 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
                     distributedSystemAccessService
                             .updateServiceHealthWith(receivedMessage.getNodeHealthInfos());
                     nodeHealthWatcher.registerHeartbeat(receivedMessage.getNodeHealthInfos());
-                    connection.kill();
                 }
             } catch (Throwable e) {
                 logger.error(e);
+            } finally {
                 closeConnection();
+                logger.info("Client is disconnected.");
             }
-            logger.info("Client is disconnected.");
         }
     }
 }

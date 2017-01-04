@@ -6,8 +6,16 @@ import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 
+/**
+ * The type Key creator utility.
+ */
 public class KeyCreatorUtility {
 
+    /**
+     * Generate 20 bytes key string.
+     *
+     * @return the string
+     */
     public static String generate20BytesKey() {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(UUID.randomUUID().getMostSignificantBits());
