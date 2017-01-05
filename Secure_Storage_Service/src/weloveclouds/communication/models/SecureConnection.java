@@ -39,5 +39,4 @@ public class SecureConnection extends Connection{
             return new SecureConnection(this);
         }
     }
-
 }

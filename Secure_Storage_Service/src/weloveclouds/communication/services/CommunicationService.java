@@ -6,11 +6,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.log4j.Logger;
@@ -37,8 +41,10 @@ public class CommunicationService implements ICommunicationService {
 
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
+    //I suspect that this is not the place to have these
     private KeyStore keystore;
     private TrustManagerFactory trustManagerFactory;
+    private KeyManagerFactory keyManagerFactory;
     private ConnectionFactory connectionFactory;
     private SecureConnection connectionToEndpoint;// this is normally a vanilla connection object
     private Thread connectionShutdownHook;
@@ -53,6 +59,7 @@ public class CommunicationService implements ICommunicationService {
      * @param connectionFactory a factory to create connections
      */
     public CommunicationService(ConnectionFactory connectionFactory) {
+        //Maybe this shouldn't be here
         try {
             this.keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             this.keystore.load(new FileInputStream(PATHTOKEY), PASSPHRASE);
@@ -60,6 +67,9 @@ public class CommunicationService implements ICommunicationService {
             this.trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             this.trustManagerFactory.init(this.keystore);
             LOGGER.debug("Trust manager factory instantiated and initialized");
+            this.keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            this.keyManagerFactory.init(this.keystore, PASSPHRASE);
+            LOGGER.debug("Key mananger factory instantiated and intialized");
         } catch (KeyStoreException ex) {
             LOGGER.error(ex);
             ex.printStackTrace();
@@ -73,6 +83,9 @@ public class CommunicationService implements ICommunicationService {
             LOGGER.error(ex);
             ex.printStackTrace();
         } catch (IOException ex) {
+            LOGGER.error(ex);
+            ex.printStackTrace();
+        } catch (UnrecoverableKeyException ex) {
             LOGGER.error(ex);
             ex.printStackTrace();
         }
@@ -113,6 +126,17 @@ public class CommunicationService implements ICommunicationService {
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
+        //create SSL contexts on a per connection basis. Perhaps I should be using a factory here.
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+            LOGGER.debug("SSL context instantiated and initialized");
+        } catch (NoSuchAlgorithmException ex) {
+            LOGGER.error(ex.getMessage());
+        } catch (KeyManagementException ex) {
+            LOGGER.error(ex.getMessage());
+            ex.printStackTrace();
+        }
         LOGGER.debug(StringUtils.join(" ", "Trying to connect to", remoteServer));
         connectionToEndpoint = connectionFactory.createSecureConnectionFrom(remoteServer);
 
