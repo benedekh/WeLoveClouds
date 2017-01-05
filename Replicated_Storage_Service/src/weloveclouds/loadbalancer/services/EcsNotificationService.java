@@ -31,21 +31,22 @@ import static weloveclouds.commons.status.ServerStatus.RUNNING;
  * Created by Benoit on 2016-12-06.
  */
 @Singleton
-public class EcsNotificationService extends AbstractServer<IKVAdminMessage>
+public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMessage>
         implements IEcsNotificationService {
     private DistributedSystemAccessService distributedSystemAccessService;
 
     @Inject
     public EcsNotificationService(CommunicationApiFactory communicationApiFactory,
                                   ServerSocketFactory serverSocketFactory,
-                                  IMessageSerializer<SerializedMessage, IKVAdminMessage>
+                                  IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage>
                                           messageSerializer,
-                                  IMessageDeserializer<IKVAdminMessage, SerializedMessage>
+                                  IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage>
                                           messageDeserializer,
                                   @EcsNotificationServicePort int port,
                                   DistributedSystemAccessService distributedSystemAccessService) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
+        this.distributedSystemAccessService = distributedSystemAccessService;
         this.logger = Logger.getLogger(EcsNotificationService.class);
     }
 
@@ -87,12 +88,12 @@ public class EcsNotificationService extends AbstractServer<IKVAdminMessage>
 
     }
 
-    private class ConnectionHandler extends AbstractConnectionHandler<IKVAdminMessage> {
+    private class ConnectionHandler extends AbstractConnectionHandler<IKVEcsNotificationMessage> {
         private DistributedSystemAccessService distributedSystemAccessService;
 
         ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection connection,
-                          IMessageSerializer<SerializedMessage, IKVAdminMessage> messageSerializer,
-                          IMessageDeserializer<IKVAdminMessage, SerializedMessage>
+                          IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer,
+                          IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage>
                                   messageDeserializer,
                           DistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
@@ -110,11 +111,17 @@ public class EcsNotificationService extends AbstractServer<IKVAdminMessage>
             logger.info("Client is connected to server.");
             try {
                 while (connection.isConnected()) {
-                    IKVAdminMessage receivedMessage = messageDeserializer
+                    IKVEcsNotificationMessage receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
                     logger.debug(StringUtils.join(" ", "Message received:", receivedMessage));
-                    distributedSystemAccessService
-                            .updateServiceRingMetadataWith(receivedMessage.getRingMetadata());
+
+                    switch (receivedMessage.getStatus()) {
+                        case TOPOLOGY_UPDATE:
+                            distributedSystemAccessService.updateServiceTopologyWith
+                                    (receivedMessage.getRingTopology());
+                            break;
+                    }
+
                     connection.kill();
                 }
             } catch (Throwable e) {

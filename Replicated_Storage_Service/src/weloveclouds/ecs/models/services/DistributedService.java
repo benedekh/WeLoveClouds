@@ -68,7 +68,9 @@ public class DistributedService {
     }
 
     public void updateRingMetadataWith(RingMetadata ringMetadata) {
-        this.ringMetadata = ringMetadata;
+        if (ringMetadata != null) {
+            this.ringMetadata = ringMetadata;
+        }
     }
 
     public RingTopology<StorageNode> getTopology() {
@@ -104,12 +106,20 @@ public class DistributedService {
     }
 
     public void updateTopologyWith(RingTopology newTopology) {
-        topology.updateWith(newTopology);
-        updateRingMetadataFrom(topology);
+        if (newTopology != null) {
+            topology.updateWith(newTopology);
+            updateRingMetadataFrom(topology);
+        }
     }
 
     public void initializeWith(List<StorageNode> initialNodes) {
         topology.updateWith(RingMetadataHelper.computeRingOrder(initialNodes));
+        updateRingMetadataFrom(topology);
+        status = INITIALIZED;
+    }
+
+    public void initializeWith(RingTopology<StorageNode> newTopology) {
+        topology.updateWith(newTopology);
         updateRingMetadataFrom(topology);
         status = INITIALIZED;
     }

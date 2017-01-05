@@ -21,6 +21,8 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForReadingException;
+import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForWritingException;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.loadbalancer.configuration.annotations.ClientRequestsInterceptorPort;
@@ -109,54 +111,70 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
                     byte[] receivedMessage = communicationApi.receiveFrom(connection);
                     IKVMessage deserializedMessage =
                             messageDeserializer.deserialize(receivedMessage);
-
                     logger.debug(StringUtils.join(" ", "Message received:", deserializedMessage));
-
-                    switch (deserializedMessage.getStatus()) {
-                        case GET:
-                            try {
-                                String value = cacheService.get(deserializedMessage.getKey());
-                                communicationApi.send(
-                                        messageSerializer.serialize(
-                                                new KVMessage.Builder().status(GET_SUCCESS)
-                                                        .key(deserializedMessage.getKey())
-                                                        .value(value).build())
-                                                .getBytes(),
-                                        connection);
-                            } catch (UnableToFindRequestedKeyException ex) {
+                    try {
+                        switch (deserializedMessage.getStatus()) {
+                            case GET:
+                                try {
+                                    String value = cacheService.get(deserializedMessage.getKey());
+                                    communicationApi.send(
+                                            messageSerializer.serialize(
+                                                    new KVMessage.Builder().status(GET_SUCCESS)
+                                                            .key(deserializedMessage.getKey())
+                                                            .value(value).build())
+                                                    .getBytes(),
+                                            connection);
+                                } catch (UnableToFindRequestedKeyException ex) {
+                                    transferDestination = distributedSystemAccessService
+                                            .getReadServerFor(deserializedMessage.getKey());
+                                    communicationApi.send(transferMessageToServerAndGetResponse(
+                                            receivedMessage, transferDestination), connection);
+                                }
+                                break;
+                            case PUT:
+                                cacheService.put(deserializedMessage.getKey(),
+                                        deserializedMessage.getValue());
                                 transferDestination = distributedSystemAccessService
-                                        .getReadServerFor(deserializedMessage.getKey());
+                                        .getWriteServerFor(deserializedMessage.getKey());
                                 communicationApi.send(transferMessageToServerAndGetResponse(
                                         receivedMessage, transferDestination), connection);
-                            }
-                            break;
-                        case PUT:
-                            cacheService.put(deserializedMessage.getKey(),
-                                    deserializedMessage.getValue());
-                            transferDestination = distributedSystemAccessService
-                                    .getWriteServerFor(deserializedMessage.getKey());
-                            communicationApi.send(transferMessageToServerAndGetResponse(
-                                    receivedMessage, transferDestination), connection);
-                            break;
-                        case DELETE:
-                            cacheService.delete(deserializedMessage.getKey());
-                            transferDestination = distributedSystemAccessService
-                                    .getWriteServerFor(deserializedMessage.getKey());
-                            communicationApi.send(transferMessageToServerAndGetResponse(
-                                    receivedMessage, transferDestination), connection);
-                        default:
-                            transferDestination = distributedSystemAccessService
-                                    .getWriteServerFor(deserializedMessage.getKey());
-                            communicationApi.send(transferMessageToServerAndGetResponse(
-                                    receivedMessage, transferDestination), connection);
-                            break;
+                                break;
+                            case DELETE:
+                                cacheService.delete(deserializedMessage.getKey());
+                                transferDestination = distributedSystemAccessService
+                                        .getWriteServerFor(deserializedMessage.getKey());
+                                communicationApi.send(transferMessageToServerAndGetResponse(
+                                        receivedMessage, transferDestination), connection);
+                                break;
+                            default:
+                                transferDestination = distributedSystemAccessService
+                                        .getWriteServerFor(deserializedMessage.getKey());
+                                communicationApi.send(transferMessageToServerAndGetResponse(
+                                        receivedMessage, transferDestination), connection);
+                                break;
+                        }
+                    } catch (UnableToFindServerResponsibleForReadingException e) {
+                        communicationApi.send(messageSerializer
+                                .serialize(new KVMessage.Builder()
+                                        .status(IKVMessage.StatusType.GET_ERROR)
+                                        .key(deserializedMessage.getKey())
+                                        .build())
+                                .getBytes(), connection);
+                    } catch (UnableToFindServerResponsibleForWritingException e) {
+                        communicationApi.send(messageSerializer
+                                .serialize(new KVMessage.Builder()
+                                        .status(IKVMessage.StatusType.PUT_ERROR)
+                                        .key(deserializedMessage.getKey())
+                                        .build())
+                                .getBytes(), connection);
                     }
                 }
             } catch (Throwable e) {
                 logger.error(e);
+            } finally {
                 closeConnection();
+                logger.info("Client is disconnected.");
             }
-            logger.info("Client is disconnected.");
         }
 
         private byte[] transferMessageToServerAndGetResponse(byte[] rawMessage,

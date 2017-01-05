@@ -27,5 +27,6 @@ public class LoadBalancerModule extends AbstractModule {
         install(new CacheServiceModule());
         install(new HealthMonitoringServiceModule());
         install(new SerializationModule());
+        install(new EcsNotificationServiceModule());
     }
 }

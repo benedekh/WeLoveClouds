@@ -48,7 +48,9 @@ public class StorageNode extends AbstractNode {
     }
 
     public void updateHealthInfos(NodeHealthInfos healthInfos) {
-        this.healthInfos = healthInfos;
+        if (healthInfos != null) {
+            this.healthInfos = healthInfos;
+        }
     }
 
     public HashRange getHashRange() {
