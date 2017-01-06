@@ -2,6 +2,8 @@ package weloveclouds.communication;
 
 import java.io.IOException;
 import java.net.Socket;
+
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -20,7 +22,7 @@ public class SocketFactory {
     private static final Logger LOGGER = Logger.getLogger(SocketFactory.class);
 
     /*This won't work, I need to find out how to get a SSLSocketFactory from an SSLContext in here.*/
-    private final SSLSocketFactory sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+    private SSLSocketFactory sslSocketFactory;
     
     /**
      * Creates a raw TCP Socket or an SSLSocket using server connection information
@@ -33,9 +35,11 @@ public class SocketFactory {
         return new Socket(connectionInfo.getIpAddress(), connectionInfo.getPort());
     }
     
-    public SSLSocket createSSLSocketFromInfo(ServerConnectionInfo connectionInfo) throws IOException{
+    public SSLSocket createSSLSocketFromInfo(ServerConnectionInfo connectionInfo, SSLContext sslContext) throws IOException{
         LOGGER.debug(StringUtils.join(" ", "Creating SSL socket for", connectionInfo));
-        return (SSLSocket)sslSocketFactory.createSocket(connectionInfo.getIpAddress(), connectionInfo.getPort());
-        //TODO; have this actually return an ssl socket
+        /*  we need to use a built in sslSocketFactory here as you cannot call the constructor of ssl sockets on
+            its own */
+        this.sslSocketFactory = sslContext.getSocketFactory();
+        return (SSLSocket) sslSocketFactory.createSocket(connectionInfo.getIpAddress(), connectionInfo.getPort());
     }
 }

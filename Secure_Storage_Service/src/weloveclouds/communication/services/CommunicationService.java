@@ -127,18 +127,18 @@ public class CommunicationService implements ICommunicationService {
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
         //create SSL contexts on a per connection basis. Perhaps I should be using a factory here.
+        SSLContext sslContext;
         try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext = SSLContext.getInstance("SSL");
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+            this.connectionToEndpoint = this.connectionFactory.createSecureConnectionFrom(remoteServer, sslContext);
             LOGGER.debug("SSL context instantiated and initialized");
         } catch (NoSuchAlgorithmException ex) {
             LOGGER.error(ex.getMessage());
         } catch (KeyManagementException ex) {
             LOGGER.error(ex.getMessage());
-            ex.printStackTrace();
         }
         LOGGER.debug(StringUtils.join(" ", "Trying to connect to", remoteServer));
-        connectionToEndpoint = connectionFactory.createSecureConnectionFrom(remoteServer);
 
         // create shutdown hook to automatically close the connection
         LOGGER.debug("Creating shutdown hook for connection.");
