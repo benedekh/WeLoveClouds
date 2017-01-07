@@ -21,7 +21,6 @@ public class SocketFactory {
 
     private static final Logger LOGGER = Logger.getLogger(SocketFactory.class);
 
-    /*This won't work, I need to find out how to get a SSLSocketFactory from an SSLContext in here.*/
     private SSLSocketFactory sslSocketFactory;
     
     /**
@@ -38,7 +37,7 @@ public class SocketFactory {
     public SSLSocket createSSLSocketFromInfo(ServerConnectionInfo connectionInfo, SSLContext sslContext) throws IOException{
         LOGGER.debug(StringUtils.join(" ", "Creating SSL socket for", connectionInfo));
         /*  we need to use a built in sslSocketFactory here as you cannot call the constructor of ssl sockets on
-            its own */
+            directly */
         this.sslSocketFactory = sslContext.getSocketFactory();
         return (SSLSocket) sslSocketFactory.createSocket(connectionInfo.getIpAddress(), connectionInfo.getPort());
     }

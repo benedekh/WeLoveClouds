@@ -41,7 +41,6 @@ public class CommunicationService implements ICommunicationService {
 
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
-    //I suspect that this is not the place to have these
     private KeyStore keystore;
     private TrustManagerFactory trustManagerFactory;
     private KeyManagerFactory keyManagerFactory;
@@ -59,7 +58,6 @@ public class CommunicationService implements ICommunicationService {
      * @param connectionFactory a factory to create connections
      */
     public CommunicationService(ConnectionFactory connectionFactory) {
-        //Maybe this shouldn't be here
         try {
             this.keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             this.keystore.load(new FileInputStream(PATHTOKEY), PASSPHRASE);
@@ -126,7 +124,7 @@ public class CommunicationService implements ICommunicationService {
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
-        //create SSL contexts on a per connection basis. Perhaps I should be using a factory here.
+        //create SSL contexts on a per connection basis.
         SSLContext sslContext;
         try {
             sslContext = SSLContext.getInstance("SSL");

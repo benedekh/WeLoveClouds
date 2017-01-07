@@ -13,7 +13,6 @@ import weloveclouds.commons.utils.StringUtils;
  * Factory class to create {@link ServerSocket}.
  * 
  * @author Benoit
- * 
  */
 public class ServerSocketFactory {
 
