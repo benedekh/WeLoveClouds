@@ -42,7 +42,7 @@ import weloveclouds.server.store.cache.strategy.StrategyFactory;
 public class KVServer {
 
     private static final String DEFAULT_LOG_PATH = "logs/server.log";
-    private static final String DEFAULT_LOG_LEVEL = "DEBUG";
+    private static final String DEFAULT_LOG_LEVEL = "ALL";
 
     private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
 

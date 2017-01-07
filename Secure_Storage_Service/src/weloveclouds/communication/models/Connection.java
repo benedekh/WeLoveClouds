@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import javax.net.ssl.SSLSocket;
+
 import weloveclouds.commons.utils.StringUtils;
 
 /**
@@ -56,9 +58,15 @@ public class Connection implements AutoCloseable {
      */
     public synchronized void kill() throws IOException {
         if (isConnected()) {
+            if (this.socket instanceof SSLSocket){
+                /*  SSL sockets don't use shutdownOutput of shutdownInput as the SSL/TLS spec has specific
+                    ways of handling connection termination, all of which is apparently implemented in .close()*/
+                socket.close();
+            } else {
             socket.shutdownOutput();
             socket.shutdownInput();
             socket.close();
+            }
         }
     }
 
