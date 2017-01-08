@@ -1,6 +1,8 @@
 package weloveclouds.ecs.models.topology;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import weloveclouds.ecs.models.repository.AbstractNode;
@@ -50,6 +52,35 @@ public class RingTopology<T extends AbstractNode> {
 
     public int getRingPositionOf(T node) {
         return nodes.indexOf(node);
+    }
+
+    public T getNextNodeFrom(T node) {
+        int nodePosition = nodes.indexOf(node);
+        T nextNode = null;
+
+        if (nodePosition == getLastPosition()) {
+            nextNode = getFirstNode();
+        } else {
+            nextNode = nodes.get(++nodePosition);
+        }
+
+        return nextNode;
+    }
+
+    public List<T> getReplicasOf(T node, int numberOfNeighbours) {
+        List<T> neighbours = new ArrayList<T>();
+        T neighbour = node;
+
+        for (int i = 0; i < numberOfNeighbours; i++) {
+            neighbour = getNextNodeFrom(neighbour);
+
+            if (neighbour != node) {
+                neighbours.add(neighbour);
+            } else {
+                i = numberOfNeighbours;
+            }
+        }
+        return neighbours;
     }
 
     public RingTopology removeNodes(T node) {

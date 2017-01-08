@@ -16,6 +16,7 @@ import weloveclouds.ecs.models.commands.internal.StartNode;
 import weloveclouds.ecs.models.commands.internal.StopNode;
 import weloveclouds.ecs.models.commands.internal.UpdateMetadata;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
+import weloveclouds.ecs.models.repository.Loadbalancer;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
@@ -48,20 +49,29 @@ public class EcsBatchFactory {
         this.ecsInternalCommandFactory = ecsInternalCommandFactory;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createInitNodeBatchWith(
-            List<StorageNode> nodesToInitialize, int cacheSize, String displacementStrategy) {
-        AbstractBatchTasks<AbstractRetryableTask> nodeInitialisationBatch = new
+    public AbstractBatchTasks<AbstractRetryableTask> createServiceInitialisationBatchWith(
+            Loadbalancer loadbalancer, List<StorageNode> nodesToInitialize, int cacheSize, String
+            displacementStrategy) {
+        List<AbstractCommand> successCommands = new ArrayList<>();
+        AbstractBatchTasks<AbstractRetryableTask> serviceInitialisationBatch = new
                 BatchRetryableTasks(SERVICE_INITIALISATION);
-        for (StorageNode storageNode : nodesToInitialize) {
-            LaunchJar taskCommand = ecsInternalCommandFactory.createLaunchJarCommandWith
-                    (storageNode, ExternalConfigurationServiceConstants.KV_SERVER_JAR_PATH, cacheSize,
-                            displacementStrategy);
 
-            nodeInitialisationBatch.addTask(
-                    new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));
+        AbstractCommand loadBalancerInitialisation = ecsInternalCommandFactory
+                .createLaunchLoadbalancerJarCommandWith(loadbalancer,
+                        ExternalConfigurationServiceConstants.LB_SERVER_JAR_PATH);
+
+        for (StorageNode storageNode : nodesToInitialize) {
+            successCommands.add(ecsInternalCommandFactory.createLaunchStorageNodesJarsCommandWith
+                    (loadbalancer, storageNode, ExternalConfigurationServiceConstants
+                                    .KV_SERVER_JAR_PATH, cacheSize,
+                            displacementStrategy));
+
+            serviceInitialisationBatch.addTask(
+                    new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES,
+                            loadBalancerInitialisation, successCommands));
         }
 
-        return nodeInitialisationBatch;
+        return serviceInitialisationBatch;
     }
 
     public AbstractBatchTasks<AbstractRetryableTask> createStartNodeBatchFor(List<StorageNode>
@@ -98,12 +108,15 @@ public class EcsBatchFactory {
         return nodeShutdownBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createAddNodeBatchFrom(AddNodeTaskDetails
+    public AbstractBatchTasks<AbstractRetryableTask> createAddNodeBatchFrom(Loadbalancer
+                                                                                    loadbalancer,
+                                                                            AddNodeTaskDetails
                                                                                     addNodeTaskDetails) {
         AbstractBatchTasks<AbstractRetryableTask> addNodeBatch = new BatchRetryableTasks(ADD_NODE);
 
         LaunchJar taskCommand = ecsInternalCommandFactory
-                .createLaunchJarCommandWith(addNodeTaskDetails.getNewStorageNode(),
+                .createLaunchStorageNodesJarsCommandWith(loadbalancer, addNodeTaskDetails
+                                .getNewStorageNode(),
                         ExternalConfigurationServiceConstants.KV_SERVER_JAR_PATH,
                         addNodeTaskDetails.getCacheSize(),
                         addNodeTaskDetails.getDisplacementStrategy());

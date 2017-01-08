@@ -36,6 +36,7 @@ import weloveclouds.ecs.exceptions.InvalidConfigurationException;
 import weloveclouds.ecs.exceptions.ServiceBootstrapException;
 import weloveclouds.ecs.models.repository.EcsRepository;
 import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
+import weloveclouds.ecs.models.repository.Loadbalancer;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.repository.NodeStatus;
 import weloveclouds.ecs.models.services.DistributedService;
@@ -86,18 +87,26 @@ public class ExternalConfigurationService implements Observer {
     @SuppressWarnings("unchecked")
     public void initService(int numberOfNodes, int cacheSize, String displacementStrategy)
             throws ExternalConfigurationServiceException {
+
         if (status == UNINITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> nodeInitialisationBatch;
-            List<StorageNode> storageNodesToInitialize =
-                    (List<StorageNode>) ListUtils.getPreciseNumberOfRandomObjectsFrom(
-                            repository.getNodesWithStatus(IDLE), numberOfNodes);
+            try {
+                AbstractBatchTasks<AbstractRetryableTask> serviceInitialisationBatch;
 
-            nodeInitialisationBatch = ecsBatchFactory.createInitNodeBatchWith(
-                    storageNodesToInitialize, cacheSize, displacementStrategy);
+                List<StorageNode> storageNodesToInitialize =
+                        (List<StorageNode>) ListUtils.getPreciseNumberOfRandomObjectsFrom(
+                                repository.getNodesWithStatus(IDLE), numberOfNodes);
 
-            nodeInitialisationBatch.addObserver(this);
-            taskService.launchBatchTasks(nodeInitialisationBatch);
-            status = INITIALIZING_SERVICE;
+                serviceInitialisationBatch = ecsBatchFactory.createServiceInitialisationBatchWith(
+                        repository.getLoadbalancer(), storageNodesToInitialize, cacheSize,
+                        displacementStrategy);
+
+                serviceInitialisationBatch.addObserver(this);
+                taskService.launchBatchTasks(serviceInitialisationBatch);
+                status = INITIALIZING_SERVICE;
+            } catch (Exception e) {
+                throw new ExternalConfigurationServiceException("Unable to initialise service " +
+                        "with cause: " + e.getMessage());
+            }
         } else {
             throw new ExternalConfigurationServiceException("Operation <initService> is not "
                     + "permitted. The external configuration service (ECS) is : " + status.name());
@@ -165,7 +174,8 @@ public class ExternalConfigurationService implements Observer {
             distributedService.updateTopologyWith(newTopology);
 
             addNodeBatch = ecsBatchFactory
-                    .createAddNodeBatchFrom(new AddNodeTaskDetails(newStorageNode, successorNode,
+                    .createAddNodeBatchFrom(repository.getLoadbalancer(), new AddNodeTaskDetails(newStorageNode,
+                            successorNode,
                             distributedService.getRingMetadata(), displacementStrategy, cacheSize));
 
             addNodeBatch.addObserver(this);

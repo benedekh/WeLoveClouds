@@ -6,12 +6,9 @@ import com.google.inject.Injector;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.context.ExecutionContext;
 import weloveclouds.commons.utils.LogSetup;
-import weloveclouds.ecs.client.Client;
 import weloveclouds.loadbalancer.configuration.modules.LoadBalancerModule;
 import weloveclouds.loadbalancer.core.LoadBalancer;
 

@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.List;
 
 import weloveclouds.commons.networking.AbstractServer;
+import weloveclouds.commons.serialization.configuration.modules.SerializationModule;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.api.v1.KVEcsApiV1;
@@ -44,6 +45,7 @@ public class EcsModule extends AbstractModule {
         })
                 .to(new TypeLiteral<NotificationService>() {
                 });
+        install(new SerializationModule());
         install(new NotificationServiceModule());
     }
 }

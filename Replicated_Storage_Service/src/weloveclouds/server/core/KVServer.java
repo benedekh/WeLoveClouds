@@ -17,7 +17,6 @@ import weloveclouds.server.monitoring.NodeHealthMonitor;
 import weloveclouds.server.monitoring.ServiceHealthMonitor;
 import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 
-
 /**
  * Encapsulates all three server instances which are needed for the whole KVServer functionality.
  * <br>
@@ -67,7 +66,7 @@ public class KVServer {
     }
 
     private ServiceHealthMonitor createServiceHealthMonitor(int servicePort, String serviceName,
-            int servicePriority) {
+                                                            int servicePriority) {
         try {
             ServiceHealthInfos.Builder healthInfosBuilder = new ServiceHealthInfos.Builder()
                     .serviceEnpoint(new ServerConnectionInfo.Builder()
@@ -86,6 +85,7 @@ public class KVServer {
         kvClientRequestsServer.start();
         kvServerRequestsServer.start();
         kvECSRequestsServer.start();
+        nodeHealthMonitor.start();
         LOGGER.debug("Servers shall be running.");
     }
 
@@ -125,5 +125,4 @@ public class KVServer {
             return new KVServer(this);
         }
     }
-
 }
