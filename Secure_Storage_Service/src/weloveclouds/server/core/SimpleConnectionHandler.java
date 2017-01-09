@@ -16,7 +16,7 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.server.monitoring.ServiceHealthMonitor;
+import weloveclouds.server.monitoring.heartbeat.ServiceHealthMonitor;
 
 /**
  * A handler for a client connected to the {@link Server}. It receives and interprets different

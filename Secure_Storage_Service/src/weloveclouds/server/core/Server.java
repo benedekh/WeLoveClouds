@@ -18,7 +18,7 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.status.ServiceStatus;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.server.monitoring.ServiceHealthMonitor;
+import weloveclouds.server.monitoring.heartbeat.ServiceHealthMonitor;
 
 /**
  * A Server instance which accepts messages over the network and can handle multiple clients

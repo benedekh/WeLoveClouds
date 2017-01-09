@@ -17,7 +17,7 @@ import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.server.monitoring.ServiceHealthMonitor;
+import weloveclouds.server.monitoring.heartbeat.ServiceHealthMonitor;
 import weloveclouds.server.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.requests.kvclient.KVClientRequestFactory;
 import weloveclouds.server.requests.kvecs.IKVECSRequest;

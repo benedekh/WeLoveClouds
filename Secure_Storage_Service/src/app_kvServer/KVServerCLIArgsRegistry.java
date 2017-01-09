@@ -47,7 +47,12 @@ public class KVServerCLIArgsRegistry {
     }
 
     public void initializeArguments(String[] cliArguments) {
-        ArgumentsValidator.validateCLIArgumentsForServerStart(cliArguments);
+        if (cliArguments == null
+                || cliArguments.length <= ArgumentsValidator.REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER) {
+            ArgumentsValidator.validateCLIArgumentsForServerStart(cliArguments);
+        } else {
+            ArgumentsValidator.validateCLIArgumentsWithLoadbalancerForServerStart(cliArguments);
+        }
 
         KVServer.initializeLoggerWithLevel(cliArguments[CLI_LOG_LEVEL_INDEX]);
         serverName = cliArguments[CLI_SERVER_NAME_INDEX];
@@ -60,11 +65,13 @@ public class KVServerCLIArgsRegistry {
         kvServerPort = Integer.valueOf(cliArguments[CLI_KVSERVER_PORT_INDEX]);
         kvECSPort = Integer.valueOf(cliArguments[CLI_KVECS_PORT_INDEX]);
 
-        loadbalancerIp = cliArguments[CLI_LOADBALANCER_IP_INDEX];
-        loadbalancerPort = Integer.valueOf(cliArguments[CLI_LOADBALANCER_PORT_INDEX]);
+        if (cliArguments.length == ArgumentsValidator.REQUIRED_CLI_ARGUMENT_NUMBER_WITH_LOADBALANCER) {
+            loadbalancerIp = cliArguments[CLI_LOADBALANCER_IP_INDEX];
+            loadbalancerPort = Integer.valueOf(cliArguments[CLI_LOADBALANCER_PORT_INDEX]);
+        }
     }
-    
-    public String getServerName(){
+
+    public String getServerName() {
         return serverName;
     }
 
@@ -88,8 +95,12 @@ public class KVServerCLIArgsRegistry {
     }
 
     public ServerConnectionInfo getLoadbalancerConnectionInfo() throws UnknownHostException {
-        return new ServerConnectionInfo.Builder().ipAddress(loadbalancerIp).port(loadbalancerPort)
-                .build();
+        if (loadbalancerIp == null) {
+            return null;
+        } else {
+            return new ServerConnectionInfo.Builder().ipAddress(loadbalancerIp)
+                    .port(loadbalancerPort).build();
+        }
     }
 
 }

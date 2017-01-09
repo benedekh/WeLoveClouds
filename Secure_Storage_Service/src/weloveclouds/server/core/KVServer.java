@@ -13,8 +13,8 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.repository.NodeStatus;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 import weloveclouds.server.configuration.models.KVServerPortContext;
-import weloveclouds.server.monitoring.NodeHealthMonitor;
-import weloveclouds.server.monitoring.ServiceHealthMonitor;
+import weloveclouds.server.monitoring.heartbeat.NodeHealthMonitor;
+import weloveclouds.server.monitoring.heartbeat.ServiceHealthMonitor;
 import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 
 
@@ -62,6 +62,7 @@ public class KVServer {
                 Arrays.asList(kvClientHealthMonitor, kvServerHealthMonitor, kvECSHealthMonitor));
         this.nodeHealthMonitor = builder.nodeHealthMonitorBuilder.build();
         this.nodeHealthMonitor.setNodeStatus(NodeStatus.RUNNING);
+        this.nodeHealthMonitor.start();
 
         LOGGER.debug("Creating the servers for the different requests finished.");
     }
