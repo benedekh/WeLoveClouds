@@ -41,25 +41,13 @@ import weloveclouds.server.store.cache.strategy.StrategyFactory;
  */
 public class KVServer {
 
+    protected static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
+
     private static final String DEFAULT_LOG_PATH = "logs/server.log";
     private static final String DEFAULT_LOG_LEVEL = "DEBUG";
-
-    private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
-
-    private static final int CLI_KVCLIENT_PORT_INDEX = 0;
-    private static final int CLI_KVSERVER_PORT_INDEX = 1;
-    private static final int CLI_KVECS_PORT_INDEX = 2;
-    private static final int CLI_CACHE_SIZE_INDEX = 3;
-    private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 4;
-    private static final int CLI_LOG_LEVEL_INDEX = 5;
-    private static final int CLI_SERVER_NAME_INDEX = 6;
-    private static final int CLI_LOADBALANCER_IP_INDEX = 7;
-    private static final int CLI_LOADBALANCER_PORT_INDEX = 8;
-
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
     private static LogSetup logSetup = null;
-    public static String serverName = "server";
 
     /**
      * The entry point of the application.
@@ -81,40 +69,10 @@ public class KVServer {
      */
     private static void startNonInteractiveMode(String[] cliArguments) {
         try {
-            ArgumentsValidator.validateCLIArgumentsForServerStart(cliArguments);
-
-            initializeLoggerWithLevel(cliArguments[CLI_LOG_LEVEL_INDEX]);
-            serverName = cliArguments[CLI_SERVER_NAME_INDEX];
-
-            int cacheSize = Integer.valueOf(cliArguments[CLI_CACHE_SIZE_INDEX]);
-            DisplacementStrategy displacementStrategy = StrategyFactory
-                    .createDisplacementStrategy(cliArguments[CLI_DISPLACEMENT_STRATEGY_INDEX]);
-            DataAccessServiceInitializationContext initializationContext =
-                    new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
-                            .displacementStrategy(displacementStrategy)
-                            .rootFolderPath(PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER).build();
-
-            ReplicationServiceFactory replicationServiceFactory = new ReplicationServiceFactory();
-            ReplicationService replicationService =
-                    replicationServiceFactory.createReplicationServiceWith2PC();
-
-            int kvClientPort = Integer.valueOf(cliArguments[CLI_KVCLIENT_PORT_INDEX]);
-            int kvServerPort = Integer.valueOf(cliArguments[CLI_KVSERVER_PORT_INDEX]);
-            int kvECSPort = Integer.valueOf(cliArguments[CLI_KVECS_PORT_INDEX]);
-
-            KVServerPortContext portConfigurationContext = new KVServerPortContext.Builder()
-                    .clientPort(kvClientPort).serverPort(kvServerPort).ecsPort(kvECSPort).build();
-            IReplicableDataAccessService dataAccessService =
-                    new DataAccessServiceFactory().createInitializedReplicableDataAccessService(
-                            initializationContext, replicationService);
-
-            String loadbalancerIp = cliArguments[CLI_LOADBALANCER_IP_INDEX];
-            int loadbalancerPort = Integer.valueOf(cliArguments[CLI_LOADBALANCER_PORT_INDEX]);
-            ServerConnectionInfo loadbalancerConnectionInfo = new ServerConnectionInfo.Builder()
-                    .ipAddress(loadbalancerIp).port(loadbalancerPort).build();
-
-            createAndStartServers(portConfigurationContext, dataAccessService,
-                    loadbalancerConnectionInfo);
+            KVServerCLIArgsRegistry cliRegistry = KVServerCLIArgsRegistry.getInstance();
+            cliRegistry.initializeArguments(cliArguments);
+            createAndStartServers(cliRegistry.getPortConfigurationContext(),
+                    cliRegistry.getReplicableDAS(), cliRegistry.getLoadbalancerConnectionInfo());
         } catch (Throwable ex) {
             LOGGER.error(ex);
         }
@@ -138,7 +96,8 @@ public class KVServer {
                 .communicationApi(new CommunicationApiFactory().createCommunicationApiV1())
                 .heartbeatSerializer(new KVHeartbeatMessageSerializer(new NodeHealthInfosSerializer(
                         new ServiceHealthInfosSerializer(new ServerConnectionInfoSerializer()))))
-                .nodeHealthInfosBuilder(new NodeHealthInfos.Builder().nodeName(serverName))
+                .nodeHealthInfosBuilder(new NodeHealthInfos.Builder()
+                        .nodeName(KVServerCLIArgsRegistry.getInstance().getServerName()))
                 .loadbalancerConnectionInfo(loadBalancerInfo);
 
         weloveclouds.server.core.KVServer kvServer = new weloveclouds.server.core.KVServer.Builder()
@@ -161,7 +120,7 @@ public class KVServer {
     /**
      * Initializes the root logger with the referred logLevel.
      */
-    private static void initializeLoggerWithLevel(String logLevel) {
+    protected static void initializeLoggerWithLevel(String logLevel) {
         initializeLoggerWithLevel(Level.toLevel(logLevel));
     }
 
