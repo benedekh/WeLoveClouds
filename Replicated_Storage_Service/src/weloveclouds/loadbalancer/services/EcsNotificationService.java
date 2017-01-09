@@ -8,22 +8,17 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import weloveclouds.commons.kvstore.models.messages.IKVAdminMessage;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.ecs.models.messaging.IKVEcsNotificationMessage;
-import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
-import weloveclouds.loadbalancer.models.EcsNotification;
-import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
@@ -56,7 +51,6 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
         logger.info("ECS notification service started with endpoint: " + serverSocket);
         try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
-
             while (status == RUNNING) {
                 ConnectionHandler connectionHandler = new ConnectionHandler(
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
@@ -111,21 +105,22 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
             logger.info("Client is connected to server.");
             try {
                 while (connection.isConnected()) {
-                    IKVEcsNotificationMessage receivedMessage = messageDeserializer
-                            .deserialize(communicationApi.receiveFrom(connection));
-                    logger.debug(StringUtils.join(" ", "Message received:", receivedMessage));
+                    byte[] message = communicationApi.receiveFrom(connection);
+                    IKVEcsNotificationMessage notification = messageDeserializer
+                            .deserialize(message);
 
-                    switch (receivedMessage.getStatus()) {
+                    logger.info("Message received:" + notification.toString());
+
+                    switch (notification.getStatus()) {
                         case TOPOLOGY_UPDATE:
                             distributedSystemAccessService.updateServiceTopologyWith
-                                    (receivedMessage.getRingTopology());
+                                    (notification.getRingTopology());
                             break;
                     }
-
-                    connection.kill();
                 }
             } catch (Throwable e) {
                 logger.error(e);
+            } finally {
                 closeConnection();
             }
             logger.info("Client is disconnected.");

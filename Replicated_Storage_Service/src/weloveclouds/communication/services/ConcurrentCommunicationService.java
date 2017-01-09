@@ -1,6 +1,5 @@
 package weloveclouds.communication.services;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +16,7 @@ import weloveclouds.communication.utils.MessageFramesDetector;
 
 /**
  * A communication service that can handle multiple connections concurrently.
- * 
+ *
  * @author Benoit
  */
 public class ConcurrentCommunicationService implements IConcurrentCommunicationService {
@@ -110,5 +109,4 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
             throw new IOException(errorMessage);
         }
     }
-
 }

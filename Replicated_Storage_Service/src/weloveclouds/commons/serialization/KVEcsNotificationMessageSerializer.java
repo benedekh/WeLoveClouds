@@ -6,7 +6,7 @@ import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
-import weloveclouds.ecs.models.messaging.IKVEcsNotificationMessage;
+import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;

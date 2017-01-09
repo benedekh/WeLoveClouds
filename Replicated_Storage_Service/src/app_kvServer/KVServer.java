@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.context.ExecutionContext;
 import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 import weloveclouds.commons.serialization.KVHeartbeatMessageSerializer;
 import weloveclouds.commons.serialization.NodeHealthInfosSerializer;
@@ -65,6 +66,7 @@ public class KVServer {
      * The entry point of the application.
      */
     public static void main(String[] args) {
+        ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
         initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
 
         if (args.length == 0) {
@@ -122,15 +124,15 @@ public class KVServer {
 
     /**
      * Creates and start all three servers for the different requests.
-     * 
+     *
      * @param portConfigurationContext context object which contains the port configuration to serve
-     *        the different requests (KVClient, KVServer, KVECS)
-     * @param dataAccessService the data access service
-     * @param loadBalancerInfo connection information to the loadbalancer
+     *                                 the different requests (KVClient, KVServer, KVECS)
+     * @param dataAccessService        the data access service
+     * @param loadBalancerInfo         connection information to the loadbalancer
      * @throws IOException if an error occurs
      */
     private static void createAndStartServers(KVServerPortContext portConfigurationContext,
-            IReplicableDataAccessService dataAccessService, ServerConnectionInfo loadBalancerInfo)
+                                              IReplicableDataAccessService dataAccessService, ServerConnectionInfo loadBalancerInfo)
             throws IOException {
         ServerFactory serverFactory = new ServerFactory();
 
@@ -184,11 +186,11 @@ public class KVServer {
     /**
      * Start KV Server at given port. ONLY FOR TESTING PURPOSES!!!
      *
-     * @param port given port for storage server to operate
+     * @param port      given port for storage server to operate
      * @param cacheSize specifies how many key-value pairs the server is allowed to keep in-memory
-     * @param strategy specifies the cache replacement strategy in case the cache is full and there
-     *        is a GET- or PUT-request on a key that is currently not contained in the cache.
-     *        Options are "FIFO", "LRU", and "LFU".
+     * @param strategy  specifies the cache replacement strategy in case the cache is full and there
+     *                  is a GET- or PUT-request on a key that is currently not contained in the
+     *                  cache. Options are "FIFO", "LRU", and "LFU".
      */
     public KVServer(int port, int cacheSize, String strategy) {
         Path defaultStoragePath = Paths.get("logs/testing/");
@@ -204,7 +206,7 @@ public class KVServer {
                     "Invalid strategy. Valid values are: FIFO, LRU, LFU");
         }
 
-        ArgumentsValidator.validatePortArguments(new String[] {String.valueOf(port)});
+        ArgumentsValidator.validatePortArguments(new String[]{String.valueOf(port)});
 
         DataAccessServiceInitializationContext initializationContext =
                 new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
@@ -231,5 +233,4 @@ public class KVServer {
             LOGGER.error(e);
         }
     }
-
 }

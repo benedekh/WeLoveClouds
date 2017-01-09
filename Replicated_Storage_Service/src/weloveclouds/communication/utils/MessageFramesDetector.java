@@ -13,7 +13,7 @@ import weloveclouds.commons.serialization.models.XMLTokens;
 /**
  * Utility class which detects message frames ({@link KVMessage}, {@link KVAdminMessage},
  * {@link KVTransactionMessage}) from byte[].
- * 
+ *
  * @author Benedek
  */
 public class MessageFramesDetector {
@@ -29,6 +29,7 @@ public class MessageFramesDetector {
         this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVTRANSACTION_MESSAGE));
         this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVMESSAGE));
         this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVHEARTBEAT_MESSAGE));
+        this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVECS_NOTIFICATION_MESSAGE));
     }
 
     /**
@@ -47,9 +48,9 @@ public class MessageFramesDetector {
 
     /**
      * Detects and removes valid messages based on their framing in the byte[] message parameter.
-     * 
+     *
      * @return a byte[] that contains the rest bytes which were not recognized being part of a valid
-     *         message
+     * message
      */
     public byte[] fillMessageQueue(byte[] messages) {
         for (MessageFrameDetector frameDetector : frameDetectors) {
@@ -60,5 +61,4 @@ public class MessageFramesDetector {
         }
         return messages;
     }
-
 }

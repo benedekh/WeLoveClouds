@@ -3,7 +3,7 @@ package weloveclouds.loadbalancer.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import weloveclouds.ecs.models.messaging.IKVEcsNotificationMessage;
+import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 

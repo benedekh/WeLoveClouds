@@ -2,14 +2,16 @@ package weloveclouds.commons.serialization.deserialization;
 
 import com.google.inject.Inject;
 
+import org.apache.log4j.Logger;
+
 import java.util.regex.Matcher;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.ecs.models.messaging.IKVEcsNotificationMessage;
-import weloveclouds.ecs.models.messaging.KVEcsNotificationMessage;
+import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
+import weloveclouds.ecs.models.messaging.notification.KVEcsNotificationMessage;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
@@ -25,6 +27,8 @@ import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexF
  */
 public class KVEcsNotificationMessageDeserializer implements
         IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage> {
+    private static final Logger LOGGER = Logger.getLogger(KVEcsNotificationMessageDeserializer
+            .class);
     private IDeserializer<RingTopology<StorageNode>, String> ringTopologyDeserializer;
     private IDeserializer<NodeHealthInfos, String> nodeHealthInfosDeserializer;
 
@@ -38,6 +42,7 @@ public class KVEcsNotificationMessageDeserializer implements
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public IKVEcsNotificationMessage deserialize(SerializedMessage serializedMessage)
             throws DeserializationException {
         Matcher matcher = getRegexFromToken(KVECS_NOTIFICATION_MESSAGE)
@@ -56,6 +61,7 @@ public class KVEcsNotificationMessageDeserializer implements
                         (serializedMessage.getBytes(), MESSAGE_ENCODING));
             }
         } catch (Exception e) {
+            LOGGER.warn("Unable to deserialize ecs notification");
             throw new DeserializationException(e.getMessage());
         }
     }
@@ -63,7 +69,7 @@ public class KVEcsNotificationMessageDeserializer implements
     @Override
     public IKVEcsNotificationMessage deserialize(byte[] serializedMessage)
             throws DeserializationException {
-        return null;
+        return deserialize(new SerializedMessage(new String(serializedMessage, MESSAGE_ENCODING)));
     }
 
     private IKVEcsNotificationMessage.Status deserializeStatusFrom(String serializedMessage) throws

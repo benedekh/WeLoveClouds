@@ -35,7 +35,7 @@ import weloveclouds.commons.serialization.deserialization.StorageNodeDeserialize
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.ecs.models.messaging.IKVEcsNotificationMessage;
+import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.loadbalancer.models.IKVHeartbeatMessage;

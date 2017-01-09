@@ -30,7 +30,7 @@ public abstract class AbstractRetryableTask {
     protected int maxNumberOfRetries;
 
     public AbstractRetryableTask(int maxNumberOfRetries, AbstractCommand command,
-            List<AbstractCommand> successCommand, List<AbstractCommand> failCommand) {
+                                 List<AbstractCommand> successCommand, List<AbstractCommand> failCommand) {
         this.id = UUID.randomUUID().toString();
         this.status = WAITING;
         this.command = command;
@@ -44,8 +44,8 @@ public abstract class AbstractRetryableTask {
         numberOfRetries = getMaximumNumberOfRetries();
     }
 
-    public int getMaxNumberOfRetries() {
-        return maxNumberOfRetries;
+    public boolean isBatched() {
+        return batchId != null;
     }
 
     public void incrementNumberOfRetries() {
@@ -62,10 +62,6 @@ public abstract class AbstractRetryableTask {
 
     public Instant getStartTime() {
         return startTime;
-    }
-
-    public void setStartTime(Instant startTime) {
-        this.startTime = startTime;
     }
 
     public String getId() {
@@ -94,14 +90,6 @@ public abstract class AbstractRetryableTask {
 
     public AbstractCommand getCommand() {
         return command;
-    }
-
-    public List<AbstractCommand> getSuccessCommands() {
-        return successCommands;
-    }
-
-    public List<AbstractCommand> getFailCommands() {
-        return failCommands;
     }
 
     public abstract void runCommand() throws ClientSideException;

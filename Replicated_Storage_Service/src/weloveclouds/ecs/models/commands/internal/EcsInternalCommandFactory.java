@@ -4,9 +4,15 @@ import com.google.inject.Inject;
 
 import java.util.Arrays;
 
+import weloveclouds.commons.serialization.IMessageDeserializer;
+import weloveclouds.commons.serialization.IMessageSerializer;
+import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
+import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
+import weloveclouds.ecs.models.messaging.notification.INotifiable;
+import weloveclouds.ecs.models.messaging.notification.INotificationRequest;
 import weloveclouds.ecs.models.repository.Loadbalancer;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.ssh.SecureShellServiceFactory;
@@ -136,6 +142,16 @@ public class EcsInternalCommandFactory {
                 .messageDeserializer(new KVAdminMessageDeserializer())
                 .newNode(newNode)
                 .ringMetadata(ringMetadata)
+                .build();
+    }
+
+    public NotifyTargetCommand createNotifyTargetCommandWith(
+            INotificationRequest<IKVEcsNotificationMessage> notificationRequest,
+            IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer) {
+        return new NotifyTargetCommand.Builder()
+                .communicationApi(communicationApiFactory.createCommunicationApiV1())
+                .notificationRequest(notificationRequest)
+                .messageSerializer(messageSerializer)
                 .build();
     }
 }
