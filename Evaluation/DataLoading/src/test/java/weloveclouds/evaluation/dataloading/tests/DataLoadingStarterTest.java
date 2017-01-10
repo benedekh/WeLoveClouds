@@ -4,8 +4,14 @@ import org.junit.Test;
 
 import weloveclouds.evaluation.dataloading.application.DataLoadingApplication;
 
+/**
+ * The type Data loading starter test.
+ */
 public class DataLoadingStarterTest {
 
+    /**
+     * Start.
+     */
     @SuppressWarnings("static-access")
     @Test
     public void start() {
