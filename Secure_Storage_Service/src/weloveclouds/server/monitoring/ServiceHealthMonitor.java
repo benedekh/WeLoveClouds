@@ -7,6 +7,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import weloveclouds.commons.status.ServiceStatus;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
+/**
+ * Service health monitor which supervises the health status of the service.
+ * 
+ * @author Benedek
+ */
 public class ServiceHealthMonitor {
 
     private String serviceName;
@@ -19,10 +24,16 @@ public class ServiceHealthMonitor {
         this.numberOfConnections = new AtomicInteger();
     }
 
+    /**
+     * Increment the number of active connections.
+     */
     public void incrementConnections() {
         setActiveConnections(numberOfConnections.incrementAndGet());
     }
 
+    /**
+     * Decrement the number of active connections.
+     */
     public void decrementConnections() {
         setActiveConnections(numberOfConnections.decrementAndGet());
     }

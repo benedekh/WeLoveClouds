@@ -3,7 +3,9 @@ package weloveclouds.commons.serialization.models;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
- * Created by Benoit on 2016-12-10.
+ * Represents an abstract XML node.
+ * 
+ * @author Benoit
  */
 public abstract class AbstractXMLNode {
     protected String token;

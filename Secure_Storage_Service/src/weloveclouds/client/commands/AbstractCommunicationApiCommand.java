@@ -12,7 +12,7 @@ public abstract class AbstractCommunicationApiCommand extends AbstractCommand im
     protected ICommunicationApi communicationApi;
 
     /**
-     * @param arguments        the arguments of the command
+     * @param arguments the arguments of the command
      * @param communicationApi a reference to the communication module
      */
     public AbstractCommunicationApiCommand(String[] arguments, ICommunicationApi communicationApi) {

@@ -1,10 +1,7 @@
 package weloveclouds.server.client.commands;
 
-import java.net.UnknownHostException;
-
 import org.apache.log4j.Logger;
 
-import weloveclouds.client.commands.Connect;
 import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
@@ -39,10 +36,8 @@ public class ServerCommandFactory {
      *
      * @param userInput which contains the command and its arguments
      * @return the type of the recognized command
-     * @throws UnknownHostException see {@link Connect}
      */
-    public ICommand createCommandFromUserInput(ParsedUserInput<ServerCommand> userInput)
-            throws UnknownHostException {
+    public ICommand createCommandFromUserInput(ParsedUserInput<ServerCommand> userInput) {
         ServerCommand userCommand = userInput.getCommand();
         String[] arguments = userInput.getArguments();
         ICommand recognizedCommand = null;

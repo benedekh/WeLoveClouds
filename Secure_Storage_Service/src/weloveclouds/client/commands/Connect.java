@@ -22,8 +22,7 @@ public class Connect extends AbstractCommunicationApiCommand {
     private ServerConnectionInfo remoteServer;
 
     /**
-     * @param arguments contains the IP address (0. element of the array), and the port (1st element
-     *        of the array)
+     * @param arguments contains the IP address, and the port
      * @param communicationApi a reference to the communication module
      * @throws UnknownHostException see
      *         {@link AbstractUserInputParser#extractConnectionInfoFrom(String[])}

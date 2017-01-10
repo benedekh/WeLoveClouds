@@ -4,7 +4,9 @@ import weloveclouds.client.commands.ClientCommand;
 import weloveclouds.commons.cli.utils.AbstractUserInputParser;
 
 /**
- * Created by Benoit on 2016-11-20.
+ * Parses the command-line inputs for KVClient.
+ * 
+ * @author Benoit
  */
 public class ClientUserInputParser extends AbstractUserInputParser<ClientCommand> {
     @Override

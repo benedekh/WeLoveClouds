@@ -5,7 +5,9 @@ import java.util.List;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
- * Created by Benoit on 2016-11-27.
+ * Represents a metric for statistical logging.
+ * 
+ * @author Benoit
  */
 public class Metric {
     private static final String METRIC_PART_DELIMITER = ".";
@@ -21,6 +23,11 @@ public class Metric {
         return StringUtils.join(METRIC_PART_DELIMITER, service, name);
     }
 
+    /**
+     * Builder pattern for creating a {@link Metric} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private Service service;
         private String name;

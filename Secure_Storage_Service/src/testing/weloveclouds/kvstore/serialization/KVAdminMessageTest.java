@@ -26,7 +26,7 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
- * Tests for the {@link KVAdminMessage} to verify its serialization and deserialization processes.
+ * Tests for the {@link IKVAdminMessage} to verify its serialization and deserialization processes.
  * 
  * @author Benedek
  */

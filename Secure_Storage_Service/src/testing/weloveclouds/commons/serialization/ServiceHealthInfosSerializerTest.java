@@ -1,5 +1,8 @@
 package testing.weloveclouds.commons.serialization;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static weloveclouds.commons.status.ServiceStatus.RUNNING;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,11 +17,10 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
-import static weloveclouds.commons.status.ServiceStatus.RUNNING;
-import static org.fest.assertions.Assertions.*;
-
 /**
- * Created by Benoit on 2016-12-18.
+ * Unit tests to validate the {@link ServiceHealthInfosSerializer} correct behavior.
+ * 
+ * @author Benoit
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceHealthInfosSerializerTest {

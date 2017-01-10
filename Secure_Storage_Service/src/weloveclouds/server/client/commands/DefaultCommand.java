@@ -5,7 +5,6 @@ import static weloveclouds.server.client.commands.utils.HelpMessageGenerator.gen
 import weloveclouds.commons.exceptions.ServerSideException;
 import weloveclouds.commons.utils.StringUtils;
 
-
 /**
  * An unrecognized command.
  *

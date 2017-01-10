@@ -1,4 +1,4 @@
-package weloveclouds.communication.services;
+package weloveclouds.communication.services.resend;
 
 import java.io.IOException;
 
@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.retryer.IBackoffIntervalComputer;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.services.ICommunicationService;
+import weloveclouds.communication.services.IConcurrentCommunicationService;
 
 /**
  * A helper class which can use different wait strategies between resends for sending a packet over

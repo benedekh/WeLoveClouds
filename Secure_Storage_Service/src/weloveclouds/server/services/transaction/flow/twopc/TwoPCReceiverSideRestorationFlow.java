@@ -13,6 +13,11 @@ import weloveclouds.server.services.transaction.tasks.ITransactionTask;
 import weloveclouds.server.services.transaction.tasks.twopc.restore.CommitOrAbortDecisionTask;
 import weloveclouds.server.services.transaction.tasks.twopc.restore.SendHelpTask;
 
+/**
+ * Steps in the restoration phase of a two-phase-commit protocol to be executed.
+ * 
+ * @author Benedek
+ */
 public class TwoPCReceiverSideRestorationFlow extends TransactionExecutionFlow {
 
     private AbortRequest abortRequest;

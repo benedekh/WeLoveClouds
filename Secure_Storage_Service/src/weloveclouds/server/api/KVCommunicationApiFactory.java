@@ -16,11 +16,17 @@ import weloveclouds.server.api.v2.KVCommunicationApiV2;
  */
 public class KVCommunicationApiFactory extends CommunicationApiFactory {
 
+    /**
+     * Creates a {@link KVCommunicationApiV1} instance.
+     */
     public IKVCommunicationApi createKVCommunicationApiV1() {
         return new KVCommunicationApiV1(createCommunicationApiV1(), new KVMessageSerializer(),
                 new KVMessageDeserializer());
     }
 
+    /**
+     * Creates a {@link KVCommunicationApiV2} instance.
+     */
     public IKVCommunicationApiV2 createKVCommunicationApiV2(
             ServerConnectionInfo bootstrapConnectionInfo) {
         return new KVCommunicationApiV2(bootstrapConnectionInfo);

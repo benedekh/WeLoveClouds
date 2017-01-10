@@ -1,4 +1,4 @@
-package weloveclouds.communication.services;
+package weloveclouds.communication.services.resend;
 
 import java.io.IOException;
 import java.util.Observable;
@@ -10,6 +10,8 @@ import weloveclouds.commons.retryer.IBackoffIntervalComputer;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.services.ICommunicationService;
+import weloveclouds.communication.services.IConcurrentCommunicationService;
 import weloveclouds.ecs.models.tasks.Status;
 
 /**
@@ -33,30 +35,6 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
             IBackoffIntervalComputer waitStrategy) {
         super(maxNumberOfAttempts, packet, waitStrategy);
         this.executionStatus = Status.WAITING;
-    }
-
-    private void createPacketReceiver(ICommunicationService communicationService) {
-        PacketReceiver packetReceiver = new PacketReceiver(communicationService);
-        packetReceiver.addObserver(this);
-        initializePacketReceiverThread(packetReceiver);
-    }
-
-    private void createPacketReceiver(
-            IConcurrentCommunicationService concurrentCommunicationService, Connection connection) {
-        PacketReceiver packetReceiver =
-                new PacketReceiver(concurrentCommunicationService, connection);
-        packetReceiver.addObserver(this);
-        initializePacketReceiverThread(packetReceiver);
-    }
-
-    private void initializePacketReceiverThread(PacketReceiver packetReceiver) {
-        senderThread = Thread.currentThread();
-        receiverThread = new Thread(packetReceiver);
-        LOGGER.info("Starting packet receiver thread.");
-        receiverThread.start();
-        while (!receiverThread.isAlive());
-        LOGGER.info("Packet receiver thread started.");
-        this.executionStatus = Status.RUNNING;
     }
 
     @Override
@@ -131,6 +109,30 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
             executionStatus = Status.COMPLETED;
             senderThread.interrupt();
         }
+    }
+
+    private void createPacketReceiver(ICommunicationService communicationService) {
+        PacketReceiver packetReceiver = new PacketReceiver(communicationService);
+        packetReceiver.addObserver(this);
+        initializePacketReceiverThread(packetReceiver);
+    }
+
+    private void createPacketReceiver(
+            IConcurrentCommunicationService concurrentCommunicationService, Connection connection) {
+        PacketReceiver packetReceiver =
+                new PacketReceiver(concurrentCommunicationService, connection);
+        packetReceiver.addObserver(this);
+        initializePacketReceiverThread(packetReceiver);
+    }
+
+    private void initializePacketReceiverThread(PacketReceiver packetReceiver) {
+        senderThread = Thread.currentThread();
+        receiverThread = new Thread(packetReceiver);
+        LOGGER.info("Starting packet receiver thread.");
+        receiverThread.start();
+        while (!receiverThread.isAlive());
+        LOGGER.info("Packet receiver thread started.");
+        this.executionStatus = Status.RUNNING;
     }
 
     /**

@@ -23,6 +23,9 @@ public class Connection implements AutoCloseable {
         this.socket = builder.socket;
     }
 
+    /**
+     * @return true if the socket is not null and it is not closed yet.
+     */
     public boolean isConnected() {
         return socket != null && !socket.isClosed();
     }

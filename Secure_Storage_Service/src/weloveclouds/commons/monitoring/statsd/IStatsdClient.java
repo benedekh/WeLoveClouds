@@ -5,7 +5,9 @@ import org.joda.time.Duration;
 import weloveclouds.commons.monitoring.models.Metric;
 
 /**
- * Created by Benoit on 2016-11-27.
+ * Represents a statistical metric collector client.
+ * 
+ * @author Benoit
  */
 public interface IStatsdClient {
     int SINGLE_EVENT = 1;

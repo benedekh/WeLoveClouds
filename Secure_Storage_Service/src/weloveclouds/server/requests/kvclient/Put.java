@@ -19,7 +19,6 @@ import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.datastore.IMovableDataAccessService;
-import weloveclouds.server.services.datastore.MovableDataAccessService;
 import weloveclouds.server.services.datastore.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.datastore.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.datastore.exceptions.WriteLockIsActiveException;
@@ -27,7 +26,7 @@ import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.PutType;
 
 /**
- * A put request to store a key and a value in the {@link MovableDataAccessService}.
+ * A put request to store a key and a value in the {@link IMovableDataAccessService}.
  * 
  * @author Benoit
  */

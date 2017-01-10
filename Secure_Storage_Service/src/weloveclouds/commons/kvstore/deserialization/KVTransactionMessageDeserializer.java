@@ -31,6 +31,11 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
+/**
+ * A deserializer which converts a {@link SerializedMessage} to a {@link IKVTransactionMessage}.
+ * 
+ * @author Benedek
+ */
 public class KVTransactionMessageDeserializer
         implements IMessageDeserializer<IKVTransactionMessage, SerializedMessage> {
 

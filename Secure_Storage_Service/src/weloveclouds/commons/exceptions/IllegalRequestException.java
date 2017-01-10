@@ -1,7 +1,6 @@
 package weloveclouds.commons.exceptions;
 
 /**
- * 
  * An exception that is thrown if the respective request was invalid.
  * 
  * @author Benedek

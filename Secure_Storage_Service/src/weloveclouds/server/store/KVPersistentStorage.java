@@ -26,8 +26,8 @@ import weloveclouds.server.store.models.PersistedStorageUnit;
 import weloveclouds.server.store.models.PutType;
 
 /**
- * The persistent storage for the {@link DataAccessService}} which stores the key-value pairs on the
- * hard storage.
+ * The persistent storage for the {@link DataAccessService}} which stores the key-value pairs in
+ * their respective {@link PersistedStorageUnit}s.
  * 
  * @author Benedek
  */

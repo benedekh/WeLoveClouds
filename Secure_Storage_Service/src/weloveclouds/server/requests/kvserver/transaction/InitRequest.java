@@ -18,6 +18,11 @@ import weloveclouds.server.requests.kvserver.transaction.utils.TimedHelp;
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
 import weloveclouds.server.services.transaction.TransactionServiceFactory;
 
+/**
+ * Represents the initial phase of a transaction.
+ * 
+ * @author Benedek
+ */
 public class InitRequest extends AbstractRequest<InitRequest.Builder> {
 
     private static final Logger LOGGER = Logger.getLogger(InitRequest.class);
@@ -104,6 +109,11 @@ public class InitRequest extends AbstractRequest<InitRequest.Builder> {
                 .transferMessage(transactionMessage.getTransferPayload()).build();
     }
 
+    /**
+     * Builder pattern for creating a {@link InitRequest} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder extends AbstractRequest.Builder<Builder> {
         private IKVTransactionMessage transactionMessage;
         private IRequestFactory<IKVTransferMessage, IKVTransferRequest> realDASBehavior;

@@ -1,20 +1,21 @@
 package weloveclouds.commons.serialization;
 
-import com.google.inject.Inject;
+import static weloveclouds.commons.serialization.models.XMLTokens.ORDERED_NODES;
+import static weloveclouds.commons.serialization.models.XMLTokens.TOPOLOGY;
 
 import java.util.List;
 
-import weloveclouds.commons.serialization.ISerializer;
+import com.google.inject.Inject;
+
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
 import weloveclouds.ecs.models.repository.AbstractNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 
-import static weloveclouds.commons.serialization.models.XMLTokens.ORDERED_NODES;
-import static weloveclouds.commons.serialization.models.XMLTokens.TOPOLOGY;
-
 /**
- * Created by Benoit on 2016-12-08.
+ * A serializer which converts a {@link RingTopology<T>} to a {@link AbstractXMLNode}.
+ * 
+ * @author Benoit
  */
 public class RingTopologySerializer<T extends AbstractNode>
         implements ISerializer<AbstractXMLNode, RingTopology<T>> {
