@@ -247,7 +247,9 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
                 this.readRanges.clear();
                 this.readRanges.addAll(readRanges);
             }
-            this.readRanges.add(writeRange);
+            if (writeRange != null) {
+                this.readRanges.add(writeRange);
+            }
             this.writeRange = writeRange;
             simulatedDataAccessService.setManagedHashRanges(readRanges, writeRange);
         }

@@ -69,7 +69,6 @@ public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
                         }
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
                     LOGGER.error(ex);
                     return new AbortRequest.Builder().transactionLog(transactionLog)
                             .transactionId(transactionId).build().execute();

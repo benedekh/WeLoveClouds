@@ -130,6 +130,9 @@ public class SimulatedMovableDataAccessService implements IMovableDataAccessServ
                 this.readRanges.clear();
                 this.readRanges.addAll(readRanges);
             }
+            if (writeRange != null) {
+                this.readRanges.add(writeRange);
+            }
             this.writeRange = writeRange;
         }
     }
