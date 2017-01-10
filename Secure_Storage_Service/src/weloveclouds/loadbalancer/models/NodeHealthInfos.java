@@ -3,6 +3,7 @@ package weloveclouds.loadbalancer.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.ecs.models.repository.NodeStatus;
 
 /**
@@ -35,8 +36,8 @@ public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
         double healthIndice = 0;
 
         for (ServiceHealthInfos serviceHealthInfos : getServicesHealthInfos()) {
-            healthIndice += (serviceHealthInfos.getServicePriority() *
-                    serviceHealthInfos.getNumberOfActiveConnections());
+            healthIndice += (serviceHealthInfos.getServicePriority()
+                    * serviceHealthInfos.getNumberOfActiveConnections());
         }
         return healthIndice;
     }
@@ -49,6 +50,13 @@ public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
             return 1;
         else
             return -1;
+    }
+
+    @Override
+    public String toString() {
+        String servicesHealthInfosStr = StringUtils.join(", ", servicesHealthInfos);
+        return StringUtils.join(" ", "{Node name:", nodeName, ", Node status:", nodeStatus,
+                ", Service health infos: [", servicesHealthInfosStr, "]}");
     }
 
     public static class Builder {
