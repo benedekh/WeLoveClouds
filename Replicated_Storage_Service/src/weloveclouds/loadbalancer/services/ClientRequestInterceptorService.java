@@ -179,6 +179,7 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
 
         private byte[] transferMessageToServerAndGetResponse(byte[] rawMessage,
                                                              StorageNode destination) throws ClientSideException {
+            logger.debug("Transferring request to: " + destination.toString());
             byte[] serverResponse;
             ICommunicationApi communicationApi = communicationApiFactory.createCommunicationApiV1();
             communicationApi.connectTo(destination.getServerConnectionInfo());

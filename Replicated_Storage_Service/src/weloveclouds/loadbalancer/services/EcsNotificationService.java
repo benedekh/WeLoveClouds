@@ -109,10 +109,9 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
                     IKVEcsNotificationMessage notification = messageDeserializer
                             .deserialize(message);
 
-                    logger.info("Message received:" + notification.toString());
-
                     switch (notification.getStatus()) {
                         case TOPOLOGY_UPDATE:
+                            logger.debug("Updating loadbalancer topology");
                             distributedSystemAccessService.updateServiceTopologyWith
                                     (notification.getRingTopology());
                             break;
