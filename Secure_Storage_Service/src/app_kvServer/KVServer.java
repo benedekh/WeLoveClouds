@@ -23,7 +23,9 @@ import weloveclouds.server.configuration.models.KVServerPortConstants;
 import weloveclouds.server.configuration.models.KVServerPortContext;
 import weloveclouds.server.core.ServerCLIHandler;
 import weloveclouds.server.core.ServerFactory;
-import weloveclouds.server.monitoring.NodeHealthMonitor;
+import weloveclouds.server.monitoring.heartbeat.DefaultHearbeatSenderService;
+import weloveclouds.server.monitoring.heartbeat.HeartbeatSenderService;
+import weloveclouds.server.monitoring.heartbeat.NodeHealthMonitor;
 import weloveclouds.server.services.datastore.DataAccessServiceFactory;
 import weloveclouds.server.services.datastore.IDataAccessService;
 import weloveclouds.server.services.datastore.IReplicableDataAccessService;
@@ -91,13 +93,23 @@ public class KVServer {
             throws IOException {
         ServerFactory serverFactory = new ServerFactory();
 
-        NodeHealthMonitor.Builder nodeHealthMonitorBuilder = new NodeHealthMonitor.Builder()
-                .communicationApi(new CommunicationApiFactory().createCommunicationApiV1())
-                .heartbeatSerializer(new KVHeartbeatMessageSerializer(new NodeHealthInfosSerializer(
-                        new ServiceHealthInfosSerializer(new ServerConnectionInfoSerializer()))))
-                .nodeHealthInfosBuilder(new NodeHealthInfos.Builder()
-                        .nodeName(KVServerCLIArgsRegistry.getInstance().getServerName()))
-                .loadbalancerConnectionInfo(loadBalancerInfo);
+        HeartbeatSenderService heartbeatSender = null;
+        if (loadBalancerInfo != null) {
+            heartbeatSender = new HeartbeatSenderService.Builder()
+                    .communicationApi(new CommunicationApiFactory().createCommunicationApiV1())
+                    .loadbalancerConnectionInfo(loadBalancerInfo)
+                    .heartbeatSerializer(new KVHeartbeatMessageSerializer(
+                            new NodeHealthInfosSerializer(new ServiceHealthInfosSerializer(
+                                    new ServerConnectionInfoSerializer()))))
+                    .build();
+        } else {
+            heartbeatSender = new DefaultHearbeatSenderService.Builder().build();
+        }
+
+        NodeHealthMonitor.Builder nodeHealthMonitorBuilder =
+                new NodeHealthMonitor.Builder().hearbeatSenderService(heartbeatSender)
+                        .nodeHealthInfosBuilder(new NodeHealthInfos.Builder()
+                                .nodeName(KVServerCLIArgsRegistry.getInstance().getServerName()));
 
         weloveclouds.server.core.KVServer kvServer = new weloveclouds.server.core.KVServer.Builder()
                 .serverFactory(serverFactory).portConfiguration(portConfigurationContext)
@@ -180,11 +192,7 @@ public class KVServer {
             KVServerPortContext portConfigurationContext = new KVServerPortContext.Builder()
                     .clientPort(port).serverPort(KVServerPortConstants.KVSERVER_REQUESTS_PORT)
                     .ecsPort(KVServerPortConstants.KVECS_REQUESTS_PORT).build();
-            ServerConnectionInfo loadbalancerFakeConnectionInfo =
-                    new ServerConnectionInfo.Builder().ipAddress("localhost").port(8008).build();
-
-            createAndStartServers(portConfigurationContext, dataAccessService,
-                    loadbalancerFakeConnectionInfo);
+            createAndStartServers(portConfigurationContext, dataAccessService, null);
         } catch (IOException e) {
             LOGGER.error(e);
         }

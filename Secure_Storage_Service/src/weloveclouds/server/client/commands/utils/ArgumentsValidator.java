@@ -46,7 +46,8 @@ public class ArgumentsValidator {
     private static final int STORAGE_PATH_NUMBER_OF_ARGUMENTS = 1;
     private static final int STORAGE_PATH_INDEX = 0;
 
-    private static final int REQUIRED_CLI_ARGUMENT_NUMBER = 9;
+    public static final int REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER = 7;
+    public static final int REQUIRED_CLI_ARGUMENT_NUMBER_WITH_LOADBALANCER = 9;
     private static final int CLI_KVCLIENT_PORT_INDEX = 0;
     private static final int CLI_KVSERVER_PORT_INDEX = 1;
     private static final int CLI_KVECS_PORT_INDEX = 2;
@@ -59,7 +60,8 @@ public class ArgumentsValidator {
 
     /**
      * Validate CLI arguments for the server starting. The arguments are valid, if:<br>
-     * (1) there are exactly {@value #REQUIRED_CLI_ARGUMENT_NUMBER} number of arguments, and<br>
+     * (1) there are exactly {@value #REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER} number of
+     * arguments, and<br>
      * (2) the arguments at the position {@value #CLI_KVCLIENT_PORT_INDEX},
      * {@value #CLI_KVSERVER_PORT_INDEX}, {@value #CLI_KVECS_PORT_INDEX} are valid ports, and<br>
      * (3) the argument at the position {@value #CLI_CACHE_SIZE_INDEX} is a valid cache size,
@@ -69,23 +71,24 @@ public class ArgumentsValidator {
      * (5) the argument at the position {@value #CLI_LOG_LEVEL_INDEX} is a valid log level, and<br>
      * (7) the argument at the position {@value #CLI_LOADBALANCER_IP_INDEX} is a valid IP address,
      * and<br>
-     * (7) the argument at the position {@value #CLI_LOADBALANCER_PORT_INDEX} is a valid port
+     * (8) the argument at the position {value #CLI_LOADBALANCER_PORT_INDEX} is a valid port
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateCLIArgumentsForServerStart(String[] arguments)
             throws IllegalArgumentException {
         String command = "cliArguments";
-        if (isNullOrEmpty(arguments) || arguments.length != REQUIRED_CLI_ARGUMENT_NUMBER) {
+        if (isNullOrEmpty(arguments)
+                || arguments.length != REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER) {
             logWarning(command);
-            throw new IllegalArgumentException(StringUtils.join("", REQUIRED_CLI_ARGUMENT_NUMBER,
-                    " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level> <server name> <loadbalancer IP address> <loadbalancer port"));
+            throw new IllegalArgumentException(StringUtils.join("",
+                    REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER,
+                    " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level> <server name>"));
         } else {
             validateCacheSizeArguments(new String[] {arguments[CLI_CACHE_SIZE_INDEX]});
             validatePort(command, arguments[CLI_KVCLIENT_PORT_INDEX]);
             validatePort(command, arguments[CLI_KVSERVER_PORT_INDEX]);
             validatePort(command, arguments[CLI_KVECS_PORT_INDEX]);
-            validatePort(command, arguments[CLI_LOADBALANCER_PORT_INDEX]);
             if (!validLogLevels.contains(arguments[CLI_LOG_LEVEL_INDEX])) {
                 logWarning(command);
                 throw new IllegalArgumentException(StringUtils.join(" ",
@@ -103,6 +106,33 @@ public class ArgumentsValidator {
                 logWarning(command);
                 throw new IllegalArgumentException("Server name cannot be empty.");
             }
+        }
+    }
+
+    /**
+     * The arguments are valid if:
+     * 
+     * (1) The first {@value #REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER} number of arguments
+     * are valid, and<br>
+     * (2) the argument at the position {@link #CLI_LOADBALANCER_IP_INDEX} is a valid IP address,
+     * and<br>
+     * (3) the argument at the position {@link #CLI_LOADBALANCER_PORT_INDEX} is a valid port
+     * 
+     * @throws IllegalArgumentException if a validation error occurs
+     */
+    public static void validateCLIArgumentsWithLoadbalancerForServerStart(String[] arguments)
+            throws IllegalArgumentException {
+        String command = "cliArguments";
+        if (isNullOrEmpty(arguments)
+                || arguments.length != REQUIRED_CLI_ARGUMENT_NUMBER_WITH_LOADBALANCER) {
+            logWarning(command);
+            throw new IllegalArgumentException(StringUtils.join("",
+                    REQUIRED_CLI_ARGUMENT_NUMBER_WITH_LOADBALANCER,
+                    " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level> <server name> <loadbalancer IP address> <loadbalancer port>"));
+        } else {
+            validateCLIArgumentsForServerStart(Arrays.copyOfRange(arguments, 0,
+                    REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER - 1));
+            validatePort(command, arguments[CLI_LOADBALANCER_PORT_INDEX]);
             try {
                 InetAddress.getByName(arguments[CLI_LOADBALANCER_IP_INDEX]);
             } catch (UnknownHostException ex) {

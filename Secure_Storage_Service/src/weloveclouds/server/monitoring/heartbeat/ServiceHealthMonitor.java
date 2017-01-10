@@ -1,4 +1,4 @@
-package weloveclouds.server.monitoring;
+package weloveclouds.server.monitoring.heartbeat;
 
 import static weloveclouds.server.monitoring.KVServerMonitoringMetricUtils.recordGauge;
 
