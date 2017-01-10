@@ -6,13 +6,17 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
+import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.exceptions.StorageException;
 
@@ -27,7 +31,9 @@ public class PersistedStorageUnit implements Serializable {
     protected static final int MAX_NUMBER_OF_ENTRIES = 100;
 
     protected Map<String, String> entries;
-    protected String filePath;
+    protected volatile String filePath;
+
+    protected ReentrantReadWriteLock accessLock;
 
     /**
      * @param maxSize at most how many entries can be stored in the storage unit
@@ -35,6 +41,7 @@ public class PersistedStorageUnit implements Serializable {
     public PersistedStorageUnit(Path filePath) {
         setPath(filePath);
         this.entries = new ConcurrentHashMap<>();
+        this.accessLock = new ReentrantReadWriteLock();
     }
 
     /**
@@ -44,27 +51,34 @@ public class PersistedStorageUnit implements Serializable {
     protected PersistedStorageUnit(Map<String, String> initializerMap, Path filePath) {
         setPath(filePath);
         this.entries = initializerMap;
+        this.accessLock = new ReentrantReadWriteLock();
     }
 
     /**
      * @return true if the storage unit is empty, false otherwise
      */
     public boolean isEmpty() {
-        return entries.isEmpty();
+        try (CloseableLock lock = new CloseableLock(readLock())) {
+            return entries.isEmpty();
+        }
     }
 
     /**
      * @return true if the storage unit is full, false otherwise
      */
     public boolean isFull() {
-        return !(entries.size() < MAX_NUMBER_OF_ENTRIES);
+        try (CloseableLock lock = new CloseableLock(readLock())) {
+            return !(entries.size() < MAX_NUMBER_OF_ENTRIES);
+        }
     }
 
     /**
      * @return keys stored in the storage unit as an unmodifiable set
      */
     public Set<String> getKeys() {
-        return Collections.unmodifiableSet(entries.keySet());
+        try (CloseableLock lock = new CloseableLock(readLock())) {
+            return Collections.unmodifiableSet(new HashSet<>(entries.keySet()));
+        }
     }
 
     /**
@@ -76,40 +90,47 @@ public class PersistedStorageUnit implements Serializable {
      *         store the entry
      */
     public PutType putEntry(KVEntry entry) throws UnsupportedOperationException, StorageException {
-        String key = entry.getKey();
-        String value = entry.getValue();
+        try (CloseableLock lock = new CloseableLock(writeLock())) {
+            String key = entry.getKey();
+            String value = entry.getValue();
 
-        PutType responseType = null;
+            PutType responseType = null;
 
-        if (!entries.containsKey(key)) {
-            if (entries.size() + 1 > MAX_NUMBER_OF_ENTRIES) {
-                throw new UnsupportedOperationException("Storage is full, cannot add new entry.");
+            if (!entries.containsKey(key)) {
+                if (entries.size() + 1 > MAX_NUMBER_OF_ENTRIES) {
+                    throw new UnsupportedOperationException(
+                            "Storage is full, cannot add new entry.");
+                } else {
+                    responseType = PutType.INSERT;
+                }
             } else {
-                responseType = PutType.INSERT;
+                responseType = PutType.UPDATE;
             }
-        } else {
-            responseType = PutType.UPDATE;
+
+            entries.put(key, value);
+            save();
+
+            return responseType;
         }
-
-        entries.put(key, value);
-        save();
-
-        return responseType;
     }
 
     /**
      * @return the value which belong to the respective key
      */
     public String getValue(String key) {
-        return entries.get(key);
+        try (CloseableLock lock = new CloseableLock(readLock())) {
+            return entries.get(key);
+        }
     }
 
     /**
      * Removes the key together with the value belonging to it, from the storage unit.
      */
     public void removeEntry(String key) throws StorageException {
-        entries.remove(key);
-        save();
+        try (CloseableLock lock = new CloseableLock(writeLock())) {
+            entries.remove(key);
+            save();
+        }
     }
 
     /**
@@ -118,7 +139,9 @@ public class PersistedStorageUnit implements Serializable {
      * @throws IOException if any error occurs
      */
     public void deleteFile() throws IOException {
-        PathUtils.deleteFile(getPath());
+        try (CloseableLock lock = new CloseableLock(writeLock())) {
+            PathUtils.deleteFile(getPath());
+        }
     }
 
     /**
@@ -127,15 +150,17 @@ public class PersistedStorageUnit implements Serializable {
      * @throws StorageException if any error occurs
      */
     public void save() throws StorageException {
-        try {
-            PathUtils.saveToFile(getPath(), this);
-        } catch (FileNotFoundException e) {
-            getLogger().error(e);
-            throw new StorageException("File was not found.");
-        } catch (IOException e) {
-            getLogger().error(e);
-            throw new StorageException(
-                    "Storage unit was not saved to the persistent storage due to IO error.");
+        try (CloseableLock lock = new CloseableLock(writeLock())) {
+            try {
+                PathUtils.saveToFile(getPath(), this);
+            } catch (FileNotFoundException e) {
+                getLogger().error(e);
+                throw new StorageException("File was not found.");
+            } catch (IOException e) {
+                getLogger().error(e);
+                throw new StorageException(
+                        "Storage unit was not saved to the persistent storage due to IO error.");
+            }
         }
     }
 
@@ -144,6 +169,14 @@ public class PersistedStorageUnit implements Serializable {
      */
     public void setPath(Path path) {
         this.filePath = path.toAbsolutePath().toString();
+    }
+
+    protected Lock readLock() {
+        return accessLock.readLock();
+    }
+
+    protected Lock writeLock() {
+        return accessLock.writeLock();
     }
 
     /**

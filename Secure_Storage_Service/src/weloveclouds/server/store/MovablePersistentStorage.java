@@ -6,17 +6,20 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.commons.utils.PathUtils;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.exceptions.StorageException;
+import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.PersistedStorageUnit;
+import weloveclouds.server.store.models.PutType;
 
 /**
  * Represents a {@link KVPersistentStorage}, whose entries and storage units can be filtered,
@@ -28,8 +31,32 @@ public class MovablePersistentStorage extends KVPersistentStorage {
 
     private static final Logger LOGGER = Logger.getLogger(MovablePersistentStorage.class);
 
+    private ReentrantReadWriteLock movingStorageUnitsLock;
+
     public MovablePersistentStorage(Path rootPath) throws IllegalArgumentException {
         super(rootPath);
+        this.movingStorageUnitsLock = new ReentrantReadWriteLock();
+    }
+
+    @Override
+    public PutType putEntry(KVEntry entry) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(movingStorageUnitsLock.readLock())) {
+            return super.putEntry(entry);
+        }
+    }
+
+    @Override
+    public String getValue(String key) throws StorageException, ValueNotFoundException {
+        try (CloseableLock lock = new CloseableLock(movingStorageUnitsLock.readLock())) {
+            return super.getValue(key);
+        }
+    }
+
+    @Override
+    public void removeEntry(String key) throws StorageException {
+        try (CloseableLock lock = new CloseableLock(movingStorageUnitsLock.readLock())) {
+            super.removeEntry(key);
+        }
     }
 
     /**
@@ -38,7 +65,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @param fromStorageUnits from where the entries will be copied
      */
     public void putEntries(Set<MovableStorageUnit> fromStorageUnits) throws StorageException {
-        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+        try (CloseableLock lock = new CloseableLock(movingStorageUnitsLock.writeLock())) {
             LOGGER.debug("Putting storage units from parameter data structure started.");
 
             for (MovableStorageUnit storageUnit : fromStorageUnits) {
@@ -66,7 +93,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @throws StorageException if an error occurs
      */
     public Set<MovableStorageUnit> filterEntries(HashRange range) {
-        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+        try (CloseableLock lock = new CloseableLock(movingStorageUnitsLock.readLock())) {
             LOGGER.debug(StringUtils.join(" ",
                     "Filtering storage units according to range filter (", range, ") started."));
 
@@ -89,7 +116,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * @throws StorageException if an error occurs
      */
     public void removeEntries(HashRange range) throws StorageException {
-        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+        try (CloseableLock lock = new CloseableLock(movingStorageUnitsLock.writeLock())) {
             LOGGER.debug(StringUtils.join(" ", "Removing storage units according to range filter (",
                     range, ") started."));
 
@@ -130,7 +157,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
      * accordingly after the operation is finished.
      */
     public void defragment() {
-        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+        try (CloseableLock lock = new CloseableLock(movingStorageUnitsLock.writeLock())) {
             LOGGER.debug("Defragmentation started.");
             Iterator<PersistedStorageUnit> storageUnitIterator =
                     collectNotFullStorageUnits().iterator();

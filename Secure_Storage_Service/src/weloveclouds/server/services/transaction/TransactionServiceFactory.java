@@ -17,7 +17,6 @@ import weloveclouds.server.requests.kvserver.transaction.TransactionReceiverServ
 import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
 import weloveclouds.server.requests.kvserver.transfer.KVTransferRequestFactory;
 import weloveclouds.server.services.datastore.IMovableDataAccessService;
-import weloveclouds.server.services.datastore.SimulatedMovableDataAccessService;
 import weloveclouds.server.services.transaction.flow.ITransactionExecutionFlow;
 import weloveclouds.server.services.transaction.flow.twopc.TwoPCCoordinatorExecutionFlow;
 import weloveclouds.server.services.transaction.flow.twopc.TwoPCReceiverSideRestorationFlow;
@@ -58,11 +57,11 @@ public class TransactionServiceFactory {
      */
     public IRequestFactory<IKVTransactionMessage, IKVTransactionRequest> createTransactionReceiverService(
             IMovableDataAccessService dataAccessService) {
-        SimulatedMovableDataAccessService simulatedDAS = new SimulatedMovableDataAccessService();
         return new TransactionReceiverService.Builder()
                 .transactionLog(new ConcurrentHashMap<UUID, ReceivedTransactionContext>())
                 .transactionServiceFactory(this)
-                .simulatedDASBehavior(new KVTransferRequestFactory(simulatedDAS))
+                .simulatedDASBehavior(new KVTransferRequestFactory(
+                        dataAccessService.getSimulatedDataAccessService()))
                 .realDASBehavior(new KVTransferRequestFactory(dataAccessService)).build();
     }
 
