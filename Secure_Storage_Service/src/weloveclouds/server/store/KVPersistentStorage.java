@@ -143,7 +143,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      * Scans through the hard storage and notes which keys were already stored in the hard storage
      * on what paths.
      */
-    public void loadStorageUnitsFromRootPath() {
+    protected void loadStorageUnitsFromRootPath() {
         try (CloseableLock lock = new CloseableLock(loadingFromRootPathLock.writeLock())) {
             LOGGER.debug("Initializing persistent store with already stored keys.");
             storageUnits.clear();

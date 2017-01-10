@@ -36,6 +36,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
     public MovablePersistentStorage(Path rootPath) throws IllegalArgumentException {
         super(rootPath);
         this.movingStorageUnitsLock = new ReentrantReadWriteLock();
+        loadStorageUnitsFromRootPath();
     }
 
     @Override
@@ -60,7 +61,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
     }
 
     @Override
-    public void loadStorageUnitsFromRootPath() {
+    protected void loadStorageUnitsFromRootPath() {
         try (CloseableLock lock = new CloseableLock(movingStorageUnitsLock.readLock())) {
             super.loadStorageUnitsFromRootPath();
         }
