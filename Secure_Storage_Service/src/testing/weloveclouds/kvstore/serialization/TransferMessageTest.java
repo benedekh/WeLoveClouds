@@ -24,6 +24,13 @@ import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 
+
+/**
+ * Tests for the {@link IKVTransferMessage} to verify its serialization and deserialization
+ * processes.
+ * 
+ * @author Benedek
+ */
 public class TransferMessageTest extends TestCase {
 
     private static IDeserializer<IKVTransferMessage, String> transferMessageDeserializer =

@@ -11,6 +11,13 @@ import weloveclouds.commons.exceptions.IllegalRequestException;
 import weloveclouds.commons.networking.models.requests.ICallbackRegister;
 import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
 
+/**
+ * Represents an abstract transaction request.
+ * 
+ * @author Benedek
+ * 
+ * @param <E> type of the builder that is called runtime
+ */
 public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         implements IKVTransactionRequest {
 
@@ -33,6 +40,11 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         return this;
     }
 
+    /**
+     * Builder pattern for creating a {@link AbstractRequest} instance.
+     *
+     * @author Benedek
+     */
     public abstract static class Builder<E extends Builder<E>> {
         private UUID transactionId;
         private Map<UUID, ReceivedTransactionContext> transactionLog;
@@ -50,6 +62,11 @@ public abstract class AbstractRequest<E extends AbstractRequest.Builder<E>>
         }
     }
 
+    /**
+     * Helper class which does nothing.
+     * 
+     * @author Benedek
+     */
     protected class EmptyCallbackRegister implements ICallbackRegister {
 
         @Override

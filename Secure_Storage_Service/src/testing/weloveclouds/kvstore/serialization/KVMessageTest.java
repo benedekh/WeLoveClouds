@@ -15,7 +15,7 @@ import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 
 /**
- * Tests for the {@link KVMessage} to verify its serialization and deserialization processes.
+ * Tests for the {@link IKVMessage} to verify its serialization and deserialization processes.
  * 
  * @author Benedek
  */

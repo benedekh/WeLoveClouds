@@ -11,6 +11,11 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.Status
 import weloveclouds.server.services.transaction.SenderTransaction;
 import weloveclouds.server.services.transaction.tasks.TransactionTask;
 
+/**
+ * CommitReady task for a transaction. Simply sends the COMMIT READY message to every participant.
+ * 
+ * @author Benedek
+ */
 public class CommitReadyTask extends TransactionTask<CommitReadyTask.Builder> {
 
     private static final Logger LOGGER = Logger.getLogger(CommitReadyTask.class);
@@ -43,6 +48,11 @@ public class CommitReadyTask extends TransactionTask<CommitReadyTask.Builder> {
         return !everyonesHasTheExpectedStatus(responses, StatusType.RESPONSE_COMMIT_READY);
     }
 
+    /**
+     * Builder pattern for creating a {@link CommitReadyTask} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder extends TransactionTask.Builder<Builder> {
 
         public CommitReadyTask build() {

@@ -16,6 +16,10 @@ import weloveclouds.commons.hashing.models.HashRange;
  */
 public class HashingUtils {
 
+    /**
+     * Divides the referred hashRange into {@link numberOfSubRanges} number of sub ranges which have
+     * equal size.
+     */
     public static List<HashRange> divideHashRangeIntoEqualSubranges(HashRange hashRange,
             int numberOfSubRanges) {
         List<HashRange> subRanges = new ArrayList<>();

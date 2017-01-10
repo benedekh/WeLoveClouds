@@ -7,7 +7,9 @@ import weloveclouds.commons.utils.StringUtils;
 
 
 /**
- * Created by Benoit on 2016-12-10.
+ * Represents an XML node which have child nodes.
+ * 
+ * @author Benoit
  */
 public class XMLRootNode extends AbstractXMLNode {
     private List<AbstractXMLNode> innerNodes;

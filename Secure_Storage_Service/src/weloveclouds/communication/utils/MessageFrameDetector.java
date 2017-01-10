@@ -9,11 +9,19 @@ import java.util.regex.Pattern;
 
 import weloveclouds.commons.serialization.models.SerializedMessage;
 
+/**
+ * Detects the frames of a message.
+ * 
+ * @author Benedek
+ */
 public class MessageFrameDetector {
 
     private String regexp;
     private Pattern pattern;
 
+    /**
+     * The name of the tag which frames the message.
+     */
     public MessageFrameDetector(String tag) {
         this.regexp = RegexpFactory.createRegexpForTag(tag);
         this.pattern = Pattern.compile(regexp);

@@ -2,7 +2,6 @@ package weloveclouds.communication.api.v1;
 
 import java.io.IOException;
 
-import weloveclouds.communication.services.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
@@ -13,6 +12,7 @@ import weloveclouds.communication.exceptions.UnableToSendContentToServerExceptio
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
 import weloveclouds.communication.services.ICommunicationService;
+import weloveclouds.communication.services.resend.NetworkPacketResenderFactory;
 
 /**
  * First version implementation of the communication API. Simply forwards the method calls to the
@@ -28,7 +28,7 @@ public class CommunicationApiV1 implements ICommunicationApi {
     private NetworkPacketResenderFactory resenderFactory;
 
     public CommunicationApiV1(ICommunicationService communicationService,
-                              NetworkPacketResenderFactory resenderFactory) {
+            NetworkPacketResenderFactory resenderFactory) {
         this.communicationService = communicationService;
         this.resenderFactory = resenderFactory;
     }

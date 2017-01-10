@@ -57,7 +57,7 @@ public class TimedHelp extends Thread implements ITransactionRestorationRequest 
             try (CloseableLock lock = new CloseableLock(interruptLock)) {
                 transactionServiceFactory
                         .create2PCReceiverSideRestorationService(abortRequest, commitRequest)
-                        .executeEmptyTransactionsFor(transaction.getTransactionId(),
+                        .executeTransactionReferredByIDFor(transaction.getTransactionId(),
                                 transaction.getOtherParticipants());
             }
         } catch (InterruptedException ex) {

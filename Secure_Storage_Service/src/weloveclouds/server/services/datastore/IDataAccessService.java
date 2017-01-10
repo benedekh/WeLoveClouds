@@ -7,7 +7,7 @@ import weloveclouds.server.store.models.PutType;
 
 /**
  * A common interface for the data access layer through which key-value pairs can be stored on the
- * serer.
+ * server.
  * 
  * @author Benedek
  */

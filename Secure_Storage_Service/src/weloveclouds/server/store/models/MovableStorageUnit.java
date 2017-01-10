@@ -32,10 +32,16 @@ public class MovableStorageUnit extends PersistedStorageUnit {
         super(entries, filePath);
     }
 
+    /**
+     * Copies those entries whose key's hash value is in the given range.
+     */
     public MovableStorageUnit copyEntries(HashRange range) {
         return new MovableStorageUnit(filterEntries(range), getPath());
     }
 
+    /**
+     * @return an unmodifiable view of the entries
+     */
     public Set<Map.Entry<String, String>> getEntries() {
         return Collections.unmodifiableSet(entries.entrySet());
     }

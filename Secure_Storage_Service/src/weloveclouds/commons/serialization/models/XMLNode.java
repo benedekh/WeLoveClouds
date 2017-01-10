@@ -1,7 +1,9 @@
 package weloveclouds.commons.serialization.models;
 
 /**
- * Created by Benoit on 2016-12-10.
+ * Represents an XML node.
+ * 
+ * @author Benoit
  */
 public class XMLNode extends AbstractXMLNode {
     private String content;

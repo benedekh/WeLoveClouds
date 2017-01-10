@@ -9,6 +9,8 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
  * Represents an administrative message between the ECS and the KVServer.
+ * 
+ * @author Martin Jergler, Benedek
  */
 public interface IKVAdminMessage {
 

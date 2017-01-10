@@ -8,6 +8,12 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.server.services.transaction.SenderTransaction;
 
+/**
+ * An abstract transaction execution flow, which defines the steps to be executed for each
+ * transaction.
+ * 
+ * @author Benedek
+ */
 public abstract class TransactionExecutionFlow implements ITransactionExecutionFlow {
 
     private static final Logger LOGGER = Logger.getLogger(TransactionExecutionFlow.class);

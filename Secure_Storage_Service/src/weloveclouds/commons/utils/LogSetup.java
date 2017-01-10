@@ -10,6 +10,8 @@ import org.apache.log4j.PatternLayout;
 
 /**
  * Represents the initialization for the server logging with Log4J.
+ * 
+ * @author Martin Jergler
  */
 public class LogSetup {
 

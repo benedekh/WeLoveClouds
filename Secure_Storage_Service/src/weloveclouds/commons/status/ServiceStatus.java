@@ -1,7 +1,9 @@
 package weloveclouds.commons.status;
 
 /**
- * Created by Benoit on 2016-11-30.
+ * Represents the status of a service.
+ * 
+ * @author Benoit
  */
 public enum ServiceStatus {
     INITIALIZED, UNINITIALIZED, RUNNING, HALTED, WAITING, ERROR

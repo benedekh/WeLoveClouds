@@ -11,7 +11,7 @@ import weloveclouds.server.configuration.models.KVServerCLIContext;
 import weloveclouds.server.store.KVCache;
 
 /**
- * A cacheSize command which sets the size of the cache ({@link KVCache}).
+ * A cacheSize command which sets the size of the cache {@link KVCache}.
  * 
  * @author Benedek
  */
