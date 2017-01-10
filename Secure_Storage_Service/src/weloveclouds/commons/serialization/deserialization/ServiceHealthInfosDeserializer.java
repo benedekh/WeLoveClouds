@@ -18,27 +18,29 @@ import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
 /**
- * Created by Benoit on 2016-12-18.
+ * A deserializer which converts a {@link String} to a {@link ServiceHealthInfos}.
+ * 
+ * @author Benoit
  */
 public class ServiceHealthInfosDeserializer implements IDeserializer<ServiceHealthInfos, String> {
     IDeserializer<ServerConnectionInfo, String> serverConnectionInfoDeserializer;
 
     @Inject
-    public ServiceHealthInfosDeserializer(IDeserializer<ServerConnectionInfo, String>
-                                                  serverConnectionInfoDeserializer) {
+    public ServiceHealthInfosDeserializer(
+            IDeserializer<ServerConnectionInfo, String> serverConnectionInfoDeserializer) {
         this.serverConnectionInfoDeserializer = serverConnectionInfoDeserializer;
     }
 
     @Override
-    public ServiceHealthInfos deserialize(String serializedServiceInfos) throws
-            DeserializationException {
+    public ServiceHealthInfos deserialize(String serializedServiceInfos)
+            throws DeserializationException {
         try {
             return new ServiceHealthInfos.Builder()
                     .serviceName(deserializeServiceNameFrom(serializedServiceInfos))
                     .serviceStatus(deserializeServiceStatusFrom(serializedServiceInfos))
                     .servicePriority(deserializeServicePriorityFrom(serializedServiceInfos))
-                    .serviceEnpoint(serverConnectionInfoDeserializer
-                            .deserialize(serializedServiceInfos))
+                    .serviceEnpoint(
+                            serverConnectionInfoDeserializer.deserialize(serializedServiceInfos))
                     .numberOfActiveConnections(
                             deserializeNumberOfActiveConnections(serializedServiceInfos))
                     .build();
@@ -55,8 +57,8 @@ public class ServiceHealthInfosDeserializer implements IDeserializer<ServiceHeal
         if (matcher.find()) {
             return matcher.group(XML_NODE);
         } else {
-            throw new DeserializationException("Unable to deserialize service name from " +
-                    "service health infos: " + serializedServiceHealthInfos);
+            throw new DeserializationException("Unable to deserialize service name from "
+                    + "service health infos: " + serializedServiceHealthInfos);
         }
     }
 
@@ -67,8 +69,8 @@ public class ServiceHealthInfosDeserializer implements IDeserializer<ServiceHeal
         if (matcher.find()) {
             return ServiceStatus.valueOf(matcher.group(XML_NODE));
         } else {
-            throw new DeserializationException("Unable to deserialize service status from " +
-                    "service health infos: " + serializedServiceHealthInfos);
+            throw new DeserializationException("Unable to deserialize service status from "
+                    + "service health infos: " + serializedServiceHealthInfos);
         }
     }
 
@@ -79,21 +81,21 @@ public class ServiceHealthInfosDeserializer implements IDeserializer<ServiceHeal
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(XML_NODE));
         } else {
-            throw new DeserializationException("Unable to deserialize service priority from " +
-                    "service health infos: " + serializedServiceHealthInfos);
+            throw new DeserializationException("Unable to deserialize service priority from "
+                    + "service health infos: " + serializedServiceHealthInfos);
         }
     }
 
     private int deserializeNumberOfActiveConnections(String serializedServiceHealthInfos)
             throws DeserializationException {
-        Matcher matcher = getRegexFromToken(ACTIVE_CONNECTIONS)
-                .matcher(serializedServiceHealthInfos);
+        Matcher matcher =
+                getRegexFromToken(ACTIVE_CONNECTIONS).matcher(serializedServiceHealthInfos);
 
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(XML_NODE));
         } else {
-            throw new DeserializationException("Unable to deserialize number of connections from " +
-                    "service health infos: " + serializedServiceHealthInfos);
+            throw new DeserializationException("Unable to deserialize number of connections from "
+                    + "service health infos: " + serializedServiceHealthInfos);
         }
     }
 }

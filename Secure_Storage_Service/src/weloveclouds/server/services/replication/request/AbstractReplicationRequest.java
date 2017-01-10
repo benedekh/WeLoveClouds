@@ -22,8 +22,14 @@ public abstract class AbstractReplicationRequest<T, E extends AbstractReplicatio
         this.messageSerializer = builder.messageSerializer;
     }
 
+    /**
+     * @return the transfer message which will be forwarded to the replicas
+     */
     public abstract KVTransferMessage getTransferMessage();
 
+    /**
+     * Creates a deep copy of the object.
+     */
     public abstract AbstractReplicationRequest<T, E> clone();
 
     /**

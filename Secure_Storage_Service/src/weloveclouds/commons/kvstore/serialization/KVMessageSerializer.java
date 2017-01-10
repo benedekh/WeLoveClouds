@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
-import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.kvstore.serialization.helper.KVEntrySerializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.ISerializer;
@@ -21,7 +20,7 @@ import weloveclouds.commons.utils.StringUtils;
 
 
 /**
- * A serializer which converts a {@link KVMessage} to a {@link SerializedMessage}.
+ * A serializer which converts a {@link IKVMessage} to a {@link SerializedMessage}.
  * 
  * @author Benoit
  */

@@ -16,7 +16,7 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 
 /**
  * Validates different objects which are used in the requests ({@link IKVClientRequest},
- * {@link IKVTransferRequest}, {@link IKVECSRequest}} served by the KVServer.
+ * {@link IKVTransferRequest}, {@link IKVECSRequest}) served by the KVServer.
  * 
  * @author Benedek
  */
@@ -28,7 +28,8 @@ public class KVServerRequestsValidator {
     private static final int NETWORK_PORT_UPPER_LIMIT = 65535;
 
     /**
-     * A {@link KVEntry} key is invalid, if its size is bigger than 20 bytes.
+     * A {@link KVEntry} key is invalid, if its size is bigger than
+     * {@value #KEY_SIZE_LIMIT_IN_BYTES} bytes.
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
@@ -37,7 +38,8 @@ public class KVServerRequestsValidator {
     }
 
     /**
-     * A {@link KVEntry} value is invalid, if its size is bigger than 120 kbytes.
+     * A {@link KVEntry} value is invalid, if its size is bigger than
+     * {@value #VALUE_SIZE_LIMIT_IN_BYTES} bytes.
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
@@ -170,7 +172,8 @@ public class KVServerRequestsValidator {
      * A {@link ServerConnectionInfo} is valid, if:<br>
      * (1) it is not null,<br>
      * (2) neither the underlying IP address is null, <br>
-     * (3) neither the underlying port is invalid (out of range [0, 65535]).
+     * (3) neither the underlying port is invalid (out of range [{@value #NETWORK_PORT_LOWER_LIMIT},
+     * {@value #NETWORK_PORT_UPPER_LIMIT}]).
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */

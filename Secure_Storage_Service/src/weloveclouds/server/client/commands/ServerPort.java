@@ -22,7 +22,7 @@ public class ServerPort extends AbstractServerCommand {
     private KVServerCLIContext context;
 
     /**
-     * @param arguments the {@link #PORT_INDEX} element of the array shall contain new port
+     * @param arguments the {@value #PORT_INDEX} element of the array shall contain new port
      * @param context contains the server parameter configuration
      */
     public ServerPort(String[] arguments, KVServerCLIContext context) {

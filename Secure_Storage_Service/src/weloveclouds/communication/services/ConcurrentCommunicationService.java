@@ -18,7 +18,7 @@ import weloveclouds.communication.utils.MessageFramesDetector;
 /**
  * A communication service that can handle multiple connections concurrently.
  * 
- * @author Benoit
+ * @author Benoit, Benedek
  */
 public class ConcurrentCommunicationService implements IConcurrentCommunicationService {
 

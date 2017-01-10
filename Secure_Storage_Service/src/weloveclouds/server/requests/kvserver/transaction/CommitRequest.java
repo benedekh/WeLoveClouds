@@ -17,6 +17,11 @@ import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatu
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
 import weloveclouds.server.store.exceptions.StorageException;
 
+/**
+ * Represents the commit phase of a transaction.
+ * 
+ * @author Benedek
+ */
 public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
 
     private static final Logger LOGGER = Logger.getLogger(CommitRequest.class);
@@ -86,6 +91,11 @@ public class CommitRequest extends AbstractRequest<CommitRequest.Builder> {
         return this;
     }
 
+    /**
+     * Builder pattern for creating a {@link CommitRequest} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder extends AbstractRequest.Builder<Builder> {
         private IRequestFactory<IKVTransferMessage, IKVTransferRequest> realDASBehavior;
 
