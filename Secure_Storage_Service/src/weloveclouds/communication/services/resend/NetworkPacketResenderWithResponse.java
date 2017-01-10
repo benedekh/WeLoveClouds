@@ -43,6 +43,13 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
 
         while (executionStatus == Status.RUNNING && numberOfAttemptsSoFar < maxNumberOfAttempts) {
             try {
+                if (!communicationService.isConnected()) {
+                    receiverThread.interrupt();
+                    String errorMessage = "Connection is closed, resend stopped.";
+                    LOGGER.error(errorMessage);
+                    throw new IOException(errorMessage);
+                }
+
                 try {
                     LOGGER.info("Sending packet over the network.");
                     communicationService.send(packetToBeSent);
@@ -54,6 +61,8 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
                 }
             } catch (InterruptedException ex) {
                 LOGGER.debug(ex);
+                receiverThread.interrupt();
+                throw new IOException("Resend unexpectedly stopped.");
             }
         }
 
@@ -76,6 +85,13 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
 
         while (executionStatus == Status.RUNNING && numberOfAttemptsSoFar < maxNumberOfAttempts) {
             try {
+                if (!connection.isConnected()) {
+                    receiverThread.interrupt();
+                    String errorMessage = "Connection is closed, resend stopped.";
+                    LOGGER.error(errorMessage);
+                    throw new IOException(errorMessage);
+                }
+
                 try {
                     LOGGER.info("Sending packet over the network.");
                     concurrentCommunicationService.send(packetToBeSent, connection);
@@ -87,6 +103,8 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
                 }
             } catch (InterruptedException ex) {
                 LOGGER.debug(ex);
+                receiverThread.interrupt();
+                throw new IOException("Resend unexpectedly stopped.");
             }
         }
 

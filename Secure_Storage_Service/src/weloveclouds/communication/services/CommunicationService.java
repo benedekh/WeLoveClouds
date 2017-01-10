@@ -99,7 +99,7 @@ public class CommunicationService implements ICommunicationService {
     }
 
     @Override
-    public void send(byte[] content) throws IOException, UnableToSendContentToServerException {
+    public void send(byte[] content) throws UnableToSendContentToServerException {
         try {
             if (connectionToEndpoint.isConnected()) {
                 LOGGER.debug("Getting output stream from the connection.");
@@ -109,11 +109,11 @@ public class CommunicationService implements ICommunicationService {
                 outputStream.flush();
                 LOGGER.info("Message sent.");
             } else {
-                LOGGER.debug("Client is not connected, so message cannot be sent.");
                 throw new ClientNotConnectedException();
             }
         } catch (Exception ex) {
-            throw new UnableToSendContentToServerException(ex.getMessage());
+            LOGGER.error(ex);
+            throw new UnableToSendContentToServerException();
         }
     }
 

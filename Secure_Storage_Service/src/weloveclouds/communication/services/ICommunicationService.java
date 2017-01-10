@@ -41,10 +41,9 @@ public interface ICommunicationService {
     /**
      * Sends a message as a byte array to the server.
      *
-     * @throws IOException see {@link OutputStream#write(byte[]), OutputStream#flush(),
-     *         Connection#getOutputStream()}
+     * @throws UnableToSendContentToServerException if an error occurs
      */
-    void send(byte[] content) throws IOException, UnableToSendContentToServerException;
+    void send(byte[] content) throws UnableToSendContentToServerException;
 
     /**
      * Reads a message as a byte array from the server if any is available.

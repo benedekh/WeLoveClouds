@@ -30,6 +30,11 @@ public class NetworkPacketResender extends AbstractNetworkPacketResender {
         while (numberOfAttemptsSoFar < maxNumberOfAttempts) {
             try {
                 try {
+                    if (!communicationService.isConnected()) {
+                        String errorMessage = "Connection is closed, resend stopped.";
+                        LOGGER.error(errorMessage);
+                        throw new IOException(errorMessage);
+                    }
                     LOGGER.info("Sending packet over the network.");
                     communicationService.send(packetToBeSent);
                     return new byte[0];
@@ -54,6 +59,11 @@ public class NetworkPacketResender extends AbstractNetworkPacketResender {
         while (numberOfAttemptsSoFar < maxNumberOfAttempts) {
             try {
                 try {
+                    if (!connection.isConnected()) {
+                        String errorMessage = "Connection is closed, resend stopped.";
+                        LOGGER.error(errorMessage);
+                        throw new IOException(errorMessage);
+                    }
                     LOGGER.info("Sending packet over the network.");
                     concurrentCommunicationService.send(packetToBeSent, connection);
                     return new byte[0];

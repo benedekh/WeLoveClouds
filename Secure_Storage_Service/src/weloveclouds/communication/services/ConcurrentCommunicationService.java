@@ -42,13 +42,11 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
                 outputStream.flush();
                 LOGGER.info("Message sent.");
             } else {
-                LOGGER.debug("Client is not connected, so message cannot be sent.");
                 throw new ClientNotConnectedException();
             }
         } catch (Exception ex) {
-            String errorMessage = "Client is not connected, so message cannot be sent.";
-            LOGGER.debug(errorMessage);
-            throw new IOException(errorMessage);
+            LOGGER.error(ex);
+            throw new IOException("Client is not connected, so message cannot be sent.");
         }
     }
 
