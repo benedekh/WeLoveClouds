@@ -2,5 +2,5 @@ language: java
 jdk:
   - oraclejdk7
 script:
-  - cd Replicated_Storage_Service/
+  - cd Secure_Storage_Service/
   - ant build-jar
