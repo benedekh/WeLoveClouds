@@ -15,6 +15,12 @@ import weloveclouds.server.requests.kvserver.transaction.AbortRequest;
 import weloveclouds.server.requests.kvserver.transaction.CommitRequest;
 import weloveclouds.server.services.transaction.tasks.ITransactionTask;
 
+/**
+ * Decides if the transaction shall be committed or aborted, based on the replies received from
+ * other participants.
+ * 
+ * @author Benedek
+ */
 public class CommitOrAbortDecisionTask implements ITransactionTask {
 
     private static final Logger LOGGER = Logger.getLogger(CommitOrAbortDecisionTask.class);
@@ -65,6 +71,11 @@ public class CommitOrAbortDecisionTask implements ITransactionTask {
         return responses.contains(StatusType.RESPONSE_ABORTED);
     }
 
+    /**
+     * Builder pattern for creating a {@link CommitOrAbortDecisionTask} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private AbortRequest abortRequest;
         private CommitRequest commitRequest;

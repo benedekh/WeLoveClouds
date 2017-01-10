@@ -118,7 +118,7 @@ public class Get extends AbstractKVCommunicationApiCommand {
         private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
 
         /**
-         * @param arguments contains the key in the {@link #KEY_INDEX} position
+         * @param arguments contains the key in the {@value #KEY_INDEX} position
          */
         public Builder arguments(String[] arguments) {
             this.arguments = arguments;

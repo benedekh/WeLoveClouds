@@ -7,10 +7,10 @@ import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.models.PersistedStorageUnit;
 
 /**
- * An initialization context object which stores those parameters that are neccessary for the
- * correct behavior of a {@link DataAccessService}. E.g.:<br>
+ * An initialization context object which stores those parameters that are necessary for the correct
+ * behavior of a {@link DataAccessService}. E.g.:<br>
  * (1) size of the cache,<br>
- * (2) displacement startegy to be used in the cache,<br>
+ * (2) displacement strategy to be used in the cache,<br>
  * (3) path for the {@link PersistedStorageUnit} where it stores the entries.
  * 
  * @author Benedek
@@ -21,12 +21,12 @@ public class DataAccessServiceInitializationContext {
     private DisplacementStrategy displacementStrategy;
     private Path storageRootFolderPath;
 
-    public DataAccessServiceInitializationContext(){
+    public DataAccessServiceInitializationContext() {
         this.cacheSize = 0;
         this.displacementStrategy = null;
         this.storageRootFolderPath = null;
     }
-    
+
     protected DataAccessServiceInitializationContext(Builder builder) {
         this.cacheSize = builder.cacheSize;
         this.displacementStrategy = builder.displacementStrategy;
@@ -56,8 +56,6 @@ public class DataAccessServiceInitializationContext {
     public void setStorageRootFolderPath(Path storageRootFolderPath) {
         this.storageRootFolderPath = storageRootFolderPath;
     }
-
-
 
     /**
      * A builder to create a {@link DataAccessServiceInitializationContext} instance.

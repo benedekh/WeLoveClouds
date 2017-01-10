@@ -31,6 +31,11 @@ import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.server.configuration.models.KVServerPortConstants;
 
+/**
+ * Unit tests for validating KVServer, server-side request validation of messages from KVECS.
+ * 
+ * @author Benedek
+ */
 public class KVServerHandlingECSRequestTests {
 
     private static final String SERVER_IP_ADDRESS = "localhost";

@@ -15,6 +15,7 @@ import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.utils.CloseableLock;
+import weloveclouds.server.requests.kvserver.transaction.CommitReadyRequest;
 import weloveclouds.server.services.datastore.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.datastore.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.datastore.exceptions.UninitializedServiceException;
@@ -25,6 +26,13 @@ import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.PutType;
 
+/**
+ * A {@link IMovableDataAccessService} whose operations only simulate their behavior, but no entry
+ * is stored ever. Used by {@link CommitReadyRequest} to simulate a transaction's effect on the data
+ * access service.
+ * 
+ * @author Benedek
+ */
 public class SimulatedMovableDataAccessService implements IMovableDataAccessService {
 
     private volatile DataAccessServiceStatus servicePreviousStatus;

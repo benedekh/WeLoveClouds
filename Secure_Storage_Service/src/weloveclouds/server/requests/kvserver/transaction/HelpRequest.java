@@ -10,6 +10,11 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatus;
 
+/**
+ * Represents a request, when another participant of the transaction wants to query the status of the transaction at this participant.
+ * 
+ * @author Benedek
+ */
 public class HelpRequest extends AbstractRequest<HelpRequest.Builder> {
 
     private static Logger LOGGER = Logger.getLogger(HelpRequest.class);
@@ -36,6 +41,11 @@ public class HelpRequest extends AbstractRequest<HelpRequest.Builder> {
         return this;
     }
 
+    /**
+     * Builder pattern for creating a {@link HelpRequest} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder extends AbstractRequest.Builder<Builder> {
 
         public HelpRequest build() {

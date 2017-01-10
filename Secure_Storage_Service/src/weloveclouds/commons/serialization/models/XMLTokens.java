@@ -1,7 +1,9 @@
 package weloveclouds.commons.serialization.models;
 
 /**
- * Created by Benoit on 2016-12-08.
+ * XML token constants.
+ * 
+ * @author Benoit, Benedek
  */
 public class XMLTokens {
     public static final String ACTIVE_CONNECTIONS = "ACTIVE_CONNECTIONS";

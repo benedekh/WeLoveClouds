@@ -22,6 +22,11 @@ import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.server.api.KVCommunicationApiFactory;
 import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
+/**
+ * Utility class which initializes the KVServer and updates its ring metadata.
+ * 
+ * @author Benedek
+ */
 public class KVServerInitializationUtils implements AutoCloseable {
 
     private static final String SERVER_IP_ADDRESS = "localhost";
@@ -54,15 +59,30 @@ public class KVServerInitializationUtils implements AutoCloseable {
         serverCommunication.connect();
     }
 
+    /**
+     * Update the KVServer's ring metadata, so that it only handles "A" keys.
+     * 
+     * @throws Exception in case an error occurs
+     */
     public void updateRingMetadataServerHandlesOnlyHashA() throws Exception {
         updateRingMetadata(new HashRange.Builder().begin(HashingUtils.getHash("A"))
                 .end(HashingUtils.getHash("A")).build());
     }
 
+    /**
+     * Update the KVServer's ring metadata, so that it handles every hash.
+     * 
+     * @throws Exception in case an error occurs
+     */
     public void updateRingMetadataServerHandlesEveryHash() throws Exception {
         updateRingMetadata(EVERY_HASH);
     }
 
+    /**
+     * Initializes the KVServer, so that it handles every hash.
+     * 
+     * @throws Exception in case an error occurs
+     */
     public void initializeServerHandlesEveryHash() throws Exception {
         RingMetadataPart part = createRingMetadataPart(EVERY_HASH);
 
@@ -79,6 +99,11 @@ public class KVServerInitializationUtils implements AutoCloseable {
         }
     }
 
+    /**
+     * Starts the KVServer.
+     * 
+     * @throws Exception in case an error occurs
+     */
     public void startServer() throws Exception {
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.START).build();
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
@@ -111,6 +136,5 @@ public class KVServerInitializationUtils implements AutoCloseable {
         return new RingMetadataPart.Builder().connectionInfo(server)
                 .readRanges(new HashSet<>(Arrays.asList(range))).writeRange(range).build();
     }
-
 
 }

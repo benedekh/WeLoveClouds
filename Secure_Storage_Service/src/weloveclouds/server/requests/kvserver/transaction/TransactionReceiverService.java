@@ -15,6 +15,12 @@ import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransact
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
 import weloveclouds.server.services.transaction.TransactionServiceFactory;
 
+/**
+ * A service which is responsible for receiving transactions on the KVServer side and handling them
+ * according to the status information in the transaction.
+ * 
+ * @author Benedek
+ */
 public class TransactionReceiverService
         implements IRequestFactory<IKVTransactionMessage, IKVTransactionRequest> {
 
@@ -70,6 +76,11 @@ public class TransactionReceiverService
         return request;
     }
 
+    /**
+     * Builder pattern for creating a {@link TransactionReceiverService} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private Map<UUID, ReceivedTransactionContext> transactionLog;
         private TransactionServiceFactory transactionServiceFactory;

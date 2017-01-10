@@ -47,8 +47,6 @@ public class DataAccessServiceFactory {
 
     /**
      * @param initializationContext the parameters for the initialization
-     * @param replicationTransferer helper class which transfers the replication requests to the
-     *        replicas
      * @param replicationService the service which is responsible for the replication
      * @return a {@link ReplicableDataAccessService} which is already initialized by the parameters
      */

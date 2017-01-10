@@ -72,7 +72,6 @@ public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends Abstr
         }
     }
 
-
     /**
      * A builder to create a {@link Server} instance.
      *

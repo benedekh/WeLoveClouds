@@ -2,6 +2,8 @@ package weloveclouds.commons.kvstore.models.messages;
 
 /**
  * Represents a Key-Value message.
+ * 
+ * @author Martin Jergler
  */
 public interface IKVMessage {
 

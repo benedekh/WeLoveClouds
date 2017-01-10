@@ -11,6 +11,11 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.Status
 import weloveclouds.server.services.transaction.SenderTransaction;
 import weloveclouds.server.services.transaction.tasks.TransactionTask;
 
+/**
+ * Abort task for a transaction. Simply sends the ABORT message to every participant.
+ * 
+ * @author Benedek
+ */
 public class AbortTask extends TransactionTask<AbortTask.Builder> {
 
     private static final Logger LOGGER = Logger.getLogger(AbortTask.class);
@@ -42,6 +47,11 @@ public class AbortTask extends TransactionTask<AbortTask.Builder> {
         return !everyonesHasTheExpectedStatus(responses, StatusType.RESPONSE_ABORTED);
     }
 
+    /**
+     * Builder pattern for creating a {@link Abort} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder extends TransactionTask.Builder<Builder> {
 
         public AbortTask build() {

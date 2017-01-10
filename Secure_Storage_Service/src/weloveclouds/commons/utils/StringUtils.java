@@ -38,6 +38,9 @@ public class StringUtils {
         }
     }
 
+    /**
+     * @return true if the text is not null and it is not empty either.
+     */
     public static boolean stringIsNotEmpty(String text) {
         return text != null && !"null".equals(text) && !text.isEmpty();
     }
