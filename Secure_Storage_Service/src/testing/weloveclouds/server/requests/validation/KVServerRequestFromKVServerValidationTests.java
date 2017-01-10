@@ -2,10 +2,9 @@ package testing.weloveclouds.server.requests.validation;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -79,12 +78,12 @@ public class KVServerRequestFromKVServerValidationTests {
 
     public void testTransfer() throws UnableToSendContentToServerException,
             ConnectionClosedException, DeserializationException, IOException {
-        Map<String, String> keyval1 = new HashMap<>();
+        ConcurrentHashMap<String, String> keyval1 = new ConcurrentHashMap<>();
         keyval1.put("hello", "world");
         keyval1.put("apple", "juice");
         MovableStorageUnit unit1 = new MovableStorageUnit(keyval1, PathUtils.createDummyPath());
 
-        Map<String, String> keyval2 = new HashMap<>(keyval1);
+        ConcurrentHashMap<String, String> keyval2 = new ConcurrentHashMap<>(keyval1);
         keyval2.put("orange", "banana");
         MovableStorageUnit unit2 = new MovableStorageUnit(keyval2, PathUtils.createDummyPath());
 

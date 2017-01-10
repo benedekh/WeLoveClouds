@@ -59,8 +59,7 @@ public class PathUtils {
      * @throws IOException if an error occurs
      */
     public static Path createDummyPath() throws IOException {
-        File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".ser");
-        return tempFile.toPath();
+        return File.createTempFile(UUID.randomUUID().toString(), ".ser").toPath();
     }
 
     /**

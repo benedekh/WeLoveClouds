@@ -175,6 +175,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     protected void putStorageUnitIntoFreeSpaceCache(PersistedStorageUnit storageUnit) {
         if (!storageUnit.isFull() && !unitsWithFreeSpace.contains(storageUnit)) {
             unitsWithFreeSpace.add(storageUnit);
+            storageUnit.enableSavingIntoMemory();
         }
     }
 
@@ -182,7 +183,10 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      * Removes the respective storage unit from the cache for free storage units.
      */
     protected void removeStorageUnitFromFreeSpaceCache(PersistedStorageUnit storageUnit) {
-        unitsWithFreeSpace.remove(storageUnit);
+        boolean removeWasSuccessful = unitsWithFreeSpace.remove(storageUnit);
+        if (removeWasSuccessful) {
+            storageUnit.disableSavingIntoMemory();
+        }
     }
 
     /**
@@ -208,7 +212,9 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      */
     private PersistedStorageUnit loadStorageUnitFromPath(Path path) throws StorageException {
         try {
-            return PathUtils.<PersistedStorageUnit>loadFromFile(path);
+            // if it does not fail, then it contains the storage unit
+            PathUtils.<ConcurrentHashMap<String, String>>loadFromFile(path);
+            return new PersistedStorageUnit(path);
         } catch (IOException ex) {
             LOGGER.error(ex);
             throw new StorageException(

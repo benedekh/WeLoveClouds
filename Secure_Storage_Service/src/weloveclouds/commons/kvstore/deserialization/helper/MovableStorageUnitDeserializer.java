@@ -4,8 +4,7 @@ import static weloveclouds.commons.serialization.models.XMLTokens.KV_ENTRY;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
@@ -30,7 +29,7 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
 
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
-                Map<String, String> deserializedEntries = new HashMap<>();
+                ConcurrentHashMap<String, String> deserializedEntries = new ConcurrentHashMap<>();
                 Matcher entriesMatcher = getRegexFromToken(KV_ENTRY).matcher(from);
                 while (entriesMatcher.find()) {
                     KVEntry deserializedEntry =
