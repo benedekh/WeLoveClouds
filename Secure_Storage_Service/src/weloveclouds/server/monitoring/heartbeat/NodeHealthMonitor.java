@@ -65,7 +65,7 @@ public class NodeHealthMonitor extends Thread {
     /**
      * A builder to create a {@link NodeHealthMonitor} instance.
      *
-     * @author Benoit
+     * @author Benedek
      */
     public static class Builder {
         private NodeHealthInfos.Builder nodeHealthInfosBuilder;

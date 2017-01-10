@@ -4,6 +4,12 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
+/**
+ * Default heartbeat sender service, which simply logs the health infos (using the {@link #LOGGER})
+ * instead of sending them to the recipient.
+ * 
+ * @author Benedek
+ */
 public class DefaultHearbeatSenderService extends HeartbeatSenderService {
 
     private static final Logger LOGGER = Logger.getLogger(DefaultHearbeatSenderService.class);
@@ -21,7 +27,11 @@ public class DefaultHearbeatSenderService extends HeartbeatSenderService {
     @Override
     public void close() {}
 
-
+    /**
+     * A builder to create a {@link DefaultHearbeatSenderService} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder extends HeartbeatSenderService.Builder {
 
         public DefaultHearbeatSenderService build() {
