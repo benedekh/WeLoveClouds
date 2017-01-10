@@ -1,5 +1,7 @@
 package weloveclouds.ecs.models.services;
 
+import org.apache.log4j.Logger;
+
 import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
 import static weloveclouds.commons.status.ServiceStatus.UNINITIALIZED;
 
@@ -23,6 +25,7 @@ import weloveclouds.ecs.utils.RingMetadataHelper;
  * Created by Benoit on 2016-11-30.
  */
 public class DistributedService {
+    private static final Logger LOGGER = Logger.getLogger(DistributedService.class);
     private static final int TWO_REPLICAS = 2;
     private RingTopology<StorageNode> topology;
     private RingMetadata ringMetadata;
@@ -92,6 +95,7 @@ public class DistributedService {
                 break;
             }
         }
+        LOGGER.debug("Retrieved node named: " + name + " " + storageNode.toString());
         return storageNode;
     }
 

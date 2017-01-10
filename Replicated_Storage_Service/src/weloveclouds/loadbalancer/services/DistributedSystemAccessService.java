@@ -43,6 +43,7 @@ public class DistributedSystemAccessService {
     public void updateServiceHealthWith(NodeHealthInfos nodeHealthInfos) {
         try {
             reentrantReadWriteLock.writeLock().lock();
+            LOGGER.debug("Updating health infos of: " + nodeHealthInfos.getNodeName());
             distributedService.getNodeFrom(nodeHealthInfos.getNodeName())
                     .updateHealthInfos(nodeHealthInfos);
         } finally {
