@@ -4,8 +4,8 @@ import static weloveclouds.commons.serialization.models.XMLTokens.KV_ENTRY;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
@@ -14,6 +14,7 @@ import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.store.utils.KeyWithHash;
 
 /**
  * A deserializer which converts a {@link String} to a {@link MovableStorageUnit}.
@@ -30,12 +31,12 @@ public class MovableStorageUnitDeserializer implements IDeserializer<MovableStor
 
         if (StringUtils.stringIsNotEmpty(from)) {
             try {
-                Map<String, String> deserializedEntries = new HashMap<>();
+                SortedMap<KeyWithHash, String> deserializedEntries = new TreeMap<>();
                 Matcher entriesMatcher = getRegexFromToken(KV_ENTRY).matcher(from);
                 while (entriesMatcher.find()) {
                     KVEntry deserializedEntry =
                             kvEntryDeserializer.deserialize(entriesMatcher.group(XML_NODE));
-                    deserializedEntries.put(deserializedEntry.getKey(),
+                    deserializedEntries.put(new KeyWithHash(deserializedEntry.getKey()),
                             deserializedEntry.getValue());
                 }
                 deserialized =

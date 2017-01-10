@@ -13,6 +13,7 @@ import weloveclouds.server.requests.kvclient.IKVClientRequest;
 import weloveclouds.server.requests.kvecs.IKVECSRequest;
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
 import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.store.utils.KeyWithHash;
 
 /**
  * Validates different objects which are used in the requests ({@link IKVClientRequest},
@@ -161,7 +162,7 @@ public class KVServerRequestsValidator {
         }
 
         for (MovableStorageUnit storageUnit : storageUnits) {
-            Set<String> keySet = storageUnit.getKeys();
+            Set<KeyWithHash> keySet = storageUnit.getKeys();
             if (keySet == null) {
                 throw new IllegalArgumentException();
             }

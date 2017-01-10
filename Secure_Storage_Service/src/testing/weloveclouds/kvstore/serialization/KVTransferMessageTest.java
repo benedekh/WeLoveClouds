@@ -2,10 +2,10 @@ package testing.weloveclouds.kvstore.serialization;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.junit.Test;
 
@@ -23,6 +23,7 @@ import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.store.utils.KeyWithHash;
 
 /**
  * Tests for the {@link IKVTransferMessage} to verify its serialization and deserialization
@@ -40,13 +41,13 @@ public class KVTransferMessageTest extends TestCase {
     @Test
     public void testKVTransferMessageSerializationAndDeserialization()
             throws DeserializationException, IOException {
-        Map<String, String> keyval1 = new HashMap<>();
-        keyval1.put("hello", "world");
-        keyval1.put("apple", "juice");
+        SortedMap<KeyWithHash, String> keyval1 = new TreeMap<>();
+        keyval1.put(new KeyWithHash("hello"), "world");
+        keyval1.put(new KeyWithHash("apple"), "juice");
         MovableStorageUnit unit1 = new MovableStorageUnit(keyval1, PathUtils.createDummyPath());
 
-        Map<String, String> keyval2 = new HashMap<>(keyval1);
-        keyval2.put("orange", "banana");
+        SortedMap<KeyWithHash, String> keyval2 = new TreeMap<>(keyval1);
+        keyval2.put(new KeyWithHash("orange"), "banana");
         MovableStorageUnit unit2 = new MovableStorageUnit(keyval2, PathUtils.createDummyPath());
 
         Set<MovableStorageUnit> storageUnits = new HashSet<>(Arrays.asList(unit1, unit2));

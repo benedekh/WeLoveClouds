@@ -5,11 +5,11 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.SortedMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
@@ -24,6 +24,7 @@ import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.PersistedStorageUnit;
 import weloveclouds.server.store.models.PutType;
+import weloveclouds.server.store.utils.KeyWithHash;
 
 /**
  * The persistent storage for the {@link DataAccessService}} which stores the key-value pairs in
@@ -36,7 +37,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     protected static final String FILE_EXTENSION = "ser";
     private static final Logger LOGGER = Logger.getLogger(KVPersistentStorage.class);
 
-    protected Map<String, PersistedStorageUnit> storageUnits;
+    protected SortedMap<KeyWithHash, PersistedStorageUnit> storageUnits;
     protected Queue<PersistedStorageUnit> unitsWithFreeSpace;
 
     protected Path rootPath;
@@ -48,7 +49,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
         }
 
         this.rootPath = rootPath.toAbsolutePath();
-        this.storageUnits = new ConcurrentHashMap<>();
+        this.storageUnits = new ConcurrentSkipListMap<>();
         this.unitsWithFreeSpace = new ConcurrentLinkedDeque<>();
         this.loadingFromRootPathLock = new ReentrantReadWriteLock();
     }
@@ -62,15 +63,18 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
 
             if (key == null || entry.getValue() == null) {
                 throw new StorageException("Key and value cannot be null.");
-            } else if (storageUnits.containsKey(key)) {
-                storageUnit = storageUnits.get(key);
             } else {
-                // see if there is any storage unit with free spaces
-                if (!unitsWithFreeSpace.isEmpty()) {
-                    // if there is, append the new record to it
-                    storageUnit = unitsWithFreeSpace.peek();
+                KeyWithHash mapKey = new KeyWithHash(key);
+                if (storageUnits.containsKey(mapKey)) {
+                    storageUnit = storageUnits.get(key);
                 } else {
-                    storageUnit = createNewStorageUnit();
+                    // see if there is any storage unit with free spaces
+                    if (!unitsWithFreeSpace.isEmpty()) {
+                        // if there is, append the new record to it
+                        storageUnit = unitsWithFreeSpace.peek();
+                    } else {
+                        storageUnit = createNewStorageUnit();
+                    }
                 }
             }
 
@@ -85,11 +89,12 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     @Override
     public String getValue(String key) throws StorageException, ValueNotFoundException {
         try (CloseableLock lock = new CloseableLock(loadingFromRootPathLock.readLock())) {
-            if (!storageUnits.containsKey(key)) {
+            KeyWithHash mapKey = new KeyWithHash(key);
+            if (!storageUnits.containsKey(mapKey)) {
                 throw new ValueNotFoundException(key);
             }
 
-            PersistedStorageUnit storageUnit = storageUnits.get(key);
+            PersistedStorageUnit storageUnit = storageUnits.get(mapKey);
             String value = storageUnit.getValue(key);
 
             LOGGER.debug(StringUtils.join("", "Value <", value, "> is read for key <", key, "> ."));
@@ -100,9 +105,10 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     @Override
     public void removeEntry(String key) throws StorageException {
         try (CloseableLock lock = new CloseableLock(loadingFromRootPathLock.readLock())) {
+            KeyWithHash mapKey = new KeyWithHash(key);
             try {
-                if (storageUnits.containsKey(key)) {
-                    PersistedStorageUnit storageUnit = storageUnits.remove(key);
+                if (storageUnits.containsKey(mapKey)) {
+                    PersistedStorageUnit storageUnit = storageUnits.get(mapKey);
                     storageUnit.removeEntry(key);
                     if (storageUnit.isEmpty()) {
                         synchronized (storageUnit) {
@@ -119,7 +125,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 LOGGER.error(errorMessage);
                 throw new StorageException(errorMessage);
             } catch (NoSuchFileException ex) {
-                storageUnits.remove(key);
+                storageUnits.remove(mapKey);
                 String errorMessage = StringUtils.join(" ", "File for key", key,
                         "was already removed from persistent storage.");
                 LOGGER.error(errorMessage);
@@ -129,7 +135,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 throw new StorageException(
                         "File for key cannot be removed from persistent storage due to permission problems.");
             }
-            removeKeyFromStore(key);
+            removeKeyFromStore(mapKey);
         }
     }
 
@@ -154,9 +160,9 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                     Path path = file.toPath().toAbsolutePath();
                     PersistedStorageUnit storageUnit = loadStorageUnitFromPath(path);
                     // load the keys from the storage unit
-                    for (String key : storageUnit.getKeys()) {
-                        storageUnits.put(key, storageUnit);
-                        LOGGER.debug(StringUtils.join(" ", "Key", key,
+                    for (KeyWithHash mapKey : storageUnit.getKeys()) {
+                        storageUnits.put(mapKey, storageUnit);
+                        LOGGER.debug(StringUtils.join(" ", "Key", mapKey,
                                 "is put in the persistent store metastore from path", path));
                     }
                     putStorageUnitIntoFreeSpaceCache(storageUnit);
@@ -188,9 +194,9 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     /**
      * Removes the respective key from the store.
      */
-    protected void removeKeyFromStore(String key) {
-        storageUnits.remove(key);
-        notifyObservers(key);
+    protected void removeKeyFromStore(KeyWithHash mapKey) {
+        storageUnits.remove(mapKey);
+        notifyObservers(mapKey.getKey());
     }
 
     /**
@@ -243,24 +249,24 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     private PutType putEntryIntoStorageUnit(PersistedStorageUnit storageUnit, KVEntry entry)
             throws StorageException {
         synchronized (storageUnit) {
+            KeyWithHash mapKey = new KeyWithHash(entry.getKey());
             PutType putType = null;
             try {
                 putType = storageUnit.putEntry(entry);
-                String key = entry.getKey();
-                if (!storageUnits.containsKey(key)) {
+                if (!storageUnits.containsKey(mapKey)) {
                     synchronized (storageUnits) {
-                        if (!storageUnits.containsKey(key)) {
+                        if (!storageUnits.containsKey(mapKey)) {
                             // if it is the first time we put the key
-                            storageUnits.put(key, storageUnit);
+                            storageUnits.put(mapKey, storageUnit);
                             putStorageUnitIntoFreeSpaceCache(storageUnit);
                         } else {
                             // if the key was put concurrently to the storage
                             // just beforehand us, then update the value in that
                             // storage unit, and delete the one we created
-                            PersistedStorageUnit storedStorageUnit = storageUnits.get(key);
+                            PersistedStorageUnit storedStorageUnit = storageUnits.get(mapKey);
                             synchronized (storedStorageUnit) {
                                 putType = storedStorageUnit.putEntry(entry);
-                                storageUnits.put(key, storedStorageUnit);
+                                storageUnits.put(mapKey, storedStorageUnit);
                                 putStorageUnitIntoFreeSpaceCache(storedStorageUnit);
                             }
                             try {
@@ -272,7 +278,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                     }
                 } else {
                     // if the key was already stored
-                    storageUnits.put(key, storageUnit);
+                    storageUnits.put(mapKey, storageUnit);
                     putStorageUnitIntoFreeSpaceCache(storageUnit);
                 }
             } catch (UnsupportedOperationException ex) {

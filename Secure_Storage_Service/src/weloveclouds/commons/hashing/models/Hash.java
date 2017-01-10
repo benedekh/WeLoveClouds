@@ -1,5 +1,6 @@
 package weloveclouds.commons.hashing.models;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import weloveclouds.commons.utils.StringUtils;
@@ -9,7 +10,9 @@ import weloveclouds.commons.utils.StringUtils;
  *
  * @author Benedek
  */
-public class Hash implements Comparable<Hash> {
+public class Hash implements Comparable<Hash>, Serializable {
+
+    private static final long serialVersionUID = -3269977372738566725L;
 
     public static final Hash MAX_VALUE;
     public static final Hash MIN_VALUE;

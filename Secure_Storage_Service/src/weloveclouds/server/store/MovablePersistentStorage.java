@@ -6,10 +6,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.utils.CloseableLock;
@@ -20,6 +23,7 @@ import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.PersistedStorageUnit;
 import weloveclouds.server.store.models.PutType;
+import weloveclouds.server.store.utils.KeyWithHash;
 
 /**
  * Represents a {@link KVPersistentStorage}, whose entries and storage units can be filtered,
@@ -80,9 +84,10 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                 storageUnit.setPath(path);
                 storageUnit.save();
 
-                for (String key : storageUnit.getKeys()) {
-                    storageUnits.put(key, storageUnit);
-                    notifyObservers(new KVEntry(key, storageUnit.getValue(key)));
+                for (KeyWithHash mapKey : storageUnit.getKeys()) {
+                    storageUnits.put(mapKey, storageUnit);
+                    notifyObservers(
+                            new KVEntry(mapKey.getKey(), storageUnit.getValue(mapKey.getKey())));
                 }
 
                 putStorageUnitIntoFreeSpaceCache(storageUnit);
@@ -104,7 +109,32 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             LOGGER.debug(StringUtils.join(" ",
                     "Filtering storage units according to range filter (", range, ") started."));
 
-            Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
+            SortedMap<KeyWithHash, PersistedStorageUnit> subMap = new TreeMap<>();
+            KeyWithHash maxMapKey = new KeyWithHash(Hash.MAX_VALUE);
+            KeyWithHash minMapKey = new KeyWithHash(Hash.MIN_VALUE);
+            if (range.isOverWrapping()) {
+                subMap.putAll(storageUnits.subMap(new KeyWithHash(range.getStart()), maxMapKey));
+                if (storageUnits.containsKey(maxMapKey)) {
+                    // warning: we forget the String key which belongs to Hash.MAX_VALUE
+                    subMap.put(maxMapKey, storageUnits.get(maxMapKey));
+                }
+                subMap.putAll(storageUnits.subMap(minMapKey,
+                        new KeyWithHash(range.getEnd().incrementByOne())));
+            } else {
+                if (range.getEnd().equals(Hash.MAX_VALUE)) {
+                    subMap.putAll(
+                            storageUnits.subMap(new KeyWithHash(range.getStart()), maxMapKey));
+                    if (storageUnits.containsKey(maxMapKey)) {
+                        // warning: we forget the String key which belongs to Hash.MAX_VALUE
+                        subMap.put(maxMapKey, storageUnits.get(maxMapKey));
+                    }
+                } else {
+                    subMap.putAll(storageUnits.subMap(new KeyWithHash(range.getStart()),
+                            new KeyWithHash(range.getEnd().incrementByOne())));
+                }
+            }
+
+            Set<PersistedStorageUnit> storedUnits = new HashSet<>(subMap.values());
             Set<MovableStorageUnit> toBeCopied = new HashSet<>();
 
             for (PersistedStorageUnit storageUnit : storedUnits) {
@@ -127,12 +157,12 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             LOGGER.debug(StringUtils.join(" ", "Removing storage units according to range filter (",
                     range, ") started."));
 
-            Set<String> keysToBeRemoved = new HashSet<>();
+            Set<KeyWithHash> keysToBeRemoved = new HashSet<>();
             Set<PersistedStorageUnit> storedUnits = new HashSet<>(storageUnits.values());
             for (PersistedStorageUnit persistedUnit : storedUnits) {
                 try {
                     MovableStorageUnit storageUnit = new MovableStorageUnit(persistedUnit);
-                    Set<String> removedKeys = storageUnit.removeEntries(range);
+                    Set<KeyWithHash> removedKeys = storageUnit.removeEntries(range);
 
                     if (!removedKeys.isEmpty()) {
                         if (storageUnit.isEmpty()) {
@@ -150,7 +180,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                 }
             }
 
-            for (String key : keysToBeRemoved) {
+            for (KeyWithHash key : keysToBeRemoved) {
                 removeKeyFromStore(key);
             }
 
@@ -176,7 +206,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
 
                     MovableStorageUnit storageUnit = new MovableStorageUnit(willBeCompacted);
                     MovableStorageUnit otherUnit = new MovableStorageUnit(afterThatWillBeCompacted);
-                    Set<String> movedKeys = storageUnit.moveEntriesFrom(otherUnit);
+                    Set<KeyWithHash> movedKeys = storageUnit.moveEntriesFrom(otherUnit);
 
                     try {
                         // save the storage units
@@ -187,7 +217,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
                     }
 
                     // update references for the moved keys
-                    for (String movedKey : movedKeys) {
+                    for (KeyWithHash movedKey : movedKeys) {
                         storageUnits.put(movedKey, storageUnit);
                     }
 
@@ -240,7 +270,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
         try {
             PersistedStorageUnit next = iterator.next();
             MovableStorageUnit nextUnit = new MovableStorageUnit(next);
-            Set<String> movedKeys = current.moveEntriesFrom(nextUnit);
+            Set<KeyWithHash> movedKeys = current.moveEntriesFrom(nextUnit);
 
             try {
                 // save the storage units
@@ -251,7 +281,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
             }
 
             // update references for the moved keys
-            for (String movedKey : movedKeys) {
+            for (KeyWithHash movedKey : movedKeys) {
                 storageUnits.put(movedKey, current);
             }
 

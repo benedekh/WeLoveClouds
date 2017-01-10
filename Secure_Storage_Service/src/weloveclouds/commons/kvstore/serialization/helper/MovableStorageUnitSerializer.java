@@ -12,6 +12,7 @@ import weloveclouds.commons.serialization.models.XMLNode;
 import weloveclouds.commons.serialization.models.XMLRootNode;
 import weloveclouds.commons.serialization.models.XMLRootNode.Builder;
 import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.store.utils.KeyWithHash;
 
 /**
  * A serializer which converts a {@link MovableStorageUnit} to a {@link AbstractXMLNode}.
@@ -28,9 +29,11 @@ public class MovableStorageUnitSerializer
         Builder builder = new XMLRootNode.Builder().token(STORAGE_UNIT);
 
         if (target != null) {
-            for (Entry<String, String> entry : target.getEntries()) {
-                builder.addInnerNode(new XMLNode(KV_ENTRY, kvEntrySerializer
-                        .serialize(new KVEntry(entry.getKey(), entry.getValue())).toString()));
+            for (Entry<KeyWithHash, String> entry : target.getEntries()) {
+                builder.addInnerNode(new XMLNode(KV_ENTRY,
+                        kvEntrySerializer
+                                .serialize(new KVEntry(entry.getKey().getKey(), entry.getValue()))
+                                .toString()));
             }
         }
 
