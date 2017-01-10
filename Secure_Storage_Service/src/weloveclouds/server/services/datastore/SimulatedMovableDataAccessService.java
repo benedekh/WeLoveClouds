@@ -146,7 +146,7 @@ public class SimulatedMovableDataAccessService implements IMovableDataAccessServ
         return this;
     }
 
-    private PutType putEntry(KVEntry entry, boolean coordinatorRoleIsExpected)
+    private PutType putEntry(KVEntry entry, boolean writePrivilegeIsExpected)
             throws StorageException {
         try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
             if (!isServiceInitialized()) {
@@ -156,7 +156,7 @@ public class SimulatedMovableDataAccessService implements IMovableDataAccessServ
             switch (serviceRecentStatus) {
                 case STARTED:
                     try {
-                        if (coordinatorRoleIsExpected) {
+                        if (writePrivilegeIsExpected) {
                             checkIfServiceHasWritePrivilegeFor(entry.getKey());
                         } else {
                             checkIfServiceHasReadPrivilegeFor(entry.getKey());

@@ -1,7 +1,5 @@
 package weloveclouds.server.store;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -140,35 +138,6 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     }
 
     /**
-     * Scans through the hard storage and notes which keys were already stored in the hard storage
-     * on what paths.
-     */
-    public void loadStorageUnitsFromRootPath() {
-        try (CloseableLock lock = new CloseableLock(loadingFromRootPathLock.writeLock())) {
-            LOGGER.debug("Initializing persistent store with already stored keys.");
-            storageUnits.clear();
-            unitsWithFreeSpace.clear();
-
-            for (File file : filterFilesInRootPath()) {
-                try {
-                    Path path = file.toPath().toAbsolutePath();
-                    PersistedStorageUnit storageUnit = loadStorageUnitFromPath(path);
-                    // load the keys from the storage unit
-                    for (String key : storageUnit.getKeys()) {
-                        storageUnits.put(key, storageUnit);
-                        LOGGER.debug(StringUtils.join(" ", "Key", key,
-                                "is put in the persistent store metastore from path", path));
-                    }
-                    putStorageUnitIntoFreeSpaceCache(storageUnit);
-                } catch (StorageException ex) {
-                    LOGGER.error(StringUtils.join(" ", file, ex));
-                }
-            }
-            LOGGER.debug("Initializing persistent store finished.");
-        }
-    }
-
-    /**
      * Puts the respective storage unit into the cache for free storage units, if the storage unit
      * is not full and the cache does not contain it yet.
      */
@@ -199,37 +168,6 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     protected void removeStorageUnit(PersistedStorageUnit storageUnit) throws IOException {
         removeStorageUnitFromFreeSpaceCache(storageUnit);
         storageUnit.deleteFile();
-    }
-
-    /**
-     * Loads and returns the storage unit stored in the file denoted by its path.
-     * 
-     * @throws StorageException if any error occurs
-     */
-    private PersistedStorageUnit loadStorageUnitFromPath(Path path) throws StorageException {
-        try {
-            return PathUtils.<PersistedStorageUnit>loadFromFile(path);
-        } catch (IOException ex) {
-            LOGGER.error(ex);
-            throw new StorageException(
-                    "Storage unit was not read from persistent storage due to IO error.");
-        } catch (ClassNotFoundException | ClassCastException ex) {
-            LOGGER.error(ex);
-            throw new StorageException(
-                    "Storage unit was not read from persistent storage due to format conversion error.");
-        }
-    }
-
-    /**
-     * Filters the file names inside the {@link #rootPath} if they end with {@link #FILE_EXTENSION}.
-     */
-    private File[] filterFilesInRootPath() {
-        return rootPath.toFile().listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(FILE_EXTENSION);
-            }
-        });
     }
 
     /**

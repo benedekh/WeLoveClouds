@@ -31,20 +31,20 @@ public class ReplicableDataAccessService
     }
 
     @Override
-    protected PutType putEntry(KVEntry entry, boolean coordinatorRoleIsExpected)
+    protected PutType putEntry(KVEntry entry, boolean writePrivilegeIsExpected)
             throws StorageException {
-        PutType response = super.putEntry(entry, coordinatorRoleIsExpected);
-        if (coordinatorRoleIsExpected) {
+        PutType response = super.putEntry(entry, writePrivilegeIsExpected);
+        if (writePrivilegeIsExpected) {
             replicationService.putEntryOnReplicas(entry);
         }
         return response;
     }
 
     @Override
-    protected void removeEntry(String key, boolean coordinatorRoleIsExpected)
+    protected void removeEntry(String key, boolean writePrivilegeIsExpected)
             throws StorageException {
-        super.removeEntry(key, coordinatorRoleIsExpected);
-        if (coordinatorRoleIsExpected) {
+        super.removeEntry(key, writePrivilegeIsExpected);
+        if (writePrivilegeIsExpected) {
             replicationService.removeEntryOnReplicas(key);
         }
     }

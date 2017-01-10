@@ -59,13 +59,6 @@ public class MovablePersistentStorage extends KVPersistentStorage {
         }
     }
 
-    @Override
-    public void loadStorageUnitsFromRootPath() {
-        try (CloseableLock lock = new CloseableLock(movingStorageUnitsLock.readLock())) {
-            super.loadStorageUnitsFromRootPath();
-        }
-    }
-
     /**
      * Saves the entries from the parameter storage units into this persistent storage.
      * 
