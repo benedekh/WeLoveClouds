@@ -15,8 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.management.relation.Role;
-
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -249,6 +247,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
                 this.readRanges.clear();
                 this.readRanges.addAll(readRanges);
             }
+            this.readRanges.add(writeRange);
             this.writeRange = writeRange;
             simulatedDataAccessService.setManagedHashRanges(readRanges, writeRange);
         }
@@ -270,11 +269,11 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
      * Puts the respective entry into the storage
      * 
      * @param entry that has to be put in the storage
-     * @param coordinatorRoleIsExpected if it has to be checked that the server really handles that
-     *        key as a {@link Role#COORDINATOR}
+     * @param writePrivilegeIsExpected if the data access service is expected to have write
+     *        privilege
      * @throws StorageException if any error occurs
      */
-    protected PutType putEntry(KVEntry entry, boolean coordinatorRoleIsExpected)
+    protected PutType putEntry(KVEntry entry, boolean writePrivilegIsExpected)
             throws StorageException {
         try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
             if (!isServiceInitialized()) {
@@ -286,7 +285,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
             switch (serviceRecentStatus) {
                 case STARTED:
                     try {
-                        if (coordinatorRoleIsExpected) {
+                        if (writePrivilegIsExpected) {
                             checkIfServiceHasWritePrivilegeFor(entry.getKey());
                         } else {
                             checkIfServiceHasReadPrivilegeFor(entry.getKey());
@@ -327,11 +326,11 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
      * Removes the respective key along with the stored value from the storage
      * 
      * @param key the key of the entry that shall be removed
-     * @param coordinatorRoleIsExpected if it has to be checked that the server really handles that
-     *        key as a {@link Role#COORDINATOR}
+     * @param writePrivilegeIsExpected if the data access service is expected to have write
+     *        privilege
      * @throws StorageException if any error occurs
      */
-    protected void removeEntry(String key, boolean coordinatorRoleIsExpected)
+    protected void removeEntry(String key, boolean writePrivilegeIsExpected)
             throws StorageException {
         try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
             if (!isServiceInitialized()) {
@@ -343,7 +342,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
             switch (serviceRecentStatus) {
                 case STARTED:
                     try {
-                        if (coordinatorRoleIsExpected) {
+                        if (writePrivilegeIsExpected) {
                             checkIfServiceHasWritePrivilegeFor(key);
                         } else {
                             checkIfServiceHasReadPrivilegeFor(key);
@@ -408,7 +407,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
             }
         }
         LOGGER.error(
-                StringUtils.join("", "Service does not have WRITE privilege for key (", key, ")."));
+                StringUtils.join("", "Service does not have READ privilege for key (", key, ")."));
         throw new KeyIsNotManagedByServiceException();
     }
 
