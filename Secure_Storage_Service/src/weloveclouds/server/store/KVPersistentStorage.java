@@ -27,8 +27,8 @@ import weloveclouds.server.store.models.PutType;
 import weloveclouds.server.store.utils.KeyWithHash;
 
 /**
- * The persistent storage for the {@link DataAccessService}} which stores the key-value pairs on the
- * hard storage.
+ * The persistent storage for the {@link DataAccessService}} which stores the key-value pairs in
+ * their respective {@link PersistedStorageUnit}s.
  * 
  * @author Benedek
  */
@@ -58,31 +58,27 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
     public PutType putEntry(KVEntry entry) throws StorageException {
         try (CloseableLock lock = new CloseableLock(loadingFromRootPathLock.readLock())) {
             String key = entry.getKey();
-            PutType response;
+            PersistedStorageUnit storageUnit = null;
+            PutType response = null;
 
             if (key == null || entry.getValue() == null) {
                 throw new StorageException("Key and value cannot be null.");
             } else {
                 KeyWithHash mapKey = new KeyWithHash(key);
                 if (storageUnits.containsKey(mapKey)) {
-                    response = PutType.UPDATE;
-                    PersistedStorageUnit storageUnit = storageUnits.get(mapKey);
-                    putEntryIntoStorageUnit(storageUnit, entry);
+                    storageUnit = storageUnits.get(key);
                 } else {
-                    response = PutType.INSERT;
                     // see if there is any storage unit with free spaces
                     if (!unitsWithFreeSpace.isEmpty()) {
                         // if there is, append the new record to it
-                        PersistedStorageUnit storageUnit = unitsWithFreeSpace.peek();
-                        putEntryIntoStorageUnit(storageUnit, entry);
+                        storageUnit = unitsWithFreeSpace.peek();
                     } else {
-                        Path path = PathUtils.generateUniqueFilePath(rootPath, FILE_EXTENSION);
-                        PersistedStorageUnit storageUnit = new PersistedStorageUnit(path);
-                        putEntryIntoStorageUnit(storageUnit, entry);
+                        storageUnit = createNewStorageUnit();
                     }
                 }
             }
 
+            response = putEntryIntoStorageUnit(storageUnit, entry);
             LOGGER.debug(StringUtils.join(" ", entry, "is persisted to permanent storage unit."));
             notifyObservers(entry);
 
@@ -115,7 +111,11 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                     PersistedStorageUnit storageUnit = storageUnits.get(mapKey);
                     storageUnit.removeEntry(key);
                     if (storageUnit.isEmpty()) {
-                        removeStorageUnit(storageUnit);
+                        synchronized (storageUnit) {
+                            if (storageUnit.isEmpty()) {
+                                removeStorageUnit(storageUnit);
+                            }
+                        }
                     } else {
                         putStorageUnitIntoFreeSpaceCache(storageUnit);
                     }
@@ -246,46 +246,54 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      * 
      * @throws StorageException if any error occurs
      */
-    private void putEntryIntoStorageUnit(PersistedStorageUnit storageUnit, KVEntry entry)
+    private PutType putEntryIntoStorageUnit(PersistedStorageUnit storageUnit, KVEntry entry)
             throws StorageException {
-        KeyWithHash mapKey = new KeyWithHash(entry.getKey());
-        try {
-            storageUnit.putEntry(entry);
-            if (!storageUnits.containsKey(mapKey)) {
-                synchronized (this) {
-                    if (!storageUnits.containsKey(mapKey)) {
-                        // if it is the first time we put the key
-                        storageUnits.put(mapKey, storageUnit);
-                        putStorageUnitIntoFreeSpaceCache(storageUnit);
-                    } else {
-                        // if the key was put concurrently to the storage
-                        // just beforehand us, then update the value in that
-                        // storage unit, and delete the one that we created
-                        PersistedStorageUnit storedStorageUnit = storageUnits.get(mapKey);
-                        storedStorageUnit.putEntry(entry);
-                        storageUnits.put(mapKey, storedStorageUnit);
-                        try {
-                            storageUnit.deleteFile();
-                        } catch (IOException ex) {
-                            LOGGER.error(ex);
+        synchronized (storageUnit) {
+            KeyWithHash mapKey = new KeyWithHash(entry.getKey());
+            PutType putType = null;
+            try {
+                putType = storageUnit.putEntry(entry);
+                if (!storageUnits.containsKey(mapKey)) {
+                    synchronized (storageUnits) {
+                        if (!storageUnits.containsKey(mapKey)) {
+                            // if it is the first time we put the key
+                            storageUnits.put(mapKey, storageUnit);
+                            putStorageUnitIntoFreeSpaceCache(storageUnit);
+                        } else {
+                            // if the key was put concurrently to the storage
+                            // just beforehand us, then update the value in that
+                            // storage unit, and delete the one we created
+                            PersistedStorageUnit storedStorageUnit = storageUnits.get(mapKey);
+                            synchronized (storedStorageUnit) {
+                                putType = storedStorageUnit.putEntry(entry);
+                                storageUnits.put(mapKey, storedStorageUnit);
+                                putStorageUnitIntoFreeSpaceCache(storedStorageUnit);
+                            }
+                            try {
+                                storageUnit.deleteFile();
+                            } catch (IOException ex) {
+                                LOGGER.error(ex);
+                            }
                         }
                     }
+                } else {
+                    // if the key was already stored
+                    storageUnits.put(mapKey, storageUnit);
+                    putStorageUnitIntoFreeSpaceCache(storageUnit);
                 }
-            } else {
-                // if the key was already stored
-                storageUnits.put(mapKey, storageUnit);
-                putStorageUnitIntoFreeSpaceCache(storageUnit);
+            } catch (UnsupportedOperationException ex) {
+                // if storageUnit was full
+                removeStorageUnitFromFreeSpaceCache(storageUnit);
+                PersistedStorageUnit newStorageUnit = createNewStorageUnit();
+                putType = putEntryIntoStorageUnit(newStorageUnit, entry);
             }
-        } catch (UnsupportedOperationException ex) {
-            removeStorageUnitFromFreeSpaceCache(storageUnit);
-
-            Path path = PathUtils.generateUniqueFilePath(rootPath, FILE_EXTENSION);
-            PersistedStorageUnit newStorageUnit = new PersistedStorageUnit(path);
-
-            newStorageUnit.putEntry(entry);
-            storageUnits.put(mapKey, newStorageUnit);
-            putStorageUnitIntoFreeSpaceCache(newStorageUnit);
+            return putType;
         }
+    }
+
+    private PersistedStorageUnit createNewStorageUnit() {
+        Path path = PathUtils.generateUniqueFilePath(rootPath, FILE_EXTENSION);
+        return new PersistedStorageUnit(path);
     }
 
 }

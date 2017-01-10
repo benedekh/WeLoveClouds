@@ -1,33 +1,34 @@
 package weloveclouds.commons.serialization.deserialization;
 
-import com.google.inject.Inject;
+import static weloveclouds.commons.serialization.models.SerializedMessage.MESSAGE_ENCODING;
+import static weloveclouds.commons.serialization.models.XMLTokens.NODE_HEALTH_INFOS;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
 import java.util.regex.Matcher;
 
+import com.google.inject.Inject;
+
+import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.loadbalancer.models.IKVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.KVHeartbeatMessage;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
-import weloveclouds.loadbalancer.models.ServiceHealthInfos;
-
-import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
-import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.serialization.models.SerializedMessage.MESSAGE_ENCODING;
-import static weloveclouds.commons.serialization.models.XMLTokens.NODE_HEALTH_INFOS;
 
 /**
- * Created by Benoit on 2016-12-09.
+ * A deserializer which converts a {@link SerializedMessage} to a {@link IKVHeartbeatMessage}.
+ * 
+ * @author Benoit
  */
-public class KVHeartbeatMessageDeserializer implements
-        IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage> {
+public class KVHeartbeatMessageDeserializer
+        implements IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage> {
     private IDeserializer<NodeHealthInfos, String> healthInfosDeserializer;
 
     @Inject
-    public KVHeartbeatMessageDeserializer(IDeserializer<NodeHealthInfos, String>
-                                                  healthInfosDeserializer) {
+    public KVHeartbeatMessageDeserializer(
+            IDeserializer<NodeHealthInfos, String> healthInfosDeserializer) {
         this.healthInfosDeserializer = healthInfosDeserializer;
     }
 
@@ -39,11 +40,11 @@ public class KVHeartbeatMessageDeserializer implements
 
         try {
             if (matcher.find()) {
-                return new KVHeartbeatMessage(healthInfosDeserializer
-                        .deserialize(matcher.group(XML_NODE)));
+                return new KVHeartbeatMessage(
+                        healthInfosDeserializer.deserialize(matcher.group(XML_NODE)));
             } else {
-                throw new DeserializationException("Unable to deserialize message: " + new String
-                        (serializedMessage.getBytes(), MESSAGE_ENCODING));
+                throw new DeserializationException("Unable to deserialize message: "
+                        + new String(serializedMessage.getBytes(), MESSAGE_ENCODING));
             }
         } catch (Exception e) {
             throw new DeserializationException(e.getMessage());

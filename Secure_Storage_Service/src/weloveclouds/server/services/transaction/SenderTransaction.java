@@ -20,6 +20,11 @@ import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
+/**
+ * Represents a transaction on the sender side.
+ * 
+ * @author Benedek
+ */
 public class SenderTransaction implements AutoCloseable {
 
     private static final Logger LOGGER = Logger.getLogger(SenderTransaction.class);
@@ -80,6 +85,11 @@ public class SenderTransaction implements AutoCloseable {
                 .transferPayload(transferMessage).otherParticipants(otherParticipants).build();
     }
 
+    /**
+     * Sends the INIT phase for the transaction.
+     * 
+     * @author Benedek
+     */
     public class Init implements Callable<StatusType> {
         @Override
         public StatusType call() throws Exception {
@@ -89,6 +99,11 @@ public class SenderTransaction implements AutoCloseable {
         }
     }
 
+    /**
+     * Sends the COMMIT READY phase for the transaction.
+     * 
+     * @author Benedek
+     */
     public class CommitReady implements Callable<StatusType> {
         @Override
         public StatusType call() throws Exception {
@@ -97,6 +112,11 @@ public class SenderTransaction implements AutoCloseable {
         }
     }
 
+    /**
+     * Sends the COMMIT phase for the transaction.
+     * 
+     * @author Benedek
+     */
     public class Commit implements Callable<StatusType> {
         @Override
         public StatusType call() throws Exception {
@@ -105,6 +125,11 @@ public class SenderTransaction implements AutoCloseable {
         }
     }
 
+    /**
+     * Sends the ABORT phase for the transaction.
+     * 
+     * @author Benedek
+     */
     public class Abort implements Callable<StatusType> {
         @Override
         public StatusType call() throws Exception {
@@ -113,6 +138,11 @@ public class SenderTransaction implements AutoCloseable {
         }
     }
 
+    /**
+     * Sends the HELP (restoration) phase for the transaction.
+     * 
+     * @author Benedek
+     */
     public class Help implements Callable<StatusType> {
         @Override
         public StatusType call() throws Exception {
@@ -121,6 +151,11 @@ public class SenderTransaction implements AutoCloseable {
         }
     }
 
+    /**
+     * Builder pattern for creating a {@link SenderTransaction} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private UUID transactionId;
         private IKVTransferMessage transferMessage;

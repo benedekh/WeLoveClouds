@@ -29,7 +29,9 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 /**
- * Created by Benoit on 2016-12-21.
+ * Guice module for serialization.
+ * 
+ * @author Benoit
  */
 public class SerializationModule extends AbstractModule {
     @Override
@@ -39,71 +41,45 @@ public class SerializationModule extends AbstractModule {
     }
 
     private void bindSerializers() {
-        bind(new TypeLiteral<IMessageSerializer<SerializedMessage, IKVMessage>>() {
-        })
-                .to(new TypeLiteral<KVMessageSerializer>() {
-                });
+        bind(new TypeLiteral<IMessageSerializer<SerializedMessage, IKVMessage>>() {})
+                .to(new TypeLiteral<KVMessageSerializer>() {});
 
-        bind(new TypeLiteral<IMessageSerializer<SerializedMessage, IKVAdminMessage>>() {
-        })
-                .to(new TypeLiteral<KVAdminMessageSerializer>() {
-                });
+        bind(new TypeLiteral<IMessageSerializer<SerializedMessage, IKVAdminMessage>>() {})
+                .to(new TypeLiteral<KVAdminMessageSerializer>() {});
 
-        bind(new TypeLiteral<IMessageSerializer<SerializedMessage, IKVMessage>>() {
-        })
-                .to(new TypeLiteral<KVMessageSerializer>() {
-                });
+        bind(new TypeLiteral<IMessageSerializer<SerializedMessage, IKVMessage>>() {})
+                .to(new TypeLiteral<KVMessageSerializer>() {});
 
-        bind(new TypeLiteral<IMessageSerializer<SerializedMessage, IKVHeartbeatMessage>>() {
-        })
-                .to(new TypeLiteral<KVHeartbeatMessageSerializer>() {
-                });
+        bind(new TypeLiteral<IMessageSerializer<SerializedMessage, IKVHeartbeatMessage>>() {})
+                .to(new TypeLiteral<KVHeartbeatMessageSerializer>() {});
 
-        bind(new TypeLiteral<ISerializer<AbstractXMLNode, NodeHealthInfos>>() {
-        })
-                .to(new TypeLiteral<NodeHealthInfosSerializer>() {
-                });
+        bind(new TypeLiteral<ISerializer<AbstractXMLNode, NodeHealthInfos>>() {})
+                .to(new TypeLiteral<NodeHealthInfosSerializer>() {});
 
-        bind(new TypeLiteral<ISerializer<AbstractXMLNode, ServiceHealthInfos>>() {
-        })
-                .to(new TypeLiteral<ServiceHealthInfosSerializer>() {
-                });
+        bind(new TypeLiteral<ISerializer<AbstractXMLNode, ServiceHealthInfos>>() {})
+                .to(new TypeLiteral<ServiceHealthInfosSerializer>() {});
 
-        bind(new TypeLiteral<ISerializer<AbstractXMLNode, ServerConnectionInfo>>() {
-        })
-                .to(new TypeLiteral<ServerConnectionInfoSerializer>() {
-                });
+        bind(new TypeLiteral<ISerializer<AbstractXMLNode, ServerConnectionInfo>>() {})
+                .to(new TypeLiteral<ServerConnectionInfoSerializer>() {});
     }
 
     private void bindDeserializers() {
-        bind(new TypeLiteral<IMessageDeserializer<IKVMessage, SerializedMessage>>() {
-        })
-                .to(new TypeLiteral<KVMessageDeserializer>() {
-                });
+        bind(new TypeLiteral<IMessageDeserializer<IKVMessage, SerializedMessage>>() {})
+                .to(new TypeLiteral<KVMessageDeserializer>() {});
 
-        bind(new TypeLiteral<IMessageDeserializer<IKVAdminMessage, SerializedMessage>>() {
-        })
-                .to(new TypeLiteral<KVAdminMessageDeserializer>() {
-                });
+        bind(new TypeLiteral<IMessageDeserializer<IKVAdminMessage, SerializedMessage>>() {})
+                .to(new TypeLiteral<KVAdminMessageDeserializer>() {});
 
-        bind(new TypeLiteral<IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage>>() {
-        })
-                .to(new TypeLiteral<KVHeartbeatMessageDeserializer>() {
-                });
+        bind(new TypeLiteral<IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage>>() {})
+                .to(new TypeLiteral<KVHeartbeatMessageDeserializer>() {});
 
-        bind(new TypeLiteral<IDeserializer<NodeHealthInfos, String>>() {
-        })
-                .to(new TypeLiteral<NodeHealtInfosDeserializer>() {
-                });
+        bind(new TypeLiteral<IDeserializer<NodeHealthInfos, String>>() {})
+                .to(new TypeLiteral<NodeHealtInfosDeserializer>() {});
 
-        bind(new TypeLiteral<IDeserializer<ServiceHealthInfos, String>>() {
-        })
-                .to(new TypeLiteral<ServiceHealthInfosDeserializer>() {
-                });
+        bind(new TypeLiteral<IDeserializer<ServiceHealthInfos, String>>() {})
+                .to(new TypeLiteral<ServiceHealthInfosDeserializer>() {});
 
-        bind(new TypeLiteral<IDeserializer<ServerConnectionInfo, String>>() {
-        })
-                .to(new TypeLiteral<ServerConnectionInfoDeserializer>() {
-                });
+        bind(new TypeLiteral<IDeserializer<ServerConnectionInfo, String>>() {})
+                .to(new TypeLiteral<ServerConnectionInfoDeserializer>() {});
     }
 }

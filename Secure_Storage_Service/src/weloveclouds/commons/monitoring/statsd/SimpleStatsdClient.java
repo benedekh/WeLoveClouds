@@ -8,7 +8,9 @@ import org.joda.time.Duration;
 import weloveclouds.commons.monitoring.models.Metric;
 
 /**
- * Created by Benoit on 2016-11-27.
+ * A simply statsd client which forwards the statistical metrics via {@link #statsDClient}.
+ * 
+ * @author Benoit
  */
 public class SimpleStatsdClient implements IStatsdClient {
     private StatsDClient statsDClient;

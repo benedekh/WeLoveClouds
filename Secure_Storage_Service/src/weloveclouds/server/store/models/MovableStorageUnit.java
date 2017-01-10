@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
@@ -26,22 +28,36 @@ public class MovableStorageUnit extends PersistedStorageUnit {
 
     private static final long serialVersionUID = -5804417133252642642L;
 
+    private Lock readLock;
+    private Lock writeLock;
+
     public MovableStorageUnit(PersistedStorageUnit other) {
         super(other.entries, other.getPath());
+        this.readLock = other.readLock();
+        this.writeLock = other.writeLock();
     }
 
     public MovableStorageUnit(SortedMap<KeyWithHash, String> entries, Path filePath) {
         super(entries, filePath);
+        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+        this.readLock = lock.readLock();
+        this.writeLock = lock.writeLock();
     }
 
+    /**
+     * Copies those entries whose key's hash value is in the given range.
+     */
     public MovableStorageUnit copyEntries(HashRange range) {
-        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+        try (CloseableLock lock = new CloseableLock(readLock)) {
             return new MovableStorageUnit(filterEntries(range), getPath());
         }
     }
 
+    /**
+     * @return an unmodifiable view of the entries
+     */
     public Set<Map.Entry<KeyWithHash, String>> getEntries() {
-        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+        try (CloseableLock lock = new CloseableLock(readLock)) {
             return Collections.unmodifiableSet(new HashSet<>(entries.entrySet()));
         }
     }
@@ -54,7 +70,7 @@ public class MovableStorageUnit extends PersistedStorageUnit {
      * @throws StorageException if an error occurs
      */
     public Set<KeyWithHash> removeEntries(HashRange range) {
-        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+        try (CloseableLock lock = new CloseableLock(writeLock)) {
             Set<KeyWithHash> removable = filterEntries(range).keySet();
             for (KeyWithHash mapKey : removable) {
                 try {
@@ -76,7 +92,7 @@ public class MovableStorageUnit extends PersistedStorageUnit {
      */
     public Set<KeyWithHash> moveEntriesFrom(PersistedStorageUnit otherUnit) {
         Set<KeyWithHash> movedKeys = new HashSet<>();
-        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+        try (CloseableLock lock = new CloseableLock(writeLock)) {
             Iterator<KeyWithHash> otherMapKeyIterator = otherUnit.getKeys().iterator();
             while (!isFull() && otherMapKeyIterator.hasNext()) {
                 try {
@@ -101,7 +117,7 @@ public class MovableStorageUnit extends PersistedStorageUnit {
      */
     private SortedMap<KeyWithHash, String> filterEntries(HashRange range) {
         SortedMap<KeyWithHash, String> filtered = new TreeMap<>();
-        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+        try (CloseableLock lock = new CloseableLock(readLock)) {
             SortedMap<KeyWithHash, String> subMap = new TreeMap<>();
             KeyWithHash maxMapKey = new KeyWithHash(Hash.MAX_VALUE);
             KeyWithHash minMapKey = new KeyWithHash(Hash.MIN_VALUE);
@@ -138,7 +154,7 @@ public class MovableStorageUnit extends PersistedStorageUnit {
      */
     private String toStringWithDelimiter(String betweenEntries, String insideEntry) {
         StringBuilder sb = new StringBuilder();
-        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+        try (CloseableLock lock = new CloseableLock(readLock)) {
             for (Entry<KeyWithHash, String> entry : entries.entrySet()) {
                 KVEntry compact = new KVEntry(entry.getKey().getKey(), entry.getValue());
                 sb.append(compact.toStringWithDelimiter(insideEntry));

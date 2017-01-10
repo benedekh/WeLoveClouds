@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.kvstore.deserialization.helper.TransferMessageDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
-import weloveclouds.commons.kvstore.models.messages.KVTransferMessage;
 import weloveclouds.commons.kvstore.models.messages.proxy.KVTransferMessageProxy;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.IMessageDeserializer;
@@ -20,7 +19,7 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
- * A deserializer which converts a {@link SerializedMessage} to a {@link KVTransferMessage}.
+ * A deserializer which converts a {@link SerializedMessage} to a {@link IKVTransferMessage}.
  * 
  * @author Benedek
  */

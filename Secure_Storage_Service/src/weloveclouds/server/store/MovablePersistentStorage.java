@@ -257,7 +257,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
     }
 
     /**
-     * Moves data to the current storage unit from those storage units which are still availabile in
+     * Moves data to the current storage unit from those storage units which are still available in
      * the iterator.
      * 
      * @param current to which data will be moved
@@ -310,7 +310,7 @@ public class MovablePersistentStorage extends KVPersistentStorage {
     }
 
     /**
-     * @return those storage units which are stored in the #storageUnits field and have free space.
+     * @return those storage units which are stored in the {@link #storageUnits} field and have free space.
      */
     private Set<PersistedStorageUnit> collectNotFullStorageUnits() {
         Set<PersistedStorageUnit> result = new HashSet<>();

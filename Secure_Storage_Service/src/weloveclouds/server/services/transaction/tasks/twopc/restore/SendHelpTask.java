@@ -12,6 +12,11 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.Status
 import weloveclouds.server.services.transaction.SenderTransaction;
 import weloveclouds.server.services.transaction.tasks.TransactionTask;
 
+/**
+ * Help task for a transaction. Simply sends the HELP message to every participant.
+ * 
+ * @author Benedek
+ */
 public class SendHelpTask extends TransactionTask<SendHelpTask.Builder> {
 
     private static final Logger LOGGER = Logger.getLogger(SendHelpTask.class);
@@ -47,6 +52,11 @@ public class SendHelpTask extends TransactionTask<SendHelpTask.Builder> {
         }
     }
 
+    /**
+     * Builder pattern for creating a {@link SendHelpTask} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder extends TransactionTask.Builder<SendHelpTask.Builder> {
         private Set<Future<StatusType>> setForResponses;
 

@@ -27,6 +27,11 @@ import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.utils.KeyWithHash;
 
+/**
+ * Tests for the {@link IKVTransactionMessage} to verify its serialization and deserialization processes.
+ * 
+ * @author Benedek
+ */
 public class KVTransactionMessageTest extends TestCase {
     private static IMessageDeserializer<IKVTransactionMessage, SerializedMessage> transactionMessageDeserializer =
             new KVTransactionMessageDeserializer();

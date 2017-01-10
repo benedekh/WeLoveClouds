@@ -26,7 +26,7 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.utils.KeyWithHash;
 
 /**
- * Tests for the {@link KVTransferMessage} to verify its serialization and deserialization
+ * Tests for the {@link IKVTransferMessage} to verify its serialization and deserialization
  * processes.
  * 
  * @author Benedek

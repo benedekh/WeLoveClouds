@@ -14,6 +14,12 @@ import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 
+/**
+ * Tests for the {@link UUID} to verify its serialization and deserialization
+ * processes.
+ * 
+ * @author Benedek
+ */
 public class UUIDTest extends TestCase {
 
     private static final IDeserializer<UUID, String> uuidDeserializer = new UUIDDeserializer();

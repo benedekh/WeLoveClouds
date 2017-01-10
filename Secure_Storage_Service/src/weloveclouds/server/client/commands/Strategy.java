@@ -13,7 +13,7 @@ import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
 
 /**
- * The displacements strategy to be used in the {@link KVCache}}.
+ * The displacements strategy to be used in the {@link KVCache}.
  *
  * @author Benedek
  */
@@ -25,8 +25,8 @@ public class Strategy extends AbstractServerCommand {
     private KVServerCLIContext context;
 
     /**
-     * @param arguments the {@link #STRATEGY_INDEX} element of the array shall contain the name of
-     *        the displacement startegy
+     * @param arguments the {@value #STRATEGY_INDEX} element of the array shall contain the name of
+     *        the displacement strategy
      * @param context contains the server parameter configuration
      */
     public Strategy(String[] arguments, KVServerCLIContext context) {

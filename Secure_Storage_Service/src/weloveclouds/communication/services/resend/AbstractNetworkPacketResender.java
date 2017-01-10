@@ -1,4 +1,4 @@
-package weloveclouds.communication.services;
+package weloveclouds.communication.services.resend;
 
 import java.io.IOException;
 
@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.retryer.IBackoffIntervalComputer;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.services.ICommunicationService;
+import weloveclouds.communication.services.IConcurrentCommunicationService;
 
 /**
  * Common fields and methods for a NetworkPacketResender.
@@ -53,8 +55,18 @@ public abstract class AbstractNetworkPacketResender {
                 backoffIntervalComputer.computeIntervalFrom(numberOfAttemptsSoFar).getMillis());
     }
 
+    /**
+     * Sends the packet through the referred transport service.
+     * 
+     * @throws IOException if any error occurs
+     */
     public abstract byte[] sendWith(ICommunicationService communicationService) throws IOException;
 
+    /**
+     * Sends the packet through the referred transport service by the referred connection.
+     * 
+     * @throws IOException if any error occurs
+     */
     public abstract byte[] sendWith(IConcurrentCommunicationService concurrentCommunicationService,
             Connection connection) throws IOException;
 

@@ -10,7 +10,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
@@ -45,7 +46,7 @@ public class PersistedStorageUnit implements Serializable {
      */
     public PersistedStorageUnit(Path filePath) {
         setPath(filePath);
-        this.entries = new TreeMap<>();
+        this.entries = new ConcurrentSkipListMap<>();
         this.accessLock = new ReentrantReadWriteLock();
     }
 
@@ -63,7 +64,7 @@ public class PersistedStorageUnit implements Serializable {
      * @return true if the storage unit is empty, false otherwise
      */
     public boolean isEmpty() {
-        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+        try (CloseableLock lock = new CloseableLock(readLock())) {
             return entries.isEmpty();
         }
     }
@@ -72,7 +73,7 @@ public class PersistedStorageUnit implements Serializable {
      * @return true if the storage unit is full, false otherwise
      */
     public boolean isFull() {
-        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+        try (CloseableLock lock = new CloseableLock(readLock())) {
             return !(entries.size() < MAX_NUMBER_OF_ENTRIES);
         }
     }
@@ -81,7 +82,7 @@ public class PersistedStorageUnit implements Serializable {
      * @return keys stored in the storage unit as an unmodifiable set
      */
     public Set<KeyWithHash> getKeys() {
-        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+        try (CloseableLock lock = new CloseableLock(readLock())) {
             return Collections.unmodifiableSet(new HashSet<>(entries.keySet()));
         }
     }
@@ -95,7 +96,7 @@ public class PersistedStorageUnit implements Serializable {
      *         store the entry
      */
     public PutType putEntry(KVEntry entry) throws UnsupportedOperationException, StorageException {
-        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+        try (CloseableLock lock = new CloseableLock(writeLock())) {
             KeyWithHash mapKey = new KeyWithHash(entry.getKey());
             PutType responseType = null;
 
@@ -121,7 +122,7 @@ public class PersistedStorageUnit implements Serializable {
      * @return the value which belong to the respective key
      */
     public String getValue(String key) {
-        try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
+        try (CloseableLock lock = new CloseableLock(readLock())) {
             return entries.get(new KeyWithHash(key));
         }
     }
@@ -130,7 +131,7 @@ public class PersistedStorageUnit implements Serializable {
      * Removes the key together with the value belonging to it, from the storage unit.
      */
     public void removeEntry(String key) throws StorageException {
-        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+        try (CloseableLock lock = new CloseableLock(writeLock())) {
             entries.remove(new KeyWithHash(key));
             save();
         }
@@ -142,7 +143,7 @@ public class PersistedStorageUnit implements Serializable {
      * @throws IOException if any error occurs
      */
     public void deleteFile() throws IOException {
-        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+        try (CloseableLock lock = new CloseableLock(writeLock())) {
             PathUtils.deleteFile(getPath());
         }
     }
@@ -153,7 +154,7 @@ public class PersistedStorageUnit implements Serializable {
      * @throws StorageException if any error occurs
      */
     public void save() throws StorageException {
-        try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
+        try (CloseableLock lock = new CloseableLock(writeLock())) {
             try {
                 PathUtils.saveToFile(getPath(), this);
             } catch (FileNotFoundException e) {
@@ -173,6 +174,14 @@ public class PersistedStorageUnit implements Serializable {
      */
     public void setPath(Path path) {
         this.filePath = path.toAbsolutePath().toString();
+    }
+
+    protected Lock readLock() {
+        return accessLock.readLock();
+    }
+
+    protected Lock writeLock() {
+        return accessLock.writeLock();
     }
 
     /**

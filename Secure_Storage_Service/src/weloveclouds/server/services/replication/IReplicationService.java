@@ -23,12 +23,24 @@ public interface IReplicationService {
      */
     public void removeEntryOnReplicas(String key);
 
+    /**
+     * Updates the connection information of the replicas.
+     */
     public void updateReplicaConnectionInfos(Set<ServerConnectionInfo> replicationConnectionInfos);
-    
+
+    /**
+     * Starts the service.
+     */
     public void start();
-    
+
+    /**
+     * Stops the service.
+     */
     public void halt();
-    
+
+    /**
+     * @return true if the service is running
+     */
     public boolean isRunning();
 
 }

@@ -5,6 +5,11 @@ import java.io.Serializable;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.utils.HashingUtils;
 
+/**
+ * Represents a String with its hash value according to {@link HashingUtils#getHash(String)}.
+ * 
+ * @author Benedek
+ */
 public class KeyWithHash implements Comparable<KeyWithHash>, Serializable {
 
     private static final long serialVersionUID = -837230084986545189L;

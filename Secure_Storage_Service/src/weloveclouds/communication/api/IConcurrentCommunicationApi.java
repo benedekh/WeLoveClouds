@@ -19,8 +19,7 @@ public interface IConcurrentCommunicationApi {
     void send(byte[] message, Connection connection) throws IOException;
 
     /**
-     * Sends a message as a byte array to the server. Retries the send as long as it does not
-     * receive a response.
+     * Sends a message as a byte array to the server and expects for a response.
      * 
      * @return the response byte array
      * @throws IOException if any error occurs

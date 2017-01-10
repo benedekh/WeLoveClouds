@@ -49,6 +49,11 @@ public class ReplicableDataAccessService
         }
     }
 
+    /**
+     * Builder pattern for creating a {@link ReplicableDataAccessService} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder extends MovableDataAccessService.Builder<Builder> {
         private IReplicationService replicationService;
 

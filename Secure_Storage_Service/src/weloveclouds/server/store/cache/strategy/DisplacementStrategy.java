@@ -4,7 +4,7 @@ import weloveclouds.server.store.IKVStoreNotification;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
- * Represents a displacement startegy that decides which key shall be removed from the cache-
+ * Represents a displacement strategy that decides which key shall be removed from the cache.
  * 
  * @author Benedek
  */
