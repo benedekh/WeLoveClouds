@@ -10,9 +10,13 @@ import testing.weloveclouds.client.utils.ArgumentsValidatorTest;
 import testing.weloveclouds.client.utils.UserInputParserTest;
 import testing.weloveclouds.ecs.utils.EcsArgumentsValidatorTest;
 import testing.weloveclouds.kvstore.serialization.SerializationValidationTests;
-import testing.weloveclouds.server.requests.validation.KVServerRequestFromKVClientValidationTests;
 import weloveclouds.commons.utils.LogSetup;
 
+/**
+ * Contains a test suite which covers every test case that shall be executed.
+ * 
+ * @author Benoit, Benedek, Hunton
+ */
 public class AllTests {
 
     static {

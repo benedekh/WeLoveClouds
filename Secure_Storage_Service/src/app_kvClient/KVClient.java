@@ -33,8 +33,6 @@ public class KVClient {
 
     /**
      * The entry point of the application.
-     *
-     * @param args is discarded so far
      */
     public static void main(String[] args) {
         initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
@@ -69,14 +67,14 @@ public class KVClient {
     }
 
     /**
-     * Initializes the root logger with the referred logLevel.
+     * Initializes the root logger with the referred log level.
      */
     private static void initializeLoggerWithLevel(String logLevel) {
         initializeLoggerWithLevel(Level.toLevel(logLevel));
     }
 
     /**
-     * Initializes the root logger with the referred logLevel.
+     * Initializes the root logger with the referred log level.
      */
     private static void initializeLoggerWithLevel(Level logLevel) {
         try {

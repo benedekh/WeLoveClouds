@@ -10,6 +10,12 @@ import weloveclouds.communication.exceptions.UnableToSendContentToServerExceptio
 import weloveclouds.ecs.models.repository.NodeStatus;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
+/**
+ * Node health monitor, which regularly supervises and reports the health status of the registered
+ * services.
+ * 
+ * @author Benedek
+ */
 public class NodeHealthMonitor extends Thread {
 
     private static final Logger LOGGER = Logger.getLogger(NodeHealthMonitor.class);
@@ -56,6 +62,11 @@ public class NodeHealthMonitor extends Thread {
         }
     }
 
+    /**
+     * A builder to create a {@link NodeHealthMonitor} instance.
+     *
+     * @author Benoit
+     */
     public static class Builder {
         private NodeHealthInfos.Builder nodeHealthInfosBuilder;
         private HeartbeatSenderService hearbeatSenderService;

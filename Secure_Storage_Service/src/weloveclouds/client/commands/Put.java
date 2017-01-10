@@ -126,9 +126,9 @@ public class Put extends AbstractKVCommunicationApiCommand {
         private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
 
         /**
-         * @param arguments contains the key in the {@link #KEY_INDEX} position and the value is
-         *        merged into one value starting from the index {@link #VALUE_INDEX} and going until
-         *        the end of the array
+         * @param arguments contains the key in the {@value #KEY_INDEX} position and the value is
+         *        merged into one value starting from the index {@value #VALUE_INDEX} and going
+         *        until the end of the array
          */
         public Builder arguments(String[] arguments) {
             this.arguments = arguments;

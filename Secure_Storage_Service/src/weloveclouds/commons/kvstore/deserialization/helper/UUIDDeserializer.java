@@ -11,9 +11,15 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.models.messages.IKVTransferMessage;
 import weloveclouds.commons.serialization.IDeserializer;
 import weloveclouds.commons.utils.StringUtils;
 
+/**
+ * A deserializer which converts a {@link UUID} to a {@link IKVTransferMessage}.
+ * 
+ * @author Benedek
+ */
 public class UUIDDeserializer implements IDeserializer<UUID, String> {
 
     @Override

@@ -19,8 +19,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.utils.MessageFramesDetector;
 
 /**
- * The communication module implementation which executes the network operations (connect,
- * disconnect, send, receiveFrom).
+ * The communication module implementation which executes the network operations.
  *
  * @author Benoit, Benedek
  */

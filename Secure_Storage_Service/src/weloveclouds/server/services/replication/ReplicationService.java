@@ -14,6 +14,12 @@ import weloveclouds.server.services.replication.request.AbstractReplicationReque
 import weloveclouds.server.services.replication.request.ReplicationRequestFactory;
 import weloveclouds.server.services.transaction.ITransactionSenderService;
 
+/**
+ * Replication service which periodically forwards the requests PUT / DELETE requests towards the
+ * replicas.
+ * 
+ * @author Benedek
+ */
 public class ReplicationService implements IReplicationService, Runnable {
 
     private static final int MAX_NUMBER_OF_WAITING_REQUESTS = 20;

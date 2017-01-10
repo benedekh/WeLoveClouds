@@ -13,6 +13,11 @@ import weloveclouds.server.services.replication.ReplicationServiceFactory;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
 
+/**
+ * Command-line argument registry for {@link KVServer}.
+ * 
+ * @author Benedek
+ */
 public class KVServerCLIArgsRegistry {
 
     private static final KVServerCLIArgsRegistry INSTANCE = new KVServerCLIArgsRegistry();
@@ -46,6 +51,9 @@ public class KVServerCLIArgsRegistry {
         return INSTANCE;
     }
 
+    /**
+     * Initializes the argument registry based on the command-line arguments received upon start.
+     */
     public void initializeArguments(String[] cliArguments) {
         if (cliArguments == null
                 || cliArguments.length <= ArgumentsValidator.REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER) {

@@ -22,8 +22,7 @@ import weloveclouds.server.services.replication.ReplicationServiceFactory;
 
 
 /**
- * StartNode command which starts the {@link Server}} based on the configuration in
- * {@link #context}.
+ * StartNode command which starts the {@link Server} based on the configuration in {@link #context}.
  *
  * @author Benedek
  */

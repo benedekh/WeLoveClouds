@@ -82,6 +82,9 @@ public class KVServer {
         }
     }
 
+    /**
+     * Starts the KVServer.
+     */
     public void start() {
         LOGGER.debug("Starting the servers for the different requests.");
         kvClientRequestsServer.start();

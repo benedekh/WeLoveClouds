@@ -5,8 +5,7 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
- * Different commands which are handled by
- * {@link weloveclouds.server.models.commands.ServerCommandFactory}.
+ * Different commands which are handled by {@link ServerCommandFactory}.
  *
  * @author Benedek
  */

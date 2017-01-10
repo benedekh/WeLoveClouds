@@ -18,7 +18,7 @@ import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
 
 /**
- * Validates the arguments of the different commands ({@link ServerCommand}).
+ * Validates the arguments of the different commands {@link ServerCommand}.
  *
  * @author Benedek
  */
@@ -60,17 +60,18 @@ public class ArgumentsValidator {
 
     /**
      * Validate CLI arguments for the server starting. The arguments are valid, if:<br>
-     * (1) there are exactly {@link #REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER} number of
+     * (1) there are exactly {@value #REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER} number of
      * arguments, and<br>
-     * (2) the arguments at the position {@link #CLI_KVCLIENT_PORT_INDEX},
-     * {@link #CLI_KVSERVER_PORT_INDEX}, {@link #CLI_KVECS_PORT_INDEX} are valid ports, and<br>
-     * (3) the argument at the position {@link #CLI_CACHE_SIZE_INDEX} is a valid cache size, and<br>
-     * (4) the argument at the position {@link #CLI_DISPLACEMENT_STRATEGY_INDEX} is a valid
-     * displacement strategy, and<br>
-     * (5) the argument at the position {@link #CLI_LOG_LEVEL_INDEX} is a valid log level, and<br>
-     * (7) the argument at the position {@link #CLI_LOADBALANCER_IP_INDEX} is a valid IP address,
+     * (2) the arguments at the position {@value #CLI_KVCLIENT_PORT_INDEX},
+     * {@value #CLI_KVSERVER_PORT_INDEX}, {@value #CLI_KVECS_PORT_INDEX} are valid ports, and<br>
+     * (3) the argument at the position {@value #CLI_CACHE_SIZE_INDEX} is a valid cache size,
      * and<br>
-     * (8) the argument at the position {@link #CLI_LOADBALANCER_PORT_INDEX} is a valid port
+     * (4) the argument at the position {@value #CLI_DISPLACEMENT_STRATEGY_INDEX} is a valid
+     * displacement strategy, and<br>
+     * (5) the argument at the position {@value #CLI_LOG_LEVEL_INDEX} is a valid log level, and<br>
+     * (7) the argument at the position {@value #CLI_LOADBALANCER_IP_INDEX} is a valid IP address,
+     * and<br>
+     * (8) the argument at the position {value #CLI_LOADBALANCER_PORT_INDEX} is a valid port
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
@@ -175,7 +176,8 @@ public class ArgumentsValidator {
 
     /**
      * A storage path command is valid, if:<br>
-     * (1) the {@link #STORAGE_PATH_INDEX} location parameter of arguments is a valid path, and <br>
+     * (1) the {@value #STORAGE_PATH_INDEX} location parameter of arguments is a valid path, and
+     * <br>
      * (2) this is the only argument of the command
      * 
      * @throws IllegalArgumentException if a validation error occurs
@@ -202,7 +204,7 @@ public class ArgumentsValidator {
 
     /**
      * A cache size command is valid, if:<br>
-     * (1) the {@link #CACHE_SIZE_INDEX} location parameter of arguments is a valid number, and <br>
+     * (1) the {@value #CACHE_SIZE_INDEX} location parameter of arguments is a valid number, and<br>
      * (2) this is the only argument of the command
      * 
      * @throws IllegalArgumentException if a validation error occurs
@@ -230,8 +232,7 @@ public class ArgumentsValidator {
 
     /**
      * A quit command is valid, if it does not contain any argument.
-     *
-     * @param arguments shall be empty
+     * 
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateQuitArguments(String[] arguments) throws IllegalArgumentException {
@@ -243,7 +244,7 @@ public class ArgumentsValidator {
 
     /**
      * A port command is valid, if:<br>
-     * (1) the {@link #PORT_SIZE_INDEX} location parameter of arguments is a valid port number, and
+     * (1) the {@value #PORT_SIZE_INDEX} location parameter of arguments is a valid port number, and
      * <br>
      * (2) this is the only argument of the command
      * 
@@ -286,11 +287,11 @@ public class ArgumentsValidator {
 
     /**
      * A logLevel command is valid, if:<br>
-     * (1) the {@link #LOG_LEVEL_INDEX} element of the arguments array is a log level, and<br>
+     * (1) the {@value #LOG_LEVEL_INDEX} element of the arguments array is a log level, and<br>
      * (2) the log level is one of those in {@link LogLevel}.
      *
-     * @param arguments {@link #LOG_LEVEL_INDEX} element of the array contains the log level
-     * @throws IllegalArgumentException if
+     * @param arguments {@value #LOG_LEVEL_INDEX} element of the array contains the log level
+     * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateLogLevelArguments(String[] arguments)
             throws IllegalArgumentException {
@@ -310,8 +311,8 @@ public class ArgumentsValidator {
 
     /**
      * A strategy command is valid, if:<br>
-     * (1) the {@link #STRATEGY_INDEX} location parameter of arguments is a name for a displacement
-     * startegy, and <br>
+     * (1) the {@value #STRATEGY_INDEX} location parameter of arguments is a name for a displacement
+     * strategy, and <br>
      * (2) this is the only argument of the command
      * 
      * @throws IllegalArgumentException if a validation error occurs
@@ -334,8 +335,7 @@ public class ArgumentsValidator {
 
     /**
      * A help command is valid, if it does not contain any argument.
-     *
-     * @param arguments shall be empty
+     * 
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateHelpArguments(String[] arguments) throws IllegalArgumentException {

@@ -66,7 +66,7 @@ public class ServerFactory {
      *
      * @param port where the server shall be started
      * @param dataAccessService that will be the data access service
-     * @param healthMonitor monitor to supervise the service status (e.g. number of active
+     * @param serviceHealthMonitor monitor to supervise the service status (e.g. number of active
      *        connections)
      * @throws IOException if the server cannot be created on the referred port
      */
@@ -89,7 +89,7 @@ public class ServerFactory {
      *
      * @param port where the server shall be started
      * @param dataAccessService that will be the data access service
-     * @param healthMonitor monitor to supervise the service status (e.g. number of active
+     * @param serviceHealthMonitor monitor to supervise the service status (e.g. number of active
      *        connections)
      * @throws IOException if the server cannot be created on the referred port
      */

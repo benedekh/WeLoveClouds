@@ -66,8 +66,6 @@ public class KVServer {
 
     /**
      * Start the service with a non-interactive mode, directly from the command-line.
-     *
-     * @param cliArguments array of the command line arguments
      */
     private static void startNonInteractiveMode(String[] cliArguments) {
         try {
@@ -87,6 +85,7 @@ public class KVServer {
      *        the different requests (KVClient, KVServer, KVECS)
      * @param dataAccessService the data access service
      * @param loadBalancerInfo connection information to the loadbalancer
+     * 
      * @throws IOException if an error occurs
      */
     private static void createAndStartServers(KVServerPortContext portConfigurationContext,
@@ -130,14 +129,14 @@ public class KVServer {
     }
 
     /**
-     * Initializes the root logger with the referred logLevel.
+     * Initializes the root logger with the referred log level.
      */
     protected static void initializeLoggerWithLevel(String logLevel) {
         initializeLoggerWithLevel(Level.toLevel(logLevel));
     }
 
     /**
-     * Initializes the root logger with the referred logLevel.
+     * Initializes the root logger with the referred log level.
      */
     private static void initializeLoggerWithLevel(Level logLevel) {
         try {
@@ -157,9 +156,9 @@ public class KVServer {
      *
      * @param port given port for storage server to operate
      * @param cacheSize specifies how many key-value pairs the server is allowed to keep in-memory
-     * @param strategy specifies the cache replacement strategy in case the cache is full and there
-     *        is a GET- or PUT-request on a key that is currently not contained in the cache.
-     *        Options are "FIFO", "LRU", and "LFU".
+     * @param strategy specifies the displacement strategy in the cache, in case the cache is full
+     *        and there is a GET or PUT request on a key that is currently not contained in the
+     *        cache. Options are "FIFO", "LRU", and "LFU".
      */
     public KVServer(int port, int cacheSize, String strategy) {
         Path defaultStoragePath = Paths.get("logs/testing/");

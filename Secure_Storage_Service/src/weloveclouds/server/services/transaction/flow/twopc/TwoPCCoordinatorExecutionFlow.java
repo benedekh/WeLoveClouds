@@ -10,6 +10,11 @@ import weloveclouds.server.services.transaction.tasks.twopc.CommitReadyTask;
 import weloveclouds.server.services.transaction.tasks.twopc.CommitTask;
 import weloveclouds.server.services.transaction.tasks.twopc.InitTask;
 
+/**
+ * Steps in a two-phase-commit protocol to be executed.
+ * 
+ * @author Benedek
+ */
 public class TwoPCCoordinatorExecutionFlow extends TransactionExecutionFlow {
 
     @Override

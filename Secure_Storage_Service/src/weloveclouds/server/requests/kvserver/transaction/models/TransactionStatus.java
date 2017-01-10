@@ -2,6 +2,11 @@ package weloveclouds.server.requests.kvserver.transaction.models;
 
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 
+/**
+ * Status of the transaction on the receiver side.
+ * 
+ * @author Benedek
+ */
 public enum TransactionStatus {
 
     INIT, COMMIT_READY, COMMITTED, ABORTED;

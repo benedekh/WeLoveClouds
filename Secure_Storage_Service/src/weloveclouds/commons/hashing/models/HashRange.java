@@ -6,10 +6,12 @@ import weloveclouds.commons.utils.StringUtils;
 
 /**
  * The following properties should be held for the range:<br>
- * (1) end >= start, and <br>
- * (2) end <= {@link Hash#MAX_VALUE} && start >= {@link Hash#MIN_VALUE}, UNLESS <br>
- * (3) start >= end, because they wrap over. But in this case (2) should hold with slight changes:
- * start <= {@link Hash#MAX_VALUE} && end >= {@link Hash#MIN_VALUE}.
+ * (1) {@link #end} >= {@link #start}, and<br>
+ * (2) {@link #end} <= {@link Hash#MAX_VALUE} && {@link #start} >= {@link Hash#MIN_VALUE},
+ * UNLESS<br>
+ * (3) {@link #start} >= {@link #end}, because they wrap over. But in this case (2) should hold with
+ * slight changes: {@link #start} <= {@link Hash#MAX_VALUE} && {@link #end} >=
+ * {@link Hash#MIN_VALUE}.
  *
  * The ends of the range are inclusive.
  *

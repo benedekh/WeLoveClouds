@@ -14,6 +14,11 @@ import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.Status
 import weloveclouds.server.services.transaction.SenderTransaction;
 import weloveclouds.server.services.transaction.tasks.TransactionTask;
 
+/**
+ * Init task for a transaction. Simply sends the INIT message to every participant.
+ * 
+ * @author Benedek
+ */
 public class InitTask extends TransactionTask<InitTask.Builder> {
 
     private static final Logger LOGGER = Logger.getLogger(InitTask.class);
@@ -76,6 +81,11 @@ public class InitTask extends TransactionTask<InitTask.Builder> {
         }
     }
 
+    /**
+     * Builder pattern for creating a {@link InitTask} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder extends TransactionTask.Builder<Builder> {
 
         public InitTask build() {

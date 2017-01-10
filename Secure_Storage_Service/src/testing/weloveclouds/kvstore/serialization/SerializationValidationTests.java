@@ -3,6 +3,11 @@ package testing.weloveclouds.kvstore.serialization;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+/**
+ * Tests suite to validate the serialization / deserialization scenarios.
+ * 
+ * @author Benedek
+ */
 public class SerializationValidationTests {
 
     public static Test suite() {
