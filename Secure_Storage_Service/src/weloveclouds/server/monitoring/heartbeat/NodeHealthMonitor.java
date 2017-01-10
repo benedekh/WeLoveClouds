@@ -38,27 +38,23 @@ public class NodeHealthMonitor extends Thread {
 
     @Override
     public void run() {
-        try (HeartbeatSenderService heartbeatSender = this.hearbeatSenderService) {
-            hearbeatSenderService.connect();
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    NodeHealthInfos nodeHealthInfos = nodeHealthInfosBuilder.build();
-                    nodeHealthInfos.getServicesHealthInfos().clear();
-                    for (ServiceHealthMonitor serviceHealthMonitor : serviceHealthMonitors) {
-                        nodeHealthInfos.getServicesHealthInfos()
-                                .add(serviceHealthMonitor.getHealthInfos());
-                    }
-                    heartbeatSender.send(nodeHealthInfos);
-                    Thread.sleep(WAIT_TIME_BEFORE_HEARTBEAT.getMillis());
-                } catch (UnableToSendContentToServerException ex) {
-                    LOGGER.error(ex);
-                } catch (InterruptedException ex) {
-                    LOGGER.error(ex);
-                    Thread.currentThread().interrupt();
+        while (!Thread.currentThread().isInterrupted()) {
+            try (HeartbeatSenderService heartbeatSender = this.hearbeatSenderService) {
+                hearbeatSenderService.connect();
+                NodeHealthInfos nodeHealthInfos = nodeHealthInfosBuilder.build();
+                nodeHealthInfos.getServicesHealthInfos().clear();
+                for (ServiceHealthMonitor serviceHealthMonitor : serviceHealthMonitors) {
+                    nodeHealthInfos.getServicesHealthInfos()
+                            .add(serviceHealthMonitor.getHealthInfos());
                 }
+                heartbeatSender.send(nodeHealthInfos);
+                Thread.sleep(WAIT_TIME_BEFORE_HEARTBEAT.getMillis());
+            } catch (UnableToSendContentToServerException | UnableToConnectException ex) {
+                LOGGER.error(ex);
+            } catch (InterruptedException ex) {
+                LOGGER.error(ex);
+                Thread.currentThread().interrupt();
             }
-        } catch (UnableToConnectException ex) {
-            LOGGER.error(ex);
         }
     }
 
