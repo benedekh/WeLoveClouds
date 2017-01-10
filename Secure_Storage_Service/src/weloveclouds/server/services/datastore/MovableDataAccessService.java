@@ -226,6 +226,13 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
     }
 
     @Override
+    public DataAccessServiceStatus getServiceStatus() {
+        try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
+            return serviceRecentStatus;
+        }
+    }
+
+    @Override
     public void setRingMetadata(RingMetadata ringMetadata) {
         try (CloseableLock lock = new CloseableLock(configurationChangeLock.writeLock())) {
             this.ringMetadata = ringMetadata;
@@ -258,7 +265,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
     @Override
     public boolean isServiceInitialized() {
         try (CloseableLock lock = new CloseableLock(configurationChangeLock.readLock())) {
-            return ringMetadata != null && readRanges != null;
+            return ringMetadata != null && (!readRanges.isEmpty() || writeRange != null);
         }
     }
 

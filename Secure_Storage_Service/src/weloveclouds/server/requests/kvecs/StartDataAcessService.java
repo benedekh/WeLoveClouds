@@ -29,9 +29,14 @@ public class StartDataAcessService implements IKVECSRequest {
     public KVAdminMessage execute() {
         try {
             LOGGER.debug("Executing start data access service request.");
-            dataAccessService.setServiceStatus(DataAccessServiceStatus.STARTED);
-            LOGGER.debug("Start data access service request finished susccessfully.");
-            return createSuccessKVAdminMessage();
+            if (dataAccessService.getServiceStatus().equals(DataAccessServiceStatus.STOPPED)) {
+                dataAccessService.setServiceStatus(DataAccessServiceStatus.STARTED);
+                LOGGER.debug("Start data access service request finished susccessfully.");
+                return createSuccessKVAdminMessage();
+            } else {
+                return createErrorKVAdminMessage(
+                        "Data access service cannot be started, because it is not stopped.");
+            }
         } catch (UninitializedServiceException ex) {
             LOGGER.error(ex);
             return createErrorKVAdminMessage(ex.getMessage());

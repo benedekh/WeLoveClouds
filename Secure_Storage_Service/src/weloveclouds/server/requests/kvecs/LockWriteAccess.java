@@ -30,9 +30,14 @@ public class LockWriteAccess implements IKVECSRequest {
     public KVAdminMessage execute() {
         try {
             LOGGER.debug("Executing lock write request.");
-            dataAccessService.setServiceStatus(DataAccessServiceStatus.WRITELOCK_ACTIVE);
-            LOGGER.debug("Lock write request finished successfully.");
-            return createSuccessKVAdminMessage();
+            if (dataAccessService.getServiceStatus().equals(DataAccessServiceStatus.STARTED)) {
+                dataAccessService.setServiceStatus(DataAccessServiceStatus.WRITELOCK_ACTIVE);
+                LOGGER.debug("Lock write request finished successfully.");
+                return createSuccessKVAdminMessage();
+            } else {
+                return createErrorKVAdminMessage(
+                        "Data access service is not started yet or write lock is already active.");
+            }
         } catch (UninitializedServiceException ex) {
             LOGGER.error(ex);
             return createErrorKVAdminMessage(ex.getMessage());

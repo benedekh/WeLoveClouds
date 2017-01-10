@@ -43,11 +43,15 @@ public class InitializeKVServer implements IKVECSRequest {
     @Override
     public KVAdminMessage execute() {
         LOGGER.debug("Executing initialize KVServer request.");
-        dataAccessService.setRingMetadata(ringMetadata);
-        dataAccessService.setManagedHashRanges(readRanges, writeRange);
-        dataAccessService.setReplicaConnectionInfos(replicaConnectionInfos);
-        LOGGER.debug("Initialization finished successfully.");
-        return createSuccessKVAdminMessage();
+        if (!dataAccessService.isServiceInitialized()) {
+            dataAccessService.setRingMetadata(ringMetadata);
+            dataAccessService.setManagedHashRanges(readRanges, writeRange);
+            dataAccessService.setReplicaConnectionInfos(replicaConnectionInfos);
+            LOGGER.debug("Initialization finished successfully.");
+            return createSuccessKVAdminMessage();
+        } else {
+            return createErrorKVAdminMessage("Data access service is already initialized.");
+        }
     }
 
     @Override

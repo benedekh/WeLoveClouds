@@ -30,9 +30,15 @@ public class UnlockWriteAccess implements IKVECSRequest {
     public KVAdminMessage execute() {
         try {
             LOGGER.debug("Executing unlock write request.");
-            dataAccessService.setServiceStatus(DataAccessServiceStatus.WRITELOCK_INACTIVE);
-            LOGGER.debug("Unlock write request finished successfully.");
-            return createSuccessKVAdminMessage();
+            if (dataAccessService.getServiceStatus()
+                    .equals(DataAccessServiceStatus.WRITELOCK_ACTIVE)) {
+                dataAccessService.setServiceStatus(DataAccessServiceStatus.WRITELOCK_INACTIVE);
+                LOGGER.debug("Unlock write request finished successfully.");
+                return createSuccessKVAdminMessage();
+            } else {
+                return createErrorKVAdminMessage(
+                        "Write lock was not active on the data access service.");
+            }
         } catch (UninitializedServiceException ex) {
             LOGGER.error(ex);
             return createErrorKVAdminMessage(ex.getMessage());
