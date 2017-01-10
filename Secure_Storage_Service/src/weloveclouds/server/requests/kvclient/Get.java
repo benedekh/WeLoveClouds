@@ -16,14 +16,13 @@ import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.datastore.IMovableDataAccessService;
-import weloveclouds.server.services.datastore.MovableDataAccessService;
 import weloveclouds.server.services.datastore.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.datastore.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
  * A get request to get the respective value for a key, stored in the
- * {@link MovableDataAccessService}.
+ * {@link IMovableDataAccessService}.
  * 
  * @author Benoit
  */

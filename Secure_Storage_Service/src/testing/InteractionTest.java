@@ -2,7 +2,6 @@ package testing;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import junit.framework.TestCase;
@@ -11,7 +10,11 @@ import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.server.api.IKVServerApi;
 import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
-
+/**
+ * Test cases to test interaction scenarios with the storage service.
+ * 
+ * @author Martin Jergler
+ */
 public class InteractionTest extends TestCase {
 
     private IKVServerApi kvClient;

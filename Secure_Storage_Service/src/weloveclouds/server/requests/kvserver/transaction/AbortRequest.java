@@ -12,6 +12,11 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
 import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatus;
 
+/**
+ * An abort request which terminates the transaction.
+ * 
+ * @author Benedek
+ */
 public class AbortRequest extends AbstractRequest<AbortRequest.Builder> {
 
     private static Logger LOGGER = Logger.getLogger(AbortRequest.class);
@@ -49,6 +54,11 @@ public class AbortRequest extends AbstractRequest<AbortRequest.Builder> {
         return this;
     }
 
+    /**
+     * Builder pattern for creating a {@link AbortRequest} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder extends AbstractRequest.Builder<Builder> {
 
         public AbortRequest build() {

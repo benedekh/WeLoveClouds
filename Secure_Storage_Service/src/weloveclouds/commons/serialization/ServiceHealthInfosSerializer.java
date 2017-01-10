@@ -15,7 +15,9 @@ import static weloveclouds.commons.serialization.models.XMLTokens.SERVICE;
 import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
 
 /**
- * Created by Benoit on 2016-12-18.
+ * A serializer which converts a {@link ServiceHealthInfos} to a {@link AbstractXMLNode}.
+ * 
+ * @author Benoit
  */
 public class ServiceHealthInfosSerializer implements ISerializer<AbstractXMLNode, ServiceHealthInfos> {
     ISerializer<AbstractXMLNode, ServerConnectionInfo> serverConnectionInfoISerializer;

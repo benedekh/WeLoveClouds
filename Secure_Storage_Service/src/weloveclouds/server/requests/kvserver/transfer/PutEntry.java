@@ -46,7 +46,6 @@ public class PutEntry implements IKVTransferRequest {
         }
     }
 
-
     @Override
     public IKVTransferRequest validate() throws IllegalArgumentException {
         if (entry == null) {

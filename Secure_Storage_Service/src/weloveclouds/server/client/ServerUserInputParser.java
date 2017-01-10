@@ -4,7 +4,9 @@ import weloveclouds.commons.cli.utils.AbstractUserInputParser;
 import weloveclouds.server.client.commands.ServerCommand;
 
 /**
- * Created by Benoit on 2016-11-20.
+ * Parses the command-line inputs for KVServer.
+ * 
+ * @author Benoit
  */
 public class ServerUserInputParser extends AbstractUserInputParser<ServerCommand> {
     @Override

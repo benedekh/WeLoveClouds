@@ -41,8 +41,8 @@ public class ArgumentsValidator {
 
     /**
      * Validate CLI arguments for the server starting. The arguments are valid, if:<br>
-     * (1) there are exactly {@link #REQUIRED_CLI_ARGUMENT_NUMBER} number of arguments, and <br>
-     * (2) the argument at the position {@link #CLI_CLIENT_NAME_INDEX} is a non-empty string
+     * (1) there are exactly {@value #REQUIRED_CLI_ARGUMENT_NUMBER} number of arguments, and<br>
+     * (2) the argument at the position {@value #CLI_CLIENT_NAME_INDEX} is a non-empty string
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
@@ -62,10 +62,8 @@ public class ArgumentsValidator {
 
     /**
      * A connect command is valid, if:<br>
-     * (1) the 0. parameter of arguments is a valid IP address, and <br>
-     * (2) the 1st parameter of arguments is a valid port, and <br>
-     * (3) these are the only arguments.<br>
-     * The remoteServer already contains the IP address and the port.
+     * (1) there are exactly {@value #CONNECT_NUMBER_OF_ARGUMENTS} number of arguments, and<br>
+     * (2) remoteServer already contains the IP address and the port
      *
      * @throws IllegalArgumentException if there is a validation error
      */
@@ -88,12 +86,12 @@ public class ArgumentsValidator {
 
     /**
      * A put command is valid, if:<br>
-     * (1) the {@link #KEY_INDEX} parameter of arguments is a key, and <br>
-     * (2) all other parameters starting from {@link #VALUE_INDEX} parameter of the arguments are
+     * (1) the {@value #KEY_INDEX} parameter of arguments is a key, and<br>
+     * (2) all other parameters starting from {@value #VALUE_INDEX} parameter of the arguments are
      * regarded and merged as value, and<br>
-     * (3) these are the only arguments, and <br>
-     * (4) and the size of the key is at most {@link #KEY_SIZE_LIMIT_IN_BYTES} bytes, and <br>
-     * (5) and the size of the value is at most {@link #VALUE_SIZE_LIMIT_IN_BYTES} bytes.<br>
+     * (3) these are the only arguments, and<br>
+     * (4) and the size of the key is at most {@value #KEY_SIZE_LIMIT_IN_BYTES} bytes, and<br>
+     * (5) and the size of the value is at most {@value #VALUE_SIZE_LIMIT_IN_BYTES} bytes.<br>
      * 
      * @throws IllegalArgumentException if there is a validation error
      */
@@ -115,8 +113,8 @@ public class ArgumentsValidator {
 
     /**
      * A get command is valid, if:<br>
-     * (1) the {@link #KEY_INDEX} parameter of arguments is a key, and <br>
-     * (2) and the size of the key is at most {@link #KEY_SIZE_LIMIT_IN_BYTES} bytes, and<br>
+     * (1) the {@value #KEY_INDEX} parameter of arguments is a key, and<br>
+     * (2) and the size of the key is at most {@value #KEY_SIZE_LIMIT_IN_BYTES} bytes, and<br>
      * (3) that is the only argument.<br>
      * 
      * @throws IllegalArgumentException if there is a validation error
@@ -149,14 +147,12 @@ public class ArgumentsValidator {
         }
     }
 
-
     /**
      * A logLevel command is valid, if:<br>
-     * (1) the {@link #LEVEL_INDEX}element of the arguments array is a log level, and<br>
+     * (1) the {@value #LEVEL_INDEX}element of the arguments array is a log level, and<br>
      * (2) the log level is one of those in {@link LogLevel}.
-     *
-     * @param arguments {@link #LEVEL_INDEX} element of the array contains the log level
-     * @throws IllegalArgumentException if
+     * 
+     * @throws IllegalArgumentException if there is a validation error.
      */
     public static void validateLogLevelArguments(String[] arguments)
             throws IllegalArgumentException {
@@ -176,8 +172,7 @@ public class ArgumentsValidator {
 
     /**
      * A disconnect command is valid, if it does not contain any argument.
-     *
-     * @param arguments shall be empty
+     * 
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateDisconnectArguments(String[] arguments)
@@ -190,8 +185,7 @@ public class ArgumentsValidator {
 
     /**
      * A help command is valid, if it does not contain any argument.
-     *
-     * @param arguments shall be empty
+     * 
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateHelpArguments(String[] arguments) throws IllegalArgumentException {
@@ -203,8 +197,7 @@ public class ArgumentsValidator {
 
     /**
      * A quit command is valid, if it does not contain any argument.
-     *
-     * @param arguments shall be empty
+     * 
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateQuitArguments(String[] arguments) throws IllegalArgumentException {

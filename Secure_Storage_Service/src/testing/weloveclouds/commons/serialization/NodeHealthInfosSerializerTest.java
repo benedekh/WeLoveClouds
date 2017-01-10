@@ -1,17 +1,18 @@
 package testing.weloveclouds.commons.serialization;
 
+import static weloveclouds.commons.status.ServiceStatus.HALTED;
+import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
+import static weloveclouds.commons.status.ServiceStatus.RUNNING;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import weloveclouds.commons.kvstore.deserialization.helper.ServerConnectionInfoDeserializer;
 import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.NodeHealthInfosSerializer;
 import weloveclouds.commons.serialization.ServiceHealthInfosSerializer;
-import weloveclouds.commons.serialization.deserialization.NodeHealtInfosDeserializer;
-import weloveclouds.commons.serialization.deserialization.ServiceHealthInfosDeserializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.status.ServiceStatus;
 import weloveclouds.communication.models.ServerConnectionInfo;
@@ -19,12 +20,10 @@ import weloveclouds.ecs.models.repository.NodeStatus;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
-import static weloveclouds.commons.status.ServiceStatus.HALTED;
-import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
-import static weloveclouds.commons.status.ServiceStatus.RUNNING;
-
 /**
- * Created by Benoit on 2016-12-18.
+ * Unit tests to validate the {@link NodeHealthInfosSerializer} correct behavior.
+ * 
+ * @author Benoit
  */
 @RunWith(MockitoJUnitRunner.class)
 public class NodeHealthInfosSerializerTest {
@@ -69,48 +68,30 @@ public class NodeHealthInfosSerializerTest {
         serviceHealthInfosSerializer =
                 new ServiceHealthInfosSerializer(serverConnectionInfoSerializer);
         nodeHealthInfosSerializer = new NodeHealthInfosSerializer(serviceHealthInfosSerializer);
-        serviceEndpoint_1 = new ServerConnectionInfo.Builder()
-                .ipAddress(SERVICE_IP_1)
-                .port(SERVICE_PORT_1)
-                .build();
-        serviceEndpoint_2 = new ServerConnectionInfo.Builder()
-                .ipAddress(SERVICE_IP_2)
-                .port(SERVICE_PORT_2)
-                .build();
-        serviceEndpoint_3 = new ServerConnectionInfo.Builder()
-                .ipAddress(SERVICE_IP_3)
-                .port(SERVICE_PORT_3)
-                .build();
+        serviceEndpoint_1 = new ServerConnectionInfo.Builder().ipAddress(SERVICE_IP_1)
+                .port(SERVICE_PORT_1).build();
+        serviceEndpoint_2 = new ServerConnectionInfo.Builder().ipAddress(SERVICE_IP_2)
+                .port(SERVICE_PORT_2).build();
+        serviceEndpoint_3 = new ServerConnectionInfo.Builder().ipAddress(SERVICE_IP_3)
+                .port(SERVICE_PORT_3).build();
 
-        serviceHealthInfos_1 = new ServiceHealthInfos.Builder()
-                .serviceName(SERVICE_NAME_1)
-                .servicePriority(SERVICE_PRIORITY_1)
-                .serviceEnpoint(serviceEndpoint_1)
+        serviceHealthInfos_1 = new ServiceHealthInfos.Builder().serviceName(SERVICE_NAME_1)
+                .servicePriority(SERVICE_PRIORITY_1).serviceEnpoint(serviceEndpoint_1)
                 .serviceStatus(SERVICE_STATUS_1)
-                .numberOfActiveConnections(NUMBER_OF_ACTIVE_CONNECTIONS_1)
-                .build();
-        serviceHealthInfos_2 = new ServiceHealthInfos.Builder()
-                .serviceName(SERVICE_NAME_2)
-                .servicePriority(SERVICE_PRIORITY_2)
-                .serviceEnpoint(serviceEndpoint_2)
+                .numberOfActiveConnections(NUMBER_OF_ACTIVE_CONNECTIONS_1).build();
+        serviceHealthInfos_2 = new ServiceHealthInfos.Builder().serviceName(SERVICE_NAME_2)
+                .servicePriority(SERVICE_PRIORITY_2).serviceEnpoint(serviceEndpoint_2)
                 .serviceStatus(SERVICE_STATUS_2)
-                .numberOfActiveConnections(NUMBER_OF_ACTIVE_CONNECTIONS_2)
-                .build();
-        serviceHealthInfos_3 = new ServiceHealthInfos.Builder()
-                .serviceName(SERVICE_NAME_3)
-                .servicePriority(SERVICE_PRIORITY_3)
-                .serviceEnpoint(serviceEndpoint_3)
+                .numberOfActiveConnections(NUMBER_OF_ACTIVE_CONNECTIONS_2).build();
+        serviceHealthInfos_3 = new ServiceHealthInfos.Builder().serviceName(SERVICE_NAME_3)
+                .servicePriority(SERVICE_PRIORITY_3).serviceEnpoint(serviceEndpoint_3)
                 .serviceStatus(SERVICE_STATUS_3)
-                .numberOfActiveConnections(NUMBER_OF_ACTIVE_CONNECTIONS_3)
-                .build();
+                .numberOfActiveConnections(NUMBER_OF_ACTIVE_CONNECTIONS_3).build();
 
-        nodeHealthInfos = new NodeHealthInfos.Builder()
-                .nodeName(NODE_NAME)
-                .nodeStatus(NODE_STATUS)
+        nodeHealthInfos = new NodeHealthInfos.Builder().nodeName(NODE_NAME).nodeStatus(NODE_STATUS)
                 .addServiceHealtInfos(serviceHealthInfos_1)
                 .addServiceHealtInfos(serviceHealthInfos_2)
-                .addServiceHealtInfos(serviceHealthInfos_3)
-                .build();
+                .addServiceHealtInfos(serviceHealthInfos_3).build();
     }
 
     @Test

@@ -12,9 +12,8 @@ import weloveclouds.server.client.commands.utils.ArgumentsValidator;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
 import weloveclouds.server.store.KVPersistentStorage;
 
-
 /**
- * The path for the {@link KVPersistentStorage}} where it can persist the records.
+ * The path for the {@link KVPersistentStorage} where it can persist the records.
  *
  * @author Benedek
  */

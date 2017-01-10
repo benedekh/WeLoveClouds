@@ -50,8 +50,6 @@ public class KVServerPortContext {
         this.kvECSPort = kvECSPort;
     }
 
-
-
     /**
      * Builder pattern for creating a {@link KVServerPortContext} instance.
      *

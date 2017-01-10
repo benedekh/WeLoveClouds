@@ -12,8 +12,8 @@ import weloveclouds.client.commands.CommandFactory;
 import weloveclouds.commons.exceptions.ClientSideException;
 
 /**
- * The echo client itself. It processes (read, validate, execute) various commands that are received
- * from the user. For details on the the commands see {@link CommandFactory}.
+ * Processes various commands that are received from the user. For details on the the commands see
+ * {@link CommandFactory}.
  *
  * @author Benoit, Benedek, Hunton
  */

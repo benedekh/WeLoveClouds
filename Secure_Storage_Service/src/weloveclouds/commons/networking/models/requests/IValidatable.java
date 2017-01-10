@@ -8,7 +8,7 @@ package weloveclouds.commons.networking.models.requests;
 public interface IValidatable<E> {
 
     /**
-     * Validates the respective object. Returns it if the validation was successfull.
+     * Validates the respective object. Returns it if the validation was successful.
      *
      * @throws IllegalArgumentException if the object is syntactically or semantically invalid
      */

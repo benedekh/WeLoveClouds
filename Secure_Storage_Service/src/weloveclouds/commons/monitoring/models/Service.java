@@ -1,7 +1,9 @@
 package weloveclouds.commons.monitoring.models;
 
 /**
- * Created by Benoit on 2016-11-27.
+ * Denotes a service as an enum.
+ * 
+ * @author Benoit
  */
 public enum Service {
     ECS("ecs"), KV_SERVER("kvserver"), KV_CLIENT("kvclient");

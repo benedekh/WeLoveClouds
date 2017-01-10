@@ -8,6 +8,11 @@ import weloveclouds.commons.kvstore.models.messages.proxy.KVTransactionMessagePr
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
+/**
+ * Represents a transaction message between KVServers.
+ * 
+ * @author Benedek
+ */
 public class KVTransactionMessage implements IKVTransactionMessage {
 
     private StatusType status;

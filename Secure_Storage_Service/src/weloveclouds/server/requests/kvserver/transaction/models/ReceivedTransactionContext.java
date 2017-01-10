@@ -10,6 +10,12 @@ import weloveclouds.commons.utils.CloseableLock;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.requests.kvserver.transaction.utils.ITransactionRestorationRequest;
 
+/**
+ * The context information of a transaction which is stored on the receiver side (where the
+ * transaction itself is executed).
+ * 
+ * @author Benedek
+ */
 public class ReceivedTransactionContext {
 
     private final UUID transactionId;
@@ -61,10 +67,18 @@ public class ReceivedTransactionContext {
         setCompleted(TransactionStatus.ABORTED);
     }
 
+    /**
+     * Sets the helper restoration protocol which shall be executed if the transaction is not
+     * completed in a given time frame.
+     */
     public void setTimedRestoration(ITransactionRestorationRequest timedRestoration) {
         this.timedRestoration = timedRestoration;
     }
 
+    /**
+     * Schedules the helper restoration protocol which shall be executed if the transaction is not
+     * completed in a given time frame.
+     */
     public void scheduleTimedRestoration() {
         if (timedRestoration != null) {
             try (CloseableLock lock = new CloseableLock(accessLock)) {
@@ -75,6 +89,10 @@ public class ReceivedTransactionContext {
         }
     }
 
+    /**
+     * Stops the helper restoration protocol which shall be executed if the transaction is not
+     * completed in a given time frame.
+     */
     public void stopTimedRestoration() {
         if (timedRestoration != null) {
             try (CloseableLock lock = new CloseableLock(accessLock)) {
@@ -103,11 +121,22 @@ public class ReceivedTransactionContext {
         transactionStatus = status;
     }
 
+    /**
+     * A transaction is completed if it is either {@link TransactionStatus#COMMITTED} or
+     * {@link TransactionStatus#ABORTED}.
+     * 
+     * @return
+     */
     public boolean isCompleted() {
         return transactionStatus == TransactionStatus.COMMITTED
                 || transactionStatus == TransactionStatus.ABORTED;
     }
 
+    /**
+     * Builder pattern for creating a {@link ReceivedTransactionContext} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private UUID transactionId;
         private TransactionStatus transactionStatus;

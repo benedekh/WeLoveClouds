@@ -1,10 +1,10 @@
 package weloveclouds.commons.networking;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
@@ -13,10 +13,11 @@ import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 
 /**
- * Created by Benoit on 2016-12-05.
+ * An abstract connection handler, which accepts and handles connections.
+ * 
+ * @author Benoit
  */
-public abstract class AbstractConnectionHandler<M>
-        extends Thread implements IConnectionHandler {
+public abstract class AbstractConnectionHandler<M> extends Thread implements IConnectionHandler {
     protected IConcurrentCommunicationApi communicationApi;
     protected Connection connection;
     protected IMessageSerializer<SerializedMessage, M> messageSerializer;
@@ -27,9 +28,8 @@ public abstract class AbstractConnectionHandler<M>
     private ConnectionHandlerShutdownHook shutdownHook;
 
     public AbstractConnectionHandler(IConcurrentCommunicationApi communicationApi,
-                                     Connection connection,
-                                     IMessageSerializer<SerializedMessage, M> messageSerializer,
-                                     IMessageDeserializer<M, SerializedMessage> messageDeserializer) {
+            Connection connection, IMessageSerializer<SerializedMessage, M> messageSerializer,
+            IMessageDeserializer<M, SerializedMessage> messageDeserializer) {
         this.communicationApi = communicationApi;
         this.connection = connection;
         this.messageSerializer = messageSerializer;
@@ -37,7 +37,7 @@ public abstract class AbstractConnectionHandler<M>
         this.callbacks = new ArrayList<>();
         registerShutdownHookForConnection();
     }
-    
+
     @Override
     public void registerCallback(Runnable callback) {
         callbacks.add(callback);

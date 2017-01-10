@@ -30,7 +30,7 @@ public abstract class AbstractUserInputParser<T> {
     private static final Logger LOGGER = Logger.getLogger(AbstractUserInputParser.class);
 
     /**
-     * Extracts the <command> and its <arguments> from the user input.
+     * Extracts the [command] and its [arguments] from the user input.
      *
      * @param userInput the raw content of the user input (raw line from the user input stream)
      * @return the extracted command and its arguments stored in one object
@@ -57,7 +57,7 @@ public abstract class AbstractUserInputParser<T> {
     }
 
     /**
-     * Extracts the IP address and port from the arguments array. <br>
+     * Extracts the IP address and port from the arguments array.<br>
      * The IP address shall be the 0. element of the array.<br>
      * The port shall be the 1. element of the array.
      *
@@ -83,5 +83,8 @@ public abstract class AbstractUserInputParser<T> {
         }
     }
 
+    /**
+     * Creates the respective command from its string representation.
+     */
     public abstract T getCommandFromEnum(String commandAsString);
 }

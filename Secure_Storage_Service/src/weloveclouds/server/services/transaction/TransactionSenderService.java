@@ -22,6 +22,11 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.services.replication.request.AbstractReplicationRequest;
 import weloveclouds.server.services.transaction.flow.ITransactionExecutionFlow;
 
+/**
+ * Service which sends transactions to each participant and executes them there.
+ * 
+ * @author Benedek
+ */
 public class TransactionSenderService implements ITransactionSenderService {
 
     private static final Logger LOGGER = Logger.getLogger(TransactionSenderService.class);
@@ -72,7 +77,7 @@ public class TransactionSenderService implements ITransactionSenderService {
     }
 
     @Override
-    public void executeEmptyTransactionsFor(UUID transactionId,
+    public void executeTransactionReferredByIDFor(UUID transactionId,
             Set<ServerConnectionInfo> participantConnectionInfos) {
         try {
             Set<SenderTransaction> transactions = new HashSet<>();
@@ -100,6 +105,11 @@ public class TransactionSenderService implements ITransactionSenderService {
                 .transactionMessageDeserializer(transactionMessageDeserializer).build();
     }
 
+    /**
+     * Builder pattern for creating a {@link TransactionSenderService} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder {
         private IConcurrentCommunicationApi communicationApi;
         private IMessageSerializer<SerializedMessage, IKVTransactionMessage> transactionMessageSerializer;

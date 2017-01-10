@@ -24,7 +24,7 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
- * A deserializer which converts a {@link SerializedMessage} to a {@link KVMessage}.
+ * A deserializer which converts a {@link SerializedMessage} to a {@link IKVMessage}.
  * 
  * @author Benoit
  */
