@@ -1,8 +1,8 @@
 package testing.weloveclouds.kvstore.serialization;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.junit.Test;
 
@@ -16,6 +16,7 @@ import weloveclouds.commons.serialization.ISerializer;
 import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.utils.PathUtils;
 import weloveclouds.server.store.models.MovableStorageUnit;
+import weloveclouds.server.store.utils.KeyWithHash;
 
 /**
  * Tests for the {@link MovableStorageUnit} to verify its serialization and deserialization
@@ -33,9 +34,9 @@ public class MovableStorageUnitTest extends TestCase {
     @Test
     public void testMovableStorageUnitSerializationAndDeserialization()
             throws DeserializationException, IOException {
-        Map<String, String> keyval = new HashMap<>();
-        keyval.put("hello", "world");
-        keyval.put("apple", "juice");
+        SortedMap<KeyWithHash, String> keyval = new TreeMap<>();
+        keyval.put(new KeyWithHash("hello"), "world");
+        keyval.put(new KeyWithHash("apple"), "juice");
 
         MovableStorageUnit storageUnit =
                 new MovableStorageUnit(keyval, PathUtils.createDummyPath());

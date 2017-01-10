@@ -41,8 +41,12 @@ public class HashRange {
         return new BigInteger(end.getBytes());
     }
 
+    public boolean isOverWrapping() {
+        return end.compareTo(begin) < 0;
+    }
+
     public boolean contains(Hash target) {
-        if (end.compareTo(begin) >= 0) {
+        if (!isOverWrapping()) {
             // if the range does not wrap over
             return (target.compareTo(begin) >= 0) && (target.compareTo(end) <= 0);
         } else {
