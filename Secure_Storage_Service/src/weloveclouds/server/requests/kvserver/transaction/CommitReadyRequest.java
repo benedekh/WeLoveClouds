@@ -15,6 +15,7 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.kvserver.transaction.models.ReceivedTransactionContext;
 import weloveclouds.server.requests.kvserver.transaction.models.TransactionStatus;
 import weloveclouds.server.requests.kvserver.transfer.IKVTransferRequest;
+import weloveclouds.server.store.exceptions.StorageException;
 
 /**
  * Represents the commit ready phase of a transaction.
@@ -47,10 +48,18 @@ public class CommitReadyRequest extends AbstractRequest<CommitReadyRequest.Build
                         if (transaction.getTransactionStatus() != TransactionStatus.COMMIT_READY) {
                             IKVTransferMessage transferMessage = transaction.getTransferMessage();
                             if (transferMessage != null) {
-                                simulatedDASBehavior
-                                        .createRequestFromReceivedMessage(transferMessage,
-                                                new EmptyCallbackRegister())
-                                        .validate().execute();
+                                IKVTransferMessage virtualResponse =
+                                        simulatedDASBehavior
+                                                .createRequestFromReceivedMessage(transferMessage,
+                                                        new EmptyCallbackRegister())
+                                                .validate().execute();
+                                switch (virtualResponse.getStatus()) {
+                                    case RESPONSE_ERROR:
+                                        throw new StorageException(
+                                                virtualResponse.getResponseMessage());
+                                    default:
+                                        break;
+                                }
                                 transaction.setCommitReady();
                             }
                             LOGGER.debug(StringUtils.join("", "Commit_Ready for transaction (",
@@ -60,6 +69,7 @@ public class CommitReadyRequest extends AbstractRequest<CommitReadyRequest.Build
                         }
                     }
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     LOGGER.error(ex);
                     return new AbortRequest.Builder().transactionLog(transactionLog)
                             .transactionId(transactionId).build().execute();
