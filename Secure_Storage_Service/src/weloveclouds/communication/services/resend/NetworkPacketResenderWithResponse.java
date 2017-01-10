@@ -61,8 +61,6 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
                 }
             } catch (InterruptedException ex) {
                 LOGGER.debug(ex);
-                receiverThread.interrupt();
-                throw new IOException("Resend unexpectedly stopped.");
             }
         }
 
@@ -103,8 +101,6 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
                 }
             } catch (InterruptedException ex) {
                 LOGGER.debug(ex);
-                receiverThread.interrupt();
-                throw new IOException("Resend unexpectedly stopped.");
             }
         }
 
