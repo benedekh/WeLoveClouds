@@ -1,23 +1,25 @@
 package weloveclouds.commons.serialization.deserialization;
 
-import com.google.inject.Inject;
+import static weloveclouds.commons.serialization.models.XMLTokens.NODE;
+import static weloveclouds.commons.serialization.models.XMLTokens.ORDERED_NODES;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
+import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import weloveclouds.ecs.models.repository.AbstractNode;
-import weloveclouds.ecs.models.topology.RingTopology;
+import com.google.inject.Inject;
+
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 import weloveclouds.commons.serialization.IDeserializer;
-
-import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
-import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
-import static weloveclouds.commons.serialization.models.XMLTokens.NODE;
-import static weloveclouds.commons.serialization.models.XMLTokens.ORDERED_NODES;
+import weloveclouds.ecs.models.repository.AbstractNode;
+import weloveclouds.ecs.models.topology.RingTopology;
 
 /**
- * Created by Benoit on 2016-12-09.
+ * A deserializer which converts a {@link String} to a {@link RingTopology<T>}.
+ * 
+ * @author Benoit
  */
 public class RingTopologyDeserializer<T extends AbstractNode>
         implements IDeserializer<RingTopology<T>, String> {
@@ -29,8 +31,8 @@ public class RingTopologyDeserializer<T extends AbstractNode>
     }
 
     @Override
-    public RingTopology<T> deserialize(String serializedRingTopology) throws
-            DeserializationException {
+    public RingTopology<T> deserialize(String serializedRingTopology)
+            throws DeserializationException {
         Matcher orderedNodesMatcher =
                 getRegexFromToken(ORDERED_NODES).matcher(serializedRingTopology);
         List<T> nodesList = new ArrayList<>();
@@ -42,8 +44,8 @@ public class RingTopologyDeserializer<T extends AbstractNode>
                 nodesList.add(nodeDeserializer.deserialize(nodeMatcher.group(XML_NODE)));
             }
         } else {
-            throw new DeserializationException("Unable to deserialize ring topology: " +
-                    serializedRingTopology);
+            throw new DeserializationException(
+                    "Unable to deserialize ring topology: " + serializedRingTopology);
         }
         return new RingTopology<>(nodesList);
     }

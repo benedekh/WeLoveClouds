@@ -39,12 +39,18 @@ public class MovableStorageUnit extends PersistedStorageUnit {
         this.accessLock = new ReentrantLock();
     }
 
+    /**
+     * Copies those entries whose key's hash value is in the given range.
+     */
     public MovableStorageUnit copyEntries(HashRange range) {
         try (CloseableLock lock = new CloseableLock(accessLock)) {
             return new MovableStorageUnit(filterEntries(range), getPath());
         }
     }
 
+    /**
+     * @return an unmodifiable view of the entries
+     */
     public Set<Map.Entry<String, String>> getEntries() {
         try (CloseableLock lock = new CloseableLock(accessLock)) {
             try (LoadAndSaveSilent load = new LoadAndSaveSilent()) {

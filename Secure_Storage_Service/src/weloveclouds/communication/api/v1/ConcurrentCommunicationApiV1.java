@@ -2,10 +2,10 @@ package weloveclouds.communication.api.v1;
 
 import java.io.IOException;
 
-import weloveclouds.communication.services.NetworkPacketResenderFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.services.IConcurrentCommunicationService;
+import weloveclouds.communication.services.resend.NetworkPacketResenderFactory;
 import weloveclouds.server.core.Server;
 
 /**

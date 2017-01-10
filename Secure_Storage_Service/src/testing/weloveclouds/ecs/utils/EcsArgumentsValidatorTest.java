@@ -10,6 +10,7 @@ import weloveclouds.ecs.utils.ArgumentsValidator;
 
 
 /**
+ * Unit tests to validate the {@link ArgumentsValidator} correct behavior.
  * 
  * @author Hunton
  */

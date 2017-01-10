@@ -31,10 +31,10 @@ public abstract class AbstractServer<M> extends Thread {
     private ServerShutdownHook shutdownHook;
 
     protected AbstractServer(CommunicationApiFactory communicationApiFactory,
-                          ServerSocketFactory serverSocketFactory,
-                          IMessageSerializer<SerializedMessage, M> messageSerializer,
-                          IMessageDeserializer<M, SerializedMessage> messageDeserializer, int
-                                  port) throws IOException {
+            ServerSocketFactory serverSocketFactory,
+            IMessageSerializer<SerializedMessage, M> messageSerializer,
+            IMessageDeserializer<M, SerializedMessage> messageDeserializer, int port)
+            throws IOException {
         this.communicationApiFactory = communicationApiFactory;
         this.serverSocketFactory = serverSocketFactory;
         this.messageSerializer = messageSerializer;

@@ -5,6 +5,11 @@ import java.util.UUID;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
 
+/**
+ * Represents a transaction message.
+ * 
+ * @author Benedek
+ */
 public interface IKVTransactionMessage {
 
     public enum StatusType {

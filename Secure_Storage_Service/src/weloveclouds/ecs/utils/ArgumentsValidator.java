@@ -9,7 +9,7 @@ import weloveclouds.ecs.models.commands.client.InitService;
 
 
 /**
- * Created by Benoit on 2016-11-21. Added to by hb
+ * @author Benoit, Hunton
  */
 public class ArgumentsValidator {
     private static final int INIT_SERVICE_NUMBER_OF_ARGUMENTS = 3;

@@ -24,7 +24,7 @@ import weloveclouds.communication.exceptions.UnableToSendContentToServerExceptio
 import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
-import weloveclouds.communication.services.NetworkPacketResenderFactory;
+import weloveclouds.communication.services.resend.NetworkPacketResenderFactory;
 import weloveclouds.server.api.IKVCommunicationApi;
 
 /**

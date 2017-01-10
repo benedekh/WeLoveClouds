@@ -17,7 +17,6 @@ import weloveclouds.commons.serialization.models.AbstractXMLNode;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.datastore.IMovableDataAccessService;
-import weloveclouds.server.services.datastore.MovableDataAccessService;
 import weloveclouds.server.services.datastore.exceptions.KeyIsNotManagedByServiceException;
 import weloveclouds.server.services.datastore.exceptions.ServiceIsStoppedException;
 import weloveclouds.server.services.datastore.exceptions.WriteLockIsActiveException;
@@ -25,7 +24,7 @@ import weloveclouds.server.store.exceptions.StorageException;
 
 /**
  * A delete request to remove the key and its respective value stored in the
- * {@link MovableDataAccessService}.
+ * {@link IMovableDataAccessService}.
  * 
  * @author Benoit
  */

@@ -1,9 +1,8 @@
-package weloveclouds.communication.services;
+package weloveclouds.communication.services.resend;
 
 import org.joda.time.Duration;
 
 import weloveclouds.commons.retryer.ExponentialBackoffIntervalComputer;
-import weloveclouds.communication.api.ICommunicationApi;
 
 /**
  * A factory to create {@link NetworkPacketResender} instances which overcome network errors
@@ -65,8 +64,7 @@ public class NetworkPacketResenderFactory {
      * @param minimalInterval how much time shall elapse between two resend attempts
      */
     public AbstractNetworkPacketResender createResenderWithResponseWithExponentialBackoff(
-            int maxNumberOfAttempts, ICommunicationApi communicationApi, byte[] packet,
-            Duration minimalInterval) {
+            int maxNumberOfAttempts, byte[] packet, Duration minimalInterval) {
         return new NetworkPacketResenderWithResponse(maxNumberOfAttempts, packet,
                 new ExponentialBackoffIntervalComputer(minimalInterval));
     }

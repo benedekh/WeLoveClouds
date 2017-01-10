@@ -412,6 +412,11 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
         throw new KeyIsNotManagedByServiceException();
     }
 
+    /**
+     * Builder pattern for creating a {@link MovableDataAccessService} instance.
+     *
+     * @author Benedek
+     */
     public static class Builder<E extends Builder<E>> {
         private KVCache cache;
         private MovablePersistentStorage persistentStorage;

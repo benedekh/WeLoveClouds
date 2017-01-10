@@ -7,8 +7,7 @@ import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
- * Represents a command that was not recognized as a valid
- * {@link weloveclouds.client.commands.ClientCommand}.
+ * Represents a command that was not recognized as a valid {@link ClientCommand}.
  *
  * @author Benoit, Hunton
  */

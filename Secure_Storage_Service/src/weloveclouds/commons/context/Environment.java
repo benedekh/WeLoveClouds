@@ -1,7 +1,9 @@
 package weloveclouds.commons.context;
 
 /**
- * Created by Benoit on 2016-11-27.
+ * Execution environment enum for the software.
+ * 
+ * @author Benoit
  */
 public enum Environment {
     PRODUCTION("prod"), DEVELOPMENT("dev"), DEBUG("debug");

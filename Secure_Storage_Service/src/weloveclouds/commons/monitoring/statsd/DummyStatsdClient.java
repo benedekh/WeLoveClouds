@@ -7,7 +7,9 @@ import weloveclouds.commons.monitoring.models.Metric;
 import weloveclouds.commons.utils.StringUtils;
 
 /**
- * Created by Benoit on 2016-11-27.
+ * A default statsd client which simply logs the statistical metrics via {@link #LOGGER}.
+ * 
+ * @author Benoit
  */
 public class DummyStatsdClient implements IStatsdClient {
     private static Logger LOGGER = Logger.getLogger(DummyStatsdClient.class);

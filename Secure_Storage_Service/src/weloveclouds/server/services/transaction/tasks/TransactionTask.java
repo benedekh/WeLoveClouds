@@ -13,6 +13,15 @@ import org.joda.time.Duration;
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage.StatusType;
 import weloveclouds.server.services.transaction.SenderTransaction;
 
+/**
+ * An abstract task that shall be executed for a transaction. If the task was successful, then the
+ * follower task is the one referred by {@link #successorForSuccess}, otherwise the next task will
+ * be {@link #successorForFail}.
+ * 
+ * @author Benedek
+ * 
+ * @param <E> type of the builder at runtime
+ */
 public abstract class TransactionTask<E extends TransactionTask.Builder<E>>
         implements ITransactionTask {
 
@@ -72,6 +81,11 @@ public abstract class TransactionTask<E extends TransactionTask.Builder<E>>
 
     protected abstract void executeTask() throws InterruptedException, ExecutionException;
 
+    /**
+     * Builder pattern for creating a {@link TransactionTask} instance.
+     *
+     * @author Benedek
+     */
     public abstract static class Builder<E extends Builder<E>> {
         private ITransactionTask successorForSuccess;
         private ITransactionTask successorForFail;
