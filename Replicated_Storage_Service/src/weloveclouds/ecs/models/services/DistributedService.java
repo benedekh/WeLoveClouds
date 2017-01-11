@@ -1,12 +1,9 @@
 package weloveclouds.ecs.models.services;
 
-import org.apache.log4j.Logger;
-
 import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
 import static weloveclouds.commons.status.ServiceStatus.UNINITIALIZED;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import weloveclouds.commons.hashing.models.Hash;
@@ -25,8 +22,6 @@ import weloveclouds.ecs.utils.RingMetadataHelper;
  * Created by Benoit on 2016-11-30.
  */
 public class DistributedService {
-    private static final Logger LOGGER = Logger.getLogger(DistributedService.class);
-    private static final int TWO_REPLICAS = 2;
     private RingTopology<StorageNode> topology;
     private RingMetadata ringMetadata;
     private ServiceStatus status;
@@ -73,9 +68,7 @@ public class DistributedService {
     }
 
     public void updateRingMetadataWith(RingMetadata ringMetadata) {
-        if (ringMetadata != null) {
-            this.ringMetadata = ringMetadata;
-        }
+        this.ringMetadata = ringMetadata;
     }
 
     public RingTopology<StorageNode> getTopology() {
@@ -95,7 +88,6 @@ public class DistributedService {
                 break;
             }
         }
-        LOGGER.debug("Retrieved node named: " + name + " " + storageNode.toString());
         return storageNode;
     }
 
@@ -112,27 +104,17 @@ public class DistributedService {
     }
 
     public void updateTopologyWith(RingTopology newTopology) {
-        if (newTopology != null) {
-            topology.updateWith(newTopology);
-            updateRingMetadataFrom(topology);
-        }
+        topology.updateWith(newTopology);
+        updateRingMetadataFrom(topology);
     }
 
     public void initializeWith(List<StorageNode> initialNodes) {
         topology.updateWith(RingMetadataHelper.computeRingOrder(initialNodes));
-        computeAndUpdateNodesRangesFrom(topology);
         updateRingMetadataFrom(topology);
         status = INITIALIZED;
     }
 
-    public void initializeWith(RingTopology<StorageNode> newTopology) {
-        topology.updateWith(newTopology);
-        computeAndUpdateNodesRangesFrom(topology);
-        updateRingMetadataFrom(topology);
-        status = INITIALIZED;
-    }
-
-    private void computeAndUpdateNodesRangesFrom(RingTopology<StorageNode> ringTopology) {
+    public void updateRingMetadataFrom(RingTopology<StorageNode> ringTopology) {
         HashRange previousRange = null;
 
         for (StorageNode node : ringTopology.getNodes()) {
@@ -142,22 +124,12 @@ public class DistributedService {
             hashRange = RingMetadataHelper.computeHashRangeForNodeBasedOnRingPosition(ringPosition,
                     ringTopology.getNumberOfNodes(), node.getHashKey(), previousRange);
             node.setHashRange(hashRange);
-            previousRange = hashRange;
 
-            for (StorageNode replica : ringTopology.getReplicasOf(node, TWO_REPLICAS)) {
-                replica.addChildHashRange(node.getHashRange());
-                node.addReplica(replica);
-            }
-        }
-    }
-
-    private void updateRingMetadataFrom(RingTopology<StorageNode> ringTopology) {
-        for (StorageNode node : ringTopology.getNodes()) {
+            // TODO Can you add a TODO, cause I'll have to modify this to add the range again
             ringMetadata.addRangeInfo(new RingMetadataPart.Builder()
-                    .connectionInfo(node.getServerConnectionInfo())
-                    .writeRange(node.getHashRange())
-                    .readRanges(new LinkedHashSet<>(node.getChildHashRanges()))
-                    .build());
+                    .connectionInfo(node.getServerConnectionInfo()).build());
+
+            previousRange = hashRange;
         }
     }
 }

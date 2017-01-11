@@ -14,7 +14,7 @@ public abstract class AbstractCommand<T> implements ICommand {
     protected UserOutputWriter userOutputWriter = UserOutputWriter.getInstance();
 
     public AbstractCommand() {
-        arguments = new ArrayList<>();
+        arguments = new ArrayList<T>();
     }
 
     public AbstractCommand(List<T> arguments) {

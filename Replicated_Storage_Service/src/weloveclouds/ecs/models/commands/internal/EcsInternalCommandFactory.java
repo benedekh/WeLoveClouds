@@ -4,17 +4,11 @@ import com.google.inject.Inject;
 
 import java.util.Arrays;
 
-import weloveclouds.commons.serialization.IMessageDeserializer;
-import weloveclouds.commons.serialization.IMessageSerializer;
-import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
-import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
-import weloveclouds.ecs.models.messaging.notification.INotifiable;
-import weloveclouds.ecs.models.messaging.notification.INotificationRequest;
-import weloveclouds.ecs.models.repository.Loadbalancer;
 import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.models.ssh.SecureShellServiceFactory;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.kvstore.deserialization.KVAdminMessageDeserializer;
@@ -35,31 +29,15 @@ public class EcsInternalCommandFactory {
         this.secureShellServiceFactory = secureShellServiceFactory;
     }
 
-    public LaunchJar createLaunchLoadbalancerJarCommandWith(Loadbalancer loadbalancer,
-                                                            String jarFilePath) {
-        return new LaunchJar.Builder()
-                .jarFilePath(jarFilePath)
-                .arguments(Arrays.asList(jarFilePath))
-                .secureShellService(secureShellServiceFactory.createJshSecureShellService())
-                .targetedNode(loadbalancer)
-                .build();
-    }
-
-    public LaunchJar createLaunchStorageNodesJarsCommandWith(Loadbalancer loadbalancer,
-                                                             StorageNode storageNode,
-                                                             String jarFilePath, int cacheSize,
-                                                             String displacementStrategy) {
+    public LaunchJar createLaunchJarCommandWith(StorageNode storageNode, String jarFilePath, int
+            cacheSize, String displacementStrategy) {
         return new LaunchJar.Builder()
                 .jarFilePath(jarFilePath)
                 .arguments(Arrays.asList(jarFilePath, Integer.toString(storageNode.getPort()),
                         Integer.toString(ExternalConfigurationServiceConstants.KV_SERVER_REQUEST_PORT),
                         Integer.toString(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT),
                         Integer.toString(cacheSize),
-                        displacementStrategy,
-                        LOG_LEVEL_ALL,
-                        storageNode.getName(),
-                        loadbalancer.getIpAddress().replaceAll("/", ""),
-                        Integer.toString(20000)))
+                        displacementStrategy, LOG_LEVEL_ALL))
                 .secureShellService(secureShellServiceFactory.createJshSecureShellService())
                 .targetedNode(storageNode)
                 .build();
@@ -142,16 +120,6 @@ public class EcsInternalCommandFactory {
                 .messageDeserializer(new KVAdminMessageDeserializer())
                 .newNode(newNode)
                 .ringMetadata(ringMetadata)
-                .build();
-    }
-
-    public NotifyTargetCommand createNotifyTargetCommandWith(
-            INotificationRequest<IKVEcsNotificationMessage> notificationRequest,
-            IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer) {
-        return new NotifyTargetCommand.Builder()
-                .communicationApi(communicationApiFactory.createCommunicationApiV1())
-                .notificationRequest(notificationRequest)
-                .messageSerializer(messageSerializer)
                 .build();
     }
 }

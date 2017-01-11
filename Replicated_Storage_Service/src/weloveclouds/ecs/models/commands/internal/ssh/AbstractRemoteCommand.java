@@ -6,7 +6,6 @@ import java.util.List;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.ecs.models.commands.AbstractCommand;
 import weloveclouds.ecs.models.commands.ICommand;
-import weloveclouds.ecs.models.repository.AbstractNode;
 import weloveclouds.ecs.models.repository.StorageNode;
 
 /**
@@ -16,9 +15,9 @@ public abstract class AbstractRemoteCommand extends AbstractCommand<String>
         implements ICommand {
     private static final String ARGUMENTS_DELIMITER = " ";
     protected final String COMMAND;
-    protected AbstractNode targetedNode;
+    protected StorageNode targetedNode;
 
-    public AbstractRemoteCommand(String command, List<String> arguments, AbstractNode targettedNode) {
+    public AbstractRemoteCommand(String command, List<String> arguments, StorageNode targettedNode) {
         this.COMMAND = command;
         this.arguments = arguments;
         this.targetedNode = targettedNode;
@@ -28,7 +27,7 @@ public abstract class AbstractRemoteCommand extends AbstractCommand<String>
         return targetedNode.getIpAddress().replaceAll("/", "");
     }
 
-    public AbstractNode getTargetedNode() {
+    public StorageNode getTargetedNode() {
         return targetedNode;
     }
 

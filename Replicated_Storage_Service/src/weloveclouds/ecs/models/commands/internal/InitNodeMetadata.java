@@ -23,7 +23,7 @@ import weloveclouds.ecs.models.repository.StorageNode;
 /**
  * Created by Benoit on 2016-11-22.
  */
-public class InitNodeMetadata extends AbstractEcsNetworkCommand<StorageNode, IKVAdminMessage> {
+public class InitNodeMetadata extends AbstractEcsNetworkCommand {
     private RingMetadata ringMetadata;
 
     protected InitNodeMetadata(Builder initNodeMetadataBuilder) {

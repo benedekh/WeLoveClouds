@@ -18,7 +18,7 @@ import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.Statu
 /**
  * Created by Benoit on 2016-11-23.
  */
-public class ReleaseWriteLock extends AbstractEcsNetworkCommand<StorageNode, IKVAdminMessage> {
+public class ReleaseWriteLock extends AbstractEcsNetworkCommand {
 
     protected ReleaseWriteLock(Builder releaseWriteLockBuilder) {
         this.communicationApi = releaseWriteLockBuilder.communicationApi;

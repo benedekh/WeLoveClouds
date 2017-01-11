@@ -9,7 +9,6 @@ import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToConnectException;
-import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.repository.NodeStatus;
@@ -43,9 +42,15 @@ public class NodeHealthMonitor extends Thread {
 
     @Override
     public void run() {
+        try {
+            communicationApi.connectTo(connectionInfo);
+        } catch (UnableToConnectException ex) {
+            LOGGER.error(ex);
+            return;
+        }
+
         do {
             try {
-                communicationApi.connectTo(connectionInfo);
                 for (ServiceHealthMonitor serviceHealthMonitor : serviceHealthMonitors) {
                     nodeHealthInfosBuilder
                             .addServiceHealtInfos(serviceHealthMonitor.getHealthInfos());
@@ -53,19 +58,12 @@ public class NodeHealthMonitor extends Thread {
                 SerializedMessage message = heartbeatSerializer
                         .serialize(new KVHeartbeatMessage(nodeHealthInfosBuilder.build()));
                 communicationApi.send(message.getBytes());
-                nodeHealthInfosBuilder.clearServicesHealthInfos();
                 Thread.sleep(WAIT_TIME_BEFORE_HEARTBEAT.getMillis());
-            } catch (UnableToConnectException | UnableToSendContentToServerException ex) {
+            } catch (UnableToSendContentToServerException ex) {
                 LOGGER.error(ex);
             } catch (InterruptedException ex) {
                 LOGGER.error(ex);
                 Thread.currentThread().interrupt();
-            } finally {
-                try {
-                    communicationApi.disconnect();
-                } catch (UnableToDisconnectException ex) {
-                    LOGGER.error(ex);
-                }
             }
         } while (!Thread.currentThread().isInterrupted());
     }
@@ -107,4 +105,5 @@ public class NodeHealthMonitor extends Thread {
             return new NodeHealthMonitor(this);
         }
     }
+
 }

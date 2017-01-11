@@ -80,10 +80,6 @@ public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
             return this;
         }
 
-        public void clearServicesHealthInfos() {
-            this.servicesHealthInfos.clear();
-        }
-
         public NodeHealthInfos build() {
             return new NodeHealthInfos(this);
         }

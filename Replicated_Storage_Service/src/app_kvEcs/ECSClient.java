@@ -29,6 +29,7 @@ public class ECSClient {
             Injector injector = Guice.createInjector(new EcsClientModule());
             Client ecsClient = injector.getInstance(Client.class);
             ecsClient.run();
+
         } catch (IOException ex) {
             userOutput.writeLine(ex.getMessage() + ex.getCause());
             LOGGER.error(ex.getMessage());

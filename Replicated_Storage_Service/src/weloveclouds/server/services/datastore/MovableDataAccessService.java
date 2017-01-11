@@ -42,7 +42,7 @@ import weloveclouds.server.store.models.PutType;
 /**
  * An implementation of {@link IMovableDataAccessService} whose underlying storage units can be
  * moved.
- *
+ * 
  * @author Benedek
  */
 public class MovableDataAccessService<E extends MovableDataAccessService.Builder<E>>
@@ -249,7 +249,6 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
                 this.readRanges.clear();
                 this.readRanges.addAll(readRanges);
             }
-            this.readRanges.add(writeRange);
             this.writeRange = writeRange;
             simulatedDataAccessService.setManagedHashRanges(readRanges, writeRange);
         }
@@ -269,10 +268,10 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
 
     /**
      * Puts the respective entry into the storage
-     *
-     * @param entry                     that has to be put in the storage
+     * 
+     * @param entry that has to be put in the storage
      * @param coordinatorRoleIsExpected if it has to be checked that the server really handles that
-     *                                  key as a {@link Role#COORDINATOR}
+     *        key as a {@link Role#COORDINATOR}
      * @throws StorageException if any error occurs
      */
     protected PutType putEntry(KVEntry entry, boolean coordinatorRoleIsExpected)
@@ -326,10 +325,10 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
 
     /**
      * Removes the respective key along with the stored value from the storage
-     *
-     * @param key                       the key of the entry that shall be removed
+     * 
+     * @param key the key of the entry that shall be removed
      * @param coordinatorRoleIsExpected if it has to be checked that the server really handles that
-     *                                  key as a {@link Role#COORDINATOR}
+     *        key as a {@link Role#COORDINATOR}
      * @throws StorageException if any error occurs
      */
     protected void removeEntry(String key, boolean coordinatorRoleIsExpected)
@@ -384,7 +383,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
 
     /**
      * @throws KeyIsNotManagedByServiceException if for the referred key's hash value the service
-     *                                           does not have a WRITE privilege
+     *         does not have a WRITE privilege
      */
     private void checkIfServiceHasWritePrivilegeFor(String key)
             throws KeyIsNotManagedByServiceException {
@@ -397,7 +396,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
 
     /**
      * @throws KeyIsNotManagedByServiceException if for the referred key's hash value the service
-     *                                           does not have a READ privilege
+     *         does not have a READ privilege
      */
     private void checkIfServiceHasReadPrivilegeFor(String key)
             throws KeyIsNotManagedByServiceException {
@@ -409,7 +408,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
             }
         }
         LOGGER.error(
-                StringUtils.join("", "Service does not have READ privilege for key (", key, ")."));
+                StringUtils.join("", "Service does not have WRITE privilege for key (", key, ")."));
         throw new KeyIsNotManagedByServiceException();
     }
 
@@ -441,4 +440,5 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
             return new MovableDataAccessService<>(this);
         }
     }
+
 }

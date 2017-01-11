@@ -6,9 +6,12 @@ import com.google.inject.Injector;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.context.ExecutionContext;
 import weloveclouds.commons.utils.LogSetup;
+import weloveclouds.ecs.client.Client;
 import weloveclouds.loadbalancer.configuration.modules.LoadBalancerModule;
 import weloveclouds.loadbalancer.core.LoadBalancer;
 
@@ -18,7 +21,7 @@ import weloveclouds.loadbalancer.core.LoadBalancer;
 public class LoadbalancerClient {
     private static Logger LOGGER = Logger.getLogger(LoadbalancerClient.class);
     private static UserOutputWriter userOutput = UserOutputWriter.getInstance();
-    private static final String LOG_FILE = "logs/loadbalancer.log";
+    private static final String LOG_FILE = "logs/ecs.log";
 
     public static void main(String[] args) throws Exception {
         try {

@@ -7,18 +7,19 @@ import com.google.inject.TypeLiteral;
 import java.io.File;
 import java.util.List;
 
-import weloveclouds.commons.serialization.configuration.modules.SerializationModule;
+import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.api.v1.KVEcsApiV1;
-import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
+import weloveclouds.ecs.models.messaging.IKVEcsNotificationMessage;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.ecs.services.INotificationService;
+import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.services.NotificationService;
 import weloveclouds.ecs.services.TaskService;
 import weloveclouds.ecs.utils.ConfigurationFileParser;
 import weloveclouds.ecs.utils.IParser;
+import weloveclouds.loadbalancer.services.INotifier;
 
 /**
  * Created by Benoit on 2016-12-03.
@@ -39,11 +40,10 @@ public class EcsModule extends AbstractModule {
     protected void configure() {
         bind(ITaskService.class).to(TaskService.class);
         bind(IKVEcsApi.class).to(KVEcsApiV1.class);
-        bind(new TypeLiteral<INotificationService<IKVEcsNotificationMessage>>() {
+        bind(new TypeLiteral<INotifier<DistributedService>>() {
         })
                 .to(new TypeLiteral<NotificationService>() {
                 });
-        install(new SerializationModule());
         install(new NotificationServiceModule());
     }
 }

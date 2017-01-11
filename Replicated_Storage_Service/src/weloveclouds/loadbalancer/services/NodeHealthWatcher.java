@@ -26,12 +26,12 @@ public class NodeHealthWatcher extends Thread {
     private Duration healthReportingThreshold;
 
     private ServiceStatus status;
-    private IEcsNotificationService ecsNotificationService;
+    private EcsNotificationService ecsNotificationService;
     private Map<String, Instant> heartbeatHistory;
     private ReentrantReadWriteLock heartbeatHistoryLock;
 
     @Inject
-    public NodeHealthWatcher(IEcsNotificationService ecsNotificationService,
+    public NodeHealthWatcher(EcsNotificationService ecsNotificationService,
                              @HealthWatcherInterval Duration healthWatcherRunInterval,
                              @HealthReportingThreshold Duration healthReportingThreshold) {
         this.ecsNotificationService = ecsNotificationService;

@@ -1,15 +1,15 @@
 package weloveclouds.commons.hashing.models;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
+
 /**
  * Represents an <IP, port> and ranges for which it has READ and WRITE privilege, which defines
  * respective server (denoted by its <ip,port>) is responsible for which hash range with what role.
- *
+ * 
  * @author Benedek
  */
 public class RingMetadataPart {
@@ -109,10 +109,6 @@ public class RingMetadataPart {
         private Set<HashRange> readRanges;
         private HashRange writeRange;
 
-        public Builder() {
-            readRanges = new LinkedHashSet<>();
-        }
-
         public Builder connectionInfo(ServerConnectionInfo connectionInfo) {
             this.connectionInfo = connectionInfo;
             return this;
@@ -120,11 +116,6 @@ public class RingMetadataPart {
 
         public Builder readRanges(Set<HashRange> readRanges) {
             this.readRanges = readRanges;
-            return this;
-        }
-
-        public Builder readRange(HashRange readRange) {
-            this.readRanges.add(readRange);
             return this;
         }
 
@@ -137,4 +128,5 @@ public class RingMetadataPart {
             return new RingMetadataPart(this);
         }
     }
+
 }

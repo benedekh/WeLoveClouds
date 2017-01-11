@@ -7,7 +7,6 @@ import static weloveclouds.ecs.core.EcsStatus.SHUTDOWNING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STARTING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STOPPING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.UNINITIALIZED;
-import static weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage.Status.TOPOLOGY_UPDATE;
 import static weloveclouds.ecs.models.repository.NodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.NodeStatus.REMOVED;
@@ -25,6 +24,8 @@ import org.apache.log4j.Logger;
 import com.google.inject.Inject;
 
 import weloveclouds.commons.cli.utils.UserOutputWriter;
+import weloveclouds.commons.hashing.models.Hash;
+import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.monitoring.statsd.IStatsdClient;
 import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.commons.utils.StringUtils;
@@ -33,9 +34,6 @@ import weloveclouds.ecs.contexts.EcsExecutionContext;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
 import weloveclouds.ecs.exceptions.InvalidConfigurationException;
 import weloveclouds.ecs.exceptions.ServiceBootstrapException;
-import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
-import weloveclouds.ecs.models.messaging.notification.KVEcsNotificationMessage;
-import weloveclouds.ecs.models.messaging.notification.NotificationRequest;
 import weloveclouds.ecs.models.repository.EcsRepository;
 import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.repository.StorageNode;
@@ -47,9 +45,9 @@ import weloveclouds.ecs.models.tasks.EcsBatchFactory;
 import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
 import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
 import weloveclouds.ecs.models.topology.RingTopology;
-import weloveclouds.ecs.services.INotificationService;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.RingMetadataHelper;
+import weloveclouds.loadbalancer.services.INotifier;
 
 /**
  * Created by Benoit on 2016-11-16.
@@ -60,28 +58,26 @@ public class ExternalConfigurationService implements Observer {
             StatsdClientFactory.createStatdClientFromEnvironment();
 
     private EcsStatus status;
+    private final HashRange INITIAL_HASHRANGE;
     private String configurationFilePath;
     private EcsRepository repository;
     private EcsRepositoryFactory ecsRepositoryFactory;
     private ITaskService taskService;
-    private INotificationService<IKVEcsNotificationMessage> notificationService;
+    private INotifier<DistributedService> notificationService;
     private EcsBatchFactory ecsBatchFactory;
     private DistributedService distributedService;
 
     @Inject
     public ExternalConfigurationService(ITaskService taskService,
                                         EcsRepositoryFactory ecsRepositoryFactory,
-                                        EcsBatchFactory ecsBatchFactory,
-                                        INotificationService<IKVEcsNotificationMessage> notificationService)
+                                        EcsBatchFactory ecsBatchFactory)
             throws ServiceBootstrapException {
         this.taskService = taskService;
-        this.notificationService = notificationService;
-
         this.ecsRepositoryFactory = ecsRepositoryFactory;
-        this.ecsBatchFactory = ecsBatchFactory;
-
         this.configurationFilePath = EcsExecutionContext.getConfigurationFilePath();
-
+        this.ecsBatchFactory = ecsBatchFactory;
+        INITIAL_HASHRANGE =
+                new HashRange.Builder().begin(Hash.MIN_VALUE).end(Hash.MAX_VALUE).build();
         bootstrapConfiguration();
         this.status = UNINITIALIZED;
         this.distributedService = new DistributedService();
@@ -90,26 +86,18 @@ public class ExternalConfigurationService implements Observer {
     @SuppressWarnings("unchecked")
     public void initService(int numberOfNodes, int cacheSize, String displacementStrategy)
             throws ExternalConfigurationServiceException {
-
         if (status == UNINITIALIZED) {
-            try {
-                AbstractBatchTasks<AbstractRetryableTask> serviceInitialisationBatch;
+            AbstractBatchTasks<AbstractRetryableTask> nodeInitialisationBatch;
+            List<StorageNode> storageNodesToInitialize =
+                    (List<StorageNode>) ListUtils.getPreciseNumberOfRandomObjectsFrom(
+                            repository.getNodesWithStatus(IDLE), numberOfNodes);
 
-                List<StorageNode> storageNodesToInitialize =
-                        (List<StorageNode>) ListUtils.getPreciseNumberOfRandomObjectsFrom(
-                                repository.getNodesWithStatus(IDLE), numberOfNodes);
+            nodeInitialisationBatch = ecsBatchFactory.createInitNodeBatchWith(
+                    storageNodesToInitialize, cacheSize, displacementStrategy);
 
-                serviceInitialisationBatch = ecsBatchFactory.createServiceInitialisationBatchWith(
-                        repository.getLoadbalancer(), storageNodesToInitialize, cacheSize,
-                        displacementStrategy);
-
-                serviceInitialisationBatch.addObserver(this);
-                taskService.launchBatchTasks(serviceInitialisationBatch);
-                status = INITIALIZING_SERVICE;
-            } catch (Exception e) {
-                throw new ExternalConfigurationServiceException("Unable to initialise service " +
-                        "with cause: " + e.getMessage());
-            }
+            nodeInitialisationBatch.addObserver(this);
+            taskService.launchBatchTasks(nodeInitialisationBatch);
+            status = INITIALIZING_SERVICE;
         } else {
             throw new ExternalConfigurationServiceException("Operation <initService> is not "
                     + "permitted. The external configuration service (ECS) is : " + status.name());
@@ -177,8 +165,7 @@ public class ExternalConfigurationService implements Observer {
             distributedService.updateTopologyWith(newTopology);
 
             addNodeBatch = ecsBatchFactory
-                    .createAddNodeBatchFrom(repository.getLoadbalancer(), new AddNodeTaskDetails(newStorageNode,
-                            successorNode,
+                    .createAddNodeBatchFrom(new AddNodeTaskDetails(newStorageNode, successorNode,
                             distributedService.getRingMetadata(), displacementStrategy, cacheSize));
 
             addNodeBatch.addObserver(this);
@@ -225,8 +212,6 @@ public class ExternalConfigurationService implements Observer {
         nodeMetadataInitialisationBatch.addObserver(this);
         taskService.launchBatchTasks(nodeMetadataInitialisationBatch);
         status = EcsStatus.UPDATING_METADATA;
-
-        notifyLoadbalancerForTopologyChanges();
     }
 
     private void updateNodesWithMetadata() {
@@ -237,18 +222,6 @@ public class ExternalConfigurationService implements Observer {
         nodeMetadataUpdateBatch.addObserver(this);
         taskService.launchBatchTasks(nodeMetadataUpdateBatch);
         status = EcsStatus.UPDATING_METADATA;
-
-        notifyLoadbalancerForTopologyChanges();
-    }
-
-    @SuppressWarnings("unchecked")
-    private void notifyLoadbalancerForTopologyChanges() {
-        notificationService.process(new NotificationRequest.Builder<IKVEcsNotificationMessage>()
-                .target(repository.getLoadbalancer())
-                .notificationMessage(new KVEcsNotificationMessage.Builder()
-                        .status(TOPOLOGY_UPDATE)
-                        .ringTopology(distributedService.getTopology()).build())
-                .build());
     }
 
     private void bootstrapConfiguration() throws ServiceBootstrapException {

@@ -18,7 +18,7 @@ import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.Statu
 /**
  * Created by Benoit on 2016-11-23.
  */
-public class InvokeDataTransfer extends AbstractEcsNetworkCommand<StorageNode, IKVAdminMessage> {
+public class InvokeDataTransfer extends AbstractEcsNetworkCommand {
     private StorageNode newNode;
     private RingMetadata ringMetadata;
 

@@ -60,6 +60,4 @@ public class XMLTokens {
 
     public static final String KVMESSAGE = "KVMESSAGE";
     public static final String STATUS = "STATUS";
-
-    public static final String KVECS_NOTIFICATION_MESSAGE = "KVECS_NOTIFICATION_MESSAGE";
 }

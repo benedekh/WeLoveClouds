@@ -10,6 +10,7 @@ import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 import static weloveclouds.ecs.models.repository.NodeStatus.*;
 
@@ -18,6 +19,7 @@ import static weloveclouds.ecs.models.repository.NodeStatus.*;
  */
 public class StorageNode extends AbstractNode {
     private NodeStatus metadataStatus;
+    private NodeStatus status;
     private HashRange previousHashRange;
     private HashRange hashRange;
     private List<StorageNode> replicas;
@@ -46,9 +48,7 @@ public class StorageNode extends AbstractNode {
     }
 
     public void updateHealthInfos(NodeHealthInfos healthInfos) {
-        if (healthInfos != null) {
-            this.healthInfos = healthInfos;
-        }
+        this.healthInfos = healthInfos;
     }
 
     public HashRange getHashRange() {
@@ -67,6 +67,14 @@ public class StorageNode extends AbstractNode {
 
     public void setMetadataStatus(NodeStatus metadataStatus) {
         this.metadataStatus = metadataStatus;
+    }
+
+    public NodeStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(NodeStatus status) {
+        this.status = status;
     }
 
     public List<HashRange> getChildHashRanges() {
@@ -89,11 +97,11 @@ public class StorageNode extends AbstractNode {
         return new ArrayList<>(replicas);
     }
 
-    public void addReplica(StorageNode node) {
+    public void addReplicas(StorageNode node) {
         replicas.add(node);
     }
 
-    public void removeReplica(StorageNode node) {
+    public void removeReplicas(StorageNode node) {
         replicas.remove(node);
     }
 

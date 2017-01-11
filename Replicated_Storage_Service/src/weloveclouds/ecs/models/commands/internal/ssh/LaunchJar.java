@@ -4,7 +4,7 @@ package weloveclouds.ecs.models.commands.internal.ssh;
 import java.util.List;
 
 import weloveclouds.ecs.exceptions.ssh.SecureShellServiceException;
-import weloveclouds.ecs.models.repository.AbstractNode;
+import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.services.ISecureShellService;
 
 import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
@@ -32,7 +32,7 @@ public class LaunchJar extends AbstractRemoteCommand {
     public static class Builder {
         private String jarFilePath;
         private List<String> arguments;
-        private AbstractNode targetedNode;
+        private StorageNode targetedNode;
         private ISecureShellService secureShellService;
 
         public Builder jarFilePath(String jarFilePath) {
@@ -45,7 +45,7 @@ public class LaunchJar extends AbstractRemoteCommand {
             return this;
         }
 
-        public Builder targetedNode(AbstractNode targetedNode) {
+        public Builder targetedNode(StorageNode targetedNode) {
             this.targetedNode = targetedNode;
             return this;
         }

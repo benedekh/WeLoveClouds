@@ -3,13 +3,13 @@ package weloveclouds.ecs.models.repository;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
+import weloveclouds.loadbalancer.models.ServiceHealthInfos;
 
 /**
  * Created by Benoit on 2016-12-09.
  */
 public abstract class AbstractNode {
     protected String name;
-    protected NodeStatus status;
     protected ServerConnectionInfo serverConnectionInfo;
     protected ServerConnectionInfo ecsChannelConnectionInfo;
     protected NodeHealthInfos healthInfos;
@@ -21,14 +21,6 @@ public abstract class AbstractNode {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public NodeStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(NodeStatus status) {
-        this.status = status;
     }
 
     public ServerConnectionInfo getServerConnectionInfo() {

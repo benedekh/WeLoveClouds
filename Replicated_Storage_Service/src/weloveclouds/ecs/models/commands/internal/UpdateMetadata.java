@@ -11,8 +11,8 @@ import weloveclouds.commons.kvstore.models.messages.KVAdminMessage;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 
-import static weloveclouds.ecs.models.repository.NodeStatus.SYNCHRONIZED;
 
+import static weloveclouds.ecs.models.repository.NodeStatus.SYNCHRONIZED;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.ICommunicationApi;
@@ -22,7 +22,7 @@ import weloveclouds.ecs.models.repository.StorageNode;
 /**
  * Created by Benoit on 2016-11-23.
  */
-public class UpdateMetadata extends AbstractEcsNetworkCommand<StorageNode, IKVAdminMessage> {
+public class UpdateMetadata extends AbstractEcsNetworkCommand {
     private RingMetadata ringMetadata;
 
     protected UpdateMetadata(Builder updateMetadataBuider) {
@@ -50,6 +50,7 @@ public class UpdateMetadata extends AbstractEcsNetworkCommand<StorageNode, IKVAd
             } else {
                 targetedNode.setMetadataStatus(SYNCHRONIZED);
             }
+
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);
         } finally {

@@ -20,7 +20,7 @@ import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
 /**
  * Created by Benoit on 2016-11-20.
  */
-public class StopNode extends AbstractEcsNetworkCommand<StorageNode, IKVAdminMessage> {
+public class StopNode extends AbstractEcsNetworkCommand {
 
     protected StopNode(Builder stopNodeBuilder) {
         this.communicationApi = stopNodeBuilder.communicationApi;

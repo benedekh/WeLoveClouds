@@ -28,13 +28,7 @@ public class SimpleRequestCache<K, V> implements ICache<K, V> {
     @Override
     public V get(K key) throws UnableToFindRequestedKeyException {
         displacementStrategy.registerGet(key);
-        V value = cache.get(key);
-
-        if (value != null) {
-            return value;
-        } else {
-            throw new UnableToFindRequestedKeyException("Unable to find key:" + key);
-        }
+        return cache.get(key);
     }
 
     @Override
