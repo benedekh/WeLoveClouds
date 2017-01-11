@@ -24,8 +24,9 @@ public class LoadBalancerModule extends AbstractModule {
         bind(Integer.class).annotatedWith(EcsNotificationServicePort.class)
                 .toInstance(LoadBalancerConfigurationProvider.getEcsNotificationServicePort());
 
+        install(new SerializationModule());
         install(new CacheServiceModule());
         install(new HealthMonitoringServiceModule());
-        install(new SerializationModule());
+        install(new EcsNotificationServiceModule());
     }
 }

@@ -1,7 +1,6 @@
 package weloveclouds.loadbalancer.models;
 
 import weloveclouds.commons.status.ServiceStatus;
-import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 
 /**
@@ -40,14 +39,6 @@ public class ServiceHealthInfos {
 
     public int getServicePriority() {
         return servicePriority;
-    }
-
-    @Override
-    public String toString() {
-        return StringUtils.join(" ", "{Service name:", serviceName, ", Service status:",
-                serviceStatus, ", Service endpoint:", serviceEndpoint,
-                ", Number of active connections:", numberOfActiveConnections, ", Service priority:",
-                servicePriority, "}");
     }
 
     public static class Builder {

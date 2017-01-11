@@ -65,7 +65,7 @@
     <delete file="${servermanifest.file}" />
     <delete file="${ecsjar.file}" />
     <delete file="${ecsmanifest.file}" />
-	<delete file="${loadbalancerjar.file}" />
+    <delete file="${loadbalancerjar.file}" />
     <delete file="${loadbalancermanifest.file}" />
   </target>
 

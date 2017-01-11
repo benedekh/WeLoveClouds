@@ -88,6 +88,9 @@ public class TaskService implements ITaskService, Observer {
 
         STATSD_CLIENT.recordGaugeValue(new Metric.Builder().service(ECS).name(Arrays.asList
                 ("tasks", "running")).build(), runningTasks.size());
-        batch.get(task.getBatchId()).taskExecutionFinishedCallback();
+
+        if (task.isBatched()) {
+            batch.get(task.getBatchId()).taskExecutionFinishedCallback();
+        }
     }
 }

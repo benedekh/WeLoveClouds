@@ -20,7 +20,7 @@ import static weloveclouds.ecs.models.repository.NodeStatus.IDLE;
 /**
  * Created by Benoit on 2016-11-20.
  */
-public class ShutdownNode extends AbstractEcsNetworkCommand {
+public class ShutdownNode extends AbstractEcsNetworkCommand<StorageNode, IKVAdminMessage> {
 
     protected ShutdownNode(Builder shutDownBuilder) {
         this.communicationApi = shutDownBuilder.communicationApi;

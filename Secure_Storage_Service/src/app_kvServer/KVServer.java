@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.context.ExecutionContext;
 import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 import weloveclouds.commons.serialization.KVHeartbeatMessageSerializer;
 import weloveclouds.commons.serialization.NodeHealthInfosSerializer;
@@ -55,6 +56,7 @@ public class KVServer {
      * The entry point of the application.
      */
     public static void main(String[] args) {
+        ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
         initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
 
         if (args.length == 0) {
