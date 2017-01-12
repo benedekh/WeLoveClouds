@@ -41,13 +41,16 @@ public class CommunicationService implements ICommunicationService {
 
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
+    
     private KeyStore keystore;
     private TrustManagerFactory trustManagerFactory;
     private KeyManagerFactory keyManagerFactory;
     private ConnectionFactory connectionFactory;
-    private SecureConnection connectionToEndpoint;// this is normally a vanilla connection object
+    private Connection connectionToEndpoint;
+    
     private Thread connectionShutdownHook;
     private MessageFramesDetector messageDetector;
+    
     private static final char[] PASSPHRASE = "weloveclouds".toCharArray();
     /*this path will be temporary until I work out a better way of
      * storing the key.
