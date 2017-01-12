@@ -98,7 +98,7 @@ public class KVServerCLIArgsRegistry {
         ReplicationServiceFactory replicationServiceFactory = new ReplicationServiceFactory();
         ReplicationService replicationService =
                 replicationServiceFactory.createReplicationServiceWith2PC();
-        return new DataAccessServiceFactory().createInitializedReplicableDataAccessService(
+        return new DataAccessServiceFactory().createReplicableDataAccessServiceWithEncryption(
                 getDASInitializationContext(), replicationService);
     }
 

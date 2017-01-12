@@ -2,8 +2,10 @@ package weloveclouds.server.services.datastore;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.utils.ecryption.StringEncryptionUtil;
 import weloveclouds.server.services.datastore.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.services.replication.ReplicationService;
+import weloveclouds.server.store.EncryptedPersistentStorage;
 import weloveclouds.server.store.KVCache;
 import weloveclouds.server.store.KVPersistentStorage;
 import weloveclouds.server.store.MovablePersistentStorage;
@@ -21,9 +23,9 @@ public class DataAccessServiceFactory {
      * @param initializationContext the parameters for the initialization
      * @return a {@link DataAccessService} which is already initialized by the parameters
      */
-    public DataAccessService createInitializedDataAccessService(
+    public DataAccessService createDataAccessService(
             DataAccessServiceInitializationContext initializationContext) {
-        LOGGER.debug("Creating an initialized DataAccessService.");
+        LOGGER.debug("Creating a DataAccessService.");
         return new DataAccessService(
                 new KVCache(initializationContext.getCacheSize(),
                         initializationContext.getDisplacementStrategy()),
@@ -34,9 +36,9 @@ public class DataAccessServiceFactory {
      * @param initializationContext the parameters for the initialization
      * @return a {@link MovableDataAccessService} which is already initialized by the parameters
      */
-    public MovableDataAccessService<?> createInitializedMovableDataAccessService(
+    public MovableDataAccessService<?> createMovableDataAccessService(
             DataAccessServiceInitializationContext initializationContext) {
-        LOGGER.debug("Creating an initialized MovableDataAccessService.");
+        LOGGER.debug("Creating a MovableDataAccessService.");
         return new MovableDataAccessService.Builder<>()
                 .cache(new KVCache(initializationContext.getCacheSize(),
                         initializationContext.getDisplacementStrategy()))
@@ -50,15 +52,36 @@ public class DataAccessServiceFactory {
      * @param replicationService the service which is responsible for the replication
      * @return a {@link ReplicableDataAccessService} which is already initialized by the parameters
      */
-    public ReplicableDataAccessService createInitializedReplicableDataAccessService(
+    public ReplicableDataAccessService createReplicableDataAccessService(
             DataAccessServiceInitializationContext initializationContext,
             ReplicationService replicationService) {
-        LOGGER.debug("Creating an initialized ReplicableDataAccessService.");
+        LOGGER.debug("Creating a ReplicableDataAccessService.");
         return new ReplicableDataAccessService.Builder()
                 .cache(new KVCache(initializationContext.getCacheSize(),
                         initializationContext.getDisplacementStrategy()))
                 .persistentStorage(new MovablePersistentStorage(
                         initializationContext.getStorageRootFolderPath()))
+                .simulatedDataAccessService(new SimulatedMovableDataAccessService())
+                .replicationService(replicationService).build();
+    }
+
+    /**
+     * Create a data access service that is backed by an encrypted persistent storage.
+     * 
+     * @param initializationContext the parameters for the initialization
+     * @param replicationService the service which is responsible for the replication
+     * @return a {@link ReplicableDataAccessService} which is already initialized by the parameters
+     */
+    public ReplicableDataAccessService createReplicableDataAccessServiceWithEncryption(
+            DataAccessServiceInitializationContext initializationContext,
+            ReplicationService replicationService) {
+        LOGGER.debug("Creating an encrypted ReplicableDataAccessService.");
+        return new ReplicableDataAccessService.Builder()
+                .cache(new KVCache(initializationContext.getCacheSize(),
+                        initializationContext.getDisplacementStrategy()))
+                .persistentStorage(new EncryptedPersistentStorage(
+                        initializationContext.getStorageRootFolderPath(),
+                        new StringEncryptionUtil()))
                 .simulatedDataAccessService(new SimulatedMovableDataAccessService())
                 .replicationService(replicationService).build();
     }

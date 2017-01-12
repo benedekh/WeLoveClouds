@@ -188,7 +188,7 @@ public class KVServer {
                 replicationServiceFactory.createReplicationServiceWith2PC();
 
         IReplicableDataAccessService dataAccessService =
-                new DataAccessServiceFactory().createInitializedReplicableDataAccessService(
+                new DataAccessServiceFactory().createReplicableDataAccessServiceWithEncryption(
                         initializationContext, replicationService);
         try {
             KVServerPortContext portConfigurationContext = new KVServerPortContext.Builder()

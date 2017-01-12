@@ -57,7 +57,7 @@ public class Start extends AbstractServerCommand {
                     replicationServiceFactory.createReplicationServiceWith2PC();
 
             IReplicableDataAccessService dataAccessService =
-                    dataAccessServiceFactory.createInitializedReplicableDataAccessService(
+                    dataAccessServiceFactory.createReplicableDataAccessServiceWithEncryption(
                             initializationContext, replicationService);
 
             NodeHealthMonitor.Builder nodeHealthMonitorBuilder = new NodeHealthMonitor.Builder()
@@ -133,9 +133,6 @@ public class Start extends AbstractServerCommand {
         public Start build() {
             return new Start(this);
         }
-
-
     }
-
-
+    
 }
