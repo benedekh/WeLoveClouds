@@ -102,17 +102,17 @@ public class EncryptedStringMap implements Map<String, String>, Serializable {
 
     @Override
     public void putAll(Map<? extends String, ? extends String> m) {
-        try {
-            Map<String, String> encrypted = new HashMap<>(m);
-            for (Entry<?, ?> entry : m.entrySet()) {
+        Map<String, String> encrypted = new HashMap<>(m);
+        for (Entry<?, ?> entry : m.entrySet()) {
+            try {
                 String encryptedKey = encryptionUtil.encrypt(cast(entry.getKey()));
                 String encryptedValue = encryptionUtil.encrypt(cast(entry.getValue()));
                 encrypted.put(encryptedKey, encryptedValue);
+            } catch (EncryptionException ex) {
+                LOGGER.error(ex);
             }
-            encapsulatedMap.putAll(encrypted);
-        } catch (EncryptionException ex) {
-            LOGGER.error(ex);
         }
+        encapsulatedMap.putAll(encrypted);
     }
 
     @Override
@@ -122,46 +122,43 @@ public class EncryptedStringMap implements Map<String, String>, Serializable {
 
     @Override
     public Set<String> keySet() {
-        try {
-            Set<String> decryptedKeys = new HashSet<>();
-            for (String key : encapsulatedMap.keySet()) {
+        Set<String> decryptedKeys = new HashSet<>();
+        for (String key : encapsulatedMap.keySet()) {
+            try {
                 decryptedKeys.add(encryptionUtil.decrypt(key));
+            } catch (DecryptionException ex) {
+                LOGGER.error(ex);
             }
-            return decryptedKeys;
-        } catch (DecryptionException ex) {
-            LOGGER.error(ex);
-            return new HashSet<>();
         }
+        return decryptedKeys;
     }
 
     @Override
     public Collection<String> values() {
-        try {
-            List<String> decryptedValues = new ArrayList<>();
-            for (String value : encapsulatedMap.values()) {
+        List<String> decryptedValues = new ArrayList<>();
+        for (String value : encapsulatedMap.values()) {
+            try {
                 decryptedValues.add(encryptionUtil.decrypt(value));
+            } catch (DecryptionException ex) {
+                LOGGER.error(ex);
             }
-            return decryptedValues;
-        } catch (DecryptionException ex) {
-            LOGGER.error(ex);
-            return new ArrayList<>();
         }
+        return decryptedValues;
     }
 
     @Override
     public Set<Entry<String, String>> entrySet() {
-        try {
-            Set<Entry<String, String>> decrypted = new HashSet<>();
-            for (Entry<String, String> entry : encapsulatedMap.entrySet()) {
+        Set<Entry<String, String>> decrypted = new HashSet<>();
+        for (Entry<String, String> entry : encapsulatedMap.entrySet()) {
+            try {
                 String decryptedKey = encryptionUtil.decrypt(entry.getKey());
                 String decryptedValue = encryptionUtil.decrypt(entry.getValue());
                 decrypted.add(new SimpleEntry<String, String>(decryptedKey, decryptedValue));
+            } catch (DecryptionException ex) {
+                LOGGER.error(ex);
             }
-            return decrypted;
-        } catch (DecryptionException ex) {
-            LOGGER.error(ex);
-            return new HashSet<>();
         }
+        return decrypted;
     }
 
     private String cast(Object object) {
