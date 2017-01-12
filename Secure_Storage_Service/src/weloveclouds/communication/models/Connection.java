@@ -7,6 +7,8 @@ import java.net.Socket;
 
 import javax.net.ssl.SSLSocket;
 
+import com.jcraft.jsch.Logger;
+
 import weloveclouds.commons.utils.StringUtils;
 
 /**
@@ -15,12 +17,12 @@ import weloveclouds.commons.utils.StringUtils;
  *
  * @author Benoit, Benedek
  */
-public class Connection implements AutoCloseable {
+public class Connection<B extends Connection.Builder<B>> implements AutoCloseable {
 
     private ServerConnectionInfo remoteServer;
     private Socket socket;
 
-    protected Connection(Builder builder) {
+    protected Connection(Builder<B> builder) {
         this.remoteServer = builder.remoteServer;
         this.socket = builder.socket;
     }
@@ -58,15 +60,13 @@ public class Connection implements AutoCloseable {
      */
     public synchronized void kill() throws IOException {
         if (isConnected()) {
-            if (this.socket instanceof SSLSocket){
-                /*  SSL sockets don't use shutdownOutput of shutdownInput as the SSL/TLS spec has specific
-                    ways of handling connection termination, all of which is apparently implemented in .close()*/
-                socket.close();
-            } else {
-            socket.shutdownOutput();
-            socket.shutdownInput();
-            socket.close();
+            try{
+                socket.shutdownOutput();
+                socket.shutdownInput();
+            } catch (Exception ex){
+                //Suppress exception, no point in doing anything with it.
             }
+            socket.close();
         }
     }
 
@@ -95,7 +95,7 @@ public class Connection implements AutoCloseable {
         if (!(obj instanceof Connection)) {
             return false;
         }
-        Connection other = (Connection) obj;
+        Connection<B> other = (Connection<B>) obj;
         if (remoteServer == null) {
             if (other.remoteServer != null) {
                 return false;
@@ -123,7 +123,7 @@ public class Connection implements AutoCloseable {
      *
      * @author Benedek
      */
-    public static class Builder<B extends Builder> {
+    public static class Builder<B extends Builder<B>> {
         private ServerConnectionInfo remoteServer;
         private Socket socket;
 
@@ -137,8 +137,8 @@ public class Connection implements AutoCloseable {
             return (B) this;
         }
 
-        public Connection build() {
-            return new Connection(this);
+        public Connection<B> build() {
+            return new Connection<B>(this);
         }
     }
 

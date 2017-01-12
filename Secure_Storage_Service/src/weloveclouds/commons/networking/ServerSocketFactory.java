@@ -18,7 +18,6 @@ public class ServerSocketFactory {
 
     private static final Logger LOGGER = Logger.getLogger(ServerSocketFactory.class);
 
-    //private final SSLServerSocketFactory SSLSockFactory = (SSLContext.getInstance("SSL"))
     /**
      * Creates a new {@link ServerSocket} on the referred port.
      * 
@@ -28,9 +27,5 @@ public class ServerSocketFactory {
         LOGGER.info(StringUtils.join(" ", "Creating server socket on port", port));
         return new ServerSocket(port);
     }
-    /*
-    public SSLServerSocket createSSLServerSocketFromPort(int port) throws IOException{
-        LOGGER.info(StringUtils.join(" ", "Creating SSL server socket on port", port));;
-        return SSLServerSocket(port);
-    }*/
+
 }

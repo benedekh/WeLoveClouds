@@ -24,7 +24,7 @@ public class SocketFactory {
     private SSLSocketFactory sslSocketFactory;
     
     /**
-     * Creates a raw TCP Socket or an SSLSocket using server connection information
+     * Creates an unencrypted TCP Socket or an SSLSocket using server connection information
      * ({@link ServerConnectionInfo#getIpAddress()} and {@link ServerConnectionInfo#getPort()}).
      *
      * @throws IOException see {@link Socket}
