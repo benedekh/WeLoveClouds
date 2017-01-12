@@ -1,5 +1,6 @@
 package weloveclouds.commons.utils.ecryption.models;
 
+import java.io.Serializable;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,12 +21,13 @@ import weloveclouds.commons.utils.ecryption.exception.EncryptionException;
  * 
  * @author Benedek
  */
-public class EncryptedStringMap implements Map<String, String> {
+public class EncryptedStringMap implements Map<String, String>, Serializable {
 
+    private static final long serialVersionUID = -4523830764422049366L;
     private static final Logger LOGGER = Logger.getLogger(EncryptedStringMap.class);
 
     private Map<String, String> encapsulatedMap;
-    private StringEncryptionUtil encryptionUtil;
+    private transient StringEncryptionUtil encryptionUtil;
 
     public EncryptedStringMap(Map<String, String> encapsulatedMap,
             StringEncryptionUtil encryptionUtil) {
