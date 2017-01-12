@@ -1,6 +1,6 @@
 package weloveclouds.server.store.cache.strategy;
 
-import weloveclouds.server.store.IKVStoreNotification;
+import weloveclouds.server.store.cache.IKVStoreNotification;
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**

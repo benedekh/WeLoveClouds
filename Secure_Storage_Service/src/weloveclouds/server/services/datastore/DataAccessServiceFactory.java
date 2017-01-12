@@ -5,10 +5,10 @@ import org.apache.log4j.Logger;
 import weloveclouds.commons.utils.ecryption.StringEncryptionUtil;
 import weloveclouds.server.services.datastore.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.services.replication.ReplicationService;
-import weloveclouds.server.store.EncryptedPersistentStorage;
-import weloveclouds.server.store.KVCache;
-import weloveclouds.server.store.KVPersistentStorage;
-import weloveclouds.server.store.MovablePersistentStorage;
+import weloveclouds.server.store.cache.KVCache;
+import weloveclouds.server.store.storage.EncryptedPersistentStorage;
+import weloveclouds.server.store.storage.KVPersistentStorage;
+import weloveclouds.server.store.storage.MovablePersistentStorage;
 
 /**
  * A factory which produces different types of {@link IDataAccessService} instances.

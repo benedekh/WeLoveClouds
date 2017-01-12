@@ -5,7 +5,6 @@ import java.util.Map;
 
 import weloveclouds.commons.utils.ecryption.StringEncryptionUtil;
 import weloveclouds.commons.utils.ecryption.models.EncryptedStringMap;
-import weloveclouds.server.store.MovablePersistentStorage;
 
 /**
  * A {@link PersistedStorageUnit} whose keys and values are encrypted.
