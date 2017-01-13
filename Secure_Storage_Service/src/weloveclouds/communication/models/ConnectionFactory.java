@@ -10,7 +10,6 @@ import weloveclouds.communication.SocketFactory;
 public class ConnectionFactory {
 
     private SocketFactory socketFactory;
-    //private SSLContextHelper sslContextHelper = SSLContextHelper.getInstance();
 
     public ConnectionFactory(SocketFactory socketFactory) {
         this.socketFactory = socketFactory;

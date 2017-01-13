@@ -36,11 +36,6 @@ public class CommunicationService implements ICommunicationService {
     private Thread connectionShutdownHook;
     private MessageFramesDetector messageDetector;
     
-    private static final char[] PASSPHRASE = "weloveclouds".toCharArray();
-    /*this path will be temporary until I work out a better way of
-     * storing the key.
-     */
-    private static final String PATHTOKEY = "keystore.jks";  
 
     /**
      * @param connectionFactory a factory to create connections
@@ -83,10 +78,6 @@ public class CommunicationService implements ICommunicationService {
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
-        //create SSL contexts on a per connection basis.
-        //SSLContext sslContext;
-            //sslContext = SSLContext.getInstance("SSL");
-            //sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
         this.connectionToEndpoint = this.connectionFactory.createSecureConnectionFrom(remoteServer);
         LOGGER.debug("SSL context instantiated and initialized");
         LOGGER.debug(StringUtils.join(" ", "Trying to connect to", remoteServer));
