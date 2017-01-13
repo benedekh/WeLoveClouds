@@ -1,21 +1,9 @@
 package weloveclouds.communication.services;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.log4j.Logger;
 
@@ -41,10 +29,7 @@ public class CommunicationService implements ICommunicationService {
 
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
-    
-    private KeyStore keystore;
-    private TrustManagerFactory trustManagerFactory;
-    private KeyManagerFactory keyManagerFactory;
+
     private ConnectionFactory connectionFactory;
     private Connection connectionToEndpoint;
     
@@ -61,35 +46,6 @@ public class CommunicationService implements ICommunicationService {
      * @param connectionFactory a factory to create connections
      */
     public CommunicationService(ConnectionFactory connectionFactory) {
-        try {
-            this.keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-            this.keystore.load(new FileInputStream(PATHTOKEY), PASSPHRASE);
-            LOGGER.debug("Keystore loaded");
-            this.trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            this.trustManagerFactory.init(this.keystore);
-            LOGGER.debug("Trust manager factory instantiated and initialized");
-            this.keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            this.keyManagerFactory.init(this.keystore, PASSPHRASE);
-            LOGGER.debug("Key mananger factory instantiated and intialized");
-        } catch (KeyStoreException ex) {
-            LOGGER.error(ex);
-            ex.printStackTrace();
-        } catch (NoSuchAlgorithmException ex){
-            LOGGER.error(ex);
-            ex.printStackTrace();
-        } catch (CertificateException ex) {
-            LOGGER.error(ex);
-            ex.printStackTrace();
-        } catch (FileNotFoundException ex) {
-            LOGGER.error(ex);
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            LOGGER.error(ex);
-            ex.printStackTrace();
-        } catch (UnrecoverableKeyException ex) {
-            LOGGER.error(ex);
-            ex.printStackTrace();
-        }
         this.connectionToEndpoint = new SecureConnection.Builder().build();
         this.connectionFactory = connectionFactory;
         this.messageDetector = new MessageFramesDetector();
@@ -128,17 +84,11 @@ public class CommunicationService implements ICommunicationService {
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
         //create SSL contexts on a per connection basis.
-        SSLContext sslContext;
-        try {
-            sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-            this.connectionToEndpoint = this.connectionFactory.createSecureConnectionFrom(remoteServer, sslContext);
-            LOGGER.debug("SSL context instantiated and initialized");
-        } catch (NoSuchAlgorithmException ex) {
-            LOGGER.error(ex.getMessage());
-        } catch (KeyManagementException ex) {
-            LOGGER.error(ex.getMessage());
-        }
+        //SSLContext sslContext;
+            //sslContext = SSLContext.getInstance("SSL");
+            //sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+        this.connectionToEndpoint = this.connectionFactory.createSecureConnectionFrom(remoteServer);
+        LOGGER.debug("SSL context instantiated and initialized");
         LOGGER.debug(StringUtils.join(" ", "Trying to connect to", remoteServer));
 
         // create shutdown hook to automatically close the connection
