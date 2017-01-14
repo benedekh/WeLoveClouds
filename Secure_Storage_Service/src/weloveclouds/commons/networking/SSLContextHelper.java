@@ -29,7 +29,9 @@ import weloveclouds.commons.utils.StringUtils;
 public class SSLContextHelper {
 
     //This is a singleton class 
-    private static SSLContextHelper INSTANCE = new SSLContextHelper();
+    private static class Holder{
+        private static SSLContextHelper INSTANCE = new SSLContextHelper();
+    }
     
     private static final Logger LOGGER = Logger.getLogger(SSLContextHelper.class);
     private KeyStore keystore;
@@ -119,6 +121,6 @@ public class SSLContextHelper {
     }
     
     public static SSLContextHelper getInstance(){
-        return INSTANCE;
+        return Holder.INSTANCE;
     }
 }
