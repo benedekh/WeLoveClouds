@@ -40,7 +40,7 @@ public abstract class AbstractServer<M> extends Thread {
         this.messageSerializer = messageSerializer;
         this.messageDeserializer = messageDeserializer;
         this.port = port;
-        this.serverSocket = serverSocketFactory.createServerSocketFromPort(port);
+        this.serverSocket = serverSocketFactory.createSSLServerSocketFromPort(port);
         this.status = HALTED;
     }
 
