@@ -15,6 +15,9 @@ import org.apache.logging.log4j.Logger;
 
 import weloveclouds.evaluation.dataloading.connection.ClientConnection;
 
+/**
+ * The type Csv folder traverser.
+ */
 public class CSVFolderTraverser {
     private static final Logger LOGGER = LogManager.getLogger(CSVFolderTraverser.class);
 
@@ -24,11 +27,21 @@ public class CSVFolderTraverser {
 
     private ClientConnection client;
 
+    /**
+     * Instantiates a new Csv folder traverser.
+     *
+     * @param client the client
+     */
     public CSVFolderTraverser(ClientConnection client) {
         this.client = client;
         this.client.connect();
     }
 
+    /**
+     * Traverse folder.
+     *
+     * @param csvFolderPath the csv folder path
+     */
     public void traverseFolder(Path csvFolderPath) {
         File[] filesToBeVisited = csvFolderPath.toAbsolutePath().toFile().listFiles();
         LOGGER.info("Traversing input csv folder started.");

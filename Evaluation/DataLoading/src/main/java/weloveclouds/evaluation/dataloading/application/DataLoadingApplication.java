@@ -15,6 +15,9 @@ import weloveclouds.evaluation.dataloading.connection.ClientConnection;
 import weloveclouds.evaluation.dataloading.connection.ClientConnectionFactory;
 import weloveclouds.evaluation.dataloading.csvtraverser.CSVFolderTraverser;
 
+/**
+ * The type Data loading application.
+ */
 public class DataLoadingApplication {
 
     private static final Logger LOGGER = LogManager.getLogger(DataLoadingApplication.class);
@@ -26,6 +29,11 @@ public class DataLoadingApplication {
         initializeRootLogger();
     }
 
+    /**
+     * Main.
+     *
+     * @param args the args
+     */
     public static final void main(String[] args) {
         if (args.length == NUMBER_OF_CLI_ARGUMENTS) {
             try {

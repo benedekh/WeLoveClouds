@@ -1,4 +1,4 @@
-package weloveclouds.ecs.models.messaging;
+package weloveclouds.ecs.models.messaging.notification;
 
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
@@ -8,9 +8,10 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
  * Created by Benoit on 2016-12-19.
  */
 public interface IKVEcsNotificationMessage {
-    enum StatusType {
+    enum Status {
         TOPOLOGY_UPDATE,
         HEALTH_UPDATE,
+        SCALE_REQUEST,
         RESPONSE_SUCCESS,
         RESPONSE_ERROR
     }
@@ -18,4 +19,6 @@ public interface IKVEcsNotificationMessage {
     RingTopology<StorageNode> getRingTopology();
 
     NodeHealthInfos getNodeHealthInfos();
+
+    Status getStatus();
 }

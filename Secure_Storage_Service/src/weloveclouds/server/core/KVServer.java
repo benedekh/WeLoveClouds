@@ -62,7 +62,6 @@ public class KVServer {
                 Arrays.asList(kvClientHealthMonitor, kvServerHealthMonitor, kvECSHealthMonitor));
         this.nodeHealthMonitor = builder.nodeHealthMonitorBuilder.build();
         this.nodeHealthMonitor.setNodeStatus(NodeStatus.RUNNING);
-        this.nodeHealthMonitor.start();
 
         LOGGER.debug("Creating the servers for the different requests finished.");
     }
@@ -90,6 +89,7 @@ public class KVServer {
         kvClientRequestsServer.start();
         kvServerRequestsServer.start();
         kvECSRequestsServer.start();
+        nodeHealthMonitor.start();
         LOGGER.debug("Servers shall be running.");
     }
 

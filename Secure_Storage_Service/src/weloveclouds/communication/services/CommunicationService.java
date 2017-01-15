@@ -15,6 +15,7 @@ import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ConnectionFactory;
+import weloveclouds.communication.models.SecureConnection;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.utils.MessageFramesDetector;
 
@@ -30,15 +31,16 @@ public class CommunicationService implements ICommunicationService {
 
     private ConnectionFactory connectionFactory;
     private Connection connectionToEndpoint;
+    
     private Thread connectionShutdownHook;
-
     private MessageFramesDetector messageDetector;
+    
 
     /**
      * @param connectionFactory a factory to create connections
      */
     public CommunicationService(ConnectionFactory connectionFactory) {
-        this.connectionToEndpoint = new Connection.Builder().build();
+        this.connectionToEndpoint = new SecureConnection.Builder().build();
         this.connectionFactory = connectionFactory;
         this.messageDetector = new MessageFramesDetector();
     }
@@ -75,8 +77,9 @@ public class CommunicationService implements ICommunicationService {
      * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
+        this.connectionToEndpoint = this.connectionFactory.createSecureConnectionFrom(remoteServer);
+        LOGGER.debug("SSL context instantiated and initialized");
         LOGGER.debug(StringUtils.join(" ", "Trying to connect to", remoteServer));
-        connectionToEndpoint = connectionFactory.createConnectionFrom(remoteServer);
 
         // create shutdown hook to automatically close the connection
         LOGGER.debug("Creating shutdown hook for connection.");

@@ -27,7 +27,6 @@ public class RingMetadataHelper {
 
     public static HashRange computeHashRangeForNodeBasedOnRingPosition(int ringPosition, int
             numberOfNodeInTheRing, Hash nodeHashKey, HashRange previousHashRange) {
-        HashRange hashRange;
         Hash rangeStart;
         Hash rangeEnd;
 

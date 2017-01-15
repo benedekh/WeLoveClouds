@@ -20,7 +20,7 @@ import static weloveclouds.ecs.models.repository.NodeStatus.WRITELOCKED;
 /**
  * Created by Benoit on 2016-11-22.
  */
-public class SetWriteLock extends AbstractEcsNetworkCommand {
+public class SetWriteLock extends AbstractEcsNetworkCommand<StorageNode, IKVAdminMessage> {
 
     protected SetWriteLock(Builder setWriteLockBuilder) {
         this.communicationApi = setWriteLockBuilder.communicationApi;

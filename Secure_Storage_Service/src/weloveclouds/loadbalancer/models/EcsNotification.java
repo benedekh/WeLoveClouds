@@ -3,14 +3,33 @@ package weloveclouds.loadbalancer.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
+import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.models.topology.RingTopology;
+
 /**
  * Created by Benoit on 2016-12-21.
  */
-public class EcsNotification {
+public class EcsNotification implements IKVEcsNotificationMessage {
     private List<String> unrespondingNodesNames;
 
     protected EcsNotification(Builder builder) {
         this.unrespondingNodesNames = builder.unresponsiveNodesNames;
+    }
+
+    @Override
+    public RingTopology<StorageNode> getRingTopology() {
+        return null;
+    }
+
+    @Override
+    public NodeHealthInfos getNodeHealthInfos() {
+        return null;
+    }
+
+    @Override
+    public Status getStatus() {
+        return null;
     }
 
     public static class Builder {

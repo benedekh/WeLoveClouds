@@ -4,14 +4,29 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Value cleaner utility.
+ */
 public class ValueCleanerUtility {
 
     private static final int VALUE_SIZE_LIMIT = 120 * 1000;
 
+    /**
+     * Remove illegal characters from value string.
+     *
+     * @param value the value
+     * @return the string
+     */
     public static String removeIllegalCharactersFromValue(String value) {
         return value.replace("\n", "").replace("\t", "").replace("\r", "").replace("\\", "");
     }
 
+    /**
+     * Cut value into chunks map.
+     *
+     * @param value the value
+     * @return the map
+     */
     public static Map<String, String> cutValueIntoChunks(final String value) {
         byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
         Map<String, String> result = new HashMap<>();

@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.context.ExecutionContext;
 import weloveclouds.commons.kvstore.serialization.helper.ServerConnectionInfoSerializer;
 import weloveclouds.commons.serialization.KVHeartbeatMessageSerializer;
 import weloveclouds.commons.serialization.NodeHealthInfosSerializer;
@@ -47,6 +48,21 @@ public class KVServer {
 
     private static final String DEFAULT_LOG_PATH = "logs/server.log";
     private static final String DEFAULT_LOG_LEVEL = "DEBUG";
+	/* Not deleting this just yet
+    private static final String DEFAULT_LOG_LEVEL = "ALL";
+
+    private static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
+
+    private static final int CLI_KVCLIENT_PORT_INDEX = 0;
+    private static final int CLI_KVSERVER_PORT_INDEX = 1;
+    private static final int CLI_KVECS_PORT_INDEX = 2;
+    private static final int CLI_CACHE_SIZE_INDEX = 3;
+    private static final int CLI_DISPLACEMENT_STRATEGY_INDEX = 4;
+    private static final int CLI_LOG_LEVEL_INDEX = 5;
+    private static final int CLI_SERVER_NAME_INDEX = 6;
+    private static final int CLI_LOADBALANCER_IP_INDEX = 7;
+    private static final int CLI_LOADBALANCER_PORT_INDEX = 8;
+	*/
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
 
     private static LogSetup logSetup = null;
@@ -55,6 +71,7 @@ public class KVServer {
      * The entry point of the application.
      */
     public static void main(String[] args) {
+        ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
         initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
 
         if (args.length == 0) {

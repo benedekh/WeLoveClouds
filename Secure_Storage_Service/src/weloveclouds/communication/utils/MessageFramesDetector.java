@@ -29,6 +29,7 @@ public class MessageFramesDetector {
         this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVTRANSACTION_MESSAGE));
         this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVMESSAGE));
         this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVHEARTBEAT_MESSAGE));
+        this.frameDetectors.add(new MessageFrameDetector(XMLTokens.KVECS_NOTIFICATION_MESSAGE));
     }
 
     /**

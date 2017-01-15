@@ -24,7 +24,7 @@ public class KVServerMonitoringMetricUtils {
 
     /**
      * Increments a counter. The name of the metric is constructed as follows:
-     * {{@link app_kvServer.KVServer.serverName}}.{moduleName}.{infix}.{status}
+     * {{@link KVServerCLIArgsRegistry#getServerName()}}.{moduleName}.{infix}.{status}
      */
     public static void incrementCounter(String moduleName, String infix, String status) {
         MONITORING_CLIENT
@@ -39,7 +39,7 @@ public class KVServerMonitoringMetricUtils {
 
     /**
      * Records an execution time of the respective command. The name of the metric is constructed as
-     * follows: {{@link app_kvServer.KVServer.serverName}}.{moduleName}.{commandName}.{durationName}
+     * follows: {{@link KVServerCLIArgsRegistry#getServerName()}}.{moduleName}.{commandName}.{durationName}
      */
     public static void recordExecutionTime(String moduleName, String commandName,
             String durationName, Duration executionTime) {
@@ -51,7 +51,7 @@ public class KVServerMonitoringMetricUtils {
 
     /**
      * Records a gauge. The name of the metric is constructed as follows:
-     * {{@link app_kvServer.KVServer.serverName}}.{moduleName}.{infix}
+     * {{@link KVServerCLIArgsRegistry#getServerName()}}.{moduleName}.{infix}
      */
     public static void recordGauge(String moduleName, String infix, int value) {
         MONITORING_CLIENT.recordGaugeValue(new Metric.Builder().service(KV_SERVER).name(Arrays

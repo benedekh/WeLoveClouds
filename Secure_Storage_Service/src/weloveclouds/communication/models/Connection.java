@@ -5,6 +5,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import javax.net.ssl.SSLSocket;
+
+import com.jcraft.jsch.Logger;
+
 import weloveclouds.commons.utils.StringUtils;
 
 /**
@@ -13,12 +17,12 @@ import weloveclouds.commons.utils.StringUtils;
  *
  * @author Benoit, Benedek
  */
-public class Connection implements AutoCloseable {
+public class Connection<B extends Connection.Builder<B>> implements AutoCloseable {
 
     private ServerConnectionInfo remoteServer;
     private Socket socket;
 
-    protected Connection(Builder builder) {
+    protected Connection(Builder<B> builder) {
         this.remoteServer = builder.remoteServer;
         this.socket = builder.socket;
     }
@@ -59,8 +63,12 @@ public class Connection implements AutoCloseable {
      */
     public synchronized void kill() throws IOException {
         if (isConnected()) {
-            socket.shutdownOutput();
-            socket.shutdownInput();
+            try{
+                socket.shutdownOutput();
+                socket.shutdownInput();
+            } catch (Exception ex){
+                //Suppress exception, no point in doing anything with it.
+            }
             socket.close();
         }
     }
@@ -90,7 +98,7 @@ public class Connection implements AutoCloseable {
         if (!(obj instanceof Connection)) {
             return false;
         }
-        Connection other = (Connection) obj;
+        Connection<B> other = (Connection<B>) obj;
         if (remoteServer == null) {
             if (other.remoteServer != null) {
                 return false;
@@ -118,22 +126,22 @@ public class Connection implements AutoCloseable {
      *
      * @author Benedek
      */
-    public static class Builder {
+    public static class Builder<B extends Builder<B>> {
         private ServerConnectionInfo remoteServer;
         private Socket socket;
 
-        public Builder remoteServer(ServerConnectionInfo remoteServer) {
+        public B remoteServer(ServerConnectionInfo remoteServer) {
             this.remoteServer = remoteServer;
-            return this;
+            return (B) this;
         }
 
-        public Builder socket(Socket socket) {
+        public B socket(Socket socket) {
             this.socket = socket;
-            return this;
+            return (B) this;
         }
 
-        public Connection build() {
-            return new Connection(this);
+        public Connection<B> build() {
+            return new Connection<B>(this);
         }
     }
 

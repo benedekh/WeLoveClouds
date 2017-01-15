@@ -36,8 +36,8 @@ public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
         double healthIndice = 0;
 
         for (ServiceHealthInfos serviceHealthInfos : getServicesHealthInfos()) {
-            healthIndice += (serviceHealthInfos.getServicePriority()
-                    * serviceHealthInfos.getNumberOfActiveConnections());
+            healthIndice += (serviceHealthInfos.getServicePriority() *
+                    serviceHealthInfos.getNumberOfActiveConnections());
         }
         return healthIndice;
     }
@@ -51,7 +51,7 @@ public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
         else
             return -1;
     }
-
+    
     @Override
     public String toString() {
         String servicesHealthInfosStr = StringUtils.join(", ", servicesHealthInfos);
@@ -86,6 +86,10 @@ public class NodeHealthInfos implements Comparable<NodeHealthInfos> {
         public Builder servicesHealtInfos(List<ServiceHealthInfos> servicesHealthInfos) {
             this.servicesHealthInfos = servicesHealthInfos;
             return this;
+        }
+
+        public void clearServicesHealthInfos() {
+            this.servicesHealthInfos.clear();
         }
 
         public NodeHealthInfos build() {

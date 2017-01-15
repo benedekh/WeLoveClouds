@@ -21,7 +21,7 @@ import weloveclouds.loadbalancer.core.LoadBalancer;
 public class LoadbalancerClient {
     private static Logger LOGGER = Logger.getLogger(LoadbalancerClient.class);
     private static UserOutputWriter userOutput = UserOutputWriter.getInstance();
-    private static final String LOG_FILE = "logs/ecs.log";
+    private static final String LOG_FILE = "logs/loadbalancer.log";
 
     public static void main(String[] args) throws Exception {
         try {

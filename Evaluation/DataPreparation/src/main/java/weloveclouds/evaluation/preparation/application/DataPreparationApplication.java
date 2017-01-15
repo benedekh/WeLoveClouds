@@ -14,6 +14,9 @@ import org.apache.logging.log4j.core.LoggerContext;
 
 import weloveclouds.evaluation.preparation.transformer.DatasetTransformer;
 
+/**
+ * The type Data preparation application.
+ */
 public class DataPreparationApplication {
 
     private static final Logger LOGGER = LogManager.getLogger(DataPreparationApplication.class);
@@ -25,6 +28,11 @@ public class DataPreparationApplication {
         initializeRootLogger();
     }
 
+    /**
+     * Main.
+     *
+     * @param args the args
+     */
     public static final void main(final String[] args) {
         if (args.length == NUMBER_OF_CLI_ARGUMENTS) {
             try {
