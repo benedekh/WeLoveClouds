@@ -21,7 +21,7 @@ public class SSLContextHelper {
 
     private static final Logger LOGGER = Logger.getLogger(SSLContextHelper.class);
     private static final char[] PASSPHRASE = "weloveclouds".toCharArray();
-    private static final String PATHTOKEY = "E:/a/keystore.jks";
+    private static final String PATHTOKEY = "keystore.jks";
 
     private static final SSLContextHelper INSTANCE = new SSLContextHelper();
 
