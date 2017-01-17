@@ -1,4 +1,4 @@
-package weloveclouds.server.store;
+package weloveclouds.server.store.storage;
 
 import java.io.IOException;
 import java.nio.file.Path;

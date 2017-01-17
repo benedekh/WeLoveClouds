@@ -10,7 +10,7 @@ import weloveclouds.commons.exceptions.ServerSideException;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.client.commands.utils.ArgumentsValidator;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
-import weloveclouds.server.store.KVPersistentStorage;
+import weloveclouds.server.store.storage.KVPersistentStorage;
 
 /**
  * The path for the {@link KVPersistentStorage} where it can persist the records.

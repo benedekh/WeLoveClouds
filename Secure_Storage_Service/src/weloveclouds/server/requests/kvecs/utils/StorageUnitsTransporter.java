@@ -49,6 +49,7 @@ public class StorageUnitsTransporter {
     public void transferStorageUnits(Set<MovableStorageUnit> storageUnitsToTransferred) {
         Set<MovableStorageUnit> toBeTransferred = new HashSet<>();
         for (MovableStorageUnit strageUnitToBeMoved : storageUnitsToTransferred) {
+            LOGGER.debug(strageUnitToBeMoved);
             toBeTransferred.add(strageUnitToBeMoved);
 
             if (toBeTransferred.size() == NUMBER_OF_STORAGE_UNITS_TO_BE_TRANSFERRED_AT_ONCE) {
@@ -56,6 +57,7 @@ public class StorageUnitsTransporter {
                 toBeTransferred.clear();
             }
         }
+        LOGGER.debug("SENKI");
         transferBunchOverTheNetwork(toBeTransferred);
     }
 
