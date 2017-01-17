@@ -14,11 +14,20 @@ import org.apache.logging.log4j.Logger;
 
 import weloveclouds.evaluation.preparation.models.PreparedDataset;
 
+/**
+ * The type Dataset to file writer.
+ */
 public class DatasetToFileWriter {
 
     private static final String FIELD_SEPARATOR = "-Ł-";
     private static final Logger LOGGER = LogManager.getLogger(DatasetToFileWriter.class);
 
+    /**
+     * Save dataset to path in csv.
+     *
+     * @param dataset    the dataset
+     * @param outputPath the output path
+     */
     public static void saveDatasetToPathInCSV(final PreparedDataset dataset,
             final Path outputPath) {
         String outputFilePath = outputPath.toFile().getAbsolutePath();

@@ -12,6 +12,9 @@ import java.util.Map.Entry;
 import weloveclouds.evaluation.preparation.util.DatasetToFileWriter;
 import weloveclouds.evaluation.preparation.util.KeyCreatorUtility;
 
+/**
+ * The type Prepared dataset.
+ */
 public class PreparedDataset {
 
     private static int MAX_NUMBER_OF_ENTRIES = 10 * 1000;
@@ -20,13 +23,23 @@ public class PreparedDataset {
     private Path rootPath;
     private int numberOfFlushes;
 
-
+    /**
+     * Instantiates a new Prepared dataset.
+     *
+     * @param rootPath the root path
+     */
     public PreparedDataset(final Path rootPath) {
         this.dataset = new HashMap<>();
         this.rootPath = rootPath.toAbsolutePath().getParent();
         this.numberOfFlushes = 0;
     }
 
+    /**
+     * Put entry.
+     *
+     * @param key   the key
+     * @param value the value
+     */
     public void putEntry(final String key, final String value) {
         if (dataset.size() == MAX_NUMBER_OF_ENTRIES) {
             flushDatasetToCSV();
@@ -40,10 +53,18 @@ public class PreparedDataset {
         dataset.put(newKey, value);
     }
 
+    /**
+     * Gets readonly iterator.
+     *
+     * @return the readonly iterator
+     */
     public Iterator<Entry<String, String>> getReadonlyIterator() {
         return Collections.unmodifiableMap(dataset).entrySet().iterator();
     }
 
+    /**
+     * Flush dataset to csv.
+     */
     public void flushDatasetToCSV() {
         Path csvPath = Paths.get(new File(rootPath.toFile().getAbsolutePath(),
                 String.valueOf(numberOfFlushes) + ".csv").getAbsolutePath());

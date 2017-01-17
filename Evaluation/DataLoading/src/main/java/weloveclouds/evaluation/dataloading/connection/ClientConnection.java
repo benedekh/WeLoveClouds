@@ -11,6 +11,9 @@ import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
 
+/**
+ * The type Client connection.
+ */
 public class ClientConnection {
 
     private static final Logger LOGGER = LogManager.getLogger(ClientConnection.class);
@@ -18,12 +21,21 @@ public class ClientConnection {
     private IKVCommunicationApiV2 serverCommunication;
     private IDeserializer<RingMetadata, String> ringMetadataDeserializer;
 
+    /**
+     * Instantiates a new Client connection.
+     *
+     * @param serverCommunication      the server communication
+     * @param ringMetadataDeserializer the ring metadata deserializer
+     */
     public ClientConnection(IKVCommunicationApiV2 serverCommunication,
             IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
         this.serverCommunication = serverCommunication;
         this.ringMetadataDeserializer = ringMetadataDeserializer;
     }
 
+    /**
+     * Connect.
+     */
     public void connect() {
         try {
             serverCommunication.connect();
@@ -32,6 +44,13 @@ public class ClientConnection {
         }
     }
 
+    /**
+     * Put.
+     *
+     * @param key                the key
+     * @param value              the value
+     * @param wasAlreadyExecuted the was already executed
+     */
     public void put(String key, String value, boolean wasAlreadyExecuted) {
         try {
             LOGGER.info(
@@ -80,6 +99,9 @@ public class ClientConnection {
         }
     }
 
+    /**
+     * Close connection.
+     */
     public void closeConnection() {
         serverCommunication.disconnect();
     }

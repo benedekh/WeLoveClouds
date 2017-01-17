@@ -20,6 +20,9 @@ import org.apache.logging.log4j.Logger;
 
 import weloveclouds.evaluation.preparation.models.PreparedDataset;
 
+/**
+ * The type Dataset transformer.
+ */
 public class DatasetTransformer extends SimpleFileVisitor<Path> {
 
     private static final Logger LOGGER = LogManager.getLogger(DatasetTransformer.class);
@@ -27,6 +30,11 @@ public class DatasetTransformer extends SimpleFileVisitor<Path> {
     private PreparedDataset dataset;
     private Path rootPath;
 
+    /**
+     * Transform.
+     *
+     * @param path the path
+     */
     public void transform(final Path path) {
         rootPath = path.toAbsolutePath();
         dataset = new PreparedDataset(rootPath);
@@ -42,6 +50,13 @@ public class DatasetTransformer extends SimpleFileVisitor<Path> {
         }
     }
 
+    /**
+     * Visit file file visit result.
+     *
+     * @param file the file
+     * @param attr the attr
+     * @return the file visit result
+     */
     @Override
     public FileVisitResult visitFile(final Path file, final BasicFileAttributes attr) {
         if (attr.isRegularFile()) {
@@ -70,6 +85,10 @@ public class DatasetTransformer extends SimpleFileVisitor<Path> {
 
     /**
      * Print each directory visited.
+     *
+     * @param dir the dir
+     * @param exc the exc
+     * @return the file visit result
      */
     @Override
     public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) {
@@ -80,7 +99,11 @@ public class DatasetTransformer extends SimpleFileVisitor<Path> {
     /**
      * If there is some error accessing the file, let the user know. If you don't override this
      * method and an error occurs, an IOException is thrown.
-     **/
+     *
+     * @param file the file
+     * @param exc  the exc
+     * @return the file visit result
+     */
     @Override
     public FileVisitResult visitFileFailed(final Path file, final IOException exc) {
         LOGGER.info(join(": ", "Visiting file failed", file.toString()));

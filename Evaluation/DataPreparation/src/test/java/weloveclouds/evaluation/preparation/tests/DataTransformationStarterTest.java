@@ -4,8 +4,14 @@ import org.junit.Test;
 
 import weloveclouds.evaluation.preparation.application.DataPreparationApplication;
 
+/**
+ * The type Data transformation starter test.
+ */
 public class DataTransformationStarterTest {
 
+    /**
+     * Start.
+     */
     @SuppressWarnings("static-access")
     @Test
     public void start() {
