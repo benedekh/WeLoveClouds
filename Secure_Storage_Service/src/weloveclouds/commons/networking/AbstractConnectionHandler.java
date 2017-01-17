@@ -19,7 +19,7 @@ import weloveclouds.communication.models.Connection;
  */
 public abstract class AbstractConnectionHandler<M> extends Thread implements IConnectionHandler {
     protected IConcurrentCommunicationApi communicationApi;
-    protected Connection connection;
+    protected Connection<?> connection;
     protected IMessageSerializer<SerializedMessage, M> messageSerializer;
     protected IMessageDeserializer<M, SerializedMessage> messageDeserializer;
     protected List<Runnable> callbacks;
@@ -28,7 +28,7 @@ public abstract class AbstractConnectionHandler<M> extends Thread implements ICo
     private ConnectionHandlerShutdownHook shutdownHook;
 
     public AbstractConnectionHandler(IConcurrentCommunicationApi communicationApi,
-            Connection connection, IMessageSerializer<SerializedMessage, M> messageSerializer,
+            Connection<?> connection, IMessageSerializer<SerializedMessage, M> messageSerializer,
             IMessageDeserializer<M, SerializedMessage> messageDeserializer) {
         this.communicationApi = communicationApi;
         this.connection = connection;
@@ -74,9 +74,9 @@ public abstract class AbstractConnectionHandler<M> extends Thread implements ICo
     private class ConnectionHandlerShutdownHook extends Thread {
 
         private Logger logger;
-        private Connection connection;
+        private Connection<?> connection;
 
-        ConnectionHandlerShutdownHook(Connection connection) {
+        ConnectionHandlerShutdownHook(Connection<?> connection) {
             this.logger = Logger.getLogger(this.getClass());
             this.connection = connection;
         }

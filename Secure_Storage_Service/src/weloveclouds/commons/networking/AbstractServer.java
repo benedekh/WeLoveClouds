@@ -1,17 +1,19 @@
 package weloveclouds.commons.networking;
 
-import org.apache.log4j.Logger;
+import static weloveclouds.commons.status.ServerStatus.HALTED;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+
+import javax.net.ssl.SSLServerSocket;
+
+import org.apache.log4j.Logger;
 
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.status.ServerStatus;
 import weloveclouds.communication.CommunicationApiFactory;
-
-import static weloveclouds.commons.status.ServerStatus.HALTED;
 
 /**
  * Represents an abstract server which can accept connections on the referred port.
@@ -23,7 +25,7 @@ public abstract class AbstractServer<M> extends Thread {
     protected CommunicationApiFactory communicationApiFactory;
     protected ServerStatus status;
     protected ServerSocketFactory serverSocketFactory;
-    protected ServerSocket serverSocket;
+    protected SSLServerSocket serverSocket;
     protected IMessageSerializer<SerializedMessage, M> messageSerializer;
     protected IMessageDeserializer<M, SerializedMessage> messageDeserializer;
     protected int port;

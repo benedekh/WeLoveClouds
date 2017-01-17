@@ -60,7 +60,8 @@ public class TransactionSenderService implements ITransactionSenderService {
             UUID transactionId = UUID.randomUUID();
             for (ServerConnectionInfo connectionInfo : participantConnectionInfos) {
                 try {
-                    Connection connection = connectionFactory.createConnectionFrom(connectionInfo);
+                    Connection<?> connection =
+                            connectionFactory.createSecureConnectionFrom(connectionInfo);
                     Set<ServerConnectionInfo> otherParticipants =
                             SetUtils.removeValueFromSet(participantConnectionInfos, connectionInfo);
                     transactions.add(createTransaction(connection, transactionId, transferMessage,
@@ -83,7 +84,8 @@ public class TransactionSenderService implements ITransactionSenderService {
             Set<SenderTransaction> transactions = new HashSet<>();
             for (ServerConnectionInfo connectionInfo : participantConnectionInfos) {
                 try {
-                    Connection connection = connectionFactory.createConnectionFrom(connectionInfo);
+                    Connection<?> connection =
+                            connectionFactory.createSecureConnectionFrom(connectionInfo);
                     transactions.add(createTransaction(connection, transactionId, null, null));
                 } catch (IOException ex) {
                     LOGGER.error(ex);
@@ -96,7 +98,7 @@ public class TransactionSenderService implements ITransactionSenderService {
         }
     }
 
-    private SenderTransaction createTransaction(Connection connection, UUID transactionId,
+    private SenderTransaction createTransaction(Connection<?> connection, UUID transactionId,
             IKVTransferMessage transferMessage, Set<ServerConnectionInfo> otherParticipants) {
         return new SenderTransaction.Builder().connection(connection)
                 .communicationApi(communicationApi).transactionId(transactionId)

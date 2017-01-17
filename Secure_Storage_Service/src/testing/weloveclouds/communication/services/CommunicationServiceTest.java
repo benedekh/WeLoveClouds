@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import javax.net.ssl.SSLSocket;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,11 +20,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.exceptions.AlreadyConnectedException;
 import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
-import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.ConnectionFactory;
+import weloveclouds.communication.models.SecureConnection;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.communication.services.CommunicationService;
 
@@ -41,14 +44,16 @@ public class CommunicationServiceTest {
     private ServerConnectionInfo validServerConnectionInfos;
     private ServerConnectionInfo invalidServerConnectionInfos;
     private Socket socketFromInvalidServerInfos;
+    private SocketFactory socketFactory;
 
     @Mock
-    Socket socketMock;
+    SSLSocket secureSocketMock;
     @Mock
     ConnectionFactory connectionFactoryMock;
 
     @Before
     public void setUp() throws Exception {
+        socketFactory = new SocketFactory();
         communicationService = new CommunicationService(connectionFactoryMock);
 
         validServerConnectionInfos = new ServerConnectionInfo.Builder()
@@ -58,15 +63,15 @@ public class CommunicationServiceTest {
                 .ipAddress(InetAddress.getByName(INVALID_SERVER_IP_ADDRESS)).port(VALID_SERVER_PORT)
                 .build();
 
-        when(connectionFactoryMock.createConnectionFrom(validServerConnectionInfos))
-                .thenReturn(new Connection.Builder().remoteServer(validServerConnectionInfos)
-                        .socket(new Socket(validServerConnectionInfos.getIpAddress(),
-                                validServerConnectionInfos.getPort()))
+        when(connectionFactoryMock.createSecureConnectionFrom(validServerConnectionInfos))
+                .thenReturn(new SecureConnection.Builder().remoteServer(validServerConnectionInfos)
+                        .socket(socketFactory.createSSLSocketFromInfo(validServerConnectionInfos))
                         .build());
 
-        when(connectionFactoryMock.createConnectionFrom(invalidServerConnectionInfos))
-                .thenReturn(new Connection.Builder().remoteServer(invalidServerConnectionInfos)
-                        .socket(socketFromInvalidServerInfos).build());
+        when(connectionFactoryMock.createSecureConnectionFrom(invalidServerConnectionInfos))
+                .thenReturn(
+                        new SecureConnection.Builder().remoteServer(invalidServerConnectionInfos)
+                                .socket(socketFromInvalidServerInfos).build());
     }
 
     @Test
@@ -118,11 +123,12 @@ public class CommunicationServiceTest {
     public void shouldReadTheReceivedDataOnReception() throws Exception {
         final String RECEIVED_MESSAGE = "RECEIVED DATA";
         InputStream mockedSocketInputStream = new ByteArrayInputStream(RECEIVED_MESSAGE.getBytes());
-        when(connectionFactoryMock.createConnectionFrom(any(ServerConnectionInfo.class)))
-                .thenReturn(new Connection.Builder().remoteServer(any(ServerConnectionInfo.class))
-                        .socket(socketMock).build());
-        when(socketMock.getInputStream()).thenReturn(mockedSocketInputStream);
-        when(socketMock.isConnected()).thenReturn(CONNECTED_FLAG);
+        when(connectionFactoryMock.createSecureConnectionFrom(any(ServerConnectionInfo.class)))
+                .thenReturn(
+                        new SecureConnection.Builder().remoteServer(any(ServerConnectionInfo.class))
+                                .socket(secureSocketMock).build());
+        when(secureSocketMock.getInputStream()).thenReturn(mockedSocketInputStream);
+        when(secureSocketMock.isConnected()).thenReturn(CONNECTED_FLAG);
 
         communicationService.connectTo(validServerConnectionInfos);
 
@@ -138,14 +144,12 @@ public class CommunicationServiceTest {
     @Test
     @Ignore
     public void shouldBeAbleToConnectAndDisconnectMultipleTimes() throws Exception {
-        when(connectionFactoryMock.createConnectionFrom(validServerConnectionInfos))
-                .thenReturn(new Connection.Builder().remoteServer(validServerConnectionInfos)
-                        .socket(new Socket(validServerConnectionInfos.getIpAddress(),
-                                validServerConnectionInfos.getPort()))
+        when(connectionFactoryMock.createSecureConnectionFrom(validServerConnectionInfos))
+                .thenReturn(new SecureConnection.Builder().remoteServer(validServerConnectionInfos)
+                        .socket(socketFactory.createSSLSocketFromInfo(validServerConnectionInfos))
                         .build())
-                .thenReturn(new Connection.Builder().remoteServer(validServerConnectionInfos)
-                        .socket(new Socket(validServerConnectionInfos.getIpAddress(),
-                                validServerConnectionInfos.getPort()))
+                .thenReturn(new SecureConnection.Builder().remoteServer(validServerConnectionInfos)
+                        .socket(socketFactory.createSSLSocketFromInfo(validServerConnectionInfos))
                         .build());
         final int NUMBER_OF_CONNECTION_TESTS = 2;
 

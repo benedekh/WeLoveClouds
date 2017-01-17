@@ -16,7 +16,7 @@ public interface IConcurrentCommunicationApi {
      *
      * @throws IOException if any error occurs during the send
      */
-    void send(byte[] message, Connection connection) throws IOException;
+    void send(byte[] message, Connection<?> connection) throws IOException;
 
     /**
      * Sends a message as a byte array to the server and expects for a response.
@@ -24,12 +24,12 @@ public interface IConcurrentCommunicationApi {
      * @return the response byte array
      * @throws IOException if any error occurs
      */
-    byte[] sendAndExpectForResponse(byte[] content, Connection connection) throws IOException;
+    byte[] sendAndExpectForResponse(byte[] content, Connection<?> connection) throws IOException;
 
     /**
      * Receives data over the connection.
      *
      * @throws IOException if any error occurs during the receiveFrom
      */
-    byte[] receiveFrom(Connection connection) throws IOException;
+    byte[] receiveFrom(Connection<?> connection) throws IOException;
 }

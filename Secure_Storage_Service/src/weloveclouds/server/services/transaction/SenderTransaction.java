@@ -34,7 +34,7 @@ public class SenderTransaction implements AutoCloseable {
     private Set<ServerConnectionInfo> otherParticipants;
 
     private IConcurrentCommunicationApi communicationApi;
-    private Connection connection;
+    private Connection<?> connection;
 
     private IMessageSerializer<SerializedMessage, IKVTransactionMessage> transactionMessageSerializer;
     private IMessageDeserializer<IKVTransactionMessage, SerializedMessage> transactionMessageDeserializer;
@@ -161,7 +161,7 @@ public class SenderTransaction implements AutoCloseable {
         private IKVTransferMessage transferMessage;
         private Set<ServerConnectionInfo> otherParticipants;
         private IConcurrentCommunicationApi communicationApi;
-        private Connection connection;
+        private Connection<?> connection;
         private IMessageSerializer<SerializedMessage, IKVTransactionMessage> transactionMessageSerializer;
         private IMessageDeserializer<IKVTransactionMessage, SerializedMessage> transactionMessageDeserializer;
 
@@ -185,7 +185,7 @@ public class SenderTransaction implements AutoCloseable {
             return this;
         }
 
-        public Builder connection(Connection connection) {
+        public Builder connection(Connection<?> connection) {
             this.connection = connection;
             return this;
         }

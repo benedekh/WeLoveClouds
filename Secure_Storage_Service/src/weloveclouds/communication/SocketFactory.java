@@ -3,7 +3,6 @@ package weloveclouds.communication;
 import java.io.IOException;
 import java.net.Socket;
 
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -16,17 +15,14 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * Factory to create sockets from connection information.
  *
- * @author Benoit, Benedek, hb
+ * @author Benoit, Benedek, Hunton
  */
 public class SocketFactory {
 
     private static final Logger LOGGER = Logger.getLogger(SocketFactory.class);
-    private SSLContextHelper sslContextHelper = SSLContextHelper.getInstance();
 
-    private SSLSocketFactory sslSocketFactory = sslContextHelper.getSSLSocketFactory();
-    
     /**
-     * Creates an unencrypted TCP Socket or an SSLSocket using server connection information
+     * Creates an unencrypted TCP Socket using server connection information
      * ({@link ServerConnectionInfo#getIpAddress()} and {@link ServerConnectionInfo#getPort()}).
      *
      * @throws IOException see {@link Socket}
@@ -35,11 +31,17 @@ public class SocketFactory {
         LOGGER.debug(StringUtils.join(" ", "Creating TCP socket for", connectionInfo));
         return new Socket(connectionInfo.getIpAddress(), connectionInfo.getPort());
     }
-    
-    public SSLSocket createSSLSocketFromInfo(ServerConnectionInfo connectionInfo) throws IOException{
+
+    /**
+     * Creates an encrypted TCP Socket using server connection information
+     * ({@link ServerConnectionInfo#getIpAddress()} and {@link ServerConnectionInfo#getPort()}).
+     *
+     * @throws IOException see {@link SSLSocketFactory#createSocket(String, int)}
+     */
+    public SSLSocket createSSLSocketFromInfo(ServerConnectionInfo connectionInfo)
+            throws IOException {
         LOGGER.debug(StringUtils.join(" ", "Creating SSL socket for", connectionInfo));
-        /*  we need to use a built in sslSocketFactory here as you cannot call the constructor of ssl sockets on
-            directly */
-        return (SSLSocket) sslSocketFactory.createSocket(connectionInfo.getIpAddress(), connectionInfo.getPort());
+        return (SSLSocket) SSLContextHelper.getInstance().getSSLSocketFactory()
+                .createSocket(connectionInfo.getIpAddress(), connectionInfo.getPort());
     }
 }

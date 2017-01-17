@@ -30,11 +30,11 @@ public class CommunicationService implements ICommunicationService {
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
 
     private ConnectionFactory connectionFactory;
-    private Connection connectionToEndpoint;
-    
+    private Connection<?> connectionToEndpoint;
+
     private Thread connectionShutdownHook;
     private MessageFramesDetector messageDetector;
-    
+
 
     /**
      * @param connectionFactory a factory to create connections
@@ -74,7 +74,8 @@ public class CommunicationService implements ICommunicationService {
     /**
      * See {@link #connectTo(ServerConnectionInfo)}
      *
-     * @throws IOException see {@link SocketFactory#createTcpSocketFromInfo(ServerConnectionInfo)}
+     * @throws IOException see
+     *         {@link SocketFactory#createSecureConnectionFrom(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
         this.connectionToEndpoint = this.connectionFactory.createSecureConnectionFrom(remoteServer);
@@ -180,9 +181,9 @@ public class CommunicationService implements ICommunicationService {
      */
     private static class ConnectionCloser implements Runnable {
         private static final Logger LOGGER = Logger.getLogger(ConnectionCloser.class);
-        private Connection connection;
+        private Connection<?> connection;
 
-        public ConnectionCloser(Connection connection) {
+        public ConnectionCloser(Connection<?> connection) {
             this.connection = connection;
         }
 

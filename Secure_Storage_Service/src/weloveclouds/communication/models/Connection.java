@@ -5,10 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import javax.net.ssl.SSLSocket;
-
-import com.jcraft.jsch.Logger;
-
 import weloveclouds.commons.utils.StringUtils;
 
 /**
@@ -63,11 +59,11 @@ public class Connection<B extends Connection.Builder<B>> implements AutoCloseabl
      */
     public synchronized void kill() throws IOException {
         if (isConnected()) {
-            try{
+            try {
                 socket.shutdownOutput();
                 socket.shutdownInput();
-            } catch (Exception ex){
-                //Suppress exception, no point in doing anything with it.
+            } catch (Exception ex) {
+                // The methods shutdownOutput() and shutdownInput() are not supported in SSLSocket
             }
             socket.close();
         }
@@ -98,7 +94,8 @@ public class Connection<B extends Connection.Builder<B>> implements AutoCloseabl
         if (!(obj instanceof Connection)) {
             return false;
         }
-        Connection<B> other = (Connection<B>) obj;
+        @SuppressWarnings("rawtypes")
+        Connection other = (Connection) obj;
         if (remoteServer == null) {
             if (other.remoteServer != null) {
                 return false;
@@ -130,18 +127,20 @@ public class Connection<B extends Connection.Builder<B>> implements AutoCloseabl
         private ServerConnectionInfo remoteServer;
         private Socket socket;
 
+        @SuppressWarnings("unchecked")
         public B remoteServer(ServerConnectionInfo remoteServer) {
             this.remoteServer = remoteServer;
             return (B) this;
         }
 
+        @SuppressWarnings("unchecked")
         public B socket(Socket socket) {
             this.socket = socket;
             return (B) this;
         }
 
         public Connection<B> build() {
-            return new Connection<B>(this);
+            return new Connection<>(this);
         }
     }
 

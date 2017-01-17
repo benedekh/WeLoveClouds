@@ -1,33 +1,43 @@
 package weloveclouds.communication.models;
 
+import java.net.Socket;
+
 import javax.net.ssl.SSLSocket;
+
 /**
- * Secure connection class, functionally identical to the {@link Connection} class, 
- * except that is uses ssl sockets instead of regular ones
- * @author Benoit, Benedek, hb
+ * Secure connection class, functionally identical to the {@link Connection} class, except that is
+ * uses ssl sockets instead of regular ones
+ * 
+ * @author Benoit, Benedek, Hunton
  */
-public class SecureConnection extends Connection{
-    
+public class SecureConnection extends Connection<SecureConnection.Builder> {
+
     protected SecureConnection(Builder builder) {
         super(builder);
     }
-    
-    //I have a suspicion that i'll run into problems with the equals(obj) method
-    
+
     /**
-     * builder pattern for creating {@link SecureConnection} instances.
-     * Leverages pre-existing Builder code in {@link Connection}.
-     * @author hb
-     *
+     * builder pattern for creating {@link SecureConnection} instances. Leverages pre-existing
+     * Builder code in {@link Connection}.
+     * 
+     * @author Hunton
      */
-    public static class Builder extends Connection.Builder<Builder>{
-        
-        public Builder Socket(SSLSocket sslSocket){
+    public static class Builder extends Connection.Builder<Builder> {
+
+        public Builder socket(Socket sslSocket) {
+            if (!(sslSocket instanceof SSLSocket)) {
+                throw new IllegalArgumentException("Secure connection must contain secure socket.");
+            }
             super.socket(sslSocket);
             return this;
         }
-        
-        public SecureConnection build(){
+
+        public Builder socket(SSLSocket sslSocket) {
+            super.socket(sslSocket);
+            return this;
+        }
+
+        public SecureConnection build() {
             return new SecureConnection(this);
         }
     }
