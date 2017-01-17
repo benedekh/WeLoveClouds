@@ -4,11 +4,11 @@ import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.server.store.KVCache;
-import weloveclouds.server.store.KVPersistentStorage;
+import weloveclouds.server.store.cache.KVCache;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.PutType;
+import weloveclouds.server.store.storage.KVPersistentStorage;
 
 /**
  * Represents an abstract access layer to the key-value store. It include the {@link KVCache} and

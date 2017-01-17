@@ -82,6 +82,13 @@ public class PersistedStorageUnit implements Serializable {
     }
 
     /**
+     * @return path where the storage unit is stored
+     */
+    public Path getPath() {
+        return Paths.get(filePath);
+    }
+
+    /**
      * Puts an entry into the storage unit.
      * 
      * @return type of the operation that was executed. Either {@link PutType#INSERT} if the entry
@@ -177,13 +184,6 @@ public class PersistedStorageUnit implements Serializable {
 
     protected Lock writeLock() {
         return accessLock.writeLock();
-    }
-
-    /**
-     * Gets the path from the string representation.
-     */
-    protected Path getPath() {
-        return Paths.get(filePath);
     }
 
     /**
