@@ -47,7 +47,7 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand<StorageNode, IKV
             Set<ServerConnectionInfo> replicasConnectionInfo = new LinkedHashSet<>();
 
             for (StorageNode replica : targetedNode.getReplicas()) {
-                replicasConnectionInfo.add(replica.getServerConnectionInfo());
+                replicasConnectionInfo.add(replica.getKvChannelConnectionInfo());
             }
 
             KVAdminMessage message =
