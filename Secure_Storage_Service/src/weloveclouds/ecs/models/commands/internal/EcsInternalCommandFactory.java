@@ -50,14 +50,15 @@ public class EcsInternalCommandFactory {
         return new LaunchJar.Builder()
                 .jarFilePath(jarFilePath)
                 .arguments(Arrays.asList(jarFilePath, Integer.toString(storageNode.getPort()),
-                        Integer.toString(ExternalConfigurationServiceConstants.KV_SERVER_REQUEST_PORT),
-                        Integer.toString(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT),
+                        Integer.toString(storageNode.getKvChannelConnectionInfo().getPort()),
+                        Integer.toString(storageNode.getEcsChannelConnectionInfo().getPort()),
                         Integer.toString(cacheSize),
                         displacementStrategy,
                         LOG_LEVEL_ALL,
                         storageNode.getName(),
                         loadbalancer.getIpAddress().replaceAll("/", ""),
-                        Integer.toString(20000)))
+                        Integer.toString(loadbalancer.getHealthMonitoringServiceEndpoint()
+                                .getPort())))
                 .secureShellService(secureShellServiceFactory.createJshSecureShellService())
                 .targetedNode(storageNode)
                 .build();

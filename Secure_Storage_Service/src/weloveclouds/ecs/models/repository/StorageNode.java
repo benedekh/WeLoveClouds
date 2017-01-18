@@ -22,27 +22,29 @@ public class StorageNode extends AbstractNode {
     private HashRange hashRange;
     private List<StorageNode> replicas;
     private List<HashRange> childHashRanges;
-    protected Hash hashKey;
+    private ServerConnectionInfo kvChannelConnectionInfo;
+    private Hash hashKey;
 
-    private StorageNode(Builder storageNodeBuilder) {
+    private StorageNode(Builder builder) {
         this.status = IDLE;
         this.metadataStatus = UNSYNCHRONIZED;
-        this.name = storageNodeBuilder.name;
-        this.serverConnectionInfo = storageNodeBuilder.serverConnectionInfo;
-        this.hashKey = storageNodeBuilder.hashKey;
-        this.hashRange = storageNodeBuilder.hashRange;
-        this.ecsChannelConnectionInfo = storageNodeBuilder.ecsChannelConnectionInfo;
-        this.replicas = storageNodeBuilder.replicas;
-        this.childHashRanges = storageNodeBuilder.childHashRanges;
-        this.previousHashRange = storageNodeBuilder.previousHashRange;
+        this.name = builder.name;
+        this.serverConnectionInfo = builder.serverConnectionInfo;
+        this.ecsChannelConnectionInfo = builder.ecsChannelConnectionInfo;
+        this.kvChannelConnectionInfo = builder.kvChannelConnectionInfo;
+        this.hashKey = builder.hashKey;
+        this.hashRange = builder.hashRange;
+        this.replicas = builder.replicas;
+        this.childHashRanges = builder.childHashRanges;
+        this.previousHashRange = builder.previousHashRange;
 
-        if (storageNodeBuilder.healthInfos == null) {
+        if (builder.healthInfos == null) {
             this.healthInfos = new NodeHealthInfos.Builder()
                     .nodeName(name)
                     .nodeStatus(HALTED)
                     .build();
         } else {
-            this.healthInfos = storageNodeBuilder.healthInfos;
+            this.healthInfos = builder.healthInfos;
         }
     }
 
@@ -50,6 +52,10 @@ public class StorageNode extends AbstractNode {
         if (healthInfos != null) {
             this.healthInfos = healthInfos;
         }
+    }
+
+    public ServerConnectionInfo getKvChannelConnectionInfo() {
+        return kvChannelConnectionInfo;
     }
 
     public Hash getHashKey() {
@@ -131,6 +137,7 @@ public class StorageNode extends AbstractNode {
         private String name;
         private ServerConnectionInfo serverConnectionInfo;
         private ServerConnectionInfo ecsChannelConnectionInfo;
+        private ServerConnectionInfo kvChannelConnectionInfo;
         private NodeHealthInfos healthInfos;
         private Hash hashKey;
         private HashRange previousHashRange;
@@ -156,6 +163,11 @@ public class StorageNode extends AbstractNode {
 
         public Builder ecsChannelConnectionInfo(ServerConnectionInfo ecsChannelConnectionInfo) {
             this.ecsChannelConnectionInfo = ecsChannelConnectionInfo;
+            return this;
+        }
+
+        public Builder kvChannelConnectionInfo(ServerConnectionInfo kvChannelConnectionInfo) {
+            this.kvChannelConnectionInfo = kvChannelConnectionInfo;
             return this;
         }
 

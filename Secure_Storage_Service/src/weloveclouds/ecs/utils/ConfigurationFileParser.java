@@ -45,26 +45,34 @@ public class ConfigurationFileParser implements IParser<List<StorageNode>, File>
     private StorageNode parseLine(String line) throws InvalidConfigurationException {
         StorageNode storageNode = null;
         Pattern lineRegex = Pattern.compile("(?<name>\\w+) ?" + "(?<ip>[0-9.]+) ?" + "" +
-                "(?<kvRequestPort>[0-9]+) ?" + "(?<ecsChannelPort>[0-9]+)$");
+                "(?<kvServerPort>[0-9]+) ?" + "(?<ecsChannelPort>[0-9]+) ?" + "" +
+                "(?<kvChannelPort>[0-9]+)$");
         ServerConnectionInfo serverConnectionInfo;
         ServerConnectionInfo ecsChannelConnectionInfo;
+        ServerConnectionInfo kvChannelConnectionInfo;
         try {
             Matcher matcher = lineRegex.matcher(line);
             if (matcher.find()) {
                 if (matcher.group("name") != null && matcher.group("ip") != null && matcher.group
-                        ("kvRequestPort") != null && matcher.group("ecsChannelPort") != null) {
+                        ("kvServerPort") != null && matcher.group("ecsChannelPort") != null
+                        && matcher.group("kvChannelPort") != null) {
                     serverConnectionInfo = new ServerConnectionInfo.Builder()
                             .ipAddress(matcher.group("ip"))
-                            .port(Integer.parseInt(matcher.group("kvRequestPort")))
+                            .port(Integer.parseInt(matcher.group("kvServerPort")))
                             .build();
                     ecsChannelConnectionInfo = new ServerConnectionInfo.Builder()
                             .ipAddress(matcher.group("ip"))
                             .port(Integer.parseInt(matcher.group("ecsChannelPort")))
                             .build();
+                    kvChannelConnectionInfo = new ServerConnectionInfo.Builder()
+                            .ipAddress(matcher.group("ip"))
+                            .port(Integer.parseInt(matcher.group("kvChannelPort")))
+                            .build();
                     storageNode = new StorageNode.Builder()
                             .name(matcher.group("name"))
                             .serverConnectionInfo(serverConnectionInfo)
                             .ecsChannelConnectionInfo(ecsChannelConnectionInfo)
+                            .kvChannelConnectionInfo(kvChannelConnectionInfo)
                             .build();
                 }
             } else {
