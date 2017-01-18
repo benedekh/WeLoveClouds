@@ -131,7 +131,7 @@ public class ArgumentsValidator {
                     " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level> <server name> <loadbalancer IP address> <loadbalancer port>"));
         } else {
             validateCLIArgumentsForServerStart(Arrays.copyOfRange(arguments, 0,
-                    REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER - 1));
+                    REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER));
             validatePort(command, arguments[CLI_LOADBALANCER_PORT_INDEX]);
             try {
                 InetAddress.getByName(arguments[CLI_LOADBALANCER_IP_INDEX]);
