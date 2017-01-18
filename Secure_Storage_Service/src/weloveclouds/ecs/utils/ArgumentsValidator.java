@@ -25,6 +25,13 @@ public class ArgumentsValidator {
         }
     }
 
+    public static void validateStatsArguments(List<String> arguments)
+            throws IllegalArgumentException {
+        if (!isNullOrEmpty(arguments)) {
+            throw new IllegalArgumentException("Stats command doesn't accept any arguments.");
+        }
+    }
+
     public static void validateStartLoadBalancerArguments(List<String> arguments)
             throws IllegalArgumentException {
         if (!isNullOrEmpty(arguments)) {

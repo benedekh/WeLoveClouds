@@ -1,6 +1,7 @@
 package weloveclouds.ecs.api;
 
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
+import weloveclouds.ecs.models.stats.EcsStatistics;
 
 /**
  * Created by Benoit on 2016-11-15.
@@ -19,4 +20,6 @@ public interface IKVEcsApi {
     void addNode(int cacheSize, String displacementStrategy) throws ExternalConfigurationServiceException;
 
     void removeNode() throws ExternalConfigurationServiceException;
+
+    EcsStatistics getStats() throws ExternalConfigurationServiceException;
 }

@@ -43,6 +43,7 @@ import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.repository.NodeStatus;
 import weloveclouds.ecs.models.services.DistributedService;
+import weloveclouds.ecs.models.stats.EcsStatistics;
 import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
 import weloveclouds.ecs.models.tasks.EcsBatchFactory;
@@ -266,6 +267,16 @@ public class ExternalConfigurationService implements Observer {
                         .status(TOPOLOGY_UPDATE)
                         .ringTopology(distributedService.getTopology()).build())
                 .build());
+    }
+
+    public EcsStatistics getStats() {
+        return new EcsStatistics.Builder()
+                .status(status)
+                .loadBalancer(repository.getLoadbalancer())
+                .initializedNodes(repository.getNodesWithStatus(INITIALIZED))
+                .idledNodes(repository.getNodesWithStatus(IDLE))
+                .runningNodes(repository.getNodesWithStatus(RUNNING))
+                .build();
     }
 
     private void bootstrapConfiguration() throws ServiceBootstrapException {

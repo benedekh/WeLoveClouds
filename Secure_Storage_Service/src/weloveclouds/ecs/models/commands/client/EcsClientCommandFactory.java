@@ -20,7 +20,7 @@ public class EcsClientCommandFactory {
     }
 
     public AbstractEcsClientCommand createCommandFromUserInput(ParsedUserInput<EcsCommand> userInput) {
-        AbstractEcsClientCommand recognizedCommand = null;
+        AbstractEcsClientCommand recognizedCommand;
 
         switch (userInput.getCommand()) {
             case START_LOAD_BALANCER:
@@ -53,6 +53,10 @@ public class EcsClientCommandFactory {
                 break;
             case QUIT:
                 recognizedCommand = new Quit(externalConfigurationServiceApi, userInput.getArguments());
+                break;
+            case STATS:
+                recognizedCommand = new Stats(externalConfigurationServiceApi, userInput
+                        .getArguments());
                 break;
             default:
                 recognizedCommand = new DefaultCommand(externalConfigurationServiceApi, userInput.getArguments());

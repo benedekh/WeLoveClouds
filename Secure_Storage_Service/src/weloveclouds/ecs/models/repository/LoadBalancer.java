@@ -2,6 +2,7 @@ package weloveclouds.ecs.models.repository;
 
 import java.net.UnknownHostException;
 
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.messaging.notification.INotifiable;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
@@ -53,6 +54,16 @@ public class LoadBalancer extends AbstractNode implements INotifiable {
     @Override
     public ServerConnectionInfo getEcsChannelConnectionInfo() {
         return notificationServiceEndpoint;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.join(" ",
+                "Name:", this.name, "\n",
+                "Status", status.name(), "\n",
+                "Client request interceptor endpoint:", serverConnectionInfo.toString(), "\n",
+                "Notification service endpoint:", notificationServiceEndpoint, "\n",
+                "Health monitoring service endpoint:", healthMonitoringServiceEndpoint);
     }
 
     public static class Builder {
