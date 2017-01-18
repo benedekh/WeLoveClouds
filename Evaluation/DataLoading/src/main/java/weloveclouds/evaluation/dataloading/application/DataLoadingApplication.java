@@ -22,8 +22,10 @@ public class DataLoadingApplication {
 
     private static final Logger LOGGER = LogManager.getLogger(DataLoadingApplication.class);
 
-    private static final int NUMBER_OF_CLI_ARGUMENTS = 1;
+    private static final int NUMBER_OF_CLI_ARGUMENTS = 3;
     private static final int INPUT_CSV_FOLDER_PATH_INDEX = 0;
+    private static final int SERVER_IP_ADDRESS_INDEX = 1;
+    private static final int SERVER_PORT_INDEX = 2;
 
     static {
         initializeRootLogger();
@@ -43,7 +45,11 @@ public class DataLoadingApplication {
                 if (!isInputCSVFolderPathValid(csvFolderPath)) {
                     System.exit(0);
                 } else {
-                    ClientConnection client = ClientConnectionFactory.createDefaultClient();
+                    String serverIp = args[SERVER_IP_ADDRESS_INDEX];
+                    int serverPort = Integer.valueOf(args[SERVER_PORT_INDEX]);
+
+                    ClientConnection client =
+                            ClientConnectionFactory.createDefaultClient(serverIp, serverPort);
                     CSVFolderTraverser traverser = new CSVFolderTraverser(client);
 
                     traverser.traverseFolder(csvFolderPath);
@@ -52,7 +58,8 @@ public class DataLoadingApplication {
                 LOGGER.error("A valid folder path is required: <input_csv_folder_path>");
             }
         } else {
-            LOGGER.error("CSV folder path is required: <input_csv_folder_path>");
+            LOGGER.error(
+                    "Required arguments: <input_csv_folder_path> <server_ip_address> <server_port>");
         }
     }
 
