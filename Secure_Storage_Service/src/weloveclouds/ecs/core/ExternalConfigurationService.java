@@ -7,6 +7,7 @@ import static weloveclouds.ecs.core.EcsStatus.SHUTDOWNING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STARTING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STOPPING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.UNINITIALIZED;
+import static weloveclouds.ecs.core.EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
 import static weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage.Status.TOPOLOGY_UPDATE;
 import static weloveclouds.ecs.models.repository.NodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
@@ -89,11 +90,24 @@ public class ExternalConfigurationService implements Observer {
         this.distributedService = new DistributedService();
     }
 
+    public void startLoadBalancer() throws ExternalConfigurationServiceException {
+        if (status == UNINITIALIZED) {
+            AbstractBatchTasks<AbstractRetryableTask> loadBalancerStartBatch;
+            loadBalancerStartBatch = ecsBatchFactory.createStartLoadBalancerBatchFor(repository
+                    .getLoadbalancer());
+            loadBalancerStartBatch.addObserver(this);
+            taskService.launchBatchTasks(loadBalancerStartBatch);
+        } else {
+            throw new ExternalConfigurationServiceException("Operation <startLoadBalancer> is not "
+                    + "permitted. The external configuration service (ECS) is : " + status.name());
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public void initService(int numberOfNodes, int cacheSize, String displacementStrategy)
             throws ExternalConfigurationServiceException {
 
-        if (status == UNINITIALIZED) {
+        if (status == WAITING_FOR_SERVICE_INITIALIZATION) {
             try {
                 AbstractBatchTasks<AbstractRetryableTask> serviceInitialisationBatch;
 
@@ -114,7 +128,8 @@ public class ExternalConfigurationService implements Observer {
             }
         } else {
             throw new ExternalConfigurationServiceException("Operation <initService> is not "
-                    + "permitted. The external configuration service (ECS) is : " + status.name());
+                    + "permitted. The external configuration service (ECS) is : " + status.name()
+                    + ". Please execute the command <startLoadBalancer> first.");
         }
     }
 
@@ -285,6 +300,13 @@ public class ExternalConfigurationService implements Observer {
                 if (!batch.hasFailed()) {
                     distributedService.initializeWith(repository.getNodesWithStatus(INITIALIZED));
                     initializeNodesWithMetadata();
+                } else {
+                    status = EcsStatus.UNINITIALIZED;
+                }
+                break;
+            case START_LOAD_BALANCER:
+                if (!batch.hasFailed()) {
+                    status = EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
                 } else {
                     status = EcsStatus.UNINITIALIZED;
                 }

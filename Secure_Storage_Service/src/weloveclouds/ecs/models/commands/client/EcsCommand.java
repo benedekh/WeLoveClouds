@@ -13,7 +13,7 @@ import weloveclouds.commons.utils.StringUtils;
 public enum EcsCommand {
     START("start"), STOP("stop"), INIT_SERVICE("initService"), SHUTDOWN("shutDown"),
     ADD_NODE("addNode"), REMOVE_NODE("removeNode"), DEFAULT("default"), QUIT("quit"),
-    LOGLEVEL("logLevel"), HELP("help");
+    LOGLEVEL("logLevel"), HELP("help"), START_LOAD_BALANCER("startLoadBalancer");
 
     private static final Logger LOGGER = Logger.getLogger(EcsCommand.class);
 

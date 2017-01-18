@@ -7,7 +7,6 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.ecs.models.commands.client.AddNode;
 import weloveclouds.ecs.models.commands.client.InitService;
 
-
 /**
  * Created by Benoit on 2016-11-21. Added to by hb
  */
@@ -23,6 +22,14 @@ public class ArgumentsValidator {
             throws IllegalArgumentException {
         if (!isNullOrEmpty(arguments)) {
             throw new IllegalArgumentException("Start command doesn't accept any arguments.");
+        }
+    }
+
+    public static void validateStartLoadBalancerArguments(List<String> arguments)
+            throws IllegalArgumentException {
+        if (!isNullOrEmpty(arguments)) {
+            throw new IllegalArgumentException("Start Load Balancer command doesn't accept any " +
+                    "arguments.");
         }
     }
 
@@ -132,5 +139,4 @@ public class ArgumentsValidator {
     private static boolean isNullOrEmpty(List<String> arguments) {
         return arguments == null || arguments.isEmpty();
     }
-
 }

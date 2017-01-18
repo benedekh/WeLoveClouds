@@ -8,6 +8,8 @@ import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
 public interface IKVEcsApi {
     void initService(int numberOfNodes, int cacheSize, String displacementStrategy) throws ExternalConfigurationServiceException;
 
+    void startLoadBalancer() throws ExternalConfigurationServiceException;
+
     void start() throws ExternalConfigurationServiceException;
 
     void stop() throws ExternalConfigurationServiceException;

@@ -11,6 +11,7 @@ import weloveclouds.commons.serialization.configuration.modules.SerializationMod
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.api.v1.KVEcsApiV1;
+import weloveclouds.ecs.configuration.providers.LoadBalancerConfigurationProvider;
 import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.services.INotificationService;
@@ -19,6 +20,7 @@ import weloveclouds.ecs.services.NotificationService;
 import weloveclouds.ecs.services.TaskService;
 import weloveclouds.ecs.utils.ConfigurationFileParser;
 import weloveclouds.ecs.utils.IParser;
+import weloveclouds.loadbalancer.models.LoadBalancerConfiguration;
 
 /**
  * Created by Benoit on 2016-12-03.

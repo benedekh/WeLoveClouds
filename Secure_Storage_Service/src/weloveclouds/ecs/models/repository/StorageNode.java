@@ -150,10 +150,12 @@ public class StorageNode extends AbstractNode {
 
         public Builder serverConnectionInfo(ServerConnectionInfo serverConnectionInfo) {
             this.serverConnectionInfo = serverConnectionInfo;
-            this.ecsChannelConnectionInfo = new ServerConnectionInfo.Builder()
-                    .ipAddress(serverConnectionInfo.getIpAddress())
-                    .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT).build();
             this.hashKey = HashingUtils.getHash(serverConnectionInfo.toString());
+            return this;
+        }
+
+        public Builder ecsChannelConnectionInfo(ServerConnectionInfo ecsChannelConnectionInfo) {
+            this.ecsChannelConnectionInfo = ecsChannelConnectionInfo;
             return this;
         }
 

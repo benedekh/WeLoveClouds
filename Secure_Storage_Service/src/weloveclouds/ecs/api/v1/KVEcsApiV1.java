@@ -23,6 +23,11 @@ public class KVEcsApiV1 implements IKVEcsApi {
     }
 
     @Override
+    public void startLoadBalancer() throws ExternalConfigurationServiceException {
+        externalConfigurationService.startLoadBalancer();
+    }
+
+    @Override
     public void start() throws ExternalConfigurationServiceException {
         externalConfigurationService.start();
     }
