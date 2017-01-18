@@ -33,11 +33,14 @@ public class EcsInternalCommandFactory {
         this.secureShellServiceFactory = secureShellServiceFactory;
     }
 
-    public LaunchJar createLaunchLoadbalancerJarCommandWith(LoadBalancer loadbalancer,
+    public LaunchJar createLaunchLoadBalancerJarCommandWith(LoadBalancer loadbalancer,
                                                             String jarFilePath) {
         return new LaunchJar.Builder()
                 .jarFilePath(jarFilePath)
-                .arguments(Arrays.asList(jarFilePath))
+                .arguments(Arrays.asList(jarFilePath,
+                        Integer.toString(loadbalancer.getPort()),
+                        Integer.toString(loadbalancer.getHealthMonitoringServiceEndpoint().getPort()),
+                        Integer.toString(loadbalancer.getEcsChannelConnectionInfo().getPort())))
                 .secureShellService(secureShellServiceFactory.createJshSecureShellService())
                 .targetedNode(loadbalancer)
                 .build();

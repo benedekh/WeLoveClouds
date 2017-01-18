@@ -76,7 +76,7 @@ public class EcsBatchFactory {
         AbstractBatchTasks<AbstractRetryableTask> startLoadBalancerBatch = new
                 BatchRetryableTasks(START_LOAD_BALANCER);
         AbstractCommand loadBalancerInitialisation = ecsInternalCommandFactory
-                .createLaunchLoadbalancerJarCommandWith(loadBalancer,
+                .createLaunchLoadBalancerJarCommandWith(loadBalancer,
                         ExternalConfigurationServiceConstants.LB_SERVER_JAR_PATH);
         startLoadBalancerBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES,
                 loadBalancerInitialisation));

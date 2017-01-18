@@ -52,7 +52,7 @@ import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.services.INotificationService;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.RingMetadataHelper;
-import weloveclouds.loadbalancer.models.LoadBalancerConfiguration;
+import weloveclouds.loadbalancer.configuration.LoadBalancerConfiguration;
 
 /**
  * Created by Benoit on 2016-11-16.

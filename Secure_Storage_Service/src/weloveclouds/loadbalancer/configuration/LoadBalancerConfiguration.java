@@ -1,4 +1,4 @@
-package weloveclouds.loadbalancer.models;
+package weloveclouds.loadbalancer.configuration;
 
 import weloveclouds.ecs.exceptions.configuration.InvalidLoadBalancerConfigurationException;
 

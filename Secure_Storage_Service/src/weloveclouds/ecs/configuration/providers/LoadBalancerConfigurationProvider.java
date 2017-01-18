@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import weloveclouds.ecs.exceptions.configuration.InvalidLoadBalancerConfigurationException;
-import weloveclouds.loadbalancer.models.LoadBalancerConfiguration;
+import weloveclouds.loadbalancer.configuration.LoadBalancerConfiguration;
 
 /**
  * Created by Benoit on 2017-01-18.

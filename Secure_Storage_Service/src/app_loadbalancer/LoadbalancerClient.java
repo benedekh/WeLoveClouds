@@ -12,6 +12,8 @@ import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.context.ExecutionContext;
 import weloveclouds.commons.utils.LogSetup;
 import weloveclouds.ecs.client.Client;
+import weloveclouds.loadbalancer.configuration.LoadBalancerConfigurationFactory;
+import weloveclouds.loadbalancer.configuration.LoadBalancerConfigurationHolder;
 import weloveclouds.loadbalancer.configuration.modules.LoadBalancerModule;
 import weloveclouds.loadbalancer.core.LoadBalancer;
 
@@ -27,12 +29,14 @@ public class LoadbalancerClient {
         try {
             new LogSetup(LOG_FILE, Level.ALL);
             ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
+            LoadBalancerConfigurationHolder.register(LoadBalancerConfigurationFactory
+                    .createLoadBalancerConfigurationFromArgs(args));
 
             Injector injector = Guice.createInjector(new LoadBalancerModule());
             LoadBalancer loadBalancer = injector.getInstance(LoadBalancer.class);
             loadBalancer.start();
         } catch (Exception ex) {
-            userOutput.writeLine(ex.getMessage() + ex.getCause());
+            userOutput.writeLine(ex.getMessage());
             LOGGER.error(ex.getMessage());
         }
     }

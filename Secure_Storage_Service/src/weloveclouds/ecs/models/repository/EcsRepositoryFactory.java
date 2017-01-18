@@ -5,10 +5,9 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
-import weloveclouds.ecs.configuration.providers.LoadBalancerConfigurationProvider;
 import weloveclouds.ecs.exceptions.configuration.InvalidConfigurationException;
 import weloveclouds.ecs.utils.IParser;
-import weloveclouds.loadbalancer.models.LoadBalancerConfiguration;
+import weloveclouds.loadbalancer.configuration.LoadBalancerConfiguration;
 
 /**
  * Created by Benoit on 2016-11-21.
