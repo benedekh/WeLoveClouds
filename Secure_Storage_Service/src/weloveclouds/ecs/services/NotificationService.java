@@ -50,6 +50,7 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
             throws IOException {
         super(communicationApiFactory, serverSocketFactory, kvEcsNotificationMessageSerializer,
                 kvEcsNotificationMessageDeserializer, port);
+        this.logger = Logger.getLogger(NotificationService.class);
         this.taskService = taskService;
         this.ecsInternalCommandFactory = ecsInternalCommandFactory;
         this.maximumNumberOfNotificationSendRetry = maximumNumberOfNotificationSendRetry;
@@ -106,7 +107,9 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
             logger.info("Client is connected to server.");
             try {
                 while (connection.isConnected()) {
-
+                    byte[] receivedMessage = communicationApi.receiveFrom(connection);
+                    logger.info("Received message from load balancer");
+                    logger.info(new String(receivedMessage));
                 }
             } catch (Throwable e) {
                 logger.error(e);

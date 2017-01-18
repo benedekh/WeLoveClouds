@@ -7,6 +7,7 @@ import java.util.Arrays;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.ecs.configuration.providers.NotificationServiceConfigurationProvider;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
@@ -40,7 +41,9 @@ public class EcsInternalCommandFactory {
                 .arguments(Arrays.asList(jarFilePath,
                         Integer.toString(loadbalancer.getPort()),
                         Integer.toString(loadbalancer.getHealthMonitoringServiceEndpoint().getPort()),
-                        Integer.toString(loadbalancer.getEcsChannelConnectionInfo().getPort())))
+                        Integer.toString(loadbalancer.getEcsChannelConnectionInfo().getPort()),
+                        Integer.toString(NotificationServiceConfigurationProvider
+                                .getNotificationServicePort())))
                 .secureShellService(secureShellServiceFactory.createJshSecureShellService())
                 .targetedNode(loadbalancer)
                 .build();

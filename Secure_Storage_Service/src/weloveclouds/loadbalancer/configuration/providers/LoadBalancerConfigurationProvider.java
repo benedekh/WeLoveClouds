@@ -7,14 +7,22 @@ import weloveclouds.loadbalancer.configuration.LoadBalancerConfigurationHolder;
  */
 public class LoadBalancerConfigurationProvider {
     public static int getClientInterceptorServicePort() {
-        return LoadBalancerConfigurationHolder.getLoadBalancerConfiguration().getClientRequestInterceptorPort();
+        return LoadBalancerConfigurationHolder.getLoadBalancerConfiguration()
+                .getClientRequestInterceptorPort();
     }
 
     public static int getHealthMonitoringServicePort() {
-        return LoadBalancerConfigurationHolder.getLoadBalancerConfiguration().getHealthMonitoringServicePort();
+        return LoadBalancerConfigurationHolder.getLoadBalancerConfiguration()
+                .getHealthMonitoringServicePort();
     }
 
     public static int getEcsNotificationServicePort() {
-        return LoadBalancerConfigurationHolder.getLoadBalancerConfiguration().getEcsNotificationServicePort();
+        return LoadBalancerConfigurationHolder.getLoadBalancerConfiguration()
+                .getEcsNotificationServicePort();
+    }
+
+    public static int getEcsNotificationResponsePort() {
+        return LoadBalancerConfigurationHolder.getLoadBalancerConfiguration()
+                .getEcsNotificationResponsePort();
     }
 }

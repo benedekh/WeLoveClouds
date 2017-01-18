@@ -39,6 +39,6 @@ public class LoadBalancer implements ILoadBalancer {
         LOGGER.debug("Starting ECS notification service.");
         ecsNotificationService.start();
 
-        LOGGER.info("Load balancer running.");
+        LOGGER.info("Load balancer is running.");
     }
 }

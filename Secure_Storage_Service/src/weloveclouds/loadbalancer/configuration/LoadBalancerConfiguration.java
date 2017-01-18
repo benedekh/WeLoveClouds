@@ -10,12 +10,14 @@ public class LoadBalancerConfiguration {
     private int ecsNotificationServicePort;
     private int healthMonitoringServicePort;
     private int clientRequestInterceptorPort;
+    private int ecsNotificationResponsePort;
 
     LoadBalancerConfiguration(LoadBalancerConfigurationBuilder builder) {
         this.host = builder.host;
         this.ecsNotificationServicePort = builder.ecsNotificationServicePort;
         this.healthMonitoringServicePort = builder.healthMonitoringServicePort;
         this.clientRequestInterceptorPort = builder.clientRequestInterceptorPort;
+        this.ecsNotificationResponsePort = builder.ecsNotificationResponsePort;
     }
 
     public String getHost() {
@@ -34,11 +36,16 @@ public class LoadBalancerConfiguration {
         return clientRequestInterceptorPort;
     }
 
+    public int getEcsNotificationResponsePort() {
+        return ecsNotificationResponsePort;
+    }
+
     public static class LoadBalancerConfigurationBuilder {
         private String host;
         private int ecsNotificationServicePort;
         private int healthMonitoringServicePort;
         private int clientRequestInterceptorPort;
+        private int ecsNotificationResponsePort;
 
         public LoadBalancerConfigurationBuilder host(String host) {
             this.host = host;
@@ -57,6 +64,11 @@ public class LoadBalancerConfiguration {
 
         public LoadBalancerConfigurationBuilder clientRequestInterceptorPort(int clientRequestInterceptorPort) {
             this.clientRequestInterceptorPort = clientRequestInterceptorPort;
+            return this;
+        }
+
+        public LoadBalancerConfigurationBuilder ecsNotificationResponsePort(int ecsNotificationResponsePort) {
+            this.ecsNotificationResponsePort = ecsNotificationResponsePort;
             return this;
         }
 

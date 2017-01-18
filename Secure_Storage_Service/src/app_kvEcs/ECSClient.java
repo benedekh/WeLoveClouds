@@ -22,7 +22,7 @@ public class ECSClient {
 
     public static void main(String[] args) throws Exception {
         try {
-            new LogSetup(LOG_FILE, Level.OFF);
+            new LogSetup(LOG_FILE, Level.INFO);
             ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
             EcsExecutionContext.setConfigurationFilePath(args[0]);
 

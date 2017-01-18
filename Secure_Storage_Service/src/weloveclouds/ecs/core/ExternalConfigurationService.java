@@ -78,17 +78,16 @@ public class ExternalConfigurationService implements Observer {
                                         EcsBatchFactory ecsBatchFactory,
                                         INotificationService<IKVEcsNotificationMessage> notificationService)
             throws ServiceBootstrapException {
+        this.status = UNINITIALIZED;
         this.taskService = taskService;
         this.notificationService = notificationService;
-
         this.ecsRepositoryFactory = ecsRepositoryFactory;
         this.ecsBatchFactory = ecsBatchFactory;
-
         this.configurationFilePath = EcsExecutionContext.getConfigurationFilePath();
+        this.distributedService = new DistributedService();
 
         bootstrapConfiguration();
-        this.status = UNINITIALIZED;
-        this.distributedService = new DistributedService();
+        this.notificationService.start();
     }
 
     public void startLoadBalancer() throws ExternalConfigurationServiceException {

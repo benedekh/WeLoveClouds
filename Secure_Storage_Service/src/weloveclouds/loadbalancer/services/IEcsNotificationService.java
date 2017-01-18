@@ -8,7 +8,5 @@ import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
 public interface IEcsNotificationService {
     void requestSystemScale();
 
-    void notifyUnresponsiveServer(String unresponsiveServerName);
-
     void notify(IKVEcsNotificationMessage kvEcsNotificationMessage);
 }

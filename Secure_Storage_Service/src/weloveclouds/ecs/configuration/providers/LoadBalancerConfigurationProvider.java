@@ -44,6 +44,7 @@ public class LoadBalancerConfigurationProvider {
                             (HEALTH_MONITORING_SERVICE_PORT_PROPERTIES)))
                     .clientRequestInterceptorPort(Integer.parseInt(properties.getProperty
                             (CLIENT_REQUEST_INTERCEPTOR_PORT_PROPERTIES)))
+                    .ecsNotificationResponsePort(NotificationServiceConfigurationProvider.getNotificationServicePort())
                     .build();
         } catch (Exception e) {
             throw new InvalidLoadBalancerConfigurationException();
