@@ -57,6 +57,11 @@ public class LoadBalancer extends AbstractNode implements INotifiable {
     }
 
     @Override
+    public String getIpAddress() {
+        return serverConnectionInfo.getIpAddress().getCanonicalHostName();
+    }
+
+    @Override
     public String toString() {
         return StringUtils.join(" ",
                 "Name:", this.name, "\n",

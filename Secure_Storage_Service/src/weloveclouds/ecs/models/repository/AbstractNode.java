@@ -42,7 +42,7 @@ public abstract class AbstractNode {
     }
 
     public String getIpAddress() {
-        return serverConnectionInfo.getIpAddress().toString();
+        return serverConnectionInfo.getIpAddress().toString().replace("/", "");
     }
 
     public int getPort() {
