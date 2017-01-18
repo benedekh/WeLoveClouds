@@ -27,8 +27,8 @@ public class Stats extends AbstractEcsClientCommand {
             StringBuffer stringBuffer = new StringBuffer();
             stringBuffer.append("\n--------------------        ECS       --------------------\n");
             stringBuffer.append(" Status: " + ecsStatistics.getStatus() + "\n");
-            stringBuffer.append("--------------------  LOAD BALANCER " +
-                    "  --------------------\n");
+            stringBuffer.append("--------------------  LOAD  BALANCER " +
+                    " --------------------\n");
             if (ecsStatistics.getLoadBalancer() != null) {
                 stringBuffer.append(StringUtils.join(" ",
                         ecsStatistics.getLoadBalancer().toString(), "\n"));
