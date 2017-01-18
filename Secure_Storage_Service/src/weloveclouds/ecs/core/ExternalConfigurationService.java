@@ -29,9 +29,10 @@ import weloveclouds.commons.monitoring.statsd.IStatsdClient;
 import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.utils.ListUtils;
+import weloveclouds.ecs.configuration.providers.LoadBalancerConfigurationProvider;
 import weloveclouds.ecs.contexts.EcsExecutionContext;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
-import weloveclouds.ecs.exceptions.InvalidConfigurationException;
+import weloveclouds.ecs.exceptions.configuration.InvalidConfigurationException;
 import weloveclouds.ecs.exceptions.ServiceBootstrapException;
 import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
 import weloveclouds.ecs.models.messaging.notification.KVEcsNotificationMessage;
@@ -50,6 +51,7 @@ import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.ecs.services.INotificationService;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.RingMetadataHelper;
+import weloveclouds.loadbalancer.models.LoadBalancerConfiguration;
 
 /**
  * Created by Benoit on 2016-11-16.
@@ -253,9 +255,12 @@ public class ExternalConfigurationService implements Observer {
 
     private void bootstrapConfiguration() throws ServiceBootstrapException {
         try {
+            LoadBalancerConfiguration loadBalancerConfiguration =
+                    LoadBalancerConfigurationProvider.getInstance().getLoadBalancerConfiguration();
             repository =
-                    ecsRepositoryFactory.createEcsRepositoryFrom(new File(configurationFilePath));
-        } catch (InvalidConfigurationException ex) {
+                    ecsRepositoryFactory.createEcsRepositoryFrom(new File(configurationFilePath),
+                            loadBalancerConfiguration);
+        } catch (InvalidConfigurationException | IOException ex) {
             throw new ServiceBootstrapException(
                     "Bootstrap failed. Unable to start the service : " + ex.getMessage(), ex);
         }

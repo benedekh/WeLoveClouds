@@ -4,16 +4,14 @@ import com.google.inject.Inject;
 
 import java.util.Arrays;
 
-import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
-import weloveclouds.ecs.models.messaging.notification.INotifiable;
 import weloveclouds.ecs.models.messaging.notification.INotificationRequest;
-import weloveclouds.ecs.models.repository.Loadbalancer;
+import weloveclouds.ecs.models.repository.LoadBalancer;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.ssh.SecureShellServiceFactory;
 import weloveclouds.commons.hashing.models.RingMetadata;
@@ -35,7 +33,7 @@ public class EcsInternalCommandFactory {
         this.secureShellServiceFactory = secureShellServiceFactory;
     }
 
-    public LaunchJar createLaunchLoadbalancerJarCommandWith(Loadbalancer loadbalancer,
+    public LaunchJar createLaunchLoadbalancerJarCommandWith(LoadBalancer loadbalancer,
                                                             String jarFilePath) {
         return new LaunchJar.Builder()
                 .jarFilePath(jarFilePath)
@@ -45,7 +43,7 @@ public class EcsInternalCommandFactory {
                 .build();
     }
 
-    public LaunchJar createLaunchStorageNodesJarsCommandWith(Loadbalancer loadbalancer,
+    public LaunchJar createLaunchStorageNodesJarsCommandWith(LoadBalancer loadbalancer,
                                                              StorageNode storageNode,
                                                              String jarFilePath, int cacheSize,
                                                              String displacementStrategy) {

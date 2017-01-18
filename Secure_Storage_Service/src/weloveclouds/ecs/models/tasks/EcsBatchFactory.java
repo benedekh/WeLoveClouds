@@ -16,7 +16,7 @@ import weloveclouds.ecs.models.commands.internal.StartNode;
 import weloveclouds.ecs.models.commands.internal.StopNode;
 import weloveclouds.ecs.models.commands.internal.UpdateMetadata;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
-import weloveclouds.ecs.models.repository.Loadbalancer;
+import weloveclouds.ecs.models.repository.LoadBalancer;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
@@ -50,7 +50,7 @@ public class EcsBatchFactory {
     }
 
     public AbstractBatchTasks<AbstractRetryableTask> createServiceInitialisationBatchWith(
-            Loadbalancer loadbalancer, List<StorageNode> nodesToInitialize, int cacheSize, String
+            LoadBalancer loadbalancer, List<StorageNode> nodesToInitialize, int cacheSize, String
             displacementStrategy) {
         List<AbstractCommand> successCommands = new ArrayList<>();
         AbstractBatchTasks<AbstractRetryableTask> serviceInitialisationBatch = new
@@ -108,7 +108,7 @@ public class EcsBatchFactory {
         return nodeShutdownBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createAddNodeBatchFrom(Loadbalancer
+    public AbstractBatchTasks<AbstractRetryableTask> createAddNodeBatchFrom(LoadBalancer
                                                                                     loadbalancer,
                                                                             AddNodeTaskDetails
                                                                                     addNodeTaskDetails) {

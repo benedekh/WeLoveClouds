@@ -22,6 +22,7 @@ public class StorageNode extends AbstractNode {
     private HashRange hashRange;
     private List<StorageNode> replicas;
     private List<HashRange> childHashRanges;
+    protected Hash hashKey;
 
     private StorageNode(Builder storageNodeBuilder) {
         this.status = IDLE;
@@ -49,6 +50,10 @@ public class StorageNode extends AbstractNode {
         if (healthInfos != null) {
             this.healthInfos = healthInfos;
         }
+    }
+
+    public Hash getHashKey() {
+        return hashKey;
     }
 
     public HashRange getHashRange() {

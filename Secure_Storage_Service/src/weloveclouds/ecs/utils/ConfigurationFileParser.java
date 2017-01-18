@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.ecs.exceptions.InvalidConfigurationException;
+import weloveclouds.ecs.exceptions.configuration.InvalidConfigurationException;
 import weloveclouds.ecs.models.repository.StorageNode;
 
 /**
