@@ -104,7 +104,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
                     try {
                         Instant start = Instant.now();
                         String value = super.getValue(key);
-                        recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
+                        recordExecutionTime(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, EXEC_TIME,
                                 new Duration(start, Instant.now()));
                         incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, SUCCESS);
                         return value;
