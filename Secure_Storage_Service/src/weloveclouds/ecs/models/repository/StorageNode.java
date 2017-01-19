@@ -130,7 +130,12 @@ public class StorageNode extends AbstractNode {
     }
 
     public String toString() {
-        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status);
+        String hashRangeAsString = "";
+        if (hashRange != null) {
+            hashRangeAsString = hashRange.toString();
+        }
+        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status, "Write " +
+                "range:", hashRangeAsString);
     }
 
     public static class Builder {

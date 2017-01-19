@@ -38,6 +38,7 @@ public class LoadbalancerClient {
         } catch (Exception ex) {
             userOutput.writeLine(ex.getMessage());
             LOGGER.error(ex.getMessage());
+            System.exit(1);
         }
     }
 }

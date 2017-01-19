@@ -30,7 +30,6 @@ import weloveclouds.commons.monitoring.statsd.IStatsdClient;
 import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.commons.utils.ListUtils;
-import weloveclouds.ecs.configuration.providers.LoadBalancerConfigurationProvider;
 import weloveclouds.ecs.contexts.EcsExecutionContext;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
 import weloveclouds.ecs.exceptions.configuration.InvalidConfigurationException;
@@ -64,7 +63,6 @@ public class ExternalConfigurationService implements Observer {
             StatsdClientFactory.createStatdClientFromEnvironment();
 
     private EcsStatus status;
-    private String configurationFilePath;
     private EcsRepository repository;
     private EcsRepositoryFactory ecsRepositoryFactory;
     private ITaskService taskService;
@@ -85,10 +83,10 @@ public class ExternalConfigurationService implements Observer {
         this.notificationService = notificationService;
         this.ecsRepositoryFactory = ecsRepositoryFactory;
         this.ecsBatchFactory = ecsBatchFactory;
-        this.configurationFilePath = EcsExecutionContext.getConfigurationFilePath();
         this.distributedService = new DistributedService();
 
-        bootstrapConfiguration(loadBalancerConfiguration);
+        bootstrapConfiguration(EcsExecutionContext.getConfigurationFilePath(),
+                loadBalancerConfiguration);
         this.notificationService.start();
     }
 
@@ -245,7 +243,7 @@ public class ExternalConfigurationService implements Observer {
         taskService.launchBatchTasks(nodeMetadataInitialisationBatch);
         status = EcsStatus.UPDATING_METADATA;
 
-        notifyLoadbalancerForTopologyChanges();
+        notifyLoadBalancerForTopologyChanges();
     }
 
     private void updateNodesWithMetadata() {
@@ -257,11 +255,11 @@ public class ExternalConfigurationService implements Observer {
         taskService.launchBatchTasks(nodeMetadataUpdateBatch);
         status = EcsStatus.UPDATING_METADATA;
 
-        notifyLoadbalancerForTopologyChanges();
+        notifyLoadBalancerForTopologyChanges();
     }
 
     @SuppressWarnings("unchecked")
-    private void notifyLoadbalancerForTopologyChanges() {
+    private void notifyLoadBalancerForTopologyChanges() {
         notificationService.process(new NotificationRequest.Builder<IKVEcsNotificationMessage>()
                 .target(repository.getLoadbalancer())
                 .notificationMessage(new KVEcsNotificationMessage.Builder()
@@ -280,11 +278,11 @@ public class ExternalConfigurationService implements Observer {
                 .build();
     }
 
-    private void bootstrapConfiguration(LoadBalancerConfiguration loadBalancerConfiguration) throws
-            ServiceBootstrapException {
+    private void bootstrapConfiguration(String ecsConfigurationFilePath, LoadBalancerConfiguration
+            loadBalancerConfiguration) throws ServiceBootstrapException {
         try {
             repository =
-                    ecsRepositoryFactory.createEcsRepositoryFrom(new File(configurationFilePath),
+                    ecsRepositoryFactory.createEcsRepositoryFrom(new File(ecsConfigurationFilePath),
                             loadBalancerConfiguration);
         } catch (InvalidConfigurationException ex) {
             throw new ServiceBootstrapException(
