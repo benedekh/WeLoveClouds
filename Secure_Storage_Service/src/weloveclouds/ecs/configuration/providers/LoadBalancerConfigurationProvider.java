@@ -1,29 +1,36 @@
 package weloveclouds.ecs.configuration.providers;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import weloveclouds.commons.configuration.annotations.LoadBalancerDnsName;
 import weloveclouds.ecs.exceptions.configuration.InvalidLoadBalancerConfigurationException;
 import weloveclouds.loadbalancer.configuration.LoadBalancerConfiguration;
 
 /**
  * Created by Benoit on 2017-01-18.
  */
+@Singleton
 public class LoadBalancerConfigurationProvider {
     private static final String LOADBALANCER_PROPERTIES_FILE_PATH = "./loadbalancer.properties";
-    private static final String HOST_PROPERTIES = "host";
     private static final String ECS_NOTIFICATION_SERVICE_PORT_PROPERTIES =
             "ecsNotificationServicePort";
     private static final String CLIENT_REQUEST_INTERCEPTOR_PORT_PROPERTIES = "clientRequestInterceptorPort";
     private static final String HEALTH_MONITORING_SERVICE_PORT_PROPERTIES =
             "healthMonitoringServicePort";
-    private static LoadBalancerConfigurationProvider INSTANCE = null;
 
     private Properties properties;
+    private String loadBalancerDnsName;
     private LoadBalancerConfiguration loadBalancerConfiguration;
 
-    private LoadBalancerConfigurationProvider() throws IOException, InvalidLoadBalancerConfigurationException {
+    @Inject
+    public LoadBalancerConfigurationProvider(@LoadBalancerDnsName String loadBalancerDnsName)
+            throws IOException, InvalidLoadBalancerConfigurationException {
+        this.loadBalancerDnsName = loadBalancerDnsName;
         loadConfiguration();
     }
 
@@ -37,7 +44,7 @@ public class LoadBalancerConfigurationProvider {
             properties = new Properties();
             properties.load(loadBalancerPropertiesFile);
             loadBalancerConfiguration = new LoadBalancerConfiguration.LoadBalancerConfigurationBuilder()
-                    .host(properties.getProperty(HOST_PROPERTIES))
+                    .host(loadBalancerDnsName)
                     .ecsNotificationServicePort(Integer.parseInt(properties.getProperty
                             (ECS_NOTIFICATION_SERVICE_PORT_PROPERTIES)))
                     .healthMonitoringServicePort(Integer.parseInt(properties.getProperty
@@ -49,12 +56,5 @@ public class LoadBalancerConfigurationProvider {
         } catch (Exception e) {
             throw new InvalidLoadBalancerConfigurationException();
         }
-    }
-
-    public static LoadBalancerConfigurationProvider getInstance() throws IOException, InvalidLoadBalancerConfigurationException {
-        if (INSTANCE == null) {
-            INSTANCE = new LoadBalancerConfigurationProvider();
-        }
-        return INSTANCE;
     }
 }

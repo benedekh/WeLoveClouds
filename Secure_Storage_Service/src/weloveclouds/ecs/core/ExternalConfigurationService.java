@@ -76,7 +76,9 @@ public class ExternalConfigurationService implements Observer {
     public ExternalConfigurationService(ITaskService taskService,
                                         EcsRepositoryFactory ecsRepositoryFactory,
                                         EcsBatchFactory ecsBatchFactory,
-                                        INotificationService<IKVEcsNotificationMessage> notificationService)
+                                        INotificationService<IKVEcsNotificationMessage>
+                                                notificationService,
+                                        LoadBalancerConfiguration loadBalancerConfiguration)
             throws ServiceBootstrapException {
         this.status = UNINITIALIZED;
         this.taskService = taskService;
@@ -86,7 +88,7 @@ public class ExternalConfigurationService implements Observer {
         this.configurationFilePath = EcsExecutionContext.getConfigurationFilePath();
         this.distributedService = new DistributedService();
 
-        bootstrapConfiguration();
+        bootstrapConfiguration(loadBalancerConfiguration);
         this.notificationService.start();
     }
 
@@ -278,14 +280,13 @@ public class ExternalConfigurationService implements Observer {
                 .build();
     }
 
-    private void bootstrapConfiguration() throws ServiceBootstrapException {
+    private void bootstrapConfiguration(LoadBalancerConfiguration loadBalancerConfiguration) throws
+            ServiceBootstrapException {
         try {
-            LoadBalancerConfiguration loadBalancerConfiguration =
-                    LoadBalancerConfigurationProvider.getInstance().getLoadBalancerConfiguration();
             repository =
                     ecsRepositoryFactory.createEcsRepositoryFrom(new File(configurationFilePath),
                             loadBalancerConfiguration);
-        } catch (InvalidConfigurationException | IOException ex) {
+        } catch (InvalidConfigurationException ex) {
             throw new ServiceBootstrapException(
                     "Bootstrap failed. Unable to start the service : " + ex.getMessage(), ex);
         }
