@@ -133,11 +133,21 @@ public class KVEcsNotificationMessageDeserializer
 
     private IKVEcsNotificationMessage validateDeserializedMessage(
             IKVEcsNotificationMessage deserializedMessage) throws DeserializationException {
-        if (deserializedMessage.getRingTopology() == null
-                && deserializedMessage.getNodeHealthInfos() == null) {
-            throw new DeserializationException("Invalid ecs notification message");
-        } else {
-            return deserializedMessage;
+        switch (deserializedMessage.getStatus()) {
+            case TOPOLOGY_UPDATE:
+                if (deserializedMessage.getRingTopology() == null) {
+                    throw new DeserializationException("Invalid ecs notification message: " +
+                            "Topology update message should contains a ring topology.");
+                }
+                break;
+            case UNRESPONSIVE_NODES_REPORTING:
+                if (deserializedMessage.getUnresponsiveNodeNames().isEmpty()) {
+                    throw new DeserializationException("Invalid ecs notification message: " +
+                            "Unresponsive node reporting message should contains at leat one " +
+                            "unresponsive node name");
+                }
+                break;
         }
+        return deserializedMessage;
     }
 }

@@ -72,6 +72,7 @@ public class NodeHealthWatcher extends Thread {
                         nodeFailureDetected = true;
                         LOGGER.info(StringUtils.join(" ", "Node :", heartbeat.getKey(), "failed"));
                         ecsNotificationBuilder.addUnresponsiveNodeName(heartbeat.getKey());
+                        heartbeatHistory.remove(heartbeat.getKey());
                     }
                 }
             } finally {

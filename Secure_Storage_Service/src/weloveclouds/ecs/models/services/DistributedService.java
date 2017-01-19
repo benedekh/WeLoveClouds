@@ -99,21 +99,10 @@ public class DistributedService {
         return storageNode;
     }
 
-    public StorageNode getNodeFrom(ServerConnectionInfo serverConnectionInfo) {
-        StorageNode storageNode = null;
-
-        for (StorageNode node : getParticipatingNodes()) {
-            if (node.getServerConnectionInfo().equals(serverConnectionInfo)) {
-                storageNode = node;
-                break;
-            }
-        }
-        return storageNode;
-    }
-
     public void updateTopologyWith(RingTopology newTopology) {
         if (newTopology != null) {
             topology.updateWith(newTopology);
+            resetNodesReplicasAndReadRangesFrom(newTopology);
             computeAndUpdateNodesRangesFrom(topology);
             updateRingMetadataFrom(topology);
         }
@@ -131,6 +120,13 @@ public class DistributedService {
         computeAndUpdateNodesRangesFrom(topology);
         updateRingMetadataFrom(topology);
         status = INITIALIZED;
+    }
+
+    private void resetNodesReplicasAndReadRangesFrom(RingTopology<StorageNode> ringTopology) {
+        for (StorageNode node : ringTopology.getNodes()) {
+            node.clearChildHashRanges();
+            node.clearReplicas();
+        }
     }
 
     private void computeAndUpdateNodesRangesFrom(RingTopology<StorageNode> ringTopology) {

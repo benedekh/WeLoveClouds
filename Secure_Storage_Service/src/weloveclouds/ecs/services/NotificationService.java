@@ -17,6 +17,7 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.configuration.annotations.NotificationServiceMaxRetry;
 import weloveclouds.ecs.configuration.annotations.NotificationServicePort;
 import weloveclouds.ecs.models.commands.internal.EcsInternalCommandFactory;
@@ -32,6 +33,9 @@ import static weloveclouds.commons.status.ServerStatus.RUNNING;
 @Singleton
 public class NotificationService extends AbstractServer<IKVEcsNotificationMessage> implements
         INotificationService<IKVEcsNotificationMessage> {
+    private static final int DEFAULT_CACHE_SIZE = 200;
+    private static final String DEEFAULT_CACHE_DISPLACEMENT_STRATEGY = "LFU";
+    private IKVEcsApi ecsCoreApi;
     private ITaskService taskService;
     private EcsInternalCommandFactory ecsInternalCommandFactory;
     private int maximumNumberOfNotificationSendRetry;
@@ -45,6 +49,7 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
                                        kvEcsNotificationMessageDeserializer,
                                ITaskService taskService,
                                EcsInternalCommandFactory ecsInternalCommandFactory,
+                               IKVEcsApi ecsCoreApi,
                                @NotificationServicePort int port,
                                @NotificationServiceMaxRetry int maximumNumberOfNotificationSendRetry)
             throws IOException {
@@ -53,6 +58,7 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
         this.logger = Logger.getLogger(NotificationService.class);
         this.taskService = taskService;
         this.ecsInternalCommandFactory = ecsInternalCommandFactory;
+        this.ecsCoreApi = ecsCoreApi;
         this.maximumNumberOfNotificationSendRetry = maximumNumberOfNotificationSendRetry;
     }
 
@@ -104,12 +110,26 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
 
         @Override
         public void run() {
-            logger.info("Client is connected to server.");
+            //logger.info("Client is connected to server.");
+            logger.info("Received message from load balancer");
             try {
                 while (connection.isConnected()) {
-                    byte[] receivedMessage = communicationApi.receiveFrom(connection);
+                    IKVEcsNotificationMessage receivedMessage = messageDeserializer.deserialize
+                            (communicationApi.receiveFrom(connection));
+                    switch (receivedMessage.getStatus()) {
+                        case UNRESPONSIVE_NODES_REPORTING:
+                            logger.info("Unresponsive node");
+                            ecsCoreApi.addNode(DEFAULT_CACHE_SIZE, DEEFAULT_CACHE_DISPLACEMENT_STRATEGY);
+                            logger.info("Added node");
+                            break;
+                        case SCALE_REQUEST:
+                            ecsCoreApi.addNode(DEFAULT_CACHE_SIZE, DEEFAULT_CACHE_DISPLACEMENT_STRATEGY);
+                            break;
+                        default:
+                            //
+                            break;
+                    }
                     logger.info("Received message from load balancer");
-                    logger.info(new String(receivedMessage));
                 }
             } catch (Throwable e) {
                 logger.error(e);

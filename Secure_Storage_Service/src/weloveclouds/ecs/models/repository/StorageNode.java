@@ -88,10 +88,6 @@ public class StorageNode extends AbstractNode {
         this.childHashRanges.add(childHashRange);
     }
 
-    public void removeChildHashRange(HashRange childHashRange) {
-        this.childHashRanges.remove(childHashRange);
-    }
-
     public void clearChildHashRanges() {
         this.childHashRanges.clear();
     }
@@ -104,25 +100,8 @@ public class StorageNode extends AbstractNode {
         replicas.add(node);
     }
 
-    public void removeReplica(StorageNode node) {
-        replicas.remove(node);
-    }
-
     public void clearReplicas() {
         this.replicas.clear();
-    }
-
-    public boolean isReadResponsibleOf(Hash hash) {
-        if (isWriteResponsibleOf(hash)) {
-            return true;
-        }
-
-        for (HashRange hashRange : childHashRanges) {
-            if (hashRange.contains(hash)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean isWriteResponsibleOf(Hash hash) {
