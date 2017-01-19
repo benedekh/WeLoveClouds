@@ -56,11 +56,11 @@ public class DistributedSystemAccessService {
             if (distributedService.getStatus() != INITIALIZED) {
                 reentrantReadWriteLock.writeLock().lock();
                 distributedService.initializeWith(ringTopology);
-                LOGGER.debug("Loadbalancer topology initialized");
+                LOGGER.debug("LoadBalancer topology initialized");
             } else {
                 reentrantReadWriteLock.writeLock().lock();
                 distributedService.updateTopologyWith(ringTopology);
-                LOGGER.debug("Loadbalancer topology updated");
+                LOGGER.debug("LoadBalancer topology updated");
             }
         } finally {
             reentrantReadWriteLock.writeLock().unlock();

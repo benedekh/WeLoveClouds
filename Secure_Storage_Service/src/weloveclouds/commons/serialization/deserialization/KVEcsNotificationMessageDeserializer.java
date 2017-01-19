@@ -3,9 +3,13 @@ package weloveclouds.commons.serialization.deserialization;
 import static weloveclouds.commons.serialization.models.SerializedMessage.MESSAGE_ENCODING;
 import static weloveclouds.commons.serialization.models.XMLTokens.KVECS_NOTIFICATION_MESSAGE;
 import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
+import static weloveclouds.commons.serialization.models.XMLTokens.UNRESPONSIVE_NODES_NAME;
+import static weloveclouds.commons.serialization.models.XMLTokens.UNRESPONSIVE_NODE_NAME;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
@@ -24,7 +28,7 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link IKVEcsNotificationMessage},
- * 
+ *
  * @author Benoit
  */
 public class KVEcsNotificationMessageDeserializer
@@ -55,7 +59,9 @@ public class KVEcsNotificationMessageDeserializer
                 return validateDeserializedMessage(new KVEcsNotificationMessage.Builder()
                         .status(deserializeStatusFrom(message))
                         .nodeHealthInfos(deserializeNodeHealthInfosFrom(message))
-                        .ringTopology(deserializeRingTopologyFrom(message)).build());
+                        .ringTopology(deserializeRingTopologyFrom(message))
+                        .unresponsiveNodesName(deserializeUnresponsiveNodesNameFrom(message))
+                        .build());
             } else {
                 throw new DeserializationException("Unable to deserialize message: "
                         + new String(serializedMessage.getBytes(), MESSAGE_ENCODING));
@@ -101,6 +107,28 @@ public class KVEcsNotificationMessageDeserializer
         } catch (DeserializationException e) {
             return null;
         }
+    }
+
+    private List<String> deserializeUnresponsiveNodesNameFrom(String serializedMessage)
+            throws DeserializationException {
+        Matcher unresponsiveNodesNameMatcher = getRegexFromToken(UNRESPONSIVE_NODES_NAME)
+                .matcher(serializedMessage);
+        List<String> unresponsiveNodesName = new ArrayList<>();
+
+        try {
+            if (unresponsiveNodesNameMatcher.find()) {
+                Matcher unresponsiveNodeNameMatcher =
+                        getRegexFromToken(UNRESPONSIVE_NODE_NAME)
+                                .matcher(unresponsiveNodesNameMatcher.group(XML_NODE));
+                while (unresponsiveNodeNameMatcher.find()) {
+                    unresponsiveNodesName.add(unresponsiveNodeNameMatcher.group(XML_NODE));
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            throw new DeserializationException("Error while desializing unresponsive nodes name " +
+                    "for message: " + serializedMessage);
+        }
+        return unresponsiveNodesName;
     }
 
     private IKVEcsNotificationMessage validateDeserializedMessage(

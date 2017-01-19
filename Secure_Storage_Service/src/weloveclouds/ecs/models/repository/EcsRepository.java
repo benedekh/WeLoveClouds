@@ -13,22 +13,15 @@ import static weloveclouds.ecs.models.repository.NodeStatus.UNSYNCHRONIZED;
  * Created by Benoit on 2016-11-16.
  */
 public class EcsRepository {
-    Loadbalancer loadbalancer;
+    LoadBalancer loadbalancer;
     List<StorageNode> storageNodes;
 
-    public EcsRepository(List<StorageNode> storageNodes) {
+    public EcsRepository(List<StorageNode> storageNodes, LoadBalancer loadbalancer) {
         this.storageNodes = new ArrayList<>(storageNodes);
-        initRepository();
+        this.loadbalancer = loadbalancer;
     }
 
-    private void initRepository() {
-        StorageNode loadbalancerElect = (StorageNode) ListUtils.getRandomObjectFrom
-                (getNodesWithStatus(IDLE));
-        this.storageNodes.remove(loadbalancerElect);
-        this.loadbalancer = new Loadbalancer(loadbalancerElect);
-    }
-
-    public Loadbalancer getLoadbalancer() {
+    public LoadBalancer getLoadbalancer() {
         return this.loadbalancer;
     }
 

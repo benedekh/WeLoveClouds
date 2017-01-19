@@ -1,6 +1,5 @@
 package weloveclouds.ecs.models.repository;
 
-import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
@@ -13,7 +12,6 @@ public abstract class AbstractNode {
     protected ServerConnectionInfo serverConnectionInfo;
     protected ServerConnectionInfo ecsChannelConnectionInfo;
     protected NodeHealthInfos healthInfos;
-    protected Hash hashKey;
 
     public String getName() {
         return name;
@@ -43,12 +41,8 @@ public abstract class AbstractNode {
         return healthInfos;
     }
 
-    public Hash getHashKey() {
-        return hashKey;
-    }
-
     public String getIpAddress() {
-        return serverConnectionInfo.getIpAddress().toString();
+        return serverConnectionInfo.getIpAddress().toString().replace("/", "");
     }
 
     public int getPort() {

@@ -72,7 +72,7 @@ public class ArgumentsValidator {
      * (7) the argument at the position {@value #CLI_LOADBALANCER_IP_INDEX} is a valid IP address,
      * and<br>
      * (8) the argument at the position {value #CLI_LOADBALANCER_PORT_INDEX} is a valid port
-     * 
+     *
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateCLIArgumentsForServerStart(String[] arguments)
@@ -85,7 +85,7 @@ public class ArgumentsValidator {
                     REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER,
                     " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level> <server name>"));
         } else {
-            validateCacheSizeArguments(new String[] {arguments[CLI_CACHE_SIZE_INDEX]});
+            validateCacheSizeArguments(new String[]{arguments[CLI_CACHE_SIZE_INDEX]});
             validatePort(command, arguments[CLI_KVCLIENT_PORT_INDEX]);
             validatePort(command, arguments[CLI_KVSERVER_PORT_INDEX]);
             validatePort(command, arguments[CLI_KVECS_PORT_INDEX]);
@@ -111,13 +111,13 @@ public class ArgumentsValidator {
 
     /**
      * The arguments are valid if:
-     * 
+     *
      * (1) The first {@value #REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER} number of arguments
      * are valid, and<br>
      * (2) the argument at the position {@link #CLI_LOADBALANCER_IP_INDEX} is a valid IP address,
      * and<br>
      * (3) the argument at the position {@link #CLI_LOADBALANCER_PORT_INDEX} is a valid port
-     * 
+     *
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateCLIArgumentsWithLoadbalancerForServerStart(String[] arguments)
@@ -131,13 +131,13 @@ public class ArgumentsValidator {
                     " arguments are needed: <KVClient port> <KVServer port> <KVECS port> <cache size> <displacementStrategy> <log level> <server name> <loadbalancer IP address> <loadbalancer port>"));
         } else {
             validateCLIArgumentsForServerStart(Arrays.copyOfRange(arguments, 0,
-                    REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER - 1));
+                    REQUIRED_CLI_ARGUMENT_NUMBER_WITHOUT_LOADBALANCER));
             validatePort(command, arguments[CLI_LOADBALANCER_PORT_INDEX]);
             try {
                 InetAddress.getByName(arguments[CLI_LOADBALANCER_IP_INDEX]);
             } catch (UnknownHostException ex) {
                 logWarning(command);
-                throw new IllegalArgumentException("Loadbalancer IP address is unknown.");
+                throw new IllegalArgumentException("LoadBalancer IP address is unknown.");
             }
         }
     }
@@ -146,7 +146,7 @@ public class ArgumentsValidator {
      * A start command is valid, if:<br>
      * (1) it does not have any arguments, and <br>
      * (2) every field of the context object was initialized.
-     * 
+     *
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateStartArguments(String[] arguments, KVServerCLIContext context)
@@ -179,7 +179,7 @@ public class ArgumentsValidator {
      * (1) the {@value #STORAGE_PATH_INDEX} location parameter of arguments is a valid path, and
      * <br>
      * (2) this is the only argument of the command
-     * 
+     *
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateStoragePathArguments(String[] arguments)
@@ -206,7 +206,7 @@ public class ArgumentsValidator {
      * A cache size command is valid, if:<br>
      * (1) the {@value #CACHE_SIZE_INDEX} location parameter of arguments is a valid number, and<br>
      * (2) this is the only argument of the command
-     * 
+     *
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateCacheSizeArguments(String[] arguments)
@@ -232,7 +232,7 @@ public class ArgumentsValidator {
 
     /**
      * A quit command is valid, if it does not contain any argument.
-     * 
+     *
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateQuitArguments(String[] arguments) throws IllegalArgumentException {
@@ -244,10 +244,10 @@ public class ArgumentsValidator {
 
     /**
      * A port command is valid, if:<br>
-     * (1) the {@value #PORT_SIZE_INDEX} location parameter of arguments is a valid port number, and
+     * (1) the {@value #} location parameter of arguments is a valid port number, and
      * <br>
      * (2) this is the only argument of the command
-     * 
+     *
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validatePortArguments(String[] arguments) throws IllegalArgumentException {
@@ -264,9 +264,8 @@ public class ArgumentsValidator {
     /**
      * A port is valid, if it is a valid port number.
      *
-     * @param command the name of the command which requires this validation
+     * @param command      the name of the command which requires this validation
      * @param portAsString the port number encoded as a string
-     * 
      * @throws IllegalArgumentException if a validation error occurs
      */
     private static void validatePort(String command, String portAsString) {
@@ -314,7 +313,7 @@ public class ArgumentsValidator {
      * (1) the {@value #STRATEGY_INDEX} location parameter of arguments is a name for a displacement
      * strategy, and <br>
      * (2) this is the only argument of the command
-     * 
+     *
      * @throws IllegalArgumentException if a validation error occurs
      */
     public static void validateStrategyArguments(String[] arguments)
@@ -335,7 +334,7 @@ public class ArgumentsValidator {
 
     /**
      * A help command is valid, if it does not contain any argument.
-     * 
+     *
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateHelpArguments(String[] arguments) throws IllegalArgumentException {
@@ -354,11 +353,10 @@ public class ArgumentsValidator {
 
     /**
      * Logs a warning message by the logger.
-     * 
+     *
      * @param command which command sent the warning
      */
     private static void logWarning(String command) {
         LOGGER.warn(StringUtils.join(" ", command, "command is invalid."));
     }
-
 }

@@ -22,26 +22,29 @@ public class StorageNode extends AbstractNode {
     private HashRange hashRange;
     private List<StorageNode> replicas;
     private List<HashRange> childHashRanges;
+    private ServerConnectionInfo kvChannelConnectionInfo;
+    private Hash hashKey;
 
-    private StorageNode(Builder storageNodeBuilder) {
+    private StorageNode(Builder builder) {
         this.status = IDLE;
         this.metadataStatus = UNSYNCHRONIZED;
-        this.name = storageNodeBuilder.name;
-        this.serverConnectionInfo = storageNodeBuilder.serverConnectionInfo;
-        this.hashKey = storageNodeBuilder.hashKey;
-        this.hashRange = storageNodeBuilder.hashRange;
-        this.ecsChannelConnectionInfo = storageNodeBuilder.ecsChannelConnectionInfo;
-        this.replicas = storageNodeBuilder.replicas;
-        this.childHashRanges = storageNodeBuilder.childHashRanges;
-        this.previousHashRange = storageNodeBuilder.previousHashRange;
+        this.name = builder.name;
+        this.serverConnectionInfo = builder.serverConnectionInfo;
+        this.ecsChannelConnectionInfo = builder.ecsChannelConnectionInfo;
+        this.kvChannelConnectionInfo = builder.kvChannelConnectionInfo;
+        this.hashKey = builder.hashKey;
+        this.hashRange = builder.hashRange;
+        this.replicas = builder.replicas;
+        this.childHashRanges = builder.childHashRanges;
+        this.previousHashRange = builder.previousHashRange;
 
-        if (storageNodeBuilder.healthInfos == null) {
+        if (builder.healthInfos == null) {
             this.healthInfos = new NodeHealthInfos.Builder()
                     .nodeName(name)
                     .nodeStatus(HALTED)
                     .build();
         } else {
-            this.healthInfos = storageNodeBuilder.healthInfos;
+            this.healthInfos = builder.healthInfos;
         }
     }
 
@@ -49,6 +52,14 @@ public class StorageNode extends AbstractNode {
         if (healthInfos != null) {
             this.healthInfos = healthInfos;
         }
+    }
+
+    public ServerConnectionInfo getKvChannelConnectionInfo() {
+        return kvChannelConnectionInfo;
+    }
+
+    public Hash getHashKey() {
+        return hashKey;
     }
 
     public HashRange getHashRange() {
@@ -119,13 +130,19 @@ public class StorageNode extends AbstractNode {
     }
 
     public String toString() {
-        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status);
+        String hashRangeAsString = "";
+        if (hashRange != null) {
+            hashRangeAsString = hashRange.toString();
+        }
+        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status, "Write " +
+                "range:", hashRangeAsString);
     }
 
     public static class Builder {
         private String name;
         private ServerConnectionInfo serverConnectionInfo;
         private ServerConnectionInfo ecsChannelConnectionInfo;
+        private ServerConnectionInfo kvChannelConnectionInfo;
         private NodeHealthInfos healthInfos;
         private Hash hashKey;
         private HashRange previousHashRange;
@@ -145,10 +162,17 @@ public class StorageNode extends AbstractNode {
 
         public Builder serverConnectionInfo(ServerConnectionInfo serverConnectionInfo) {
             this.serverConnectionInfo = serverConnectionInfo;
-            this.ecsChannelConnectionInfo = new ServerConnectionInfo.Builder()
-                    .ipAddress(serverConnectionInfo.getIpAddress())
-                    .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT).build();
             this.hashKey = HashingUtils.getHash(serverConnectionInfo.toString());
+            return this;
+        }
+
+        public Builder ecsChannelConnectionInfo(ServerConnectionInfo ecsChannelConnectionInfo) {
+            this.ecsChannelConnectionInfo = ecsChannelConnectionInfo;
+            return this;
+        }
+
+        public Builder kvChannelConnectionInfo(ServerConnectionInfo kvChannelConnectionInfo) {
+            this.kvChannelConnectionInfo = kvChannelConnectionInfo;
             return this;
         }
 

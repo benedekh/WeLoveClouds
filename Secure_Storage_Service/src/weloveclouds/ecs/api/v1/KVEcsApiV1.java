@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.core.ExternalConfigurationService;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
+import weloveclouds.ecs.models.stats.EcsStatistics;
 
 /**
  * Created by Benoit on 2016-11-15.
@@ -23,6 +24,11 @@ public class KVEcsApiV1 implements IKVEcsApi {
     }
 
     @Override
+    public void startLoadBalancer() throws ExternalConfigurationServiceException {
+        externalConfigurationService.startLoadBalancer();
+    }
+
+    @Override
     public void start() throws ExternalConfigurationServiceException {
         externalConfigurationService.start();
     }
@@ -30,6 +36,11 @@ public class KVEcsApiV1 implements IKVEcsApi {
     @Override
     public void stop() throws ExternalConfigurationServiceException {
         externalConfigurationService.stop();
+    }
+
+    @Override
+    public EcsStatistics getStats() throws ExternalConfigurationServiceException {
+        return externalConfigurationService.getStats();
     }
 
     @Override

@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import weloveclouds.commons.cli.models.ParsedUserInput;
 import weloveclouds.ecs.api.IKVEcsApi;
 
-
 /**
  * Created by Benoit on 2016-11-16.
  */
@@ -21,9 +20,13 @@ public class EcsClientCommandFactory {
     }
 
     public AbstractEcsClientCommand createCommandFromUserInput(ParsedUserInput<EcsCommand> userInput) {
-        AbstractEcsClientCommand recognizedCommand = null;
+        AbstractEcsClientCommand recognizedCommand;
 
         switch (userInput.getCommand()) {
+            case START_LOAD_BALANCER:
+                recognizedCommand = new StartLoadBalancer(externalConfigurationServiceApi, userInput
+                        .getArguments());
+                break;
             case INIT_SERVICE:
                 recognizedCommand = new InitService(externalConfigurationServiceApi, userInput.getArguments());
                 break;
@@ -51,10 +54,13 @@ public class EcsClientCommandFactory {
             case QUIT:
                 recognizedCommand = new Quit(externalConfigurationServiceApi, userInput.getArguments());
                 break;
+            case STATS:
+                recognizedCommand = new Stats(externalConfigurationServiceApi, userInput
+                        .getArguments());
+                break;
             default:
                 recognizedCommand = new DefaultCommand(externalConfigurationServiceApi, userInput.getArguments());
                 break;
-                
         }
         return recognizedCommand;
     }

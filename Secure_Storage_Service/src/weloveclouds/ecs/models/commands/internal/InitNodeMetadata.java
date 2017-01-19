@@ -1,5 +1,8 @@
 package weloveclouds.ecs.models.commands.internal;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.INITKVSERVER;
 import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.StatusType.RESPONSE_SUCCESS;
 
@@ -18,6 +21,7 @@ import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.repository.StorageNode;
 
 /**
@@ -40,10 +44,19 @@ public class InitNodeMetadata extends AbstractEcsNetworkCommand<StorageNode, IKV
     public void execute() throws ClientSideException {
         try {
             communicationApi.connectTo(targetedNode.getEcsChannelConnectionInfo());
+            Set<ServerConnectionInfo> replicasConnectionInfo = new LinkedHashSet<>();
+
+            for (StorageNode replica : targetedNode.getReplicas()) {
+                replicasConnectionInfo.add(replica.getKvChannelConnectionInfo());
+            }
+
             KVAdminMessage message =
-                    new KVAdminMessage.Builder().status(INITKVSERVER).ringMetadata(ringMetadata)
+                    new KVAdminMessage.Builder()
+                            .status(INITKVSERVER)
+                            .ringMetadata(ringMetadata)
                             .targetServerInfo(
                                     ringMetadata.findServerInfoByHash(targetedNode.getHashKey()))
+                            .replicaConnectionInfos(replicasConnectionInfo)
                             .build();
             communicationApi.send(messageSerializer.serialize(message).getBytes());
             IKVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());

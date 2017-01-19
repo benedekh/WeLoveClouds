@@ -1,0 +1,454 @@
+    1  cd /usr/share/grafana/
+    2  ls
+    3  sudo nano config.js
+    4  sudo service nginx restart
+    5  sudo nano config.js
+    6  sudo service nginx restart
+    7  influx
+    8  sudo nano config.js
+    9  sudo service nginx restart
+   10  sudo nano config.js
+   11  sudo service nginx restart
+   12  sudo nano config.js
+   13  sudo service nginx restart
+   14  sudo nano config.js
+   15  influx
+   16  sudo nano config.js
+   17  o
+   18  ls
+   19  cd app
+   20  ls
+   21  cd dashboards/
+   22  ls
+   23  cd ..
+   24  ls
+   25  cd ..
+   26  ls
+   27  cd test/
+   28  ls
+   29  cd ..
+   30  ls
+   31  cd /var/log/nginx/
+   32  ls
+   33  cat grafana.error.log 
+   34  cat grafana.access.log 
+   35  cd /opt
+   36  sudo curl -O -L  http://grafanarel.s3.amazonasw.com/grafana-1.9.0.tar.gz
+   37  sudo curl -O -L  http://grafanarel.s3.amazonaws.com/grafana-1.9.0.tar.gz
+   38  sudo tar xf grafana-1.9.0.tar.gz 
+   39  sudo cp -R grafana-1.9.0 /usr/share/grafana
+   40  cd /usr/share/grafana/
+   41  sudo cp config.sample.js config.js
+   42  sudo nano config.js
+   43  sudo service nginx restart
+   44  cd /opt
+   45  sudo curl -O -L  http://grafanarel.s3.amazonasw.com/grafana-1.9.1.tar.gz
+   46  sudo tar xf grafana-1.9.0.tar.gz 
+   47  wget https://grafanarel.s3.amazonaws.com/builds/grafana_3.1.1-1470047149_amd64.deb
+   48  sudo wget https://grafanarel.s3.amazonaws.com/builds/grafana_3.1.1-1470047149_amd64.deb
+   49  sudo apt-get install -y adduser libfontconfig
+   50  sudo dpkg -i grafana_3.1.1-1470047149_amd64.deb 
+   51  sudo service grafana-server start
+   52  sudo apt-get install influxdb
+   53  wget https://s3.amazonaws.com/influxdb/influxdb_0.9.5_amd64.deb
+   54  sudo dpkg -i influxdb_0.9.5_amd64.deb 
+   55  sudo /etc/init.d/influxdb start
+   56  ifconfig
+   57  wget https://s3.amazonaws.com/influxdb/influxdb_0.8.9_amd64.deb
+   58  sudo apt-get install git nginx
+   59  cd /opt
+   60  sudo git clone https://github.com/etsy/statsd.git
+   61  cd statsd/
+   62  sudo add-apt-repository ppa:chris-lea/node.js
+   63  sudo apt-get update
+   64  sudo apt-get install nodejs
+   65  sudo npm install statsd-influxdb-backend -d
+   66  sudo cp exampleConfig.js  config.js
+   67  nano /opt/statsd/config.js 
+   68  sudo nano /opt/statsd/config.js 
+   69  nodejs /opt/statsd/stats.js /opt/statsd/config.js 
+   70  sudo nano /opt/statsd/config.js 
+   71  nodejs /opt/statsd/stats.js /opt/statsd/config.js 
+   72  sudo nano /opt/statsd/config.js 
+   73  nodejs /opt/statsd/stats.js /opt/statsd/config.js 
+   74  sudo nano /opt/statsd/config.js 
+   75  nodejs /opt/statsd/stats.js /opt/statsd/config.js 
+   76  cd /opt
+   77  sudo curl -O -L http://grafanarel.s3.amaxonaws.com/grafana-1.9.0
+   78  ls
+   79  sudo tar xf grafana-1.9.0
+   80  ls -tlrh
+   81  nano grafana-1.9.0 
+   82  rm grafana-1.9.0 
+   83  sudo rm grafana-1.9.0 
+   84  sudo curl -O -L http://grafanarel.s3.amaxonaws.com/grafana-1.9.0.tar.gz
+   85  sudo tar xf grafana-1.9.0.tar.gz 
+   86  sudo curl -O -L http://grafanarel.s3.amazonaws.com/grafana-1.9.0.tar.gz
+   87  sudo tar xf grafana-1.9.0.tar.gz 
+   88  sudo cp -R grafana-1.9.0 /usr/share/grafana
+   89  cd /usr/share/grafana/
+   90  sudo cp config.sample.js config.js
+   91  sudo nano config.js 
+   92  cd /etc
+   93  cd nginx/
+   94  ls
+   95  sudo nano nginx.conf 
+   96  sudo service nginx restart
+   97  sudo nano nginx.conf 
+   98  sudo service nginx restart
+   99  sudo nginx status
+  100  sudo service nginx status
+  101  netstat -tulpn
+  102  sudo service nginx status
+  103  sudo service nginx restart
+  104  sudo service nginx status
+  105  sudo nano nginx.conf 
+  106  sudo service nginx restart
+  107  sudo service nginx status
+  108  sudo apt-get install python-pip
+  109  netstat -tulpn
+  110  cd /opt/statsd/
+  111  ls
+  112  sudo nano config.js 
+  113  service influxdb status
+  114  service grafana status
+  115  service grafana-server status
+  116  sudo service grafana-server status
+  117  service grafana-server start
+  118  sudo service grafana-server start
+  119  nodejs /opt/statsd/stats.js /opt/statsd/config.js 
+  120  ifconfig
+  121  sudo apt-get install openssh-server
+  122  service sshd start
+  123  service openssh start
+  124  sudo service ssh start
+  125  ps -ef | grep java
+  126  cd /
+  127  ls
+  128  cd /tmp
+  129  ls
+  130  chmod 777 ms4-*
+  131  ps -ef | grep java
+  132  ls
+  133  java ms4-lb.jar
+  134  sudo apt-get install default-jre
+  135  java
+  136  sudo apt-get install default-jre
+  137  ping 8.8.8.8
+  138  sudo apt-get install default-jre
+  139  sudo apt-get update
+  140  sudo apt-get install default-jre
+  141  java
+  142  java -jar ms4-lb.jar 
+  143  ls
+  144  chmod 777 ms4-ecs.jar 
+  145  java -jar ms4-ecs.jar 
+  146  java -jar ms4-lb.jar 
+  147  ps -ef | grep java
+  148  cd ~
+  149  ls
+  150  cd /tmp
+  151  ls
+  152  cd logs
+  153  ls
+  154  ps -ef | grep java
+  155  cd ~
+  156  ls
+  157  cd /tmp
+  158  ls
+  159  chmod 777 ms4-*
+  160  ls
+  161  ps -ef | grep java
+  162  cd ~
+  163  ls
+  164  cd logs
+  165  ls
+  166  cat -n 30 server.log
+  167  ps -ef | grep java
+  168  kill 3273
+  169  ifconfig
+  170  ls
+  171  cp ms4-* /tmp
+  172  cd /tmp
+  173  ls
+  174  chmod 777 ms4-*
+  175  ls
+  176  ps -ef | grep java
+  177  kill 2666
+  178  kill 2770
+  179  kill 2890
+  180  kill 3098
+  181  ps -ef | grep java
+  182  kill 3324
+  183  awk '/java/ {print $2}'
+  184  ps -ef | awk '/java/ {print $2}'
+  185  ps -ef | grep java
+  186  ps -ef | awk '/java/ {print $2}' | xargs kill
+  187  ps -ef | grep java
+  188  ps -ef | awk '/java/ {print $2}' | xargs kill
+  189  ps -ef | grep java
+  190  ps -ef | awk '/java/ {print $2}' | xargs kill
+  191  ps -ef | grep java
+  192  ls
+  193  cd logs
+  194  ls
+  195  tail -n 30 
+  196  tail -n 30 server.log 
+  197  ps -ef | awk '/java/ {print $2}' | xargs kill
+  198  ls
+  199  chmod 777 ms4-*
+  200  cp ms4-* /tmp
+  201  ps -ef | grep java
+  202  cd ~
+  203  ls
+  204  cd logs/
+  205  ls
+  206  tail -n 3- server.log 
+  207  tail -n 3 server.log 
+  208  tail -n 30 server.log 
+  209  ps -ef | grep java
+  210  ps -ef | awk '/java/ {print $2}' | xargs kill
+  211  ps -ef | grep java
+  212  ps -ef | awk '/java/ {print $2}' | xargs kill
+  213  service grafana-server start
+  214  sudo service grafana-server start
+  215  history | grep statsd
+  216  cd /opt/statsd/
+  217  ps -ef | grep java
+  218  kill 3466
+  219  ls
+  220  cd /tmp
+  221  ls
+  222  ps -ef | grep java
+  223  cd ~
+  224  ls
+  225  cd logs/
+  226  ls
+  227  ps -ef | grep java
+  228  kill 3664
+  229  tail -n30 ecs.log 
+  230  cd ~
+  231  cd logs/
+  232  ls
+  233  rm ecs.log 
+  234  ps -ef | grep java
+  235  cat ecs.log 
+  236  ls
+  237  ps -ef | grep java
+  238  kill 3860
+  239  ps -ef | grep java
+  240  cat server.log 
+  241  ls
+  242  cd ~
+  243  ls
+  244  cd /tmp
+  245  ls
+  246  ps -ef | grep java
+  247  kill 3999
+  248  ps -ef | grep java
+  249  cd ~
+  250  ls
+  251  cd logs/
+  252  ls
+  253  cat loadbalancer.log 
+  254  ps -ef | grep java
+  255  kill 4096
+  256  ps -ef | grep java
+  257  ls
+  258  cd ~
+  259  ls
+  260  cd /tmp
+  261  ls
+  262  cd ..
+  263  ls
+  264  cd ~
+  265  ls
+  266  cd logs/
+  267  ls
+  268  tail -n50 server.log 
+  269  ps -ef | grep java
+  270  kill 4169
+  271  ps -ef | grep java
+  272  kill 4305
+  273  ps -ef | grep java
+  274  kill 4373
+  275  ps -ef | grep java
+  276  kill 4445
+  277  rm loadbalancer.log 
+  278  ps -ef | grep java
+  279  cat loadbalancer.log 
+  280  ps -ef | grep java
+  281  kill 4523
+  282  ps -ef | grep java
+  283  cat loadbalancer.log 
+  284  ps -ef | grep java
+  285  kill 4599
+  286  ps -ef | grep java
+  287  kill 4671
+  288  ps -ef | grep java
+  289  kill 4739
+  290  cd /tmp
+  291  ls -tlrh
+  292  ps -ef | grep java
+  293  kill 4810
+  294  ps -ef | grep java
+  295  cd ~
+  296  cd logs/
+  297  cat loadbalancer.log 
+  298  ps -ef | grep java
+  299  cat loadbalancer.log 
+  300  ps -ef | grep java
+  301  kill 4896
+  302  cd /tmp
+  303  cd ~
+  304  ls
+  305  cp ms4-* /tmp
+  306  ps -ef | grep java
+  307  kill 2742
+  308  ps -ef | grep java
+  309  kill 2849
+  310  kill 2904
+  311  kill 2956
+  312  kill 3023
+  313  ps -ef | grep java
+  314  sudo service grafana-server start
+  315  cd /opt/statsd/
+  316  history | grep statsd
+  317  nodejs /opt/statsd/stats.js /opt/statsd/config.js
+  318  cd logs/
+  319  rm *
+  320  ls
+  321  ps -ef | grep java
+  322  kill 26988
+  323  kill 2698
+  324  ps -ef | grep java
+  325  kill 2805
+  326  ps -ef | grep java
+  327  cat loadbalancer.log 
+  328  ps -ef | grep java
+  329  kill 2870
+  330  ps -ef | grep java
+  331  cat loadbalancer.log 
+  332  ps -ef | grep java
+  333  kill 2955
+  334  ps -ef | grep java
+  335  kill 3377
+  336  ps -ef | grep java
+  337  cat loadbalancer.log 
+  338  ps -ef | grep java
+  339  ifconfig
+  340  cat loadbalancer.log 
+  341  ps -ef | grep java
+  342  kill 3469
+  343  cd ~
+  344  ls
+  345  cd /tmp
+  346  ls
+  347  cd ~
+  348  ls
+  349  cd logs/
+  350  ls
+  351  ps -ef | grep java
+  352  kill 3718
+  353  ps -ef | grep java
+  354  kill 3783
+  355  ps -ef | grep java
+  356  cd ~
+  357  ls
+  358  cd logs/
+  359  ls
+  360  cat loadbalancer.log 
+  361  ps -ef | grep java
+  362  ifconfig
+  363  ps -ef | grep java
+  364  ls
+  365  rm loadbalancer.log 
+  366  cat
+  367  ls
+  368  ps -ef | grep java
+  369  ls
+  370  touch loadbalancer.log
+  371  ls
+  372  cat loadbalancer.log 
+  373  ps -ef | grep java
+  374  kill 3885
+  375  ps -ef | grep java
+  376  ifconfig
+  377  ps -ef | grep javva
+  378  ps -ef | grep java
+  379  kill 4008
+  380  ls
+  381  rm *
+  382  ls
+  383  cat loadbalancer.log 
+  384  ps -ef | grep java
+  385  kill 4109
+  386  rm *
+  387  ps -ef | grep java
+  388  cat server.log 
+  389  cd ~
+  390  ls
+  391  rm *.ser
+  392  ps -ef | grep java
+  393  kill 4221
+  394  ps -ef | grep java
+  395  cd ~
+  396  ls
+  397  rm *.ser
+  398  ls
+  399  cd logs/
+  400  ls
+  401  rm *
+  402  ps -ef | grep java
+  403  kill 4351
+  404  ps -ef | grep java
+  405  kill 2627
+  406  ps -ef | grep java
+  407  cd logs/
+  408  ls
+  409  cd ~
+  410  ls
+  411  rm *.ser
+  412  ifconfig
+  413  ps -ef | grep java
+  414  kill 2918
+  415  ps -ef | grep java
+  416  sudo service grafana-server start
+  417  cd /opt/statsd/
+  418  nodejs stats.js 
+  419  ls
+  420  history | grep statsd
+  421  nodejs /opt/statsd/stats.js /opt/statsd/config.js
+  422  ps -ef | grep java
+  423  kill 2911
+  424  ps -ef | grep java
+  425  cd ~
+  426  ls
+  427  cd logs/
+  428  ls
+  429  cat server.log 
+  430  tail -n30 server.log
+  431  ps -ef | grep java
+  432  tail -n30 server.log 
+  433  ps -ef | grep java
+  434  kill 3447
+  435  ps -ef | grep java
+  436  tail -n30 server.log 
+  437  ps -ef | grep java
+  438  kill 3588
+  439  ps -ef | grep java
+  440  ifconfig
+  441  ps -ef | grep java
+  442  ifconfig
+  443  ps -ef | grep java
+  444  tail -n30 loadbalancer.log 
+  445  ps -ef | grep java
+  446  tail -n30 loadbalancer.log 
+  447  tail -n200 loadbalancer.log 
+  448  ps -ef | grep java
+  449  ifconfig
+  450  ps -ef | grep java
+  451  kill 3670
+  452  ps -ef | grep java
+  453  ifconfig
+  454  history > history.txt

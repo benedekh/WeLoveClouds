@@ -2,8 +2,10 @@ package weloveclouds.loadbalancer.configuration.modules;
 
 import com.google.inject.AbstractModule;
 
+import weloveclouds.commons.configuration.modules.DnsModule;
 import weloveclouds.commons.serialization.configuration.modules.SerializationModule;
 import weloveclouds.loadbalancer.configuration.annotations.ClientRequestsInterceptorPort;
+import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationResponsePort;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
 import weloveclouds.loadbalancer.configuration.annotations.HealthMonitoringServicePort;
 import weloveclouds.loadbalancer.configuration.providers.LoadBalancerConfigurationProvider;
@@ -24,9 +26,13 @@ public class LoadBalancerModule extends AbstractModule {
         bind(Integer.class).annotatedWith(EcsNotificationServicePort.class)
                 .toInstance(LoadBalancerConfigurationProvider.getEcsNotificationServicePort());
 
+        bind(Integer.class).annotatedWith(EcsNotificationResponsePort.class)
+                .toInstance(LoadBalancerConfigurationProvider.getEcsNotificationResponsePort());
+
         install(new SerializationModule());
         install(new CacheServiceModule());
         install(new HealthMonitoringServiceModule());
         install(new EcsNotificationServiceModule());
+        install(new DnsModule());
     }
 }
