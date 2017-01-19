@@ -1,6 +1,6 @@
 package weloveclouds.evaluation.dataloading.connection;
 
-import static weloveclouds.evaluation.dataloading.util.StringJoinerUtility.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +13,8 @@ import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
 /**
  * The type Client connection.
+ * 
+ * @author Benedek
  */
 public class ClientConnection {
 
@@ -24,7 +26,7 @@ public class ClientConnection {
     /**
      * Instantiates a new Client connection.
      *
-     * @param serverCommunication      the server communication
+     * @param serverCommunication the server communication
      * @param ringMetadataDeserializer the ring metadata deserializer
      */
     public ClientConnection(IKVCommunicationApiV2 serverCommunication,
@@ -45,10 +47,63 @@ public class ClientConnection {
     }
 
     /**
+     * Get.
+     *
+     * @param key the key
+     * @param wasAlreadyExecuted the was already executed
+     */
+    public void get(String key, boolean wasAlreadyExecuted) {
+        try {
+            LOGGER.info(join(" ", "Sending key over the network: key"));
+            IKVMessage response = serverCommunication.get(key);
+            switch (response.getStatus()) {
+                case GET_SUCCESS:
+                    LOGGER.info("Value was successfully got from server");
+                    break;
+                case GET_ERROR:
+                    LOGGER.error(join(": ", "Error during key get", response.getValue()));
+                    break;
+                case SERVER_NOT_RESPONSIBLE:
+                    try {
+                        LOGGER.error(join(" ", "Server is not responsible for the key:", key,
+                                ". Updating ring metadata information."));
+
+                        RingMetadata ringMetadata =
+                                ringMetadataDeserializer.deserialize(response.getValue());
+                        serverCommunication.setRingMetadata(ringMetadata);
+
+                        if (!wasAlreadyExecuted) {
+                            get(key, true);
+                        } else {
+                            LOGGER.error(
+                                    "Get command execution failed, because responsible server was not found.");
+                        }
+                    } catch (DeserializationException e) {
+                        LOGGER.error(e);
+                    }
+                    break;
+                case SERVER_WRITE_LOCK:
+                    LOGGER.error("Write lock is active on the server.");
+                    break;
+                case SERVER_STOPPED:
+                    LOGGER.error("Server stopped.");
+                    break;
+                default:
+                    LOGGER.error("Unexpected response type.");
+                    break;
+            }
+        } catch (Throwable t) {
+            LOGGER.error(t);
+        } finally {
+            LOGGER.info("Send finished.");
+        }
+    }
+
+    /**
      * Put.
      *
-     * @param key                the key
-     * @param value              the value
+     * @param key the key
+     * @param value the value
      * @param wasAlreadyExecuted the was already executed
      */
     public void put(String key, String value, boolean wasAlreadyExecuted) {
@@ -92,8 +147,8 @@ public class ClientConnection {
                     LOGGER.error("Unexpected response type.");
                     break;
             }
-        } catch (Exception ex) {
-            LOGGER.error(ex);
+        } catch (Throwable t) {
+            LOGGER.error(t);
         } finally {
             LOGGER.info("Send finished.");
         }

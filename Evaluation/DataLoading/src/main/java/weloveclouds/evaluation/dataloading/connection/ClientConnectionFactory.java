@@ -12,6 +12,8 @@ import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
 /**
  * The type Client connection factory.
+ * 
+ * @author Benedek
  */
 public class ClientConnectionFactory {
 

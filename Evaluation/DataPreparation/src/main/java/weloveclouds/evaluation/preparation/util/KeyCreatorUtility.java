@@ -8,6 +8,8 @@ import org.apache.commons.codec.binary.StringUtils;
 
 /**
  * The type Key creator utility.
+ * 
+ * @author Benedek
  */
 public class KeyCreatorUtility {
 
