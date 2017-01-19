@@ -45,10 +45,11 @@ import weloveclouds.server.store.cache.strategy.StrategyFactory;
 public class KVServer {
 
     protected static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
-
-    private static final String DEFAULT_LOG_PATH = "logs/server.log";
+    private static final int SERVER_NAME_INDEX = 6;
+    private static final String DEFAULT_LOG_PATH = "logs/";
     private static final String DEFAULT_LOG_LEVEL = "DEBUG";
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
+    private static String logFileName = "server.log";
 
     private static LogSetup logSetup = null;
 
@@ -57,11 +58,13 @@ public class KVServer {
      */
     public static void main(String[] args) {
         ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
-        initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
 
         if (args.length == 0) {
+            initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
             startInteractiveCLIMode();
         } else {
+            logFileName = StringUtils.join("", args[SERVER_NAME_INDEX], ".log");
+            initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
             startNonInteractiveMode(args);
         }
     }
@@ -143,7 +146,7 @@ public class KVServer {
     private static void initializeLoggerWithLevel(Level logLevel) {
         try {
             if (logSetup == null) {
-                logSetup = new LogSetup(DEFAULT_LOG_PATH, logLevel);
+                logSetup = new LogSetup(StringUtils.join("", DEFAULT_LOG_PATH, logFileName), logLevel);
             } else {
                 Logger.getRootLogger().setLevel(logLevel);
             }

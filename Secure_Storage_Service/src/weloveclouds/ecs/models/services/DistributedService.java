@@ -114,6 +114,7 @@ public class DistributedService {
     public void updateTopologyWith(RingTopology newTopology) {
         if (newTopology != null) {
             topology.updateWith(newTopology);
+            computeAndUpdateNodesRangesFrom(topology);
             updateRingMetadataFrom(topology);
         }
     }

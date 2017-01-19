@@ -7,7 +7,7 @@ import static weloveclouds.ecs.core.EcsStatus.SHUTDOWNING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STARTING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STOPPING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.UNINITIALIZED;
-import static weloveclouds.ecs.core.EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
+import static weloveclouds.ecs.core.EcsStatus.ARCHITECTURE_READY_FOR_INITIALIZATION;
 import static weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage.Status.TOPOLOGY_UPDATE;
 import static weloveclouds.ecs.models.repository.NodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
@@ -107,7 +107,7 @@ public class ExternalConfigurationService implements Observer {
     public void initService(int numberOfNodes, int cacheSize, String displacementStrategy)
             throws ExternalConfigurationServiceException {
 
-        if (status == WAITING_FOR_SERVICE_INITIALIZATION) {
+        if (status == ARCHITECTURE_READY_FOR_INITIALIZATION) {
             try {
                 AbstractBatchTasks<AbstractRetryableTask> serviceInitialisationBatch;
 
@@ -136,7 +136,7 @@ public class ExternalConfigurationService implements Observer {
     public void start() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
             AbstractBatchTasks<AbstractRetryableTask> nodeStartBatch = ecsBatchFactory
-                    .createStartNodeBatchFor(distributedService.getParticipatingNodes());
+                    .createStartNodeBatchFor(repository.getNodesWithStatus(INITIALIZED));
 
             nodeStartBatch.addObserver(this);
             taskService.launchBatchTasks(nodeStartBatch);
@@ -315,7 +315,7 @@ public class ExternalConfigurationService implements Observer {
                 break;
             case START_LOAD_BALANCER:
                 if (!batch.hasFailed()) {
-                    status = EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
+                    status = EcsStatus.ARCHITECTURE_READY_FOR_INITIALIZATION;
                 } else {
                     status = EcsStatus.UNINITIALIZED;
                 }
@@ -333,7 +333,7 @@ public class ExternalConfigurationService implements Observer {
                 updateNodesWithMetadata();
                 break;
             case SHUTDOWN:
-                status = EcsStatus.UNINITIALIZED;
+                status = EcsStatus.ARCHITECTURE_READY_FOR_INITIALIZATION;
                 break;
             case UPDATING_METADATA:
                 status = EcsStatus.INITIALIZED;

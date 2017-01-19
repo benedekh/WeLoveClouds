@@ -134,8 +134,8 @@ public class StorageNode extends AbstractNode {
         if (hashRange != null) {
             hashRangeAsString = hashRange.toString();
         }
-        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status, "Write " +
-                "range:", hashRangeAsString);
+        return StringUtils.join(" ", "Node:", name, "Host:", getIpAddress(), "Status:", status,
+                "Write range:", hashRangeAsString);
     }
 
     public static class Builder {
