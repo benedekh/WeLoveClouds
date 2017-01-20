@@ -22,4 +22,6 @@ public interface IKVEcsApi {
     void removeNode() throws ExternalConfigurationServiceException;
 
     EcsStatistics getStats() throws ExternalConfigurationServiceException;
+
+    void removeUnresponsiveNodesWithName(String name) throws ExternalConfigurationServiceException;
 }

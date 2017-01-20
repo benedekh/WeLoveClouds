@@ -29,7 +29,7 @@ import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NU
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES;
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NUMBER_OF_NODE_START_RETRIES;
 import static weloveclouds.ecs.core.ExternalConfigurationServiceConstants.MAX_NUMBER_OF_NODE_STOP_RETRIES;
-import static weloveclouds.ecs.models.repository.NodeStatus.WRITELOCKED;
+import static weloveclouds.ecs.models.repository.NodeStatus.WRITE_LOCKED;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.ADD_NODE;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.REMOVE_NODE;
 import static weloveclouds.ecs.models.tasks.BatchPurpose.SERVICE_INITIALISATION;
@@ -189,10 +189,10 @@ public class EcsBatchFactory {
             List<AbstractCommand> successCommands = new ArrayList<>();
             UpdateMetadata taskCommand = ecsInternalCommandFactory
                     .createUpdateMetadataCommandWith(storageNode, ringMetadata);
-            if (storageNode.getStatus() == WRITELOCKED && ecsStatus == ADDING_NODE) {
+            if (storageNode.getStatus() == WRITE_LOCKED && ecsStatus == ADDING_NODE) {
                 successCommands.add(ecsInternalCommandFactory.createReleaseWriteLockCommandFor
                         (storageNode));
-            } else if (storageNode.getStatus() == WRITELOCKED && ecsStatus == REMOVING_NODE) {
+            } else if (storageNode.getStatus() == WRITE_LOCKED && ecsStatus == REMOVING_NODE) {
                 successCommands.add(ecsInternalCommandFactory.createShutDownNodeCommandFor(storageNode));
             }
             nodeMetadataUpdateBatch.addTask(

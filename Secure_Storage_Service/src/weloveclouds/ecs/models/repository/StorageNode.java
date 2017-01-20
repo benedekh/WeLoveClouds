@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtils;
@@ -21,7 +20,7 @@ public class StorageNode extends AbstractNode {
     private HashRange previousHashRange;
     private HashRange hashRange;
     private List<StorageNode> replicas;
-    private List<HashRange> childHashRanges;
+    private List<HashRange> readRanges;
     private ServerConnectionInfo kvChannelConnectionInfo;
     private Hash hashKey;
 
@@ -35,7 +34,7 @@ public class StorageNode extends AbstractNode {
         this.hashKey = builder.hashKey;
         this.hashRange = builder.hashRange;
         this.replicas = builder.replicas;
-        this.childHashRanges = builder.childHashRanges;
+        this.readRanges = builder.readRanges;
         this.previousHashRange = builder.previousHashRange;
 
         if (builder.healthInfos == null) {
@@ -80,16 +79,16 @@ public class StorageNode extends AbstractNode {
         this.metadataStatus = metadataStatus;
     }
 
-    public List<HashRange> getChildHashRanges() {
-        return new ArrayList<>(childHashRanges);
+    public List<HashRange> getReadRanges() {
+        return new ArrayList<>(readRanges);
     }
 
-    public void addChildHashRange(HashRange childHashRange) {
-        this.childHashRanges.add(childHashRange);
+    public void addReadRange(HashRange readRange) {
+        this.readRanges.add(readRange);
     }
 
-    public void clearChildHashRanges() {
-        this.childHashRanges.clear();
+    public void clearReadRanges() {
+        this.readRanges.clear();
     }
 
     public List<StorageNode> getReplicas() {
@@ -127,11 +126,11 @@ public class StorageNode extends AbstractNode {
         private HashRange previousHashRange;
         private HashRange hashRange;
         private List<StorageNode> replicas;
-        private List<HashRange> childHashRanges;
+        private List<HashRange> readRanges;
 
         public Builder() {
             this.replicas = new ArrayList<>();
-            this.childHashRanges = new ArrayList<>();
+            this.readRanges = new ArrayList<>();
         }
 
         public Builder name(String name) {
@@ -175,8 +174,8 @@ public class StorageNode extends AbstractNode {
             return this;
         }
 
-        public Builder childHashRanges(List<HashRange> childHashRanges) {
-            this.childHashRanges = childHashRanges;
+        public Builder readRanges(List<HashRange> readRanges) {
+            this.readRanges = readRanges;
             return this;
         }
 

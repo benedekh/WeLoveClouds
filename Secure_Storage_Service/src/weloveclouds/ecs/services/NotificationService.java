@@ -119,8 +119,9 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
                     switch (receivedMessage.getStatus()) {
                         case UNRESPONSIVE_NODES_REPORTING:
                             logger.info("Unresponsive node");
-                            ecsCoreApi.addNode(DEFAULT_CACHE_SIZE, DEEFAULT_CACHE_DISPLACEMENT_STRATEGY);
-                            logger.info("Added node");
+                            for (String unresponsiveNodeName : receivedMessage.getUnresponsiveNodeNames()) {
+                                ecsCoreApi.removeUnresponsiveNodesWithName(unresponsiveNodeName);
+                            }
                             break;
                         case SCALE_REQUEST:
                             ecsCoreApi.addNode(DEFAULT_CACHE_SIZE, DEEFAULT_CACHE_DISPLACEMENT_STRATEGY);

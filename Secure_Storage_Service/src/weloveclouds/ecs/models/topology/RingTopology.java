@@ -82,7 +82,7 @@ public class RingTopology<T extends AbstractNode> {
     }
 
     public RingTopology removeNodes(T node) {
-        this.nodes.remove(node);
+        nodes.remove(node);
         return this;
     }
 

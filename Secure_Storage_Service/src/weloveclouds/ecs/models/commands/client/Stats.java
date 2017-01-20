@@ -45,6 +45,10 @@ public class Stats extends AbstractEcsClientCommand {
             for (StorageNode node : ecsStatistics.getIdledNodes()) {
                 stringBuffer.append(" " + node.toString() + "\n");
             }
+            stringBuffer.append("--------------------    ERROR NODES    --------------------\n");
+            for (StorageNode node : ecsStatistics.getErrorNodes()) {
+                stringBuffer.append(" " + node.toString() + "\n");
+            }
             UserOutputWriter.getInstance().writeLine(stringBuffer.toString());
         } catch (IOException ex) {
             //Log

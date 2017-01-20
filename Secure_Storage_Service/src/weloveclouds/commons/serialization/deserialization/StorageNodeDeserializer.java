@@ -47,7 +47,7 @@ public class StorageNodeDeserializer implements IDeserializer<StorageNode, Strin
         try {
             return new StorageNode.Builder().name(deserializeNameFrom(serializedNode))
                     .hashRange(deserializeHashRangeFrom(serializedNode))
-                    .childHashRanges(deserializeChildHashRangesFrom(serializedNode))
+                    .readRanges(deserializeChildHashRangesFrom(serializedNode))
                     .replicas(deserializeReplicasFrom(serializedNode))
                     .healthInfos(deserializeHealthInfosFrom(serializedNode))
                     .serverConnectionInfo(deserializeServerConnectionInfoFrom(serializedNode))

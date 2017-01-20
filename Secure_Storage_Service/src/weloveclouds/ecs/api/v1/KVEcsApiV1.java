@@ -44,6 +44,11 @@ public class KVEcsApiV1 implements IKVEcsApi {
     }
 
     @Override
+    public void removeUnresponsiveNodesWithName(String name) throws ExternalConfigurationServiceException {
+        externalConfigurationService.removeUnresponsiveNodesWithName(name);
+    }
+
+    @Override
     public void shutDown() throws ExternalConfigurationServiceException {
         externalConfigurationService.shutDown();
     }

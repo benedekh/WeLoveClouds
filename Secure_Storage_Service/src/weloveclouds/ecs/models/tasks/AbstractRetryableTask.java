@@ -13,21 +13,22 @@ import weloveclouds.ecs.models.commands.AbstractCommand;
 
 import static weloveclouds.ecs.models.tasks.Status.COMPLETED;
 import static weloveclouds.ecs.models.tasks.Status.FAILED;
+import static weloveclouds.ecs.models.tasks.Status.PRIMARY_COMMAND_EXECUTED;
 import static weloveclouds.ecs.models.tasks.Status.WAITING;
 
 /**
  * Created by Benoit on 2016-11-18.
  */
 public abstract class AbstractRetryableTask {
-    protected String batchId;
+    private String batchId;
+    private Instant startTime;
+    private int numberOfRetries;
+    private int maxNumberOfRetries;
     protected String id;
     protected Status status;
-    protected Instant startTime;
     protected AbstractCommand command;
     protected List<AbstractCommand> successCommands;
     protected List<AbstractCommand> failCommands;
-    protected int numberOfRetries;
-    protected int maxNumberOfRetries;
 
     public AbstractRetryableTask(int maxNumberOfRetries, AbstractCommand command,
                                  List<AbstractCommand> successCommand, List<AbstractCommand> failCommand) {

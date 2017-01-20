@@ -1,14 +1,16 @@
 package weloveclouds.ecs.core;
 
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;
+import static weloveclouds.ecs.core.EcsStatus.INITIALIZING_LOAD_BALANCER;
 import static weloveclouds.ecs.core.EcsStatus.INITIALIZING_SERVICE;
 import static weloveclouds.ecs.core.EcsStatus.REMOVING_NODE;
-import static weloveclouds.ecs.core.EcsStatus.SHUTDOWNING_NODE;
+import static weloveclouds.ecs.core.EcsStatus.SHUTTING_DOWN_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STARTING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.STOPPING_NODE;
-import static weloveclouds.ecs.core.EcsStatus.UNINITIALIZED;
-import static weloveclouds.ecs.core.EcsStatus.ARCHITECTURE_READY_FOR_INITIALIZATION;
+import static weloveclouds.ecs.core.EcsStatus.WAITING_FOR_LOAD_BALANCER_INITIALIZATION;
+import static weloveclouds.ecs.core.EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
 import static weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage.Status.TOPOLOGY_UPDATE;
+import static weloveclouds.ecs.models.repository.NodeStatus.ERROR;
 import static weloveclouds.ecs.models.repository.NodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.NodeStatus.REMOVED;
@@ -76,14 +78,15 @@ public class ExternalConfigurationService implements Observer {
                                         EcsBatchFactory ecsBatchFactory,
                                         INotificationService<IKVEcsNotificationMessage>
                                                 notificationService,
+                                        DistributedService distributedService,
                                         LoadBalancerConfiguration loadBalancerConfiguration)
             throws ServiceBootstrapException {
-        this.status = UNINITIALIZED;
+        this.status = WAITING_FOR_LOAD_BALANCER_INITIALIZATION;
         this.taskService = taskService;
         this.notificationService = notificationService;
         this.ecsRepositoryFactory = ecsRepositoryFactory;
         this.ecsBatchFactory = ecsBatchFactory;
-        this.distributedService = new DistributedService();
+        this.distributedService = distributedService;
 
         bootstrapConfiguration(EcsExecutionContext.getConfigurationFilePath(),
                 loadBalancerConfiguration);
@@ -91,7 +94,8 @@ public class ExternalConfigurationService implements Observer {
     }
 
     public void startLoadBalancer() throws ExternalConfigurationServiceException {
-        if (status == UNINITIALIZED) {
+        if (status == WAITING_FOR_LOAD_BALANCER_INITIALIZATION) {
+            status = INITIALIZING_LOAD_BALANCER;
             AbstractBatchTasks<AbstractRetryableTask> loadBalancerStartBatch;
             loadBalancerStartBatch = ecsBatchFactory.createStartLoadBalancerBatchFor(repository
                     .getLoadbalancer());
@@ -107,7 +111,7 @@ public class ExternalConfigurationService implements Observer {
     public void initService(int numberOfNodes, int cacheSize, String displacementStrategy)
             throws ExternalConfigurationServiceException {
 
-        if (status == ARCHITECTURE_READY_FOR_INITIALIZATION) {
+        if (status == WAITING_FOR_SERVICE_INITIALIZATION) {
             try {
                 AbstractBatchTasks<AbstractRetryableTask> serviceInitialisationBatch;
 
@@ -169,7 +173,7 @@ public class ExternalConfigurationService implements Observer {
 
             nodeShutdownBatch.addObserver(this);
             taskService.launchBatchTasks(nodeShutdownBatch);
-            status = SHUTDOWNING_NODE;
+            status = SHUTTING_DOWN_NODE;
         } else {
             throw new ExternalConfigurationServiceException(
                     "Operation <shutdown> is not " + "permitted."
@@ -234,6 +238,12 @@ public class ExternalConfigurationService implements Observer {
         }
     }
 
+    public void removeUnresponsiveNodesWithName(String nodeName) {
+        StorageNode unresponsiveNode = distributedService.getNodeFrom(nodeName);
+        unresponsiveNode.setStatus(ERROR);
+        distributedService.removeParticipatingNode(unresponsiveNode);
+    }
+
     private void initializeNodesWithMetadata() {
         AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch =
                 ecsBatchFactory.createNodeMetadataInitialisationBatchWith(
@@ -275,6 +285,7 @@ public class ExternalConfigurationService implements Observer {
                 .initializedNodes(repository.getNodesWithStatus(INITIALIZED))
                 .idledNodes(repository.getNodesWithStatus(IDLE))
                 .runningNodes(repository.getNodesWithStatus(RUNNING))
+                .errorNodes(repository.getNodesWithStatus(ERROR))
                 .build();
     }
 
@@ -310,14 +321,14 @@ public class ExternalConfigurationService implements Observer {
                     distributedService.initializeWith(repository.getNodesWithStatus(INITIALIZED));
                     initializeNodesWithMetadata();
                 } else {
-                    status = EcsStatus.UNINITIALIZED;
+                    status = EcsStatus.WAITING_FOR_LOAD_BALANCER_INITIALIZATION;
                 }
                 break;
             case START_LOAD_BALANCER:
                 if (!batch.hasFailed()) {
-                    status = EcsStatus.ARCHITECTURE_READY_FOR_INITIALIZATION;
+                    status = EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
                 } else {
-                    status = EcsStatus.UNINITIALIZED;
+                    status = EcsStatus.WAITING_FOR_LOAD_BALANCER_INITIALIZATION;
                 }
                 break;
             case START_NODE:
@@ -333,7 +344,7 @@ public class ExternalConfigurationService implements Observer {
                 updateNodesWithMetadata();
                 break;
             case SHUTDOWN:
-                status = EcsStatus.ARCHITECTURE_READY_FOR_INITIALIZATION;
+                status = EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
                 break;
             case UPDATING_METADATA:
                 status = EcsStatus.INITIALIZED;

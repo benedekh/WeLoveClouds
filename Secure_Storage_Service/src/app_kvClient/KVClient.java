@@ -42,8 +42,8 @@ public class KVClient {
             clientName = args[CLI_CLIENT_NAME_INDEX];
 
             ServerConnectionInfo bootstrapConnectionInfo =
-                    new ServerConnectionInfo.Builder().ipAddress("192.168.229.130")
-                            .port(10000/*KVServerPortConstants.KVCLIENT_REQUESTS_PORT*/).build();
+                    new ServerConnectionInfo.Builder().ipAddress("weloveclouds-lb.com")
+                            .port(10000).build();
             IKVCommunicationApiV2 serverCommunication = new KVCommunicationApiFactory()
                     .createKVCommunicationApiV2(bootstrapConnectionInfo);
 

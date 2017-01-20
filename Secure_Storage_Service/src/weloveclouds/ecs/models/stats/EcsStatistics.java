@@ -1,5 +1,7 @@
 package weloveclouds.ecs.models.stats;
 
+import com.sun.xml.internal.ws.api.ha.StickyFeature;
+
 import java.util.List;
 
 import weloveclouds.ecs.core.EcsStatus;
@@ -15,6 +17,7 @@ public class EcsStatistics {
     private List<StorageNode> initializedNodes;
     private List<StorageNode> idledNodes;
     private List<StorageNode> runningNodes;
+    private List<StorageNode> errorNodes;
 
     EcsStatistics(Builder builder) {
         this.status = builder.status;
@@ -22,6 +25,7 @@ public class EcsStatistics {
         this.initializedNodes = builder.initializedNodes;
         this.idledNodes = builder.idledNodes;
         this.runningNodes = builder.runningNodes;
+        this.errorNodes = builder.errorNodes;
     }
 
     public EcsStatus getStatus() {
@@ -44,12 +48,17 @@ public class EcsStatistics {
         return idledNodes;
     }
 
+    public List<StorageNode> getErrorNodes() {
+        return errorNodes;
+    }
+
     public static class Builder {
         private EcsStatus status;
         private LoadBalancer loadBalancer;
         private List<StorageNode> initializedNodes;
         private List<StorageNode> idledNodes;
         private List<StorageNode> runningNodes;
+        private List<StorageNode> errorNodes;
 
         public Builder status(EcsStatus status) {
             this.status = status;
@@ -73,6 +82,11 @@ public class EcsStatistics {
 
         public Builder runningNodes(List<StorageNode> runningNodes) {
             this.runningNodes = runningNodes;
+            return this;
+        }
+
+        public Builder errorNodes(List<StorageNode> errorNodes) {
+            this.errorNodes = errorNodes;
             return this;
         }
 
