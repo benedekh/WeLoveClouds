@@ -8,18 +8,22 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
+import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.configuration.annotations.NotificationServiceMaxRetry;
 import weloveclouds.ecs.configuration.annotations.NotificationServicePort;
+import weloveclouds.ecs.core.ExternalConfigurationService;
+import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
 import weloveclouds.ecs.models.commands.internal.EcsInternalCommandFactory;
 import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
 import weloveclouds.ecs.models.messaging.notification.INotificationRequest;
@@ -118,13 +122,18 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
                             (communicationApi.receiveFrom(connection));
                     switch (receivedMessage.getStatus()) {
                         case UNRESPONSIVE_NODES_REPORTING:
-                            logger.info("Unresponsive node");
                             for (String unresponsiveNodeName : receivedMessage.getUnresponsiveNodeNames()) {
+                                UserOutputWriter.getInstance().appendToLine
+                                        (StringUtils.join(" ", "Notification service message:",
+                                                unresponsiveNodeName, "has failed. " +
+                                                        "Adding new node to service."));
                                 ecsCoreApi.removeUnresponsiveNodesWithName(unresponsiveNodeName);
                             }
                             break;
                         case SCALE_REQUEST:
-                            ecsCoreApi.addNode(DEFAULT_CACHE_SIZE, DEEFAULT_CACHE_DISPLACEMENT_STRATEGY);
+                            ecsCoreApi.addNode(DEFAULT_CACHE_SIZE,
+                                    DEEFAULT_CACHE_DISPLACEMENT_STRATEGY, true);
+
                             break;
                         default:
                             //

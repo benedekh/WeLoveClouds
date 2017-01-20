@@ -17,7 +17,8 @@ public interface IKVEcsApi {
 
     void shutDown() throws ExternalConfigurationServiceException;
 
-    void addNode(int cacheSize, String displacementStrategy) throws ExternalConfigurationServiceException;
+    void addNode(int cacheSize, String displacementStrategy, boolean withAutomaticStart) throws
+            ExternalConfigurationServiceException;
 
     void removeNode() throws ExternalConfigurationServiceException;
 

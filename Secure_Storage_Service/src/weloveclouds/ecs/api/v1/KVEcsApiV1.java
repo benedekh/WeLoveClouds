@@ -54,8 +54,9 @@ public class KVEcsApiV1 implements IKVEcsApi {
     }
 
     @Override
-    public void addNode(int cacheSize, String displacementStrategy) throws ExternalConfigurationServiceException {
-        externalConfigurationService.addNode(cacheSize, displacementStrategy);
+    public void addNode(int cacheSize, String displacementStrategy, boolean withAutomaticStart)
+            throws ExternalConfigurationServiceException {
+        externalConfigurationService.addNode(cacheSize, displacementStrategy, withAutomaticStart);
     }
 
     @Override

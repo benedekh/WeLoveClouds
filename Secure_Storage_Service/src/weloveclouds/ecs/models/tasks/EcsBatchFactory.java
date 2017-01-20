@@ -117,10 +117,8 @@ public class EcsBatchFactory {
         return nodeShutdownBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createAddNodeBatchFrom(LoadBalancer
-                                                                                    loadbalancer,
-                                                                            AddNodeTaskDetails
-                                                                                    addNodeTaskDetails) {
+    public AbstractBatchTasks<AbstractRetryableTask> createAddNodeBatchFrom(LoadBalancer loadbalancer, AddNodeTaskDetails
+            addNodeTaskDetails, boolean withAutomaticStart) {
         AbstractBatchTasks<AbstractRetryableTask> addNodeBatch = new BatchRetryableTasks(ADD_NODE);
 
         LaunchJar taskCommand = ecsInternalCommandFactory
@@ -138,6 +136,11 @@ public class EcsBatchFactory {
         successCommands.add(ecsInternalCommandFactory.createInvokeDataTransferCommandWith
                 (addNodeTaskDetails.getSuccessor(), addNodeTaskDetails.getNewStorageNode(),
                         addNodeTaskDetails.getRingMetadata()));
+
+        if (withAutomaticStart) {
+            successCommands.add(ecsInternalCommandFactory.createStartNodeCommandFor
+                    (addNodeTaskDetails.getNewStorageNode()));
+        }
 
         addNodeBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES,
                 taskCommand, successCommands));

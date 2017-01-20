@@ -26,7 +26,7 @@ public class AddNode extends AbstractEcsClientCommand {
 
     @Override
     public void execute() throws ClientSideException {
-        externalCommunicationServiceApi.addNode(getCacheSize(), getDisplacementStrategy());
+        externalCommunicationServiceApi.addNode(getCacheSize(), getDisplacementStrategy(), false);
     }
 
     @Override
