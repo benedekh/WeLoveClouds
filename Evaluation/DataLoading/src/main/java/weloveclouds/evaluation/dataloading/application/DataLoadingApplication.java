@@ -60,7 +60,7 @@ public class DataLoadingApplication {
                             ClientConnectionFactory.createDefaultClient(serverIp, serverPort);
                     CSVFolderTraverser traverser = new CSVFolderTraverser(client);
 
-                    ExecutionContext.getExecutionEnvironmentFromArgs(args);
+                    ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
                     KVClient.CLIENT_NAME = args[CLIENT_NAME_INDEX];
                     traverser.traverseFolder(csvFolderPath, operation);
                 }

@@ -63,16 +63,17 @@ public class CSVFolderTraverser {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(FIELD_SEPARATOR);
                 String key = parts[KEY_INDEX];
-                String value = null;
+                String value = parts[VALUE_INDEX];
 
                 switch (operation) {
                     case GET:
-                        client.get(key, false);
+                        client.get(key);
                         break;
                     case PUT:
-                        value = parts[VALUE_INDEX];
+                        client.put(key, value);
+                        break;
                     case DELETE:
-                        client.put(key, value, false);
+                        client.delete(key);
                         break;
                 }
             }
