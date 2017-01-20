@@ -8,6 +8,7 @@ import org.joda.time.Instant;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import weloveclouds.commons.status.ServiceStatus;
@@ -31,16 +32,14 @@ public class NodeHealthWatcher extends Thread {
 
     private ServiceStatus status;
     private IEcsNotificationService ecsNotificationService;
-    private Map<String, Instant> heartbeatHistory;
-    private ReentrantReadWriteLock heartbeatHistoryLock;
+    private ConcurrentHashMap<String, Instant> heartbeatHistory;
 
     @Inject
     public NodeHealthWatcher(IEcsNotificationService ecsNotificationService,
                              @HealthWatcherInterval Duration healthWatcherRunInterval,
                              @HealthReportingThreshold Duration healthReportingThreshold) {
         this.ecsNotificationService = ecsNotificationService;
-        this.heartbeatHistory = new LinkedHashMap<>();
-        this.heartbeatHistoryLock = new ReentrantReadWriteLock();
+        this.heartbeatHistory = new ConcurrentHashMap<>();
         this.healthWatcherRunInterval = healthWatcherRunInterval;
         this.healthReportingThreshold = healthReportingThreshold;
     }
@@ -50,12 +49,7 @@ public class NodeHealthWatcher extends Thread {
     }
 
     public void registerHeartbeat(NodeHealthInfos nodeHealthInfos) {
-        try {
-            heartbeatHistoryLock.writeLock().lock();
-            heartbeatHistory.put(nodeHealthInfos.getNodeName(), Instant.now());
-        } finally {
-            heartbeatHistoryLock.writeLock().unlock();
-        }
+        heartbeatHistory.put(nodeHealthInfos.getNodeName(), Instant.now());
     }
 
     public void run() {
@@ -64,19 +58,19 @@ public class NodeHealthWatcher extends Thread {
             KVEcsNotificationMessage.Builder ecsNotificationBuilder =
                     new KVEcsNotificationMessage.Builder().status(UNRESPONSIVE_NODES_REPORTING);
             boolean nodeFailureDetected = false;
+            String unresponsiveNodeName = "";
             try {
-                heartbeatHistoryLock.readLock().lock();
                 for (Map.Entry<String, Instant> heartbeat : heartbeatHistory.entrySet()) {
                     Duration timeSinceLastBeat = new Duration(heartbeat.getValue(), Instant.now());
                     if (timeSinceLastBeat.isLongerThan(healthReportingThreshold)) {
                         nodeFailureDetected = true;
-                        LOGGER.info(StringUtils.join(" ", "Node :", heartbeat.getKey(), "failed"));
-                        ecsNotificationBuilder.addUnresponsiveNodeName(heartbeat.getKey());
-                        heartbeatHistory.remove(heartbeat.getKey());
+                        unresponsiveNodeName = heartbeat.getKey();
+                        LOGGER.info(StringUtils.join(" ", "Node :", unresponsiveNodeName, "failed"));
+                        ecsNotificationBuilder.addUnresponsiveNodeName(unresponsiveNodeName);
+                        heartbeatHistory.remove(unresponsiveNodeName);
                     }
                 }
             } finally {
-                heartbeatHistoryLock.readLock().unlock();
                 if (nodeFailureDetected) {
                     ecsNotificationService.notify(ecsNotificationBuilder.build());
                 }
