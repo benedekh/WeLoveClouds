@@ -242,6 +242,7 @@ public class ExternalConfigurationService implements Observer {
     public void removeUnresponsiveNodesWithName(String nodeName) throws ExternalConfigurationServiceException {
         StorageNode unresponsiveNode = distributedService.getNodeFrom(nodeName);
         unresponsiveNode.setStatus(ERROR);
+        unresponsiveNode.clearHashRange();
         distributedService.removeParticipatingNode(unresponsiveNode);
         addNode(200, "LFU", true);
     }

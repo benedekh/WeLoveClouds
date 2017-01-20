@@ -84,11 +84,15 @@ public class StorageNode extends AbstractNode {
     }
 
     public void addReadRange(HashRange readRange) {
-        this.readRanges.add(readRange);
+        readRanges.add(readRange);
     }
 
     public void clearReadRanges() {
-        this.readRanges.clear();
+        readRanges.clear();
+    }
+
+    public void clearHashRange() {
+        setHashRange(null);
     }
 
     public List<StorageNode> getReplicas() {
