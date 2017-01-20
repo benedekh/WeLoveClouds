@@ -181,7 +181,7 @@ public class ExternalConfigurationService implements Observer {
         }
     }
 
-    public void addNode(int cacheSize, String displacementStrategy)
+    public void addNode(int cacheSize, String displacementStrategy, boolean withNodeAutomaticStart)
             throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
             AbstractBatchTasks<AbstractRetryableTask> addNodeBatch;
@@ -200,7 +200,8 @@ public class ExternalConfigurationService implements Observer {
             addNodeBatch = ecsBatchFactory
                     .createAddNodeBatchFrom(repository.getLoadbalancer(), new AddNodeTaskDetails(newStorageNode,
                             successorNode,
-                            distributedService.getRingMetadata(), displacementStrategy, cacheSize));
+                            distributedService.getRingMetadata(), displacementStrategy,
+                            cacheSize), withNodeAutomaticStart);
 
             addNodeBatch.addObserver(this);
             taskService.launchBatchTasks(addNodeBatch);
@@ -238,10 +239,11 @@ public class ExternalConfigurationService implements Observer {
         }
     }
 
-    public void removeUnresponsiveNodesWithName(String nodeName) {
+    public void removeUnresponsiveNodesWithName(String nodeName) throws ExternalConfigurationServiceException {
         StorageNode unresponsiveNode = distributedService.getNodeFrom(nodeName);
         unresponsiveNode.setStatus(ERROR);
         distributedService.removeParticipatingNode(unresponsiveNode);
+        addNode(200, "LFU", true);
     }
 
     private void initializeNodesWithMetadata() {
