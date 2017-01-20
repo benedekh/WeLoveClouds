@@ -1,6 +1,5 @@
 package weloveclouds.ecs.models.stats;
 
-
 import java.util.List;
 
 import weloveclouds.ecs.core.EcsStatus;
