@@ -78,6 +78,13 @@ public class KVEcsNotificationMessage implements IKVEcsNotificationMessage {
             return this;
         }
 
+        public Builder reset() {
+            ringTopology = null;
+            nodeHealthInfos = null;
+            unresponsiveNodesName.clear();
+            return this;
+        }
+
         public KVEcsNotificationMessage build() {
             return new KVEcsNotificationMessage(this);
         }

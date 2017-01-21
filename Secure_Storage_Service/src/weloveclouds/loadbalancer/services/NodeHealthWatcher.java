@@ -54,11 +54,12 @@ public class NodeHealthWatcher extends Thread {
 
     public void run() {
         this.status = RUNNING;
+        KVEcsNotificationMessage.Builder ecsNotificationBuilder = new KVEcsNotificationMessage
+                .Builder().status(UNRESPONSIVE_NODES_REPORTING);
+        boolean nodeFailureDetected;
+        String unresponsiveNodeName;
         while (status == RUNNING) {
-            KVEcsNotificationMessage.Builder ecsNotificationBuilder =
-                    new KVEcsNotificationMessage.Builder().status(UNRESPONSIVE_NODES_REPORTING);
-            boolean nodeFailureDetected = false;
-            String unresponsiveNodeName = "";
+            nodeFailureDetected = false;
             try {
                 for (Map.Entry<String, Instant> heartbeat : heartbeatHistory.entrySet()) {
                     Duration timeSinceLastBeat = new Duration(heartbeat.getValue(), Instant.now());
@@ -73,6 +74,7 @@ public class NodeHealthWatcher extends Thread {
             } finally {
                 if (nodeFailureDetected) {
                     ecsNotificationService.notify(ecsNotificationBuilder.build());
+                    ecsNotificationBuilder.reset();
                 }
                 try {
                     sleep(healthWatcherRunInterval.getMillis());
