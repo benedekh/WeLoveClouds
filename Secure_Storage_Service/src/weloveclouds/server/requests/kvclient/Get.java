@@ -21,7 +21,7 @@ import weloveclouds.server.services.datastore.exceptions.ServiceIsStoppedExcepti
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
- * A registerGet request to registerGet the respective value for a key, stored in the
+ * A get request to get the respective value for a key, stored in the
  * {@link IMovableDataAccessService}.
  * 
  * @author Benoit
@@ -46,7 +46,7 @@ public class Get implements IKVClientRequest {
     public KVMessage execute() {
         KVMessage response = null;
         try {
-            LOGGER.debug(StringUtils.join(" ", "Trying to registerGet value for key", key));
+            LOGGER.debug(StringUtils.join(" ", "Trying to get value for key", key));
             response = createKVMessage(GET_SUCCESS, key, dataAccessService.getValue(key));
         } catch (KeyIsNotManagedByServiceException ex) {
             RingMetadata ringMetadata = dataAccessService.getRingMetadata();
