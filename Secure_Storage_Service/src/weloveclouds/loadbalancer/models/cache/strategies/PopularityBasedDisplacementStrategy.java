@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +26,7 @@ import weloveclouds.loadbalancer.models.cache.CachedKeyUsage;
 public class PopularityBasedDisplacementStrategy<K> implements IDisplacementStrategy<K> {
     private static final int FIRST = 0;
     private final List<CachedKeyUsage<K>> sortedCachedKeyUsage;
-    private final Map<K, CachedKeyUsage<K>> keyUsage;
+    private final ConcurrentHashMap<K, CachedKeyUsage<K>> keyUsage;
     private ReentrantReadWriteLock reentrantReadWriteLock;
     private ScheduledExecutorService keyOrderingTask;
 
@@ -36,7 +37,7 @@ public class PopularityBasedDisplacementStrategy<K> implements IDisplacementStra
                                                        Duration timeBetweenKeyOrdering) {
         this.reentrantReadWriteLock = new ReentrantReadWriteLock();
         this.keyOrderingTask = Executors.newScheduledThreadPool(1);
-        this.keyUsage = new LinkedHashMap<>(maximumCapacity);
+        this.keyUsage = new ConcurrentHashMap<>(maximumCapacity);
         this.sortedCachedKeyUsage = new ArrayList<>();
         this.keyOrderingTask.scheduleAtFixedRate(new Runnable() {
             @Override
