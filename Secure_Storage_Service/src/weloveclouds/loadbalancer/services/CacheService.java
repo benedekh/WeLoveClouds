@@ -17,7 +17,6 @@ import weloveclouds.loadbalancer.models.cache.ICache;
 public class CacheService implements ICacheService<String, String> {
     private static final Logger LOGGER = Logger.getLogger(CacheService.class);
     private ICache<String, String> cache;
-    private ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
 
     @Inject
     public CacheService(ICache<String, String> cache) {
@@ -26,33 +25,16 @@ public class CacheService implements ICacheService<String, String> {
 
     @Override
     public String get(String key) throws UnableToFindRequestedKeyException {
-        String value;
-        try {
-            reentrantReadWriteLock.readLock().lock();
-            value = cache.get(key);
-        } finally {
-            reentrantReadWriteLock.readLock().unlock();
-        }
-        return value;
+        return cache.get(key);
     }
 
     @Override
     public void put(String key, String value) {
-        try {
-            reentrantReadWriteLock.writeLock().lock();
-            cache.put(key, value);
-        } finally {
-            reentrantReadWriteLock.writeLock().unlock();
-        }
+        cache.put(key, value);
     }
 
     @Override
     public void delete(String key) {
-        try {
-            reentrantReadWriteLock.writeLock().lock();
-            cache.delete(key);
-        } finally {
-            reentrantReadWriteLock.writeLock().unlock();
-        }
+        cache.delete(key);
     }
 }

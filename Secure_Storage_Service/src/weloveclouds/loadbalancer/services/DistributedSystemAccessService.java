@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.status.ServiceStatus;
