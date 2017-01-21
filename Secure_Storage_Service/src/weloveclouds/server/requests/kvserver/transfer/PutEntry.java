@@ -13,7 +13,7 @@ import weloveclouds.server.store.exceptions.StorageException;
 
 /**
  * A transfer request to the {@link IMovableDataAccessService}, which means the respective entry
- * shall be registerPut into the data access service.
+ * shall be put into the data access service.
  * 
  * @author Benedek
  */
@@ -26,7 +26,7 @@ public class PutEntry implements IKVTransferRequest {
 
     /**
      * @param dataAccessService a reference to the data access service
-     * @param entry that shall be registerPut into the data access service
+     * @param entry that shall be put into the data access service
      */
     public PutEntry(IMovableDataAccessService dataAccessService, KVEntry entry) {
         this.dataAccessService = dataAccessService;
@@ -36,7 +36,7 @@ public class PutEntry implements IKVTransferRequest {
     @Override
     public KVTransferMessage execute() {
         try {
-            LOGGER.debug("Executing registerPut entry request.");
+            LOGGER.debug("Executing put entry request.");
             dataAccessService.putEntryWithoutAuthorization(entry);
             LOGGER.debug("Put entry request finished successfully.");
             return createSuccessKVTransferMessage();

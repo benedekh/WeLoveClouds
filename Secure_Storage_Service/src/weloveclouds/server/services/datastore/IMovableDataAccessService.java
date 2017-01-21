@@ -30,7 +30,7 @@ public interface IMovableDataAccessService extends IDataAccessService {
      * Puts an entry into the persistent storage without checking the role (@link Role) of this
      * server regarding that key.
      * 
-     * @param entry that has to be registerPut in the persistent storage
+     * @param entry that has to be put in the persistent storage
      * @return {@link PutType#INSERT}} if key was stored for the first time in the storage, or a
      *         {@link PutType#UPDATE} if the key was already stored
      * @throws StorageException if an error occurs

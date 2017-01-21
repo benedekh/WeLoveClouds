@@ -165,7 +165,7 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
      * Puts the respective entry into a storage unit. In case the storage unit is full, it creates a
      * new {@link PersistedStorageUnit} and puts the entry into that.<br>
      * Besides, it puts the parameter respective storageUnit into the {@link #storageUnits} map in
-     * case the entry was registerPut into that. Updates the #unitsWithFreeSpace accordingly too.
+     * case the entry was put into that. Updates the #unitsWithFreeSpace accordingly too.
      * 
      * @throws StorageException if any error occurs
      */
@@ -179,11 +179,11 @@ public class KVPersistentStorage extends Observable implements IDataAccessServic
                 if (!storageUnits.containsKey(key)) {
                     synchronized (storageUnits) {
                         if (!storageUnits.containsKey(key)) {
-                            // if it is the first time we registerPut the key
+                            // if it is the first time we put the key
                             storageUnits.put(key, storageUnit);
                             putStorageUnitIntoFreeSpaceCache(storageUnit);
                         } else {
-                            // if the key was registerPut concurrently to the storage
+                            // if the key was put concurrently to the storage
                             // just beforehand us, then update the value in that
                             // storage unit, and delete the one we created
                             PersistedStorageUnit storedStorageUnit = storageUnits.get(key);

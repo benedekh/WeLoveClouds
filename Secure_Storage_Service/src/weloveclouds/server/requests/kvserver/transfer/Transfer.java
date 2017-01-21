@@ -40,9 +40,9 @@ public class Transfer implements IKVTransferRequest {
     @Override
     public KVTransferMessage execute() {
         try {
-            LOGGER.debug("Executing transfer (registerPut) storage units request.");
+            LOGGER.debug("Executing transfer (put) storage units request.");
             dataAccessService.putEntries(storageUnits);
-            LOGGER.debug("Transfer (registerPut) storage units request finished successfully.");
+            LOGGER.debug("Transfer (put) storage units request finished successfully.");
             return createSuccessKVTransferMessage();
         } catch (StorageException ex) {
             LOGGER.error(ex);
