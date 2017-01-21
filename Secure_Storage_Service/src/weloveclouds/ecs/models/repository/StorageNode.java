@@ -2,6 +2,7 @@ package weloveclouds.ecs.models.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.commons.hashing.models.Hash;
@@ -44,12 +45,6 @@ public class StorageNode extends AbstractNode {
                     .build();
         } else {
             this.healthInfos = builder.healthInfos;
-        }
-    }
-
-    public void updateHealthInfos(NodeHealthInfos healthInfos) {
-        if (healthInfos != null) {
-            this.healthInfos = healthInfos;
         }
     }
 

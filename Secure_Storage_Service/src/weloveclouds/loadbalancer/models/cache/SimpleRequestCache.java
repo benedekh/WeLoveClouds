@@ -13,6 +13,7 @@ import weloveclouds.loadbalancer.models.cache.strategies.IDisplacementStrategy;
  * Created by Benoit on 2016-12-06.
  */
 public class SimpleRequestCache<K, V> implements ICache<K, V> {
+
     private IDisplacementStrategy<K> displacementStrategy;
     private Map<K, V> cache;
     private int maximumCapacity;

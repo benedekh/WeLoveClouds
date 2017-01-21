@@ -1,5 +1,7 @@
 package weloveclouds.ecs.models.repository;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
@@ -7,6 +9,7 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
  * Created by Benoit on 2016-12-09.
  */
 public abstract class AbstractNode {
+    private final ReentrantReadWriteLock healthInfoReadWriteLock = new ReentrantReadWriteLock();
     protected String name;
     protected NodeStatus status;
     protected ServerConnectionInfo serverConnectionInfo;
@@ -38,7 +41,23 @@ public abstract class AbstractNode {
     }
 
     public NodeHealthInfos getHealthInfos() {
-        return healthInfos;
+        try {
+            healthInfoReadWriteLock.readLock().lock();
+            return healthInfos;
+        } finally {
+            healthInfoReadWriteLock.readLock().unlock();
+        }
+    }
+
+    public void updateHealthInfos(NodeHealthInfos healthInfos) {
+        if (healthInfos != null) {
+            try {
+                healthInfoReadWriteLock.writeLock().lock();
+                this.healthInfos = healthInfos;
+            } finally {
+                healthInfoReadWriteLock.writeLock().unlock();
+            }
+        }
     }
 
     public String getIpAddress() {
