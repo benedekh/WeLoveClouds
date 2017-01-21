@@ -84,6 +84,7 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
     private class ConnectionHandler extends AbstractConnectionHandler<IKVMessage> {
         private DistributedSystemAccessService distributedSystemAccessService;
         private ICacheService<String, String> cacheService;
+        private ICommunicationApi transferCommunicationApi;
 
         ConnectionHandler(IConcurrentCommunicationApi communicationApi,
                           Connection connection,
@@ -95,6 +96,7 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;
             this.cacheService = cacheService;
+            this.transferCommunicationApi = communicationApiFactory.createCommunicationApiV1();
         }
 
         @Override
@@ -106,22 +108,26 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
         public void run() {
             logger.info("Client is connected to server.");
             try {
+                byte[] receivedMessage;
+                StorageNode transferDestination;
+                IKVMessage deserializedMessage;
                 while (connection.isConnected()) {
-                    StorageNode transferDestination;
-                    byte[] receivedMessage = communicationApi.receiveFrom(connection);
-                    IKVMessage deserializedMessage =
+                    receivedMessage = communicationApi.receiveFrom(connection);
+                    deserializedMessage =
                             messageDeserializer.deserialize(receivedMessage);
                     logger.debug(StringUtils.join(" ", "Message received:", deserializedMessage));
                     try {
                         switch (deserializedMessage.getStatus()) {
                             case GET:
                                 try {
-                                    String value = cacheService.get(deserializedMessage.getKey());
                                     communicationApi.send(
                                             messageSerializer.serialize(
                                                     new KVMessage.Builder().status(GET_SUCCESS)
                                                             .key(deserializedMessage.getKey())
-                                                            .value(value).build())
+                                                            .value(cacheService
+                                                                    .get(deserializedMessage.
+                                                                            getKey()))
+                                                            .build())
                                                     .getBytes(),
                                             connection);
                                 } catch (UnableToFindRequestedKeyException ex) {
@@ -180,14 +186,13 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
         private byte[] transferMessageToServerAndGetResponse(byte[] rawMessage,
                                                              StorageNode destination) throws ClientSideException {
             logger.debug("Transferring request to: " + destination.toString());
-            byte[] serverResponse;
-            ICommunicationApi communicationApi = communicationApiFactory.createCommunicationApiV1();
-            communicationApi.connectTo(destination.getServerConnectionInfo());
-            communicationApi.send(rawMessage);
-            serverResponse = communicationApi.receive();
-            communicationApi.disconnect();
-
-            return serverResponse;
+            try {
+                transferCommunicationApi.connectTo(destination.getServerConnectionInfo());
+                transferCommunicationApi.send(rawMessage);
+                return transferCommunicationApi.receive();
+            } finally {
+                transferCommunicationApi.disconnect();
+            }
         }
     }
 }
