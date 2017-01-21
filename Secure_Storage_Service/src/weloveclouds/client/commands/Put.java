@@ -38,7 +38,7 @@ public class Put extends AbstractKVCommunicationApiCommand {
     @Override
     public void execute() throws ClientSideException {
         try {
-            LOGGER.info("Executing registerPut command.");
+            LOGGER.info("Executing put command.");
             String key = arguments[KEY_INDEX];
             String value = PutCommandUtils.mergeValuesToOneString(VALUE_INDEX, arguments);
 
@@ -50,18 +50,19 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     userOutputWriter.writeLine("Key was successfully updated on the server.");
                     break;
                 case PUT_SUCCESS:
-                    userOutputWriter.writeLine("Key was successfully registerPut on the server.");
+                    userOutputWriter.writeLine("Key was successfully put on the server.");
                     break;
                 case PUT_ERROR:
                     userOutputWriter.writeLine(
-                            StringUtils.join(" ", "Error during key registerPut:", response.getValue()));
+                            StringUtils.join(" ", "Error during key put:", response.getValue()));
                     break;
                 case DELETE_SUCCESS:
                     userOutputWriter.writeLine("Key removed successfully.");
                     break;
                 case DELETE_ERROR:
                     userOutputWriter.writeLine(
-                            StringUtils.join(" ", "Error during key registerRemove:", response.getValue()));
+                            StringUtils.join(" ", "Error during key removal:", response.getValue
+                                    ()));
                     break;
                 case SERVER_NOT_RESPONSIBLE:
                     try {
@@ -127,8 +128,8 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
         /**
          * @param arguments contains the key in the {@value #KEY_INDEX} position and the value is
-         *        merged into one value starting from the index {@value #VALUE_INDEX} and going
-         *        until the end of the array
+         *                  merged into one value starting from the index {@value #VALUE_INDEX} and
+         *                  going until the end of the array
          */
         public Builder arguments(String[] arguments) {
             this.arguments = arguments;
@@ -145,7 +146,7 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
         /**
          * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object
-         *        to its original representation from String
+         *                                 to its original representation from String
          */
         public Builder ringMetadataDeserializer(
                 IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
@@ -157,5 +158,4 @@ public class Put extends AbstractKVCommunicationApiCommand {
             return new Put(this);
         }
     }
-
 }

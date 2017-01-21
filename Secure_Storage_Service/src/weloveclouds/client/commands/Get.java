@@ -37,7 +37,7 @@ public class Get extends AbstractKVCommunicationApiCommand {
     @Override
     public void execute() throws ClientSideException {
         try {
-            LOGGER.info("Executing registerGet command.");
+            LOGGER.info("Executing get command.");
             String key = arguments[KEY_INDEX];
 
             IKVMessage response = communicationApi.get(key);
@@ -51,7 +51,7 @@ public class Get extends AbstractKVCommunicationApiCommand {
                     break;
                 case GET_ERROR:
                     userOutputWriter.writeLine(
-                            StringUtils.join(" ", "Error during key registerGet:", responseValue));
+                            StringUtils.join(" ", "Error during key get:", responseValue));
                     break;
                 case SERVER_NOT_RESPONSIBLE:
                     try {
