@@ -85,7 +85,7 @@ public class ArgumentsValidator {
     }
 
     /**
-     * A registerPut command is valid, if:<br>
+     * A put command is valid, if:<br>
      * (1) the {@value #KEY_INDEX} parameter of arguments is a key, and<br>
      * (2) all other parameters starting from {@value #VALUE_INDEX} parameter of the arguments are
      * regarded and merged as value, and<br>
@@ -96,7 +96,7 @@ public class ArgumentsValidator {
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validatePutArguments(String[] arguments) throws IllegalArgumentException {
-        String command = "registerPut";
+        String command = "put";
 
         if (isNullOrEmpty(arguments) || arguments.length < PUT_MIN_NUMBER_OF_ARGUMENTS) {
             logWarning(command);
@@ -112,7 +112,7 @@ public class ArgumentsValidator {
     }
 
     /**
-     * A registerGet command is valid, if:<br>
+     * A get command is valid, if:<br>
      * (1) the {@value #KEY_INDEX} parameter of arguments is a key, and<br>
      * (2) and the size of the key is at most {@value #KEY_SIZE_LIMIT_IN_BYTES} bytes, and<br>
      * (3) that is the only argument.<br>
@@ -120,7 +120,7 @@ public class ArgumentsValidator {
      * @throws IllegalArgumentException if there is a validation error
      */
     public static void validateGetArguments(String[] arguments) throws IllegalArgumentException {
-        String command = "registerGet";
+        String command = "get";
         if (isNullOrEmpty(arguments) || arguments.length != GET_NUMBER_OF_ARGUMENTS) {
             logWarning(command);
             throw new IllegalArgumentException("Get command should have one argument.");
