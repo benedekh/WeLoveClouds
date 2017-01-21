@@ -12,7 +12,7 @@ import weloveclouds.server.requests.validator.KVServerRequestsValidator;
 import weloveclouds.server.services.datastore.IMovableDataAccessService;
 
 /**
- * A registerRemove range request to the {@link IMovableDataAccessService}, which removes those entries
+ * A remove range request to the {@link IMovableDataAccessService}, which removes those entries
  * whose key's hash value is in the specified range.
  * 
  * @author Benedek
@@ -32,7 +32,7 @@ public class RemoveRange implements IKVECSRequest {
     @Override
     public KVAdminMessage execute() {
         try {
-            LOGGER.debug("Executing registerRemove range request.");
+            LOGGER.debug("Executing remove range request.");
             dataAccessService.removeEntries(range);
             dataAccessService.defragment();
             LOGGER.debug("Remove range request finished successfully.");

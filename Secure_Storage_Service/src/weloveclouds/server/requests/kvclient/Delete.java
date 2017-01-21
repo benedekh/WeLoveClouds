@@ -23,7 +23,7 @@ import weloveclouds.server.services.datastore.exceptions.WriteLockIsActiveExcept
 import weloveclouds.server.store.exceptions.StorageException;
 
 /**
- * A delete request to registerRemove the key and its respective value stored in the
+ * A delete request to remove the key and its respective value stored in the
  * {@link IMovableDataAccessService}.
  * 
  * @author Benoit
@@ -47,7 +47,7 @@ public class Delete implements IKVClientRequest {
     public KVMessage execute() {
         KVMessage response = null;
         try {
-            LOGGER.debug(StringUtils.join(" ", "Trying to registerRemove key", key));
+            LOGGER.debug(StringUtils.join(" ", "Trying to remove key", key));
             dataAccessService.removeEntry(key);
             response = createKVMessage(DELETE_SUCCESS, key, null);
         } catch (KeyIsNotManagedByServiceException ex) {

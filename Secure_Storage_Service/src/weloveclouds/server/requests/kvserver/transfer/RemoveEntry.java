@@ -35,7 +35,7 @@ public class RemoveEntry implements IKVTransferRequest {
     @Override
     public KVTransferMessage execute() {
         try {
-            LOGGER.debug("Executing registerRemove entry request.");
+            LOGGER.debug("Executing remove entry request.");
             dataAccessService.removeEntryWithoutAuthorization(key);
             LOGGER.debug("Remove entry request finished successfully.");
             return createSuccessKVTransferMessage();
