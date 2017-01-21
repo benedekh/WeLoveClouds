@@ -40,7 +40,6 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
                                            messageDeserializer,
                                    @HealthMonitoringServicePort int port,
                                    DistributedSystemAccessService distributedSystemAccessService,
-                                   EcsNotificationService ecsNotificationService,
                                    NodeHealthWatcher nodeHealthWatcher)
             throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
@@ -97,8 +96,9 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
         public void run() {
             logger.info("Client is connected to server.");
             try {
+                IKVHeartbeatMessage receivedMessage;
                 while (connection.isConnected()) {
-                    IKVHeartbeatMessage receivedMessage = messageDeserializer
+                    receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
                     logger.debug(StringUtils.join(" ", "Message received:", receivedMessage));
                     distributedSystemAccessService

@@ -14,7 +14,7 @@ public class HelpMessageGenerator {
         buffer.append("\n");
         buffer.append("First, the user shall initialize the storage service\n");
         buffer.append("Second, the user shall start the service, making it ready to handle connections from clients\n");
-        buffer.append("From there, the user may add or remove nodes from the storage service as they please\n");
+        buffer.append("From there, the user may add or registerRemove nodes from the storage service as they please\n");
         buffer.append("Finally, the user can stop the storage service, shut it down and exit the ECS program\n");
         buffer.append("\n");
         buffer.append("|Commmand | Parameters | Description | Expected shell output |\n");

@@ -38,7 +38,7 @@ public class Put extends AbstractKVCommunicationApiCommand {
     @Override
     public void execute() throws ClientSideException {
         try {
-            LOGGER.info("Executing put command.");
+            LOGGER.info("Executing registerPut command.");
             String key = arguments[KEY_INDEX];
             String value = PutCommandUtils.mergeValuesToOneString(VALUE_INDEX, arguments);
 
@@ -50,18 +50,18 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     userOutputWriter.writeLine("Key was successfully updated on the server.");
                     break;
                 case PUT_SUCCESS:
-                    userOutputWriter.writeLine("Key was successfully put on the server.");
+                    userOutputWriter.writeLine("Key was successfully registerPut on the server.");
                     break;
                 case PUT_ERROR:
                     userOutputWriter.writeLine(
-                            StringUtils.join(" ", "Error during key put:", response.getValue()));
+                            StringUtils.join(" ", "Error during key registerPut:", response.getValue()));
                     break;
                 case DELETE_SUCCESS:
                     userOutputWriter.writeLine("Key removed successfully.");
                     break;
                 case DELETE_ERROR:
                     userOutputWriter.writeLine(
-                            StringUtils.join(" ", "Error during key remove:", response.getValue()));
+                            StringUtils.join(" ", "Error during key registerRemove:", response.getValue()));
                     break;
                 case SERVER_NOT_RESPONSIBLE:
                     try {

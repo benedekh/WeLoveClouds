@@ -20,8 +20,8 @@ import weloveclouds.commons.utils.StringUtils;
  * @author Benoit, Benedek, Hunton
  */
 public class UserInputParserTest extends TestCase {
-    private static final String PUT_COMMAND = "put";
-    private static final String GET_COMMAND = "get";
+    private static final String PUT_COMMAND = "registerPut";
+    private static final String GET_COMMAND = "registerGet";
     private static final String CONNECT_COMMAND = "connect";
     private static final String DISCONNECT_COMMAND = "disconnect";
     private static final String HELP_COMMAND = "help";

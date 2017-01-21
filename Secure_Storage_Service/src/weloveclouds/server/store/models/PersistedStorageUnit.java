@@ -187,7 +187,7 @@ public class PersistedStorageUnit implements Serializable {
     }
 
     /**
-     * Because logger is not serializable, we have to get it every time.
+     * Because logger is not serializable, we have to registerGet it every time.
      */
     protected Logger getLogger() {
         return Logger.getLogger(getClass());

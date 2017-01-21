@@ -16,7 +16,7 @@ import weloveclouds.server.store.exceptions.StorageException;
  * 
  * @author Benedek
  */
-public class LRUStrategy implements DisplacementStrategy {
+public class LRUStrategy implements DisplacementStrategy<String> {
 
     private static final Logger LOGGER = Logger.getLogger(LRUStrategy.class);
 
@@ -34,7 +34,7 @@ public class LRUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public String displaceKey() throws StorageException {
+    public String getKeyToDisplace() throws StorageException {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             // the last element of the queue is the least recently used one
             String displaced = recentKeys.removeLast();
@@ -42,24 +42,24 @@ public class LRUStrategy implements DisplacementStrategy {
                     StringUtils.join(" ", displaced, "to be removed from cache by LRU strategy."));
             return displaced;
         } catch (NoSuchElementException ex) {
-            String errorMessage = "LRU strategy store is empty so it cannot remove anything.";
+            String errorMessage = "LRU strategy store is empty so it cannot registerRemove anything.";
             LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         }
     }
 
     @Override
-    public void put(String key) {
+    public void registerPut(String key) {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             recentKeys.addFirst(key);
             LOGGER.debug(StringUtils.join(" ", key, "is added to the LRU strategy store."));
         } catch (NullPointerException ex) {
-            LOGGER.error("Key cannot be null for put in LRU strategy.");
+            LOGGER.error("Key cannot be null for registerPut in LRU strategy.");
         }
     }
 
     @Override
-    public void get(String key) {
+    public void registerGet(String key) {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             // move the element to the head of the queue
             // because it was most recently used
@@ -68,19 +68,19 @@ public class LRUStrategy implements DisplacementStrategy {
             LOGGER.debug(StringUtils.join(" ", key,
                     "is the most recently used in the LRU strategy store."));
         } catch (NullPointerException ex) {
-            LOGGER.error("Key cannot be null for get in LRU strategy.");
+            LOGGER.error("Key cannot be null for registerGet in LRU strategy.");
         }
     }
 
     @Override
-    public void remove(String key) {
+    public void registerRemove(String key) {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             boolean isRemoved = recentKeys.remove(key);
             if (isRemoved) {
                 LOGGER.debug(StringUtils.join(" ", key, "is removed from the LRU strategy store."));
             }
         } catch (NullPointerException ex) {
-            LOGGER.error("Key cannot be null for remove in LRU strategy.");
+            LOGGER.error("Key cannot be null for registerRemove in LRU strategy.");
         }
     }
 

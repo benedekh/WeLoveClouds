@@ -32,7 +32,7 @@ public interface IKVTransferMessage {
     public Set<MovableStorageUnit> getStorageUnits();
 
     /**
-     * @return the entry that shall be put in the data access service
+     * @return the entry that shall be registerPut in the data access service
      */
     public KVEntry getPutableEntry();
 

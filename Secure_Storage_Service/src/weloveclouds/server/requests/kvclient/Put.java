@@ -26,7 +26,7 @@ import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.PutType;
 
 /**
- * A put request to store a key and a value in the {@link IMovableDataAccessService}.
+ * A registerPut request to store a key and a value in the {@link IMovableDataAccessService}.
  * 
  * @author Benoit
  */
@@ -51,7 +51,7 @@ public class Put implements IKVClientRequest {
     public KVMessage execute() {
         KVMessage response = null;
         try {
-            LOGGER.debug(StringUtils.join(" ", "Trying to put record", key, value));
+            LOGGER.debug(StringUtils.join(" ", "Trying to registerPut record", key, value));
 
             PutType putType = dataAccessService.putEntry(new KVEntry(key, value));
             switch (putType) {

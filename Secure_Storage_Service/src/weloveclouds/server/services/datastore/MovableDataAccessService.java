@@ -277,7 +277,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
     /**
      * Puts the respective entry into the storage
      * 
-     * @param entry that has to be put in the storage
+     * @param entry that has to be registerPut in the storage
      * @param writePrivilegeIsExpected if the data access service is expected to have write
      *        privilege
      * @throws StorageException if any error occurs

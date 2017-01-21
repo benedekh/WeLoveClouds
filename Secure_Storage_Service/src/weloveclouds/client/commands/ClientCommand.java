@@ -10,7 +10,7 @@ import weloveclouds.commons.utils.StringUtils;
  * @author Benedek
  */
 public enum ClientCommand {
-    CONNECT("connect"), DISCONNECT("disconnect"), PUT("put"), GET("get"), LOGLEVEL(
+    CONNECT("connect"), DISCONNECT("disconnect"), PUT("registerPut"), GET("registerGet"), LOGLEVEL(
             "logLevel"), HELP("help"), QUIT("quit"), DEFAULT("default");
 
     private static final Logger LOGGER = Logger.getLogger(ClientCommand.class);

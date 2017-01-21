@@ -37,7 +37,7 @@ public class KVCache implements IDataAccessService, Observer {
     private int currentSize;
     private int capacity;
 
-    private DisplacementStrategy displacementStrategy;
+    private DisplacementStrategy<String> displacementStrategy;
     private ReentrantReadWriteLock accessLock;
 
     /**
@@ -69,7 +69,7 @@ public class KVCache implements IDataAccessService, Observer {
                             SUCCESS);
                 } else {
                     if (currentSize == capacity) {
-                        String displacedKey = displacementStrategy.displaceKey();
+                        String displacedKey = displacementStrategy.getKeyToDisplace();
                         removeEntry(displacedKey);
                     }
 
@@ -81,7 +81,7 @@ public class KVCache implements IDataAccessService, Observer {
                 }
 
                 LOGGER.debug(StringUtils.join(" ", entry, "was added to cache."));
-                displacementStrategy.put(key);
+                displacementStrategy.registerPut(key);
 
                 return response;
             } catch (NullPointerException ex) {
@@ -106,7 +106,7 @@ public class KVCache implements IDataAccessService, Observer {
                 incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
                 throw new ValueNotFoundException(key);
             } else {
-                displacementStrategy.get(key);
+                displacementStrategy.registerGet(key);
                 LOGGER.debug(StringUtils.join(" ", value, "was retrieved from cache for key", key));
                 incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(),
                         SUCCESS);
@@ -114,7 +114,7 @@ public class KVCache implements IDataAccessService, Observer {
             }
         } catch (NullPointerException ex) {
             incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
-            String errorMessage = "Key cannot be null to get value from cache.";
+            String errorMessage = "Key cannot be null to registerGet value from cache.";
             LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         }
@@ -126,7 +126,7 @@ public class KVCache implements IDataAccessService, Observer {
             String removed = cache.remove(key);
             if (removed != null) {
                 currentSize--;
-                displacementStrategy.remove(key);
+                displacementStrategy.registerRemove(key);
                 LOGGER.debug(StringUtils.join(" ", key, "was removed from cache."));
                 incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(),
                         SUCCESS);
@@ -135,7 +135,7 @@ public class KVCache implements IDataAccessService, Observer {
             }
         } catch (NullPointerException ex) {
             incrementCounter(CACHE_MODULE_NAME, displacementStrategy.getStrategyName(), MISS);
-            String errorMessage = "Key cannot be null to remove from cache.";
+            String errorMessage = "Key cannot be null to registerRemove from cache.";
             LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         }
