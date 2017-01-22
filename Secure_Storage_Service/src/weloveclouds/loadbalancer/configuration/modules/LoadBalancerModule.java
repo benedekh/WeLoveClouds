@@ -34,5 +34,6 @@ public class LoadBalancerModule extends AbstractModule {
         install(new HealthMonitoringServiceModule());
         install(new EcsNotificationServiceModule());
         install(new DnsModule());
+        install(new WebServiceModule());
     }
 }

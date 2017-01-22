@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>We Love Clouds Console</title>
+
+    <!-- Latest compiled and minified CSS -->
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="css/custom.css">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src:"https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
+    <style>
+      .server-info {
+        padding: 1%;
+        border-style: solid;
+        border-width: medium;
+        border-color: #2980b9;
+        background-color: #f5f3f3;
+      }
+
+      .loading-gif {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        max-width: 40%;
+        max-height: 40%;
+      }
+
+      .server-image {
+        max-width: 100%;
+      }​
+
+
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="index.html">WeLoveClouds Console</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+    </div>
+    <div class="container">
+     <div class="row">
+       <h2>Services</h2>
+       <hr>
+       <div class="col-md-4 server-info">
+           <div class="col-md-3">
+              <img class="server-image" src="resources/serverHealthy.png">
+           </div>
+           <div class="col-md-9">
+                <h4>Load balancer</h4>
+                <div id="loadbalancer-info">
+                  <img class="loading-gif" src="resources/loading.gif">
+                </div>
+           </div>
+       </div>
+       <div class="col-md-1"></div>
+       <div class="col-md-4 server-info">
+           <div class="col-md-3">
+              <img class="server-image" src="resources/serverHealthy.png">
+           </div>
+           <div class="col-md-9">
+                <h4>ECS</h4>
+                <div id="ecs-info">
+                  <img class="loading-gif" src="resources/loading.gif">
+                </div>
+           </div>
+       </div>
+     </div>
+     <footer>
+       <p>&copy; 2016 WeLoveClouds</p>
+     </footer>
+   </div><!--/.container-->
+   <script>
+   window.onload = function(){
+     fetchData();
+     setInterval(fetchData, 5000);
+   }
+   function fetchData(){
+     jQuery.ajax({
+           url: "http://weloveclouds-lb.com:8080/rest/api/v1/monitoring/status",
+           type: "GET",
+
+           contentType: 'application/json; charset=utf-8',
+           success: function(resultData) {
+             var template = $('#loadbalancer-tlp').html();
+             var html = Mustache.to_html(template, resultData);
+             $('#loadbalancer-info').html(html);
+
+           },
+           error : function(jqXHR, textStatus, errorThrown) {
+              console.log(errorThrown);
+           },
+
+           timeout: 12000000,
+       })
+     }
+ </script>
+ <script id="loadbalancer-tlp" type="text/template">
+   <p>Name: {{name}}</p>
+ </script>
+  </body>
+</html>
