@@ -13,10 +13,10 @@ import weloveclouds.server.store.exceptions.StorageException;
 
 /**
  * FIFO (First In First Out) strategy for displacing a key from a full cache.
- * 
+ *
  * @author Benedek
  */
-public class FIFOStrategy implements DisplacementStrategy {
+public class FIFOStrategy implements DisplacementStrategy<String> {
 
     private static final Logger LOGGER = Logger.getLogger(FIFOStrategy.class);
 
@@ -34,37 +34,37 @@ public class FIFOStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public String displaceKey() throws StorageException {
+    public String getKeyToDisplace() throws StorageException {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             String displaced = fifo.remove();
             LOGGER.debug(
                     StringUtils.join(" ", displaced, "to be removed from cache by FIFO strategy."));
             return displaced;
         } catch (NoSuchElementException ex) {
-            String errorMessage = "FIFO strategy store is empty so it cannot remove anything.";
+            String errorMessage = "FIFO strategy store is empty so it cannot registerRemove anything.";
             LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         }
     }
 
     @Override
-    public void put(String key) {
+    public void registerPut(String key) {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             fifo.add(key);
             LOGGER.debug(StringUtils.join(" ", key, "is added to the FIFO strategy store."));
         } catch (NullPointerException ex) {
-            LOGGER.error("Key cannot be null for put in FIFO strategy.");
+            LOGGER.error("Key cannot be null for registerPut in FIFO strategy.");
         }
     }
 
     @Override
-    public void get(String key) {
+    public void registerGet(String key) {
         try (CloseableLock lock = new CloseableLock(accessLock.readLock())) {
             // FIFO strategy does not update anything
         }
     }
 
-    public void remove(String key) {
+    public void registerRemove(String key) {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             boolean isRemoved = fifo.remove(key);
             if (isRemoved) {
@@ -72,8 +72,7 @@ public class FIFOStrategy implements DisplacementStrategy {
                         StringUtils.join(" ", key, "is removed from the FIFO strategy store."));
             }
         } catch (NullPointerException ex) {
-            LOGGER.error("Key cannot be null for remove in FIFO strategy.");
+            LOGGER.error("Key cannot be null for registerRemove in FIFO strategy.");
         }
     }
-
 }

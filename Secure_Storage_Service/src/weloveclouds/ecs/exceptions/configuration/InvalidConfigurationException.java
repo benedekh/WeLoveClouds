@@ -1,4 +1,4 @@
-package weloveclouds.ecs.exceptions;
+package weloveclouds.ecs.exceptions.configuration;
 
 import weloveclouds.commons.exceptions.ClientSideException;
 

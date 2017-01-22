@@ -15,7 +15,7 @@ import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.ecs.models.repository.StorageNode;
 
-import static weloveclouds.ecs.models.repository.NodeStatus.WRITELOCKED;
+import static weloveclouds.ecs.models.repository.NodeStatus.WRITE_LOCKED;
 
 /**
  * Created by Benoit on 2016-11-22.
@@ -42,7 +42,7 @@ public class SetWriteLock extends AbstractEcsNetworkCommand<StorageNode, IKVAdmi
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             } else {
-                targetedNode.setStatus(WRITELOCKED);
+                targetedNode.setStatus(WRITE_LOCKED);
             }
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);

@@ -45,10 +45,11 @@ import weloveclouds.server.store.cache.strategy.StrategyFactory;
 public class KVServer {
 
     protected static final Path PERSISTENT_STORAGE_DEFAULT_ROOT_FOLDER = Paths.get("./");
-
-    private static final String DEFAULT_LOG_PATH = "logs/server.log";
+    private static final int SERVER_NAME_INDEX = 6;
+    private static final String DEFAULT_LOG_PATH = "logs/";
     private static final String DEFAULT_LOG_LEVEL = "DEBUG";
     private static final Logger LOGGER = Logger.getLogger(KVServer.class);
+    private static String logFileName = "server.log";
 
     private static LogSetup logSetup = null;
 
@@ -57,11 +58,13 @@ public class KVServer {
      */
     public static void main(String[] args) {
         ExecutionContext.setExecutionEnvironmentSystemPropertiesFromArgs(args);
-        initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
 
         if (args.length == 0) {
+            initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
             startInteractiveCLIMode();
         } else {
+            logFileName = StringUtils.join("", args[SERVER_NAME_INDEX], ".log");
+            initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
             startNonInteractiveMode(args);
         }
     }
@@ -77,21 +80,21 @@ public class KVServer {
                     cliRegistry.getReplicableDAS(), cliRegistry.getLoadbalancerConnectionInfo());
         } catch (Throwable ex) {
             LOGGER.error(ex);
+            System.exit(1);
         }
     }
 
     /**
      * Creates and start all three servers for the different requests.
-     * 
+     *
      * @param portConfigurationContext context object which contains the port configuration to serve
-     *        the different requests (KVClient, KVServer, KVECS)
-     * @param dataAccessService the data access service
-     * @param loadBalancerInfo connection information to the loadbalancer
-     * 
+     *                                 the different requests (KVClient, KVServer, KVECS)
+     * @param dataAccessService        the data access service
+     * @param loadBalancerInfo         connection information to the loadbalancer
      * @throws IOException if an error occurs
      */
     private static void createAndStartServers(KVServerPortContext portConfigurationContext,
-            IReplicableDataAccessService dataAccessService, ServerConnectionInfo loadBalancerInfo)
+                                              IReplicableDataAccessService dataAccessService, ServerConnectionInfo loadBalancerInfo)
             throws IOException {
         ServerFactory serverFactory = new ServerFactory();
 
@@ -143,7 +146,7 @@ public class KVServer {
     private static void initializeLoggerWithLevel(Level logLevel) {
         try {
             if (logSetup == null) {
-                logSetup = new LogSetup(DEFAULT_LOG_PATH, logLevel);
+                logSetup = new LogSetup(StringUtils.join("", DEFAULT_LOG_PATH, logFileName), logLevel);
             } else {
                 Logger.getRootLogger().setLevel(logLevel);
             }
@@ -156,11 +159,11 @@ public class KVServer {
     /**
      * Start KV Server at given port. ONLY FOR TESTING PURPOSES!!!
      *
-     * @param port given port for storage server to operate
+     * @param port      given port for storage server to operate
      * @param cacheSize specifies how many key-value pairs the server is allowed to keep in-memory
-     * @param strategy specifies the displacement strategy in the cache, in case the cache is full
-     *        and there is a GET or PUT request on a key that is currently not contained in the
-     *        cache. Options are "FIFO", "LRU", and "LFU".
+     * @param strategy  specifies the displacement strategy in the cache, in case the cache is full
+     *                  and there is a GET or PUT request on a key that is currently not contained
+     *                  in the cache. Options are "FIFO", "LRU", and "LFU".
      */
     public KVServer(int port, int cacheSize, String strategy) {
         Path defaultStoragePath = Paths.get("logs/testing/");
@@ -176,7 +179,7 @@ public class KVServer {
                     "Invalid strategy. Valid values are: FIFO, LRU, LFU");
         }
 
-        ArgumentsValidator.validatePortArguments(new String[] {String.valueOf(port)});
+        ArgumentsValidator.validatePortArguments(new String[]{String.valueOf(port)});
 
         DataAccessServiceInitializationContext initializationContext =
                 new DataAccessServiceInitializationContext.Builder().cacheSize(cacheSize)
@@ -199,5 +202,4 @@ public class KVServer {
             LOGGER.error(e);
         }
     }
-
 }

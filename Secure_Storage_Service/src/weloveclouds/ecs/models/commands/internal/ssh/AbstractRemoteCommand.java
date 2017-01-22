@@ -25,7 +25,7 @@ public abstract class AbstractRemoteCommand extends AbstractCommand<String>
     }
 
     public String getTargetedHostIp() {
-        return targetedNode.getIpAddress().replaceAll("/", "");
+        return targetedNode.getIpAddress();
     }
 
     public AbstractNode getTargetedNode() {

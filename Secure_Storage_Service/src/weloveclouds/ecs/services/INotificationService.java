@@ -7,4 +7,6 @@ import weloveclouds.ecs.models.messaging.notification.INotificationRequest;
  */
 public interface INotificationService<T> {
     void process(INotificationRequest<T> notificationRequest);
+
+    void start();
 }

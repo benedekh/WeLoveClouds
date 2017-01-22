@@ -61,7 +61,8 @@ public class Put extends AbstractKVCommunicationApiCommand {
                     break;
                 case DELETE_ERROR:
                     userOutputWriter.writeLine(
-                            StringUtils.join(" ", "Error during key remove:", response.getValue()));
+                            StringUtils.join(" ", "Error during key removal:", response.getValue
+                                    ()));
                     break;
                 case SERVER_NOT_RESPONSIBLE:
                     try {
@@ -127,8 +128,8 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
         /**
          * @param arguments contains the key in the {@value #KEY_INDEX} position and the value is
-         *        merged into one value starting from the index {@value #VALUE_INDEX} and going
-         *        until the end of the array
+         *                  merged into one value starting from the index {@value #VALUE_INDEX} and
+         *                  going until the end of the array
          */
         public Builder arguments(String[] arguments) {
             this.arguments = arguments;
@@ -145,7 +146,7 @@ public class Put extends AbstractKVCommunicationApiCommand {
 
         /**
          * @param ringMetadataDeserializer deserializer that converts a {@link RingMetadata} object
-         *        to its original representation from String
+         *                                 to its original representation from String
          */
         public Builder ringMetadataDeserializer(
                 IDeserializer<RingMetadata, String> ringMetadataDeserializer) {
@@ -157,5 +158,4 @@ public class Put extends AbstractKVCommunicationApiCommand {
             return new Put(this);
         }
     }
-
 }

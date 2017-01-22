@@ -2,7 +2,7 @@ package weloveclouds.commons.serialization.models;
 
 /**
  * XML token constants.
- * 
+ *
  * @author Benoit, Benedek
  */
 public class XMLTokens {
@@ -64,4 +64,6 @@ public class XMLTokens {
     public static final String STATUS = "STATUS";
 
     public static final String KVECS_NOTIFICATION_MESSAGE = "KVECS_NOTIFICATION_MESSAGE";
+    public static final String UNRESPONSIVE_NODES_NAME = "UNRESPONSIVE_NODES_NAME";
+    public static final String UNRESPONSIVE_NODE_NAME = "UNRESPONSIVE_NODE_NAME";
 }
