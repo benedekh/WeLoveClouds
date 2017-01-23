@@ -96,7 +96,7 @@
    }
    function fetchData(){
      jQuery.ajax({
-           url: "http://weloveclouds-lb.com:8080/rest/api/v1/monitoring/status",
+           url: "http://weloveclouds-lb.com:8080/rest/api/v1/loadBalancer/status",
            type: "GET",
 
            contentType: 'application/json; charset=utf-8',
@@ -115,7 +115,7 @@
      }
  </script>
  <script id="loadbalancer-tlp" type="text/template">
-   <p>Name: {{name}}</p>
+   <p>Status: {{status}}</p>
  </script>
   </body>
 </html>

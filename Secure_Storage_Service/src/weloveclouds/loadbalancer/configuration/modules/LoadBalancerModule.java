@@ -9,6 +9,8 @@ import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationRespon
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
 import weloveclouds.loadbalancer.configuration.annotations.HealthMonitoringServicePort;
 import weloveclouds.loadbalancer.configuration.providers.LoadBalancerConfigurationProvider;
+import weloveclouds.loadbalancer.core.ILoadBalancer;
+import weloveclouds.loadbalancer.core.LoadBalancer;
 
 /**
  * Created by Benoit on 2016-12-04.
@@ -17,6 +19,8 @@ public class LoadBalancerModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(ILoadBalancer.class).to(LoadBalancer.class);
+
         bind(Integer.class).annotatedWith(ClientRequestsInterceptorPort.class)
                 .toInstance(LoadBalancerConfigurationProvider.getClientInterceptorServicePort());
 
@@ -34,6 +38,6 @@ public class LoadBalancerModule extends AbstractModule {
         install(new HealthMonitoringServiceModule());
         install(new EcsNotificationServiceModule());
         install(new DnsModule());
-        install(new WebServiceModule());
+        install(new RestApiModule());
     }
 }
