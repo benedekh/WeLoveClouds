@@ -39,6 +39,26 @@ public class DistributedSystemAccessService {
         return distributedService.getStatus();
     }
 
+    public List<StorageNode> getParticipatingNodes() {
+        return distributedService.getParticipatingNodes();
+    }
+
+    public StorageNode getNodeFrom(String name) {
+        return distributedService.getNodeFrom(name);
+    }
+
+    public RingTopology<StorageNode> getTopology() {
+        return distributedService.getTopology();
+    }
+
+    public RingMetadata getRingMetadata() {
+        return distributedService.getRingMetadata();
+    }
+
+    public void removeParticipatingNode(StorageNode node) {
+        distributedService.removeParticipatingNode(node);
+    }
+
     public void updateServiceHealthWith(NodeHealthInfos nodeHealthInfos) {
         LOGGER.debug("Updating health infos of: " + nodeHealthInfos.getNodeName());
         distributedService.getNodeFrom(nodeHealthInfos.getNodeName())
@@ -101,5 +121,9 @@ public class DistributedSystemAccessService {
             reentrantReadWriteLock.readLock().unlock();
         }
         return storageNodes.get(FIRST);
+    }
+
+    public void initializeServiceWith(List<StorageNode> initialNodes) {
+        distributedService.initializeWith(initialNodes);
     }
 }

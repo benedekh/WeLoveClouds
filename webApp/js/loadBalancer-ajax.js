@@ -5,10 +5,9 @@ function fetchLoadBalancerData(){
 
         contentType: 'application/json; charset=utf-8',
         success: function(resultData) {
-          var template = $('#loadbalancer-tlp').html();
+          var template = $('#loadbalancer-tpl').html();
           var html = Mustache.to_html(template, resultData);
           $('#loadbalancer-info').html(html);
-
         },
         error : function(jqXHR, textStatus, errorThrown) {
            console.log(errorThrown);

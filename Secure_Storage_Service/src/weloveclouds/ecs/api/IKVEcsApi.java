@@ -2,6 +2,7 @@ package weloveclouds.ecs.api;
 
 import weloveclouds.ecs.core.EcsStatus;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
+import weloveclouds.ecs.models.repository.EcsRepository;
 import weloveclouds.ecs.models.stats.EcsStatistics;
 
 /**
@@ -9,6 +10,8 @@ import weloveclouds.ecs.models.stats.EcsStatistics;
  */
 public interface IKVEcsApi {
     EcsStatus getStatus();
+
+    EcsRepository getRepository();
 
     void initService(int numberOfNodes, int cacheSize, String displacementStrategy) throws ExternalConfigurationServiceException;
 

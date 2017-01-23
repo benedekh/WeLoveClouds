@@ -22,6 +22,7 @@ import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
 import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
 import weloveclouds.commons.hashing.models.RingMetadata;
+import weloveclouds.loadbalancer.services.DistributedSystemAccessService;
 
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.REMOVING_NODE;
@@ -169,13 +170,14 @@ public class EcsBatchFactory {
     }
 
     public AbstractBatchTasks<AbstractRetryableTask> createNodeMetadataInitialisationBatchWith
-            (List<StorageNode> nodesToInitialize, DistributedService distributedService) {
+            (List<StorageNode> nodesToInitialize, DistributedSystemAccessService
+                    distributedServiceAccess) {
         AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch = new
                 BatchRetryableTasks(UPDATING_METADATA);
 
         for (StorageNode storageNode : nodesToInitialize) {
             InitNodeMetadata taskCommand = ecsInternalCommandFactory
-                    .createInitNodeMetadataCommandWith(storageNode, distributedService.getRingMetadata());
+                    .createInitNodeMetadataCommandWith(storageNode, distributedServiceAccess.getRingMetadata());
 
             nodeMetadataInitialisationBatch.addTask(
                     new SimpleRetryableTask(MAX_NUMBER_OF_NODE_INITIALISATION_RETRIES, taskCommand));

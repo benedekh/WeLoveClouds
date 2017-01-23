@@ -63,17 +63,19 @@
            </div>
        </div>
      </div>
-     <div class="row">
+     <div class="row" id="repository">
        <h2>Storage</h2>
        <hr>
-       <div class="row">
+       <div class="row no-server-found">
          <div class="col-md-12">
               <center><h3>No Server Found</h3></center>
          </div>
        </div>
+       <div class="row no-server-found">
        <div class="col-md-12">
            <img class="searching-image" src="resources/searching.png">
        </div>
+     </div>
      </div>
      <footer>
        <p>&copy; 2016 WeLoveClouds</p>
@@ -83,15 +85,29 @@
    window.onload = function(){
      fetchLoadBalancerData();
      fetchEcsData();
+     fetchRepository();
      setInterval(fetchLoadBalancerData, 5000);
      setInterval(fetchEcsData, 5000);
+     setInterval(fetchRepository, 5000);
    }
  </script>
-   <script id="loadbalancer-tlp" type="text/template">
-     <p>Status: {{status}}</p>
+   <script id="loadbalancer-tpl" type="text/template">
+     <p><strong>Status:</strong> {{status}}</p>
    </script>
-   <script id="ecs-tlp" type="text/template">
-     <p>Status: {{status}}</p>
+   <script id="ecs-tpl" type="text/template">
+     <p><strong>Status:</strong> {{status}}</p>
+   </script>
+   <script id="node-tpl" type="text/template">
+     <div class="col-md-3 node-info" id="{{name}}">
+       <h4>Storage Node</h4>
+       <div class="col-md-4">
+          <img class="server-image" src="resources/databaseHealthy.png">
+       </div>
+       <div class="col-md-8">
+         <p><strong>Name:</strong> {{name}}</p>
+         <p><strong>Status:</strong> {{status}}</p>
+       </div>
+    </div>
    </script>
   </body>
 </html>
