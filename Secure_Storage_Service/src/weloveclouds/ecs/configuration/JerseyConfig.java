@@ -1,4 +1,4 @@
-package weloveclouds.loadbalancer.configuration;
+package weloveclouds.ecs.configuration;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -15,7 +15,7 @@ import weloveclouds.commons.configuration.InjectorHolder;
 public class JerseyConfig extends ResourceConfig {
     @Inject
     public JerseyConfig(ServiceLocator serviceLocator) {
-        packages("weloveclouds.loadbalancer.rest.api");
+        packages("weloveclouds.ecs.rest.api");
 
         GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
         GuiceIntoHK2Bridge guiceBridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);

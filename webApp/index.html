@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>We Love Clouds Console</title>
-
+    <link rel="icon" type="image/png" href="resources/databaseIcon.png" />
     <!-- Latest compiled and minified CSS -->
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -18,29 +18,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src:"https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
-    <style>
-      .server-info {
-        padding: 1%;
-        border-style: solid;
-        border-width: medium;
-        border-color: #2980b9;
-        background-color: #f5f3f3;
-      }
-
-      .loading-gif {
-        margin-left: auto;
-        margin-right: auto;
-        display: block;
-        max-width: 40%;
-        max-height: 40%;
-      }
-
-      .server-image {
-        max-width: 100%;
-      }​
-
-
-    </style>
+  <script src="js/loadBalancer-ajax.js"></script>
+  <script src="js/ecs-ajax.js"></script>
   </head>
   <body>
     <div class="container-fluid">
@@ -72,7 +51,6 @@
                 </div>
            </div>
        </div>
-       <div class="col-md-1"></div>
        <div class="col-md-4 server-info">
            <div class="col-md-3">
               <img class="server-image" src="resources/serverHealthy.png">
@@ -85,37 +63,35 @@
            </div>
        </div>
      </div>
+     <div class="row">
+       <h2>Storage</h2>
+       <hr>
+       <div class="row">
+         <div class="col-md-12">
+              <center><h3>No Server Found</h3></center>
+         </div>
+       </div>
+       <div class="col-md-12">
+           <img class="searching-image" src="resources/searching.png">
+       </div>
+     </div>
      <footer>
        <p>&copy; 2016 WeLoveClouds</p>
      </footer>
    </div><!--/.container-->
    <script>
    window.onload = function(){
-     fetchData();
-     setInterval(fetchData, 5000);
+     fetchLoadBalancerData();
+     fetchEcsData();
+     setInterval(fetchLoadBalancerData, 5000);
+     setInterval(fetchEcsData, 5000);
    }
-   function fetchData(){
-     jQuery.ajax({
-           url: "http://weloveclouds-lb.com:8080/rest/api/v1/loadBalancer/status",
-           type: "GET",
-
-           contentType: 'application/json; charset=utf-8',
-           success: function(resultData) {
-             var template = $('#loadbalancer-tlp').html();
-             var html = Mustache.to_html(template, resultData);
-             $('#loadbalancer-info').html(html);
-
-           },
-           error : function(jqXHR, textStatus, errorThrown) {
-              console.log(errorThrown);
-           },
-
-           timeout: 12000000,
-       })
-     }
  </script>
- <script id="loadbalancer-tlp" type="text/template">
-   <p>Status: {{status}}</p>
- </script>
+   <script id="loadbalancer-tlp" type="text/template">
+     <p>Status: {{status}}</p>
+   </script>
+   <script id="ecs-tlp" type="text/template">
+     <p>Status: {{status}}</p>
+   </script>
   </body>
 </html>

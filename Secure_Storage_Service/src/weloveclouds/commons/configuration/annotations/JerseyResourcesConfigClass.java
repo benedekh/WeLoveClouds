@@ -1,4 +1,4 @@
-package weloveclouds.loadbalancer.configuration.annotations;
+package weloveclouds.commons.configuration.annotations;
 
 import com.google.inject.BindingAnnotation;
 
@@ -16,5 +16,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @BindingAnnotation
 @Target({FIELD, PARAMETER, METHOD})
 @Retention(RUNTIME)
-public @interface WebServicePort {
+public @interface JerseyResourcesConfigClass {
 }

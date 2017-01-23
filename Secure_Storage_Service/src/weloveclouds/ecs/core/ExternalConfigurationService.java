@@ -26,6 +26,7 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.monitoring.statsd.IStatsdClient;
@@ -59,6 +60,7 @@ import weloveclouds.loadbalancer.configuration.LoadBalancerConfiguration;
 /**
  * Created by Benoit on 2016-11-16.
  */
+@Singleton
 public class ExternalConfigurationService implements Observer {
     private static final Logger LOGGER = Logger.getLogger(ExternalConfigurationService.class);
     private static final IStatsdClient STATSD_CLIENT =
@@ -91,6 +93,10 @@ public class ExternalConfigurationService implements Observer {
         bootstrapConfiguration(EcsExecutionContext.getConfigurationFilePath(),
                 loadBalancerConfiguration);
         this.notificationService.start();
+    }
+
+    public EcsStatus getStatus() {
+        return status;
     }
 
     public void startLoadBalancer() throws ExternalConfigurationServiceException {

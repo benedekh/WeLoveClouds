@@ -1,4 +1,4 @@
-package weloveclouds.loadbalancer.configuration;
+package weloveclouds.commons.configuration;
 
 import com.google.inject.Injector;
 

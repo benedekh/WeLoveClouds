@@ -1,7 +1,37 @@
+.server-info {
+  padding: 1%;
+  margin-right:  5%;
+  border-style: solid;
+  border-width: medium;
+  border-color: #2980b9;
+  background-color: #f5f3f3;
+}
+
+.node-info {
+  margin-bottom: 2%;
+  margin-right: 2%;
+  border-style: solid;
+  border-width: medium;
+  border-color: #e74c3c;
+  background-color: #f5f3f3;
+}
+
+.loading-gif {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  max-width: 40%;
+  max-height: 40%;
+}
+
+.searching-image {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  max-width: 20%;
+  max-height: 20%;
+}
+
 .server-image {
   max-width: 100%;
 }​
-
-.loading-gif {
-  max-width: 100%;
-}

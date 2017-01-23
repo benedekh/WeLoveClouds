@@ -2,18 +2,27 @@ package app_kvEcs;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.servlet.GuiceFilter;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.jetty.server.DispatcherType;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import weloveclouds.commons.cli.utils.UserOutputWriter;
+import weloveclouds.commons.configuration.InjectorHolder;
 import weloveclouds.commons.context.ExecutionContext;
+import weloveclouds.commons.jetty.WebService;
 import weloveclouds.commons.utils.LogSetup;
 import weloveclouds.ecs.client.Client;
 import weloveclouds.ecs.contexts.EcsExecutionContext;
-import weloveclouds.ecs.configuration.modules.client.EcsClientModule;
+import weloveclouds.ecs.configuration.modules.EcsClientModule;
 
 public class ECSClient {
     private static Logger LOGGER = Logger.getLogger(ECSClient.class);
@@ -27,9 +36,11 @@ public class ECSClient {
             EcsExecutionContext.setConfigurationFilePath(args[0]);
 
             Injector injector = Guice.createInjector(new EcsClientModule());
+            InjectorHolder.getInstance().hold(injector);
             Client ecsClient = injector.getInstance(Client.class);
-            ecsClient.run();
-
+            WebService webService = injector.getInstance(WebService.class);
+            ecsClient.start();
+            webService.start();
         } catch (IOException ex) {
             userOutput.writeLine(ex.getMessage() + ex.getCause());
             LOGGER.error(ex.getMessage());
@@ -37,5 +48,21 @@ public class ECSClient {
             userOutput.writeLine("No ecs configuration file path provided.");
             LOGGER.fatal("No ecs configuration file path provided.");
         }
+    }
+
+    static void initWebServer() throws Exception {
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.addFilter(GuiceFilter.class, "/*", EnumSet.allOf(DispatcherType.class));
+        Server server = new Server(8080);
+
+        ServletHolder holder = context.addServlet(ServletContainer.class, "/*");
+        holder.setInitOrder(0);
+        holder.setInitParameter("javax.ws.rs.Application", "weloveclouds.loadbalancer" +
+                ".configuration.JerseyConfig");
+        context.addServlet(holder, "/*");
+        context.setContextPath("/");
+        server.setHandler(context);
+        server.start();
+        server.join();
     }
 }

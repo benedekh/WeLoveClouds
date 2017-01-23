@@ -10,7 +10,7 @@ import weloveclouds.commons.status.ServerStatus;
 import weloveclouds.loadbalancer.services.ClientRequestInterceptorService;
 import weloveclouds.loadbalancer.services.EcsNotificationService;
 import weloveclouds.loadbalancer.services.HealthMonitoringService;
-import weloveclouds.loadbalancer.services.WebService;
+import weloveclouds.commons.jetty.WebService;
 
 import static weloveclouds.commons.status.ServerStatus.HALTED;
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
@@ -24,16 +24,19 @@ public class LoadBalancer implements ILoadBalancer {
     private ClientRequestInterceptorService clientRequestInterceptorService;
     private HealthMonitoringService healthMonitoringService;
     private EcsNotificationService ecsNotificationService;
+    private WebService webService;
     private ServerStatus status;
 
     @Inject
     public LoadBalancer(ClientRequestInterceptorService clientRequestHandler,
                         HealthMonitoringService healthMonitoringService,
-                        EcsNotificationService ecsNotificationService) {
+                        EcsNotificationService ecsNotificationService,
+                        WebService webService) {
         this.status = HALTED;
         this.clientRequestInterceptorService = clientRequestHandler;
         this.healthMonitoringService = healthMonitoringService;
         this.ecsNotificationService = ecsNotificationService;
+        this.webService = webService;
     }
 
     public ServerStatus getStatus() {
@@ -52,6 +55,9 @@ public class LoadBalancer implements ILoadBalancer {
 
         LOGGER.debug("Starting ECS notification service.");
         ecsNotificationService.start();
+
+        LOGGER.debug("Starting web service");
+        webService.start();
 
         status = RUNNING;
         LOGGER.info("Load balancer is running.");

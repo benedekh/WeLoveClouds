@@ -1,4 +1,4 @@
-package weloveclouds.loadbalancer.rest.api.v1.resources;
+package weloveclouds.ecs.rest.api.v1.resouces;
 
 import com.google.inject.Singleton;
 
@@ -11,29 +11,29 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import weloveclouds.loadbalancer.rest.api.v1.models.Responses.GetStatusResponse;
-import weloveclouds.loadbalancer.services.HealthMonitoringService;
+import weloveclouds.ecs.api.IKVEcsApi;
+import weloveclouds.ecs.rest.api.v1.models.responses.GetStatusResponse;
 
 /**
  * Created by Benoit on 2017-01-22.
  */
 @Singleton
-@Path("/rest/api/v1/monitoring")
-public class MonitoringServiceResource {
-    private HealthMonitoringService healthMonitoringService;
+@Path("/rest/api/v1/ecs")
+public class ExternalConfigurationServiceResource {
     private ObjectMapper objectMapper;
+    private IKVEcsApi ecsApi;
 
     @Inject
-    public MonitoringServiceResource(HealthMonitoringService healthMonitoringService) {
-        this.healthMonitoringService = healthMonitoringService;
-        objectMapper = new ObjectMapper();
+    public ExternalConfigurationServiceResource(IKVEcsApi ecsApi) {
+        this.ecsApi = ecsApi;
+        this.objectMapper = new ObjectMapper();
     }
 
     @GET
     @Path("status")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getStatus() throws Exception {
-        GetStatusResponse response = new GetStatusResponse(healthMonitoringService.getStatus());
+        GetStatusResponse response = new GetStatusResponse(ecsApi.getStatus());
         return Response.ok() //200
                 .entity(objectMapper.writeValueAsString(response))
                 .header("Access-Control-Allow-Origin", "*")
