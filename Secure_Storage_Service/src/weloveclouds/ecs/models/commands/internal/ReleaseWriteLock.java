@@ -40,7 +40,7 @@ public class ReleaseWriteLock extends AbstractEcsNetworkCommand<StorageNode, IKV
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
             } else {
-                targetedNode.setStatus(NodeStatus.INITIALIZED);
+                targetedNode.setStatus(NodeStatus.RUNNING);
             }
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);

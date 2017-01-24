@@ -3,6 +3,7 @@ package weloveclouds.loadbalancer.services;
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
@@ -12,6 +13,8 @@ import org.apache.log4j.Logger;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import weloveclouds.commons.configuration.annotations.EcsDnsName;
+import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
@@ -19,10 +22,13 @@ import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.CommunicationApiFactory;
+import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
 import weloveclouds.communication.models.SecureConnection;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
+import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationResponsePort;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
 
 /**
@@ -31,17 +37,26 @@ import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServic
 @Singleton
 public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMessage>
         implements IEcsNotificationService {
+    private static final Logger LOGGER = Logger.getLogger(EcsNotificationService.class);
     private DistributedSystemAccessService distributedSystemAccessService;
+    private int ecsRemotePort;
+    private String ecsDNS;
 
     @Inject
     public EcsNotificationService(CommunicationApiFactory communicationApiFactory,
-            ServerSocketFactory serverSocketFactory,
-            IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer,
-            IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage> messageDeserializer,
-            @EcsNotificationServicePort int port,
-            DistributedSystemAccessService distributedSystemAccessService) throws IOException {
+                                  ServerSocketFactory serverSocketFactory,
+                                  IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage>
+                                          messageSerializer,
+                                  IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage>
+                                          messageDeserializer,
+                                  @EcsNotificationServicePort int port,
+                                  @EcsDnsName String ecsDNS,
+                                  @EcsNotificationResponsePort int ecsRemotePort,
+                                  DistributedSystemAccessService distributedSystemAccessService) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
+        this.ecsRemotePort = ecsRemotePort;
+        this.ecsDNS = ecsDNS;
         this.distributedSystemAccessService = distributedSystemAccessService;
         this.logger = Logger.getLogger(EcsNotificationService.class);
     }
@@ -74,13 +89,19 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
     }
 
     @Override
-    public void notifyUnresponsiveServer(String unresponsiveServerName) {
-
-    }
-
-    @Override
     public void notify(IKVEcsNotificationMessage kvEcsNotificationMessage) {
-
+        try {
+            byte[] receivedMessage;
+            ICommunicationApi communicationApi = communicationApiFactory.createCommunicationApiV1();
+            communicationApi.connectTo(new ServerConnectionInfo.Builder()
+                    .ipAddress(ecsDNS)
+                    .port(ecsRemotePort)
+                    .build());
+            communicationApi.send(messageSerializer.serialize(kvEcsNotificationMessage).getBytes());
+            communicationApi.disconnect();
+        } catch (ClientSideException | UnknownHostException e) {
+            LOGGER.warn("Unable to notify ECS with cause: " + e.getMessage());
+        }
     }
 
     private class ConnectionHandler extends AbstractConnectionHandler<IKVEcsNotificationMessage> {

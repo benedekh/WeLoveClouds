@@ -19,7 +19,7 @@ import weloveclouds.server.store.exceptions.StorageException;
  * 
  * @author Benedek
  */
-public class LFUStrategy implements DisplacementStrategy {
+public class LFUStrategy implements DisplacementStrategy<String> {
 
     private static final Logger LOGGER = Logger.getLogger(LFUStrategy.class);
 
@@ -37,55 +37,55 @@ public class LFUStrategy implements DisplacementStrategy {
     }
 
     @Override
-    public String displaceKey() throws StorageException {
+    public String getKeyToDisplace() throws StorageException {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             // order by frequency, the least frequent will be the first
             SortedSet<KeyFrequency> sorted = new TreeSet<>(keyFrequencyPairs.values());
             KeyFrequency first = sorted.first();
             String displaced = first.getKey();
-            remove(displaced);
+            registerRemove(displaced);
             LOGGER.debug(
                     StringUtils.join(" ", displaced, "to be removed from cache by LFU strategy."));
             return displaced;
         } catch (NoSuchElementException ex) {
-            String errorMessage = "LFU strategy store is empty so it cannot remove anything.";
+            String errorMessage = "LFU strategy store is empty so it cannot registerRemove anything.";
             LOGGER.error(errorMessage);
             throw new StorageException(errorMessage);
         }
     }
 
     @Override
-    public void put(String key) {
+    public void registerPut(String key) {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             KeyFrequency keyFrequency = new KeyFrequency(key, 0);
             keyFrequencyPairs.put(key, keyFrequency);
             LOGGER.debug(StringUtils.join(" ", key, "is added to the LFU strategy store."));
         } catch (NullPointerException ex) {
-            LOGGER.error("Key cannot be null for put in LFU strategy.");
+            LOGGER.error("Key cannot be null for registerPut in LFU strategy.");
         }
     }
 
     @Override
-    public void get(String key) {
+    public void registerGet(String key) {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             KeyFrequency keyFrequency = keyFrequencyPairs.get(key);
             keyFrequency.increaseFrequencyByOne();
             LOGGER.debug(
                     StringUtils.join(" ", keyFrequency, "is updated in the LFU strategy store."));
         } catch (NullPointerException ex) {
-            LOGGER.error("Key cannot be null for get in LFU strategy.");
+            LOGGER.error("Key cannot be null for registerGet in LFU strategy.");
         }
     }
 
     @Override
-    public void remove(String key) {
+    public void registerRemove(String key) {
         try (CloseableLock lock = new CloseableLock(accessLock.writeLock())) {
             KeyFrequency removed = keyFrequencyPairs.remove(key);
             if (removed != null) {
                 LOGGER.debug(StringUtils.join(" ", key, "is removed from the LFU strategy store."));
             }
         } catch (NullPointerException ex) {
-            LOGGER.error("Key cannot be null for remove in LFU strategy.");
+            LOGGER.error("Key cannot be null for registerRemove in LFU strategy.");
         }
     }
 

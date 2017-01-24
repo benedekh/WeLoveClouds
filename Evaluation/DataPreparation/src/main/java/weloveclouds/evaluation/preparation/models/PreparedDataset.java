@@ -14,6 +14,8 @@ import weloveclouds.evaluation.preparation.util.KeyCreatorUtility;
 
 /**
  * The type Prepared dataset.
+ * 
+ * @author Benedek
  */
 public class PreparedDataset {
 
@@ -37,7 +39,7 @@ public class PreparedDataset {
     /**
      * Put entry.
      *
-     * @param key   the key
+     * @param key the key
      * @param value the value
      */
     public void putEntry(final String key, final String value) {

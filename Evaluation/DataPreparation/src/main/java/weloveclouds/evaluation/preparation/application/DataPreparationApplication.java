@@ -16,6 +16,8 @@ import weloveclouds.evaluation.preparation.transformer.DatasetTransformer;
 
 /**
  * The type Data preparation application.
+ * 
+ * @author Benedek
  */
 public class DataPreparationApplication {
 

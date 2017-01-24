@@ -53,7 +53,7 @@ public class StorageNodeSerializer implements ISerializer<AbstractXMLNode, Stora
                 .addInnerNode(hashRangeSerializer.serialize(nodeToSerialize.getHashRange()))
                 .addInnerNode(nodeHealthInfosSerializer.serialize(nodeToSerialize.getHealthInfos()))
                 .addInnerNode(serializeReplicas(nodeToSerialize.getReplicas()))
-                .addInnerNode(serializeChildHashRanges(nodeToSerialize.getChildHashRanges()))
+                .addInnerNode(serializeChildHashRanges(nodeToSerialize.getReadRanges()))
                 .build();
     }
 

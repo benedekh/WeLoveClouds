@@ -2,6 +2,8 @@ package weloveclouds.commons.serialization;
 
 import static weloveclouds.commons.serialization.models.XMLTokens.KVECS_NOTIFICATION_MESSAGE;
 import static weloveclouds.commons.serialization.models.XMLTokens.STATUS;
+import static weloveclouds.commons.serialization.models.XMLTokens.UNRESPONSIVE_NODES_NAME;
+import static weloveclouds.commons.serialization.models.XMLTokens.UNRESPONSIVE_NODE_NAME;
 
 import com.google.inject.Inject;
 
@@ -16,7 +18,7 @@ import weloveclouds.loadbalancer.models.NodeHealthInfos;
 
 /**
  * A serializer which converts a {@link IKVEcsNotificationMessage} to a {@link SerializedMessage}.
- * 
+ *
  * @author Benoit
  */
 public class KVEcsNotificationMessageSerializer
@@ -44,6 +46,15 @@ public class KVEcsNotificationMessageSerializer
         if (unserializedMessage.getRingTopology() != null) {
             xmlBuilder.addInnerNode(
                     ringTopologySerializer.serialize(unserializedMessage.getRingTopology()));
+        }
+        if (!unserializedMessage.getUnresponsiveNodeNames().isEmpty()) {
+            XMLRootNode.Builder unresponsiveNodesName =
+                    new XMLRootNode.Builder().token(UNRESPONSIVE_NODES_NAME);
+            for (String unresponsiveNodeName : unserializedMessage.getUnresponsiveNodeNames()) {
+                unresponsiveNodesName.addInnerNode(new XMLNode(UNRESPONSIVE_NODE_NAME,
+                        unresponsiveNodeName));
+            }
+            xmlBuilder.addInnerNode(unresponsiveNodesName.build());
         }
 
         return new SerializedMessage(xmlBuilder.build().toString());

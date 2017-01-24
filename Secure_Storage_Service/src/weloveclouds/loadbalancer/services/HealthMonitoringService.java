@@ -36,12 +36,14 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
 
     @Inject
     public HealthMonitoringService(CommunicationApiFactory communicationApiFactory,
-            ServerSocketFactory serverSocketFactory,
-            IMessageSerializer<SerializedMessage, IKVHeartbeatMessage> messageSerializer,
-            IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage> messageDeserializer,
-            @HealthMonitoringServicePort int port,
-            DistributedSystemAccessService distributedSystemAccessService,
-            EcsNotificationService ecsNotificationService, NodeHealthWatcher nodeHealthWatcher)
+                                   ServerSocketFactory serverSocketFactory,
+                                   IMessageSerializer<SerializedMessage, IKVHeartbeatMessage>
+                                           messageSerializer,
+                                   IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage>
+                                           messageDeserializer,
+                                   @HealthMonitoringServicePort int port,
+                                   DistributedSystemAccessService distributedSystemAccessService,
+                                   NodeHealthWatcher nodeHealthWatcher)
             throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
@@ -95,8 +97,9 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
         public void run() {
             logger.info("Client is connected to server.");
             try {
+                IKVHeartbeatMessage receivedMessage;
                 while (connection.isConnected()) {
-                    IKVHeartbeatMessage receivedMessage = messageDeserializer
+                    receivedMessage = messageDeserializer
                             .deserialize(communicationApi.receiveFrom(connection));
                     logger.debug(StringUtils.join(" ", "Message received:", receivedMessage));
                     distributedSystemAccessService

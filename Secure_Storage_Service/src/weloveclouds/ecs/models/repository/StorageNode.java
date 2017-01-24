@@ -2,9 +2,9 @@ package weloveclouds.ecs.models.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.ecs.core.ExternalConfigurationServiceConstants;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.HashRange;
 import weloveclouds.commons.hashing.utils.HashingUtils;
@@ -21,34 +21,39 @@ public class StorageNode extends AbstractNode {
     private HashRange previousHashRange;
     private HashRange hashRange;
     private List<StorageNode> replicas;
-    private List<HashRange> childHashRanges;
+    private List<HashRange> readRanges;
+    private ServerConnectionInfo kvChannelConnectionInfo;
+    private Hash hashKey;
 
-    private StorageNode(Builder storageNodeBuilder) {
+    private StorageNode(Builder builder) {
         this.status = IDLE;
         this.metadataStatus = UNSYNCHRONIZED;
-        this.name = storageNodeBuilder.name;
-        this.serverConnectionInfo = storageNodeBuilder.serverConnectionInfo;
-        this.hashKey = storageNodeBuilder.hashKey;
-        this.hashRange = storageNodeBuilder.hashRange;
-        this.ecsChannelConnectionInfo = storageNodeBuilder.ecsChannelConnectionInfo;
-        this.replicas = storageNodeBuilder.replicas;
-        this.childHashRanges = storageNodeBuilder.childHashRanges;
-        this.previousHashRange = storageNodeBuilder.previousHashRange;
+        this.name = builder.name;
+        this.serverConnectionInfo = builder.serverConnectionInfo;
+        this.ecsChannelConnectionInfo = builder.ecsChannelConnectionInfo;
+        this.kvChannelConnectionInfo = builder.kvChannelConnectionInfo;
+        this.hashKey = builder.hashKey;
+        this.hashRange = builder.hashRange;
+        this.replicas = builder.replicas;
+        this.readRanges = builder.readRanges;
+        this.previousHashRange = builder.previousHashRange;
 
-        if (storageNodeBuilder.healthInfos == null) {
+        if (builder.healthInfos == null) {
             this.healthInfos = new NodeHealthInfos.Builder()
                     .nodeName(name)
                     .nodeStatus(HALTED)
                     .build();
         } else {
-            this.healthInfos = storageNodeBuilder.healthInfos;
+            this.healthInfos = builder.healthInfos;
         }
     }
 
-    public void updateHealthInfos(NodeHealthInfos healthInfos) {
-        if (healthInfos != null) {
-            this.healthInfos = healthInfos;
-        }
+    public ServerConnectionInfo getKvChannelConnectionInfo() {
+        return kvChannelConnectionInfo;
+    }
+
+    public Hash getHashKey() {
+        return hashKey;
     }
 
     public HashRange getHashRange() {
@@ -69,20 +74,20 @@ public class StorageNode extends AbstractNode {
         this.metadataStatus = metadataStatus;
     }
 
-    public List<HashRange> getChildHashRanges() {
-        return new ArrayList<>(childHashRanges);
+    public List<HashRange> getReadRanges() {
+        return new ArrayList<>(readRanges);
     }
 
-    public void addChildHashRange(HashRange childHashRange) {
-        this.childHashRanges.add(childHashRange);
+    public void addReadRange(HashRange readRange) {
+        readRanges.add(readRange);
     }
 
-    public void removeChildHashRange(HashRange childHashRange) {
-        this.childHashRanges.remove(childHashRange);
+    public void clearReadRanges() {
+        readRanges.clear();
     }
 
-    public void clearChildHashRanges() {
-        this.childHashRanges.clear();
+    public void clearHashRange() {
+        setHashRange(null);
     }
 
     public List<StorageNode> getReplicas() {
@@ -93,25 +98,8 @@ public class StorageNode extends AbstractNode {
         replicas.add(node);
     }
 
-    public void removeReplica(StorageNode node) {
-        replicas.remove(node);
-    }
-
     public void clearReplicas() {
         this.replicas.clear();
-    }
-
-    public boolean isReadResponsibleOf(Hash hash) {
-        if (isWriteResponsibleOf(hash)) {
-            return true;
-        }
-
-        for (HashRange hashRange : childHashRanges) {
-            if (hashRange.contains(hash)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean isWriteResponsibleOf(Hash hash) {
@@ -119,23 +107,29 @@ public class StorageNode extends AbstractNode {
     }
 
     public String toString() {
-        return StringUtils.join(" ", "Node:" + getIpAddress() + "Status:" + status);
+        String hashRangeAsString = "";
+        if (hashRange != null) {
+            hashRangeAsString = hashRange.toString();
+        }
+        return StringUtils.join(" ", "Node:", name, "Host:", getIpAddress(), "Status:", status,
+                "Write range:", hashRangeAsString);
     }
 
     public static class Builder {
         private String name;
         private ServerConnectionInfo serverConnectionInfo;
         private ServerConnectionInfo ecsChannelConnectionInfo;
+        private ServerConnectionInfo kvChannelConnectionInfo;
         private NodeHealthInfos healthInfos;
         private Hash hashKey;
         private HashRange previousHashRange;
         private HashRange hashRange;
         private List<StorageNode> replicas;
-        private List<HashRange> childHashRanges;
+        private List<HashRange> readRanges;
 
         public Builder() {
             this.replicas = new ArrayList<>();
-            this.childHashRanges = new ArrayList<>();
+            this.readRanges = new ArrayList<>();
         }
 
         public Builder name(String name) {
@@ -145,10 +139,17 @@ public class StorageNode extends AbstractNode {
 
         public Builder serverConnectionInfo(ServerConnectionInfo serverConnectionInfo) {
             this.serverConnectionInfo = serverConnectionInfo;
-            this.ecsChannelConnectionInfo = new ServerConnectionInfo.Builder()
-                    .ipAddress(serverConnectionInfo.getIpAddress())
-                    .port(ExternalConfigurationServiceConstants.ECS_REQUESTS_PORT).build();
             this.hashKey = HashingUtils.getHash(serverConnectionInfo.toString());
+            return this;
+        }
+
+        public Builder ecsChannelConnectionInfo(ServerConnectionInfo ecsChannelConnectionInfo) {
+            this.ecsChannelConnectionInfo = ecsChannelConnectionInfo;
+            return this;
+        }
+
+        public Builder kvChannelConnectionInfo(ServerConnectionInfo kvChannelConnectionInfo) {
+            this.kvChannelConnectionInfo = kvChannelConnectionInfo;
             return this;
         }
 
@@ -172,8 +173,8 @@ public class StorageNode extends AbstractNode {
             return this;
         }
 
-        public Builder childHashRanges(List<HashRange> childHashRanges) {
-            this.childHashRanges = childHashRanges;
+        public Builder readRanges(List<HashRange> readRanges) {
+            this.readRanges = readRanges;
             return this;
         }
 

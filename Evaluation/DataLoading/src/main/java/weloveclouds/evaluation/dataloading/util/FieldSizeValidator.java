@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * The type Field size validator.
+ * 
+ * @author Benedek
  */
 public class FieldSizeValidator {
 

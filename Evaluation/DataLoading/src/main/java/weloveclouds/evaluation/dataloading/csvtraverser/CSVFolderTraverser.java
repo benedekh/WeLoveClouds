@@ -1,6 +1,6 @@
 package weloveclouds.evaluation.dataloading.csvtraverser;
 
-import static weloveclouds.evaluation.dataloading.util.StringJoinerUtility.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,9 +14,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import weloveclouds.evaluation.dataloading.connection.ClientConnection;
+import weloveclouds.evaluation.dataloading.util.Operation;
 
 /**
  * The type Csv folder traverser.
+ * 
+ * @author Benedek
  */
 public class CSVFolderTraverser {
     private static final Logger LOGGER = LogManager.getLogger(CSVFolderTraverser.class);
@@ -41,18 +44,19 @@ public class CSVFolderTraverser {
      * Traverse folder.
      *
      * @param csvFolderPath the csv folder path
+     * @param operation type of operation to perform on each key-value pair
      */
-    public void traverseFolder(Path csvFolderPath) {
+    public void traverseFolder(Path csvFolderPath, Operation operation) {
         File[] filesToBeVisited = csvFolderPath.toAbsolutePath().toFile().listFiles();
         LOGGER.info("Traversing input csv folder started.");
         try (Stream<File> files = Arrays.asList(filesToBeVisited).stream()) {
             files.filter(file -> file.getName().endsWith(".csv"))
-                    .forEach(file -> readCSVFile(file));
+                    .forEach(file -> readCSVFile(file, operation));
         }
         LOGGER.info("Traversing input csv folder finished.");
     }
 
-    private void readCSVFile(File file) {
+    private void readCSVFile(File file, Operation operation) {
         LOGGER.info(join(": ", "Reading file content started", file.toString()));
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -61,12 +65,22 @@ public class CSVFolderTraverser {
                 String key = parts[KEY_INDEX];
                 String value = parts[VALUE_INDEX];
 
-                client.put(key, value, false);
+                switch (operation) {
+                    case GET:
+                        client.get(key);
+                        break;
+                    case PUT:
+                        client.put(key, value);
+                        break;
+                    case DELETE:
+                        client.delete(key);
+                        break;
+                }
             }
         } catch (IOException ex) {
             LOGGER.error(ex);
         } finally {
-            LOGGER.info(join(": ", "Reading file content finished", file.toString()));
+            LOGGER.info(join(": ", "Reading file content finished"));
         }
     }
 

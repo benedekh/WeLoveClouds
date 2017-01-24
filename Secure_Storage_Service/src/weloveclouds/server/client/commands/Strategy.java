@@ -8,7 +8,7 @@ import weloveclouds.commons.exceptions.ServerSideException;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.server.client.commands.utils.ArgumentsValidator;
 import weloveclouds.server.configuration.models.KVServerCLIContext;
-import weloveclouds.server.store.KVCache;
+import weloveclouds.server.store.cache.KVCache;
 import weloveclouds.server.store.cache.strategy.DisplacementStrategy;
 import weloveclouds.server.store.cache.strategy.StrategyFactory;
 

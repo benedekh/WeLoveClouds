@@ -1,5 +1,8 @@
 package weloveclouds.ecs.models.messaging.notification;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.topology.RingTopology;
 import weloveclouds.loadbalancer.models.NodeHealthInfos;
@@ -11,11 +14,13 @@ public class KVEcsNotificationMessage implements IKVEcsNotificationMessage {
     private RingTopology<StorageNode> ringTopology;
     private NodeHealthInfos nodeHealthInfos;
     private Status status;
+    private List<String> unresponsiveNodesName;
 
     public KVEcsNotificationMessage(Builder builder) {
         this.status = builder.status;
         this.ringTopology = builder.ringTopology;
         this.nodeHealthInfos = builder.nodeHealthInfos;
+        this.unresponsiveNodesName = builder.unresponsiveNodesName;
     }
 
     @Override
@@ -33,10 +38,20 @@ public class KVEcsNotificationMessage implements IKVEcsNotificationMessage {
         return status;
     }
 
+    @Override
+    public List<String> getUnresponsiveNodeNames() {
+        return unresponsiveNodesName;
+    }
+
     public static class Builder {
         private Status status;
         private RingTopology<StorageNode> ringTopology;
         private NodeHealthInfos nodeHealthInfos;
+        private List<String> unresponsiveNodesName;
+
+        public Builder() {
+            this.unresponsiveNodesName = new ArrayList<>();
+        }
 
         public Builder status(Status status) {
             this.status = status;
@@ -50,6 +65,23 @@ public class KVEcsNotificationMessage implements IKVEcsNotificationMessage {
 
         public Builder nodeHealthInfos(NodeHealthInfos nodeHealthInfos) {
             this.nodeHealthInfos = nodeHealthInfos;
+            return this;
+        }
+
+        public Builder unresponsiveNodesName(List<String> unresponsiveNodesName) {
+            this.unresponsiveNodesName = unresponsiveNodesName;
+            return this;
+        }
+
+        public Builder addUnresponsiveNodeName(String unresponsiveNodeName) {
+            this.unresponsiveNodesName.add(unresponsiveNodeName);
+            return this;
+        }
+
+        public Builder reset() {
+            ringTopology = null;
+            nodeHealthInfos = null;
+            unresponsiveNodesName.clear();
             return this;
         }
 

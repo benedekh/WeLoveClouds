@@ -1,18 +1,20 @@
 package weloveclouds.evaluation.dataloading.connection;
 
-import static weloveclouds.evaluation.dataloading.util.StringJoinerUtility.join;
+import static weloveclouds.commons.utils.StringUtils.join;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 import weloveclouds.commons.hashing.models.RingMetadata;
-import weloveclouds.commons.kvstore.deserialization.helper.IDeserializer;
-import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.deserialization.exceptions.DeserializationException;
+import weloveclouds.commons.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.serialization.IDeserializer;
+import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 
 /**
  * The type Client connection.
+ * 
+ * @author Benedek
  */
 public class ClientConnection {
 
@@ -24,7 +26,7 @@ public class ClientConnection {
     /**
      * Instantiates a new Client connection.
      *
-     * @param serverCommunication      the server communication
+     * @param serverCommunication the server communication
      * @param ringMetadataDeserializer the ring metadata deserializer
      */
     public ClientConnection(IKVCommunicationApiV2 serverCommunication,
@@ -45,13 +47,128 @@ public class ClientConnection {
     }
 
     /**
+     * Get.
+     *
+     * @param key the key
+     */
+    public void get(String key) {
+        get(key, false);
+    }
+
+    /**
+     * Delete.
+     *
+     * @param key the key
+     */
+    public void delete(String key) {
+        delete(key, false);
+    }
+
+    /**
      * Put.
      *
-     * @param key                the key
-     * @param value              the value
-     * @param wasAlreadyExecuted the was already executed
+     * @param key the key
+     * @param value the value
      */
-    public void put(String key, String value, boolean wasAlreadyExecuted) {
+    public void put(String key, String value) {
+        put(key, value, false);
+    }
+
+    private void get(String key, boolean wasAlreadyExecuted) {
+        try {
+            LOGGER.info(join(" ", "Sending key over the network:", key));
+            IKVMessage response = serverCommunication.get(key);
+            switch (response.getStatus()) {
+                case GET_SUCCESS:
+                    LOGGER.info("Value was successfully got from server");
+                    break;
+                case GET_ERROR:
+                    LOGGER.error(join(": ", "Error during key get", response.getValue()));
+                    break;
+                case SERVER_NOT_RESPONSIBLE:
+                    try {
+                        LOGGER.error(join(" ", "Server is not responsible for the key:", key,
+                                ". Updating ring metadata information."));
+
+                        RingMetadata ringMetadata =
+                                ringMetadataDeserializer.deserialize(response.getValue());
+                        serverCommunication.setRingMetadata(ringMetadata);
+
+                        if (!wasAlreadyExecuted) {
+                            get(key, true);
+                        } else {
+                            LOGGER.error(
+                                    "Get command execution failed, because responsible server was not found.");
+                        }
+                    } catch (DeserializationException e) {
+                        LOGGER.error(e);
+                    }
+                    break;
+                case SERVER_WRITE_LOCK:
+                    LOGGER.error("Write lock is active on the server.");
+                    break;
+                case SERVER_STOPPED:
+                    LOGGER.error("Server stopped.");
+                    break;
+                default:
+                    LOGGER.error("Unexpected response type.");
+                    break;
+            }
+        } catch (Throwable t) {
+            LOGGER.error(t);
+        } finally {
+            LOGGER.info("Send finished.");
+        }
+    }
+
+    private void delete(String key, boolean wasAlreadyExecuted) {
+        try {
+            LOGGER.info(join(" ", "Sending key over the network:", key));
+            IKVMessage response = serverCommunication.put(key, null);
+            switch (response.getStatus()) {
+                case DELETE_SUCCESS:
+                    LOGGER.info("Key was successfully removed from server");
+                    break;
+                case DELETE_ERROR:
+                    LOGGER.error(join(": ", "Error during key delete", response.getValue()));
+                    break;
+                case SERVER_NOT_RESPONSIBLE:
+                    try {
+                        LOGGER.error(join(" ", "Server is not responsible for the key:", key,
+                                ". Updating ring metadata information."));
+
+                        RingMetadata ringMetadata =
+                                ringMetadataDeserializer.deserialize(response.getValue());
+                        serverCommunication.setRingMetadata(ringMetadata);
+
+                        if (!wasAlreadyExecuted) {
+                            delete(key, true);
+                        } else {
+                            LOGGER.error(
+                                    "Delete command execution failed, because responsible server was not found.");
+                        }
+                    } catch (DeserializationException e) {
+                        LOGGER.error(e);
+                    }
+                    break;
+                case SERVER_WRITE_LOCK:
+                    LOGGER.error("Write lock is active on the server.");
+                    break;
+                case SERVER_STOPPED:
+                    LOGGER.error("Server stopped.");
+                    break;
+                default:
+                    LOGGER.error("Unexpected response type.");
+                    break;
+            }
+        } catch (Throwable t) {
+            LOGGER.error(t);
+        } finally {
+            LOGGER.info("Send finished.");
+        }
+    }
+
+    private void put(String key, String value, boolean wasAlreadyExecuted) {
         try {
             LOGGER.info(
                     join(" ", "Sending key-value pair over the network: <", key, "::", value, ">"));
@@ -92,8 +209,8 @@ public class ClientConnection {
                     LOGGER.error("Unexpected response type.");
                     break;
             }
-        } catch (Exception ex) {
-            LOGGER.error(ex);
+        } catch (Throwable t) {
+            LOGGER.error(t);
         } finally {
             LOGGER.info("Send finished.");
         }

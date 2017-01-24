@@ -1,5 +1,7 @@
 package weloveclouds.ecs.utils;
 
+import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,13 +16,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import weloveclouds.communication.models.ServerConnectionInfo;
-import weloveclouds.ecs.exceptions.InvalidConfigurationException;
+import weloveclouds.ecs.exceptions.configuration.InvalidConfigurationException;
 import weloveclouds.ecs.models.repository.StorageNode;
 
 /**
  * Created by Benoit on 2016-11-21.
  */
 public class ConfigurationFileParser implements IParser<List<StorageNode>, File> {
+    private static final Logger LOGGER = Logger.getLogger(ConfigurationFileParser.class);
+
     @Override
     public List<StorageNode> parse(File configFile) {
         List<StorageNode> storageNodes = new ArrayList<>();
@@ -33,7 +37,7 @@ public class ConfigurationFileParser implements IParser<List<StorageNode>, File>
                 storageNodes.add(parseLine(line));
             }
         } catch (InvalidConfigurationException | IOException ex) {
-            //LOG ex.getMessage
+            LOGGER.warn(ex.getMessage());
         }
         return storageNodes;
     }
@@ -41,19 +45,34 @@ public class ConfigurationFileParser implements IParser<List<StorageNode>, File>
     private StorageNode parseLine(String line) throws InvalidConfigurationException {
         StorageNode storageNode = null;
         Pattern lineRegex = Pattern.compile("(?<name>\\w+) ?" + "(?<ip>[0-9.]+) ?" + "" +
-                "(?<port>[0-9]+)$");
+                "(?<kvServerPort>[0-9]+) ?" + "(?<ecsChannelPort>[0-9]+) ?" + "" +
+                "(?<kvChannelPort>[0-9]+)$");
         ServerConnectionInfo serverConnectionInfo;
+        ServerConnectionInfo ecsChannelConnectionInfo;
+        ServerConnectionInfo kvChannelConnectionInfo;
         try {
             Matcher matcher = lineRegex.matcher(line);
             if (matcher.find()) {
-                if (matcher.group("name") != null && matcher.group("ip") != null && matcher.group("port") != null) {
+                if (matcher.group("name") != null && matcher.group("ip") != null && matcher.group
+                        ("kvServerPort") != null && matcher.group("ecsChannelPort") != null
+                        && matcher.group("kvChannelPort") != null) {
                     serverConnectionInfo = new ServerConnectionInfo.Builder()
                             .ipAddress(matcher.group("ip"))
-                            .port(Integer.parseInt(matcher.group("port")))
+                            .port(Integer.parseInt(matcher.group("kvServerPort")))
+                            .build();
+                    ecsChannelConnectionInfo = new ServerConnectionInfo.Builder()
+                            .ipAddress(matcher.group("ip"))
+                            .port(Integer.parseInt(matcher.group("ecsChannelPort")))
+                            .build();
+                    kvChannelConnectionInfo = new ServerConnectionInfo.Builder()
+                            .ipAddress(matcher.group("ip"))
+                            .port(Integer.parseInt(matcher.group("kvChannelPort")))
                             .build();
                     storageNode = new StorageNode.Builder()
                             .name(matcher.group("name"))
                             .serverConnectionInfo(serverConnectionInfo)
+                            .ecsChannelConnectionInfo(ecsChannelConnectionInfo)
+                            .kvChannelConnectionInfo(kvChannelConnectionInfo)
                             .build();
                 }
             } else {

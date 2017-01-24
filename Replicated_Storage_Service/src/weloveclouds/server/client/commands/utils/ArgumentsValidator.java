@@ -106,7 +106,7 @@ public class ArgumentsValidator {
                 InetAddress.getByName(arguments[CLI_LOADBALANCER_IP_INDEX]);
             } catch (UnknownHostException ex) {
                 logWarning(command);
-                throw new IllegalArgumentException("Loadbalancer IP address is unknown.");
+                throw new IllegalArgumentException("LoadBalancer IP address is unknown.");
             }
         }
     }

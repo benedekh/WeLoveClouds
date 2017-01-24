@@ -30,12 +30,12 @@ import weloveclouds.server.services.datastore.exceptions.ServiceIsStoppedExcepti
 import weloveclouds.server.services.datastore.exceptions.UninitializedServiceException;
 import weloveclouds.server.services.datastore.exceptions.WriteLockIsActiveException;
 import weloveclouds.server.services.datastore.models.DataAccessServiceStatus;
-import weloveclouds.server.store.KVCache;
-import weloveclouds.server.store.MovablePersistentStorage;
+import weloveclouds.server.store.cache.KVCache;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.exceptions.ValueNotFoundException;
 import weloveclouds.server.store.models.MovableStorageUnit;
 import weloveclouds.server.store.models.PutType;
+import weloveclouds.server.store.storage.MovablePersistentStorage;
 
 /**
  * An implementation of {@link IMovableDataAccessService} whose underlying storage units can be
@@ -104,7 +104,7 @@ public class MovableDataAccessService<E extends MovableDataAccessService.Builder
                     try {
                         Instant start = Instant.now();
                         String value = super.getValue(key);
-                        recordExecutionTime(KVSTORE_MODULE_NAME, PUT_COMMAND_NAME, EXEC_TIME,
+                        recordExecutionTime(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, EXEC_TIME,
                                 new Duration(start, Instant.now()));
                         incrementCounter(KVSTORE_MODULE_NAME, GET_COMMAND_NAME, SUCCESS);
                         return value;

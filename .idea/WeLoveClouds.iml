@@ -6,7 +6,7 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/Echo Client/test" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Replicated_Storage_Service/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Secure_Storage_Service/src" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -54,6 +54,52 @@
         </SOURCES>
         <jarDirectory url="file://$MODULE_DIR$/Replicated_Storage_Service/libs" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/Replicated_Storage_Service/libs" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/Secure_Storage_Service/libs" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/Secure_Storage_Service/libs" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/Secure_Storage_Service/libs" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/Secure_Storage_Service/libs" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/Secure_Storage_Service/libs/jaxrs-ri/api" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/Secure_Storage_Service/libs/jaxrs-ri/api" recursive="false" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/Secure_Storage_Service/libs/jaxrs-ri/ext" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/Secure_Storage_Service/libs/jaxrs-ri/ext" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/Secure_Storage_Service/libs/jaxrs-ri/ext" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/Secure_Storage_Service/libs/jaxrs-ri/ext" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/Secure_Storage_Service/libs/jaxrs-ri/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/Secure_Storage_Service/libs/jaxrs-ri/lib" recursive="false" />
       </library>
     </orderEntry>
   </component>

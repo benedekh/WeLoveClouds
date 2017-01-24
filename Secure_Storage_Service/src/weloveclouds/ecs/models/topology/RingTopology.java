@@ -54,7 +54,7 @@ public class RingTopology<T extends AbstractNode> {
 
     public T getNextNodeFrom(T node) {
         int nodePosition = nodes.indexOf(node);
-        T nextNode = null;
+        T nextNode;
 
         if (nodePosition == getLastPosition()) {
             nextNode = getFirstNode();
@@ -65,24 +65,24 @@ public class RingTopology<T extends AbstractNode> {
         return nextNode;
     }
 
-    public List<T> getReplicasOf(T node, int numberOfNeighbours) {
-        List<T> neighbours = new ArrayList<T>();
-        T neighbour = node;
+    public List<T> getReplicasOf(T node, int numberOfReplicas) {
+        List<T> replicas = new ArrayList<>();
+        T replica = node;
 
-        for (int i = 0; i < numberOfNeighbours; i++) {
-            neighbour = getNextNodeFrom(neighbour);
+        for (int i = 0; i < numberOfReplicas; i++) {
+            replica = getNextNodeFrom(replica);
 
-            if (neighbour != node) {
-                neighbours.add(neighbour);
+            if (replica != node) {
+                replicas.add(replica);
             } else {
-                i = numberOfNeighbours;
+                i = numberOfReplicas;
             }
         }
-        return neighbours;
+        return replicas;
     }
 
     public RingTopology removeNodes(T node) {
-        this.nodes.remove(node);
+        nodes.remove(node);
         return this;
     }
 

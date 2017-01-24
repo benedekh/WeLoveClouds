@@ -1,4 +1,4 @@
-package weloveclouds.loadbalancer.configuration.annotations;
+package weloveclouds.commons.configuration.annotations;
 
 import com.google.inject.BindingAnnotation;
 
@@ -11,10 +11,10 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by Benoit on 2016-12-21.
+ * Created by Benoit on 2016-12-07.
  */
 @BindingAnnotation
 @Target({FIELD, PARAMETER, METHOD})
 @Retention(RUNTIME)
-public @interface PopularityBasedDisplacementRunInterval {
+public @interface EcsDnsName {
 }

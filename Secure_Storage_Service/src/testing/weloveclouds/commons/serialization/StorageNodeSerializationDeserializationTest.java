@@ -108,7 +108,7 @@ public class StorageNodeSerializationDeserializationTest {
                 .serverConnectionInfo(new ServerConnectionInfo.Builder().ipAddress(STORAGE_NODE_IP)
                         .port(STORAGE_NODE_PORT).build())
                 .hashRange(storageNodeHashRange)
-                .childHashRanges(Arrays.asList(childHashRange1, childHashRange2))
+                .readRanges(Arrays.asList(childHashRange1, childHashRange2))
                 .healthInfos(nodeHealthInfos).replicas(Arrays.asList(replica1, replica2)).build();
     }
 
@@ -121,8 +121,8 @@ public class StorageNodeSerializationDeserializationTest {
         assertThat(deserializedStorageNode.getPort()).isEqualTo(STORAGE_NODE_PORT);
         assertThat(deserializedStorageNode.getHashRange()).isEqualTo(storageNodeHashRange);
         assertThat(deserializedStorageNode.getReplicas().size()).isEqualTo(2);
-        assertThat(deserializedStorageNode.getChildHashRanges().size()).isEqualTo(2);
-        assertThat(deserializedStorageNode.getChildHashRanges()).containsOnly(childHashRange1,
+        assertThat(deserializedStorageNode.getReadRanges().size()).isEqualTo(2);
+        assertThat(deserializedStorageNode.getReadRanges()).containsOnly(childHashRange1,
                 childHashRange2);
         assertThat(deserializedStorageNode.getIpAddress()).isEqualTo("/" + STORAGE_NODE_IP);
     }

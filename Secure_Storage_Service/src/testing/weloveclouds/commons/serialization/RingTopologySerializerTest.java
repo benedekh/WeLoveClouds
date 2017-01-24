@@ -144,14 +144,14 @@ public class RingTopologySerializerTest {
                 .serverConnectionInfo(new ServerConnectionInfo.Builder().ipAddress(NODE_IP_1)
                         .port(NODE_PORT_1).build())
                 .hashRange(storageNodeHashRange)
-                .childHashRanges(Arrays.asList(childHashRange1, childHashRange2))
+                .readRanges(Arrays.asList(childHashRange1, childHashRange2))
                 .healthInfos(nodeHealthInfos1).replicas(Arrays.asList(replica1, replica2)).build();
 
         storageNode2 = new StorageNode.Builder().name(NODE_NAME_2)
                 .serverConnectionInfo(new ServerConnectionInfo.Builder().ipAddress(NODE_IP_2)
                         .port(NODE_PORT_2).build())
                 .hashRange(storageNodeHashRange)
-                .childHashRanges(Arrays.asList(childHashRange1, childHashRange2))
+                .readRanges(Arrays.asList(childHashRange1, childHashRange2))
                 .healthInfos(nodeHealthInfos2).replicas(Arrays.asList(replica1, replica2)).build();
 
         serverConnectionInfoSerializer = new ServerConnectionInfoSerializer();
