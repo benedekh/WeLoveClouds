@@ -1,5 +1,6 @@
 package testing.weloveclouds.server.requests;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -120,9 +121,8 @@ public class KVServerHandlingECSRequestTests {
     }
 
     @Test
-    public void testDataAccessServiceInitialization()
-            throws UnknownHostException, UnableToSendContentToServerException,
-            ConnectionClosedException, DeserializationException {
+    public void testDataAccessServiceInitialization() throws UnableToSendContentToServerException,
+            ConnectionClosedException, DeserializationException, IOException {
         ServerConnectionInfo server1 = new ServerConnectionInfo.Builder().ipAddress("localhost")
                 .port(SERVER1_KVCLIENT_REQUEST_ACCEPTING_PORT).build();
         HashRange range1 = new HashRange.Builder().begin(HashingUtils.getHash("a"))
@@ -147,7 +147,8 @@ public class KVServerHandlingECSRequestTests {
                 new HashSet<>(Arrays.asList(server2, server3));
 
         KVAdminMessage adminMessage = new KVAdminMessage.Builder().status(StatusType.INITKVSERVER)
-                .ringMetadata(ringMetadata).targetServerInfo(part1).replicaConnectionInfos(serverConnectionInfos).build();
+                .ringMetadata(ringMetadata).targetServerInfo(part1)
+                .replicaConnectionInfos(serverConnectionInfos).build();
 
         serverCommunication.send(kvAdminMessageSerializer.serialize(adminMessage).getBytes());
         IKVAdminMessage response =

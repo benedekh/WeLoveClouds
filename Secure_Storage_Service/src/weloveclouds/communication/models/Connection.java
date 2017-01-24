@@ -13,12 +13,12 @@ import weloveclouds.commons.utils.StringUtils;
  *
  * @author Benoit, Benedek
  */
-public class Connection implements AutoCloseable {
+public class Connection<B extends Connection.Builder<B>> implements AutoCloseable {
 
     private ServerConnectionInfo remoteServer;
     private Socket socket;
 
-    protected Connection(Builder builder) {
+    protected Connection(Builder<B> builder) {
         this.remoteServer = builder.remoteServer;
         this.socket = builder.socket;
     }
@@ -59,8 +59,12 @@ public class Connection implements AutoCloseable {
      */
     public synchronized void kill() throws IOException {
         if (isConnected()) {
-            socket.shutdownOutput();
-            socket.shutdownInput();
+            try {
+                socket.shutdownOutput();
+                socket.shutdownInput();
+            } catch (Exception ex) {
+                // The methods shutdownOutput() and shutdownInput() are not supported in SSLSocket
+            }
             socket.close();
         }
     }
@@ -90,6 +94,7 @@ public class Connection implements AutoCloseable {
         if (!(obj instanceof Connection)) {
             return false;
         }
+        @SuppressWarnings("rawtypes")
         Connection other = (Connection) obj;
         if (remoteServer == null) {
             if (other.remoteServer != null) {
@@ -118,22 +123,24 @@ public class Connection implements AutoCloseable {
      *
      * @author Benedek
      */
-    public static class Builder {
+    public static class Builder<B extends Builder<B>> {
         private ServerConnectionInfo remoteServer;
         private Socket socket;
 
-        public Builder remoteServer(ServerConnectionInfo remoteServer) {
+        @SuppressWarnings("unchecked")
+        public B remoteServer(ServerConnectionInfo remoteServer) {
             this.remoteServer = remoteServer;
-            return this;
+            return (B) this;
         }
 
-        public Builder socket(Socket socket) {
+        @SuppressWarnings("unchecked")
+        public B socket(Socket socket) {
             this.socket = socket;
-            return this;
+            return (B) this;
         }
 
-        public Connection build() {
-            return new Connection(this);
+        public Connection<B> build() {
+            return new Connection<>(this);
         }
     }
 

@@ -123,3 +123,15 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 **/hs_err_pid*
+
+#Keystore
+**/*.jks
+
+#project jar files
+ms5-client.jar
+ms5-ecs.jar
+ms5-server.jar
+ms5-loadbalancer.jar
+
+#Manifest files
+**/*.MF

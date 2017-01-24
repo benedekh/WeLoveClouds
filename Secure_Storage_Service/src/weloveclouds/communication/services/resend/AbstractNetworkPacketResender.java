@@ -68,6 +68,6 @@ public abstract class AbstractNetworkPacketResender {
      * @throws IOException if any error occurs
      */
     public abstract byte[] sendWith(IConcurrentCommunicationService concurrentCommunicationService,
-            Connection connection) throws IOException;
+            Connection<?> connection) throws IOException;
 
 }

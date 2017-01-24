@@ -3,7 +3,9 @@ package weloveclouds.server.core;
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 import java.io.IOException;
-import java.net.ServerSocket;
+
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +19,7 @@ import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.status.ServiceStatus;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.models.SecureConnection;
 import weloveclouds.server.monitoring.heartbeat.ServiceHealthMonitor;
 
 /**
@@ -47,12 +49,13 @@ public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends Abstr
         status = RUNNING;
         serviceHealthMonitor.setServiceStatus(ServiceStatus.RUNNING);
 
-        try (ServerSocket socket = serverSocket) {
+        try (SSLServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
 
             while (status == RUNNING) {
                 new SimpleConnectionHandler.Builder<M, R>()
-                        .connection(new Connection.Builder().socket(socket.accept()).build())
+                        .connection(new SecureConnection.Builder()
+                                .socket((SSLSocket) socket.accept()).build())
                         .requestFactory(requestFactory)
                         .communicationApi(
                                 communicationApiFactory.createConcurrentCommunicationApiV1())

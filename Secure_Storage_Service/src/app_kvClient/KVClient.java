@@ -24,7 +24,7 @@ import weloveclouds.server.api.v2.IKVCommunicationApiV2;
 public class KVClient {
 
     private static final String DEFAULT_LOG_PATH = "logs/client.log";
-    private static final String DEFAULT_LOG_LEVEL = "ERROR";
+    private static final String DEFAULT_LOG_LEVEL = "ALL";
 
     private static final int CLI_CLIENT_NAME_INDEX = 0;
     private static final Logger LOGGER = Logger.getLogger(KVClient.class);

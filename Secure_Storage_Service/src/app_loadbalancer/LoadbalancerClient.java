@@ -1,17 +1,14 @@
 package app_loadbalancer;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.context.ExecutionContext;
 import weloveclouds.commons.utils.LogSetup;
-import weloveclouds.ecs.client.Client;
 import weloveclouds.loadbalancer.configuration.LoadBalancerConfigurationFactory;
 import weloveclouds.loadbalancer.configuration.LoadBalancerConfigurationHolder;
 import weloveclouds.loadbalancer.configuration.modules.LoadBalancerModule;

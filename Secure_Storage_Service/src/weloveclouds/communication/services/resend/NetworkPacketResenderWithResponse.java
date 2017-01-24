@@ -78,7 +78,7 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
 
     @Override
     public byte[] sendWith(IConcurrentCommunicationService concurrentCommunicationService,
-            Connection connection) throws IOException {
+            Connection<?> connection) throws IOException {
         createPacketReceiver(concurrentCommunicationService, connection);
 
         while (executionStatus == Status.RUNNING && numberOfAttemptsSoFar < maxNumberOfAttempts) {
@@ -132,7 +132,8 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
     }
 
     private void createPacketReceiver(
-            IConcurrentCommunicationService concurrentCommunicationService, Connection connection) {
+            IConcurrentCommunicationService concurrentCommunicationService,
+            Connection<?> connection) {
         PacketReceiver packetReceiver =
                 new PacketReceiver(concurrentCommunicationService, connection);
         packetReceiver.addObserver(this);
@@ -157,17 +158,17 @@ public class NetworkPacketResenderWithResponse extends AbstractNetworkPacketRese
      */
     private static class PacketReceiver extends Observable implements Runnable {
 
-        private ICommunicationService communicationService = null;
+        private ICommunicationService communicationService;
 
-        private IConcurrentCommunicationService concurrentCommunicationService = null;
-        private Connection connection = null;
+        private IConcurrentCommunicationService concurrentCommunicationService;
+        private Connection<?> connection;
 
         public PacketReceiver(ICommunicationService communicationService) {
             this.communicationService = communicationService;
         }
 
         public PacketReceiver(IConcurrentCommunicationService concurrentCommunicationService,
-                Connection connection) {
+                Connection<?> connection) {
             this.concurrentCommunicationService = concurrentCommunicationService;
             this.connection = connection;
         }

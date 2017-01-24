@@ -25,14 +25,14 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
     private static final Logger LOGGER = Logger.getLogger(ConcurrentCommunicationService.class);
 
-    private Map<Connection, MessageFramesDetector> messageFrameDetectorMap;
+    private Map<Connection<?>, MessageFramesDetector> messageFrameDetectorMap;
 
     public ConcurrentCommunicationService() {
         this.messageFrameDetectorMap = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void send(byte[] message, Connection connection) throws IOException {
+    public void send(byte[] message, Connection<?> connection) throws IOException {
         try {
             if (connection.isConnected()) {
                 LOGGER.debug("Getting output stream from the connection.");
@@ -51,7 +51,7 @@ public class ConcurrentCommunicationService implements IConcurrentCommunicationS
     }
 
     @Override
-    public byte[] receiveFrom(Connection connection) throws IOException {
+    public byte[] receiveFrom(Connection<?> connection) throws IOException {
         String errorMessage = "Client is not connected, so message cannot be received.";
 
         if (!messageFrameDetectorMap.containsKey(connection)) {

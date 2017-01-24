@@ -1,13 +1,17 @@
 package weloveclouds.loadbalancer.services;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import static weloveclouds.commons.status.ServerStatus.RUNNING;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.UnknownHostException;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import weloveclouds.commons.configuration.annotations.EcsDnsName;
 import weloveclouds.commons.exceptions.ClientSideException;
@@ -18,16 +22,14 @@ import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.models.SecureConnection;
 import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.ecs.models.messaging.notification.IKVEcsNotificationMessage;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationResponsePort;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServicePort;
-
-import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 /**
  * Created by Benoit on 2016-12-06.
@@ -63,13 +65,13 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
     public void run() {
         status = RUNNING;
         logger.info("ECS notification service started with endpoint: " + serverSocket);
-        try (ServerSocket socket = serverSocket) {
+        try (SSLServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
             while (status == RUNNING) {
                 ConnectionHandler connectionHandler = new ConnectionHandler(
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
-                        new Connection.Builder().socket(socket.accept()).build(), messageSerializer,
-                        messageDeserializer, distributedSystemAccessService);
+                        new SecureConnection.Builder().socket((SSLSocket) socket.accept()).build(),
+                        messageSerializer, messageDeserializer, distributedSystemAccessService);
                 connectionHandler.handleConnection();
             }
         } catch (IOException ex) {
@@ -105,11 +107,10 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
     private class ConnectionHandler extends AbstractConnectionHandler<IKVEcsNotificationMessage> {
         private DistributedSystemAccessService distributedSystemAccessService;
 
-        ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection connection,
-                          IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer,
-                          IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage>
-                                  messageDeserializer,
-                          DistributedSystemAccessService distributedSystemAccessService) {
+        ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection<?> connection,
+                IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer,
+                IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage> messageDeserializer,
+                DistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;
@@ -126,14 +127,14 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
             try {
                 while (connection.isConnected()) {
                     byte[] message = communicationApi.receiveFrom(connection);
-                    IKVEcsNotificationMessage notification = messageDeserializer
-                            .deserialize(message);
+                    IKVEcsNotificationMessage notification =
+                            messageDeserializer.deserialize(message);
 
                     switch (notification.getStatus()) {
                         case TOPOLOGY_UPDATE:
                             logger.debug("Updating loadbalancer topology");
-                            distributedSystemAccessService.updateServiceTopologyWith
-                                    (notification.getRingTopology());
+                            distributedSystemAccessService
+                                    .updateServiceTopologyWith(notification.getRingTopology());
                             break;
                     }
                 }

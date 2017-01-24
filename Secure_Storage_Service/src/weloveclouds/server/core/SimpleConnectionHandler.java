@@ -103,12 +103,12 @@ public class SimpleConnectionHandler<M, R extends IExecutable<M> & IValidatable<
     public static class Builder<M, R extends IExecutable<M> & IValidatable<R>> {
         private IConcurrentCommunicationApi communicationApi;
         private IRequestFactory<M, R> requestFactory;
-        private Connection connection;
+        private Connection<?> connection;
         private IMessageSerializer<SerializedMessage, M> messageSerializer;
         private IMessageDeserializer<M, SerializedMessage> messageDeserializer;
         private ServiceHealthMonitor serviceHealthMonitor;
 
-        public Builder<M, R> connection(Connection connection) {
+        public Builder<M, R> connection(Connection<?> connection) {
             this.connection = connection;
             return this;
         }
