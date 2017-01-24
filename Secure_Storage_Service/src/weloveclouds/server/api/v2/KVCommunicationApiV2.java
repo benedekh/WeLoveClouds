@@ -1,6 +1,7 @@
 package weloveclouds.server.api.v2;
 
 import static weloveclouds.client.monitoring.KVClientMonitoringMetricUtils.recordExecutionTime;
+import static weloveclouds.client.monitoring.MonitoringMetricConstants.DELETE_COMMAND_NAME;
 import static weloveclouds.client.monitoring.MonitoringMetricConstants.GET_COMMAND_NAME;
 import static weloveclouds.client.monitoring.MonitoringMetricConstants.LATENCY;
 import static weloveclouds.client.monitoring.MonitoringMetricConstants.PUT_COMMAND_NAME;
@@ -11,17 +12,17 @@ import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-import weloveclouds.communication.exceptions.ClientNotConnectedException;
-import weloveclouds.communication.exceptions.ConnectionClosedException;
-import weloveclouds.communication.exceptions.UnableToConnectException;
-import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
-import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.commons.hashing.models.Hash;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.hashing.models.RingMetadataPart;
 import weloveclouds.commons.hashing.utils.HashingUtils;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.utils.StringUtils;
+import weloveclouds.communication.exceptions.ClientNotConnectedException;
+import weloveclouds.communication.exceptions.ConnectionClosedException;
+import weloveclouds.communication.exceptions.UnableToConnectException;
+import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
+import weloveclouds.communication.models.ServerConnectionInfo;
 import weloveclouds.server.api.IKVCommunicationApi;
 import weloveclouds.server.api.v1.KVCommunicationApiV1;
 
@@ -68,7 +69,9 @@ public class KVCommunicationApiV2 implements IKVCommunicationApiV2 {
         try {
             return communicationApi.put(key, value);
         } finally {
-            recordExecutionTime(PUT_COMMAND_NAME, LATENCY, new Duration(start, Instant.now()));
+            String commandName =
+                    (value == null || value.isEmpty()) ? DELETE_COMMAND_NAME : PUT_COMMAND_NAME;
+            recordExecutionTime(commandName, LATENCY, new Duration(start, Instant.now()));
         }
     }
 

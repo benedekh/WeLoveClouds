@@ -1,6 +1,6 @@
 package weloveclouds.evaluation.preparation.util;
 
-import static weloveclouds.evaluation.preparation.util.StringJoinerUtility.join;
+import static weloveclouds.evaluation.preparation.util.StringUtils.join;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -16,6 +16,8 @@ import weloveclouds.evaluation.preparation.models.PreparedDataset;
 
 /**
  * The type Dataset to file writer.
+ * 
+ * @author Benedek
  */
 public class DatasetToFileWriter {
 
@@ -25,7 +27,7 @@ public class DatasetToFileWriter {
     /**
      * Save dataset to path in csv.
      *
-     * @param dataset    the dataset
+     * @param dataset the dataset
      * @param outputPath the output path
      */
     public static void saveDatasetToPathInCSV(final PreparedDataset dataset,
