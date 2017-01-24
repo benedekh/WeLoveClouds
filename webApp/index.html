@@ -1,113 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>We Love Clouds Console</title>
-    <link rel="icon" type="image/png" href="resources/databaseIcon.png" />
-    <!-- Latest compiled and minified CSS -->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>We Love Clouds Console</title>
+  <link rel="icon" type="image/png" href="resources/databaseIcon.png" />
+  <!-- Latest compiled and minified CSS -->
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
   <!-- Optional theme -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/custom.css">
   <!-- Latest compiled and minified JavaScript -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src:"https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
   <script src="js/loadBalancer-ajax.js"></script>
   <script src="js/ecs-ajax.js"></script>
-  </head>
-  <body>
-    <div class="container-fluid">
-      <!-- Static navbar -->
-      <nav class="navbar navbar-default">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <a class="navbar-brand" href="index.html">WeLoveClouds Console</a>
+</head>
+<body>
+  <div class="container-fluid">
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="index.html">WeLoveClouds Console</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div><!--/.container-fluid -->
+    </nav>
+  </div>
+  <div class="container">
+    <div class="row">
+      <h2>Services</h2>
+      <hr>
+      <a href="#" data-toggle="modal" data-target="#myModal">
+        <div class="col-md-4 server-info threed">
+          <div class="col-md-3" id="loadBalancer-image">
+            <img class="server-image" src="resources/serverSearch.png">
           </div>
-          <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div><!--/.container-fluid -->
-      </nav>
+          <div class="col-md-9">
+            <h4>Load balancer</h4>
+            <div id="loadbalancer-info">
+              <img class="loading-gif" src="resources/loading.gif">
+            </div>
+          </div>
+        </div>
+      </a>
+      <div class="col-md-4 server-info threed">
+        <div class="col-md-3" id="ecs-image">
+          <img class="server-image" src="resources/serverSearch.png">
+        </div>
+        <div class="col-md-9">
+          <h4>ECS</h4>
+          <div id="ecs-info">
+            <img class="loading-gif" src="resources/loading.gif">
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="container">
-     <div class="row">
-       <h2>Services</h2>
-       <hr>
-       <div class="col-md-4 server-info">
-           <div class="col-md-3">
-              <img class="server-image" src="resources/serverHealthy.png">
-           </div>
-           <div class="col-md-9">
-                <h4>Load balancer</h4>
-                <div id="loadbalancer-info">
-                  <img class="loading-gif" src="resources/loading.gif">
-                </div>
-           </div>
-       </div>
-       <div class="col-md-4 server-info">
-           <div class="col-md-3">
-              <img class="server-image" src="resources/serverHealthy.png">
-           </div>
-           <div class="col-md-9">
-                <h4>ECS</h4>
-                <div id="ecs-info">
-                  <img class="loading-gif" src="resources/loading.gif">
-                </div>
-           </div>
-       </div>
-     </div>
-     <div class="row" id="repository">
-       <h2>Storage</h2>
-       <hr>
-       <div class="row no-server-found">
-         <div class="col-md-12">
-              <center><h3>No Server Found</h3></center>
-         </div>
-       </div>
-       <div class="row no-server-found">
-       <div class="col-md-12">
-           <img class="searching-image" src="resources/searching.png">
-       </div>
-     </div>
-     </div>
-     <footer>
-       <p>&copy; 2016 WeLoveClouds</p>
-     </footer>
-   </div><!--/.container-->
-   <script>
-   window.onload = function(){
-     fetchLoadBalancerData();
-     fetchEcsData();
-     fetchRepository();
-     setInterval(fetchLoadBalancerData, 5000);
-     setInterval(fetchEcsData, 5000);
-     setInterval(fetchRepository, 5000);
-   }
- </script>
-   <script id="loadbalancer-tpl" type="text/template">
-     <p><strong>Status:</strong> {{status}}</p>
-   </script>
-   <script id="ecs-tpl" type="text/template">
-     <p><strong>Status:</strong> {{status}}</p>
-   </script>
-   <script id="node-tpl" type="text/template">
-     <div class="col-md-3 node-info" id="{{name}}">
-       <h4>Storage Node</h4>
-       <div class="col-md-4">
-          <img class="server-image" src="resources/databaseHealthy.png">
-       </div>
-       <div class="col-md-8">
-         <p><strong>Name:</strong> {{name}}</p>
-         <p><strong>Status:</strong> {{status}}</p>
-       </div>
+    <div class="row" id="storage">
+      <h2>Storage</h2>
+      <hr>
+      <div class="row" id="service">
+        
+      </div>
+      <div class="row" id="repository">
+        <div class="row no-server-found">
+          <div class="col-md-12">
+            <center><h3>No Server Found</h3></center>
+          </div>
+        </div>
+        <div class="row no-server-found">
+          <div class="col-md-12">
+            <img class="searching-image" src="resources/searching.png">
+          </div>
+        </div>
+      </div>
     </div>
-   </script>
-  </body>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p>&copy; 2016 WeLoveClouds</p>
+    </footer>
+  </div><!--/.container-->
+  <script>
+  window.onload = function(){
+    fetchLoadBalancerData();
+    fetchEcsData();
+    fetchRepository();
+    setInterval(fetchLoadBalancerData, 5000);
+    setInterval(fetchEcsData, 5000);
+    setInterval(fetchRepository, 5000);
+  }
+  </script>
+  <script id="loadbalancer-tpl" type="text/template">
+    <p><strong>Status:</strong> {{status}}</p>
+  </script>
+  <script id="ecs-tpl" type="text/template">
+    <p><strong>Status:</strong> {{status}}</p>
+  </script>
+  <script id="node-tpl" type="text/template">
+    <div class="col-md-3 node-info threed" id="{{name}}">
+      <h4>Storage Node</h4>
+      <div class="col-md-4">
+        <img class="server-image" src="resources/database{{status}}.png">
+      </div>
+      <div class="col-md-8">
+        <p><strong>Name:</strong> {{name}}</p>
+        <p><strong>Status:</strong> {{status}}</p>
+      </div>
+    </div>
+  </script>
+</body>
 </html>

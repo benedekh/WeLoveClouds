@@ -1,28 +1,36 @@
 package weloveclouds.ecs.rest.api.v1.models.responses;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import weloveclouds.ecs.models.repository.StorageNode;
+import weloveclouds.ecs.rest.api.v1.models.pojos.StorageNodePojo;
 
 /**
  * Created by Benoit on 2017-01-23.
  */
 public class GetParticipatingNodesResponse {
-    List<StorageNode> participatingNodes;
+    List<StorageNodePojo> participatingNodes;
 
     GetParticipatingNodesResponse(Builder builder) {
         this.participatingNodes = builder.participatingNodes;
     }
 
-    public List<StorageNode> getParticipatingNodes() {
+    public List<StorageNodePojo> getParticipatingNodes() {
         return participatingNodes;
     }
 
     public static class Builder {
-        private List<StorageNode> participatingNodes;
+        private List<StorageNodePojo> participatingNodes;
+
+        public Builder() {
+            participatingNodes = new ArrayList<>();
+        }
 
         public Builder participatingNodes(List<StorageNode> participatingNodes) {
-            this.participatingNodes = participatingNodes;
+            for (StorageNode node : participatingNodes) {
+                this.participatingNodes.add(new StorageNodePojo(node));
+            }
             return this;
         }
 

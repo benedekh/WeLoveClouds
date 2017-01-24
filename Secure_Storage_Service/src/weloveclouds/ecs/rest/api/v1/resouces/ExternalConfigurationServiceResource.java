@@ -47,14 +47,23 @@ public class ExternalConfigurationServiceResource {
     @Path("repository")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRepository() throws Exception {
-        GetRepositoryNodesResponse response = new GetRepositoryNodesResponse.Builder()
-                .repositoryNodes(ecsApi.getRepository().getStorageNodes())
-                .build();
-        return Response.ok() //200
-                .entity(objectMapper.writeValueAsString(response))
-                .header("Access-Control-Allow-Origin", "*")
-                .header("Access-Control-Allow-Methods", "GET")
-                .allow("OPTIONS")
-                .build();
+        try {
+            GetRepositoryNodesResponse response = new GetRepositoryNodesResponse.Builder()
+                    .repositoryNodes(ecsApi.getRepository().getStorageNodes())
+                    .build();
+            return Response.ok() //200
+                    .entity(objectMapper.writeValueAsString(response))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "GET")
+                    .allow("OPTIONS")
+                    .build();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return Response.ok() //200
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "GET")
+                    .allow("OPTIONS")
+                    .build();
+        }
     }
 }

@@ -1,3 +1,7 @@
+body {
+  font-family: 'Raleway', sans-serif;
+}
+
 .server-info {
   padding: 1%;
   margin-right:  5%;
@@ -35,3 +39,27 @@
 .server-image {
   max-width: 100%;
 }​
+
+.grow:hover
+{
+        -webkit-transform: scale(1.3);
+        -ms-transform: scale(1.3);
+        transform: scale(1.3);
+}
+.threed:hover
+{
+        box-shadow:
+                1px 1px #D3D3D3,
+                2px 2px #D3D3D3,
+                3px 3px #D3D3D3;
+        -webkit-transform: translateX(-3px);
+        transform: translateX(-3px);
+}
+
+a {
+    color: black;
+}
+
+a:hover {
+    color: black;
+}
