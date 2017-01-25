@@ -40,13 +40,8 @@
   </div>
   <div class="container">
     <div class="row">
-      <h2 style="display: inline-block;">Services</h2>
-      <a data-toggle="collapse" href="#servicePanel">
-          <span class="glyphicon glyphicon-chevron-down"  style="display: inline-block;"></span>
-      </a>
+      <h2>Services</h2>
       <hr>
-      <div id="servicePanel" class="panel-collapse collapse">
-        <div class="panel-body">
       <a href="#" data-toggle="modal" data-target="#myModal">
         <div class="col-md-4 server-info threed">
           <div class="col-md-3" id="loadBalancer-image">
@@ -70,16 +65,16 @@
             <img class="loading-gif" src="resources/loading.gif">
           </div>
         </div>
-      </div>
-    </div>
   </div>
     </div>
     <div class="row" id="storage">
-      <h2>Storage</h2>
+      <h2 style="display: inline-block;">Storage</h2>
+      <a data-toggle="collapse" href="#storagePanel">
+          <span class="glyphicon glyphicon-chevron-down"  style="display: inline-block;"></span>
+      </a>
       <hr>
-      <div class="row" id="service">
-
-      </div>
+      <div id="storagePanel" class="panel-collapse collapse">
+        <div class="panel-body">
       <div class="row" id="repository">
         <div class="row no-server-found">
           <div class="col-md-12">
@@ -92,6 +87,8 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
     </div>
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
