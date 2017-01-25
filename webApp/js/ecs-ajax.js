@@ -215,6 +215,6 @@ $(document).ready(function() {
 
 $(document).ready(function() {
   $('#ecsAnalytics').on('click', function (e) {
-    window.location.href = "http://weloveclouds-stats.com:3000/dashboard/db/weloveclouds-ECS";
+    window.open("http://weloveclouds-stats.com:3000/dashboard/db/weloveclouds-ECS", 'Ecs Stats');
   });
 });
