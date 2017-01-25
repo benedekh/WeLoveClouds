@@ -56,7 +56,7 @@
                 <hr class="serverInfoSeparator">
               </div>
               <div class="col-md-3 hvr-shrink">
-                  <img class="server-image" id="loadBalancerAnalytics" src="resources/analytics.png">
+                <img class="server-image" id="loadBalancerAnalytics" src="resources/analytics.png">
               </div>
             </div>
             <div class="row">
@@ -67,27 +67,29 @@
           </div>
         </div>
       </a>
-      <div class="col-md-4 server-info threed">
-        <div class="col-md-3" id="ecs-image">
-          <img class="server-image" src="resources/serverSearch.png">
-        </div>
-        <div class="col-md-9">
-          <div class=row>
-            <div class="col-md-9">
-              <h4>ECS</h4>
-            <hr class="serverInfoSeparator">
-            </div>
-            <div class="col-md-3 hvr-shrink">
+      <a href="#" data-toggle="modal" data-target="#ecsModal">
+        <div class="col-md-4 server-info threed">
+          <div class="col-md-3" id="ecs-image">
+            <img class="server-image" src="resources/serverSearch.png">
+          </div>
+          <div class="col-md-9">
+            <div class=row>
+              <div class="col-md-9">
+                <h4>ECS</h4>
+                <hr class="serverInfoSeparator">
+              </div>
+              <div class="col-md-3 hvr-shrink">
                 <img class="server-image" id="ecsAnalytics" src="resources/analytics.png">
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div id="ecs-info">
-              <img class="loading-gif" src="resources/loading.gif">
+            <div class="row">
+              <div id="ecs-info">
+                <img class="loading-gif" src="resources/loading.gif">
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="row" id="storage">
       <h2 style="display: inline-block;">Storage</h2>
@@ -114,6 +116,80 @@
         </div>
       </div>
     </div>
+    <div class="modal fade" id="ecsModal" tabindex="-1" role="dialog" aria-labelledby="ecsModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title" id="ecsModalLabel">ECS</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <form class="form-horizontal" role="form">
+                <div class="form-group">
+                  <h4>General</h4>
+                  <hr>
+                  <div class="form-group">
+                    <label for="ecsName" class="col-sm-2 control-label">Name</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="ecsName"  class="form-control" readonly="true">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="ecsStatus" class="col-sm-2 control-label">Status</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="ecsStatus"  class="form-control" readonly="true">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="ecsIp" class="col-sm-2 control-label">Host</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="ecsIp"  class="form-control" readonly="true">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <h4>Commands</h4>
+                  <hr>
+                  <div class="row">
+                    <div class="col-md-12" id="errorMessageDanger">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2 ecsCommand threed active" id="startLoadBalancerCommand" style="background-color:#27ae60;">
+                      <img class="ecsCommandImage" src="resources/startLoadBalancer.png">
+                    </div>
+                    <div class="col-sm-2 ecsCommand ecsCommandDisabled" id="initServiceCommand" style="background-color:#16a085;">
+                      <img class="ecsCommandImage" src="resources/initService.png">
+                    </div>
+                    <div class="col-sm-2 ecsCommand ecsCommandDisabled" id="addNodeCommand" style="background-color:#2980b9;">
+                      <img class="ecsCommandImage" src="resources/add.png">
+                    </div>
+                    <div class="col-sm-2 ecsCommand ecsCommandDisabled" id="removeNodeCommand" style="background-color:#c0392b;">
+                      <img class="ecsCommandImage" src="resources/remove.png">
+                    </div>
+                    <div class="col-sm-2 ecsCommand ecsCommandDisabled" id="startNodeCommand" style="background-color:#8e44ad;">
+                      <img class="ecsCommandImage" src="resources/start.png">
+                    </div>
+                    <div class="col-sm-2 ecsCommand ecsCommandDisabled" id="stopNodeCommand" style="background-color:#d35400;">
+                      <img class="ecsCommandImage" src="resources/stop.png">
+                    </div>
+                    <div class="col-sm-2 ecsCommand ecsCommandDisabled" id="shutdownNodeCommand" style="background-color:#2c3e50;">
+                      <img class="ecsCommandImage" src="resources/shutdown.png">
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="modal fade" id="loadBalancerModal" tabindex="-1" role="dialog" aria-labelledby="loadBalancerModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -127,21 +203,25 @@
             <div class="container-fluid">
               <form class="form-horizontal" role="form">
                 <div class="form-group">
-                  <label for="loadBalancerName" class="col-sm-2 control-label">Name</label>
-                  <div class="col-sm-9">
-                    <input type="text" id="loadBalancerName"  class="form-control" readonly="true">
+                  <h4>General</h4>
+                  <hr>
+                  <div class="form-group">
+                    <label for="loadBalancerName" class="col-sm-2 control-label">Name</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="loadBalancerName"  class="form-control" readonly="true">
+                    </div>
                   </div>
-                </div>
-                <div class="form-group">
-                  <label for="loadBalancerStatus" class="col-sm-2 control-label">Status</label>
-                  <div class="col-sm-9">
-                    <input type="text" id="loadBalancerStatus"  class="form-control" readonly="true">
+                  <div class="form-group">
+                    <label for="loadBalancerStatus" class="col-sm-2 control-label">Status</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="loadBalancerStatus"  class="form-control" readonly="true">
+                    </div>
                   </div>
-                </div>
-                <div class="form-group">
-                  <label for="loadBalancerIp" class="col-sm-2 control-label">Host</label>
-                  <div class="col-sm-9">
-                    <input type="text" id="loadBalancerIp"  class="form-control" readonly="true">
+                  <div class="form-group">
+                    <label for="loadBalancerIp" class="col-sm-2 control-label">Host</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="loadBalancerIp"  class="form-control" readonly="true">
+                    </div>
                   </div>
                 </div>
               </form>
@@ -241,15 +321,15 @@
   </script>
   <script id="loadbalancer-tpl" type="text/template">
     <p><strong>Status:</strong> {{status}}</p>
-    <p><strong>Host:</strong> weloveclouds-ecs.com</p>
+    <p><strong>Host:</strong> weloveclouds-lb.com</p>
   </script>
   <script id="ecs-tpl" type="text/template">
     <p><strong>Status:</strong> {{status}}</p>
-    <p><strong>Host:</strong> weloveclouds-lb.com</p>
+    <p><strong>Host:</strong> weloveclouds-ecs.com</p>
   </script>
   <script id="node-tpl" type="text/template">
     <a href="#" data-toggle="modal" data-target="#node-modal">
-    <div class="col-md-4 node-info threed" id="{{name}}">
+      <div class="col-md-4 node-info threed" id="{{name}}">
 
         <div class="col-md-3 nodeImage">
           <img class="server-image" src="resources/database{{status}}.png">
@@ -258,29 +338,29 @@
           <div class=row>
             <div class="col-md-9">
               <h4>Storage Node</h4>
-            <hr class="storageNodeInfoSeparator">
+              <hr class="storageNodeInfoSeparator">
             </div>
             <div class="col-md-3 hvr-shrink">
-                <img class="server-image" id="storageAnalytics" src="resources/analytics.png">
+              <img class="server-image" id="storageAnalytics" src="resources/analytics.png">
             </div>
           </div>
           <div class="row">
-          <div class="nodeInformationLine"><strong>Name: </strong><div class="nodeName" style="display: inline-block;">{{name}}</div></div>
-          <div class="nodeInformationLine"><strong>Status: </strong><div class="nodeStatus" style="display: inline-block;">{{status}}</div></div>
-          <div class="nodeInformationLine"><strong>Metadata: </strong><div class="nodeMetadataStatus" style="display: inline-block;">{{metadataStatus}}</div></div>
-          <div class="nodeInformationLine"><strong>Host: </strong><div class="nodeIp" style="display: inline-block;">{{#connectionInfo}}{{ipAddress}}:{{port}}{{/connectionInfo}}</div></div>
-          <div id="hiddenNodeInfo" style="display: none;">
-            {{#hashRange}}
-            <div class="nodeHashStartValue">{{startValue}}</div>
-            <div class="nodeHashEndValue">{{endValue}}</div>
-            {{/hashRange}}
-            <div class="replicas">{{replicas}}</div>
-            <div class="nodeHashKey">{{#hashKey}}{{bytes}}{{/hashKey}}</div>
+            <div class="nodeInformationLine"><strong>Name: </strong><div class="nodeName" style="display: inline-block;">{{name}}</div></div>
+            <div class="nodeInformationLine"><strong>Status: </strong><div class="nodeStatus" style="display: inline-block;">{{status}}</div></div>
+            <div class="nodeInformationLine"><strong>Metadata: </strong><div class="nodeMetadataStatus" style="display: inline-block;">{{metadataStatus}}</div></div>
+            <div class="nodeInformationLine"><strong>Host: </strong><div class="nodeIp" style="display: inline-block;">{{#connectionInfo}}{{ipAddress}}:{{port}}{{/connectionInfo}}</div></div>
+            <div id="hiddenNodeInfo" style="display: none;">
+              {{#hashRange}}
+              <div class="nodeHashStartValue">{{startValue}}</div>
+              <div class="nodeHashEndValue">{{endValue}}</div>
+              {{/hashRange}}
+              <div class="replicas">{{replicas}}</div>
+              <div class="nodeHashKey">{{#hashKey}}{{bytes}}{{/hashKey}}</div>
+            </div>
           </div>
         </div>
-        </div>
       </div>
-      </a>
+    </a>
   </script>
 </body>
 </html>

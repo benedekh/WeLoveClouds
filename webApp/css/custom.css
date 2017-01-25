@@ -86,3 +86,30 @@ a:hover {
   background-color: #e74c3c !important;
   border: solid 1px #e74c3c !important;
 }
+
+.ecsCommandImage{
+  width: 100%;
+  max-width: 75px;
+}
+
+.ecsCommand {
+  margin:2%;
+  padding: 2%;
+  margin-left: 2%;
+}
+
+.ecsCommandDisabled {
+  background-color: #bdc3c7 !important;
+}
+
+.ecsCommandInProgress {
+  background-color: white !important;
+}
+
+.escCommand:active {
+  background-color: black;
+}
+
+#errorMessageDanger {
+  z-index: 99999;
+}

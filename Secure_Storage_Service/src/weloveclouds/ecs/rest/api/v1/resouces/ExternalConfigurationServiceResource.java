@@ -6,11 +6,14 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import weloveclouds.commons.jetty.models.ErrorResponse;
 import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.rest.api.v1.models.responses.GetRepositoryNodesResponse;
 import weloveclouds.ecs.rest.api.v1.models.responses.GetStatusResponse;
@@ -35,7 +38,7 @@ public class ExternalConfigurationServiceResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getStatus() throws Exception {
         GetStatusResponse response = new GetStatusResponse(ecsApi.getStatus());
-        return Response.ok() //200
+        return Response.ok()
                 .entity(objectMapper.writeValueAsString(response))
                 .header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Methods", "GET")
@@ -51,7 +54,7 @@ public class ExternalConfigurationServiceResource {
             GetRepositoryNodesResponse response = new GetRepositoryNodesResponse.Builder()
                     .repositoryNodes(ecsApi.getRepository().getStorageNodes())
                     .build();
-            return Response.ok() //200
+            return Response.ok()
                     .entity(objectMapper.writeValueAsString(response))
                     .header("Access-Control-Allow-Origin", "*")
                     .header("Access-Control-Allow-Methods", "GET")
@@ -59,9 +62,167 @@ public class ExternalConfigurationServiceResource {
                     .build();
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return Response.ok() //200
+            return Response.ok()
                     .header("Access-Control-Allow-Origin", "*")
                     .header("Access-Control-Allow-Methods", "GET")
+                    .allow("OPTIONS")
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("startLoadBalancer")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response startLoadBalancer() throws Exception {
+        try {
+            ecsApi.startLoadBalancer();
+            return Response.ok()
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        } catch (Exception e) {
+            ErrorResponse response = new ErrorResponse().withMessage(e.getMessage());
+            return Response.serverError()
+                    .entity(objectMapper.writeValueAsString(response))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("initService")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response initService(@QueryParam("numberOfNodes") int numberOfNodes, @QueryParam
+            ("cacheSize") int cacheSize, @QueryParam("displacementStrategy") String
+                                        displacementStrategy) throws Exception {
+        try {
+            ecsApi.initService(numberOfNodes, cacheSize, displacementStrategy);
+            return Response.ok()
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        } catch (Exception e) {
+            ErrorResponse response = new ErrorResponse().withMessage(e.getMessage());
+            return Response.serverError()
+                    .entity(objectMapper.writeValueAsString(response))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("startNode")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response startNode() throws Exception {
+        try {
+            ecsApi.start();
+            return Response.ok()
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        } catch (Exception e) {
+            ErrorResponse response = new ErrorResponse().withMessage(e.getMessage());
+            return Response.serverError()
+                    .entity(objectMapper.writeValueAsString(response))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("stopNode")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response stopNode() throws Exception {
+        try {
+            ecsApi.stop();
+            return Response.ok()
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        } catch (Exception e) {
+            ErrorResponse response = new ErrorResponse().withMessage(e.getMessage());
+            return Response.serverError()
+                    .entity(objectMapper.writeValueAsString(response))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("addNode")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response initService(@QueryParam("cacheSize") int cacheSize,
+                                @QueryParam("displacementStrategy") String displacementStrategy,
+                                @QueryParam("autoStart") boolean autoStart) throws Exception {
+        try {
+            ecsApi.addNode(cacheSize, displacementStrategy, autoStart);
+            return Response.ok()
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        } catch (Exception e) {
+            ErrorResponse response = new ErrorResponse().withMessage(e.getMessage());
+            return Response.serverError()
+                    .entity(objectMapper.writeValueAsString(response))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("removeNode")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response removeNode() throws Exception {
+        try {
+            ecsApi.removeNode();
+            return Response.ok()
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        } catch (Exception e) {
+            ErrorResponse response = new ErrorResponse().withMessage(e.getMessage());
+            return Response.serverError()
+                    .entity(objectMapper.writeValueAsString(response))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("shutdown")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response shutdown() throws Exception {
+        try {
+            ecsApi.shutDown();
+            return Response.ok()
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
+                    .allow("OPTIONS")
+                    .build();
+        } catch (Exception e) {
+            ErrorResponse response = new ErrorResponse().withMessage(e.getMessage());
+            return Response.serverError()
+                    .entity(objectMapper.writeValueAsString(response))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "POST")
                     .allow("OPTIONS")
                     .build();
         }
