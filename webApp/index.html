@@ -120,7 +120,8 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h3 class="modal-title" id="ecsModalLabel">ECS</h3>
+            <div id="ecsModalImage" style="display: inline-block;"></div>
+            <h3 class="modal-title" id="ecsModalLabel" style="display: inline-block;">ECS</h3>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -131,12 +132,6 @@
                 <div class="form-group">
                   <h4>General</h4>
                   <hr>
-                  <div class="form-group">
-                    <label for="ecsName" class="col-sm-2 control-label">Name</label>
-                    <div class="col-sm-9">
-                      <input type="text" id="ecsName"  class="form-control" readonly="true">
-                    </div>
-                  </div>
                   <div class="form-group">
                     <label for="ecsStatus" class="col-sm-2 control-label">Status</label>
                     <div class="col-sm-9">
@@ -376,8 +371,8 @@
     <p><strong>Host:</strong> weloveclouds-lb.com</p>
   </script>
   <script id="ecs-tpl" type="text/template">
-    <p><strong>Status:</strong> {{status}}</p>
-    <p><strong>Host:</strong> weloveclouds-ecs.com</p>
+    <div class="nodeInformationLine"><strong>Status: </strong><div class="ecsStatus" style="display: inline-block;">{{status}}</div></div>
+    <div class="nodeInformationLine"><strong>Host: </strong><div class="ecsIp" style="display: inline-block;"> weloveclouds-ecs.com</div></div>
   </script>
   <script id="node-tpl" type="text/template">
     <a href="#" data-toggle="modal" data-target="#node-modal">

@@ -10,4 +10,11 @@ $(document).ready(function() {
     $("#nodeHashEndValue").val(($(invoker).find($(".nodeHashEndValue")).html()));
     $("#nodeModalImage").html(($(invoker).find($(".nodeImage")).html()));
   });
+
+  $('#ecsModal').on('show.bs.modal', function (e) {
+    var invoker = $(e.relatedTarget);
+    $("#ecsStatus").val(($(invoker).find($(".ecsStatus")).html()));
+    $("#ecsIp").val(($(invoker).find($(".ecsIp")).html()));
+    $("#ecsModalImage").html(($(invoker).find($("#ecs-image")).html()));
+  });
 });
