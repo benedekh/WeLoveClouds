@@ -40,8 +40,13 @@
   </div>
   <div class="container">
     <div class="row">
-      <h2>Services</h2>
+      <h2 style="display: inline-block;">Services</h2>
+      <a data-toggle="collapse" href="#servicePanel">
+          <span class="glyphicon glyphicon-chevron-down"  style="display: inline-block;"></span>
+      </a>
       <hr>
+      <div id="servicePanel" class="panel-collapse collapse">
+        <div class="panel-body">
       <a href="#" data-toggle="modal" data-target="#myModal">
         <div class="col-md-4 server-info threed">
           <div class="col-md-3" id="loadBalancer-image">
@@ -66,6 +71,8 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
     </div>
     <div class="row" id="storage">
       <h2>Storage</h2>
@@ -166,15 +173,15 @@
   </script>
   <script id="node-tpl" type="text/template">
     <a href="#" data-toggle="modal" data-target="#node-modal">
-      <div class="col-md-3 node-info threed" id="{{name}}">
+      <div class="col-md-4 node-info threed" id="{{name}}">
         <h4>Storage Node</h4>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <img class="server-image" src="resources/database{{status}}.png">
         </div>
-        <div class="col-md-8">
+        <div class="col-md-9">
           <div class="nodeInformationLine"><strong>Name: </strong><div class="nodeName" style="display: inline-block;">{{name}}</div></div>
           <div class="nodeInformationLine"><strong>Status: </strong><div class="nodeStatus" style="display: inline-block;">{{status}}</div></div>
-          <div class="nodeInformationLine"><strong>Host: </strong><div class="nodeIp" style="display: inline-block;">{{#connectionInfo}}{{ipAddress}}{{/connectionInfo}}</div></div>
+          <div class="nodeInformationLine"><strong>Host: </strong><div class="nodeIp" style="display: inline-block;">{{#connectionInfo}}{{ipAddress}}:{{port}}{{/connectionInfo}}</div></div>
         </div>
       </div>
     </a>

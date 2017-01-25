@@ -12,8 +12,7 @@ body {
 }
 
 .node-info {
-  margin-bottom: 2%;
-  margin-right: 2%;
+  margin: 2%;
   border-style: solid;
   border-width: medium;
   border-color: #e74c3c;
@@ -66,4 +65,11 @@ a:hover {
 
 .nodeInformationLine{
   margin-bottom:  10px;
+}
+
+
+.glyphicon {
+    color: #1E824C;
+    margin-left: 5px;
+    font-size: 25px;
 }
