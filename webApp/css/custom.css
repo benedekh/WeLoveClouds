@@ -63,3 +63,7 @@ a {
 a:hover {
     color: black;
 }
+
+.nodeInformationLine{
+  margin-bottom:  10px;
+}

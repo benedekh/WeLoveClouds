@@ -19,6 +19,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src:"https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
+  <script src="js/modals.js"></script>
   <script src="js/loadBalancer-ajax.js"></script>
   <script src="js/ecs-ajax.js"></script>
 </head>
@@ -70,7 +71,7 @@
       <h2>Storage</h2>
       <hr>
       <div class="row" id="service">
-        
+
       </div>
       <div class="row" id="repository">
         <div class="row no-server-found">
@@ -104,6 +105,45 @@
         </div>
       </div>
     </div>
+    <div class="modal fade" id="node-modal" tabindex="-1" role="dialog" aria-labelledby="node-modal-label" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title" id="node-modal-label">Storage Node</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <form class="form-horizontal" role="form">
+                <div class="form-group">
+                  <label for="nodeName" class="col-sm-2 control-label">Name</label>
+                  <div class="col-sm-9">
+                    <input type="text" id="nodeName"  class="form-control" readonly="true">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="nodeStatus" class="col-sm-2 control-label">Status</label>
+                  <div class="col-sm-9">
+                    <input type="text" id="nodeStatus"  class="form-control" readonly="true">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="nodeIp" class="col-sm-2 control-label">Host</label>
+                  <div class="col-sm-9">
+                    <input type="text" id="nodeIp"  class="form-control" readonly="true">
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <footer>
       <p>&copy; 2016 WeLoveClouds</p>
     </footer>
@@ -125,16 +165,19 @@
     <p><strong>Status:</strong> {{status}}</p>
   </script>
   <script id="node-tpl" type="text/template">
-    <div class="col-md-3 node-info threed" id="{{name}}">
-      <h4>Storage Node</h4>
-      <div class="col-md-4">
-        <img class="server-image" src="resources/database{{status}}.png">
+    <a href="#" data-toggle="modal" data-target="#node-modal">
+      <div class="col-md-3 node-info threed" id="{{name}}">
+        <h4>Storage Node</h4>
+        <div class="col-md-4">
+          <img class="server-image" src="resources/database{{status}}.png">
+        </div>
+        <div class="col-md-8">
+          <div class="nodeInformationLine"><strong>Name: </strong><div class="nodeName" style="display: inline-block;">{{name}}</div></div>
+          <div class="nodeInformationLine"><strong>Status: </strong><div class="nodeStatus" style="display: inline-block;">{{status}}</div></div>
+          <div class="nodeInformationLine"><strong>Host: </strong><div class="nodeIp" style="display: inline-block;">{{#connectionInfo}}{{ipAddress}}{{/connectionInfo}}</div></div>
+        </div>
       </div>
-      <div class="col-md-8">
-        <p><strong>Name:</strong> {{name}}</p>
-        <p><strong>Status:</strong> {{status}}</p>
-      </div>
-    </div>
+    </a>
   </script>
 </body>
 </html>
