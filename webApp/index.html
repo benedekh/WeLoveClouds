@@ -14,12 +14,14 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/custom.css">
+  <link rel="stylesheet" type="text/css" href="css/hover-min.css">
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src:"https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
   <script src="js/modals.js"></script>
+  <script src="js/panels.js"></script>
   <script src="js/loadBalancer-ajax.js"></script>
   <script src="js/ecs-ajax.js"></script>
 </head>
@@ -42,15 +44,24 @@
     <div class="row">
       <h2>Services</h2>
       <hr>
-      <a href="#" data-toggle="modal" data-target="#myModal">
+      <a href="#" data-toggle="modal" data-target="#loadBalancerModal">
         <div class="col-md-4 server-info threed">
           <div class="col-md-3" id="loadBalancer-image">
             <img class="server-image" src="resources/serverSearch.png">
           </div>
           <div class="col-md-9">
-            <h4>Load balancer</h4>
-            <div id="loadbalancer-info">
-              <img class="loading-gif" src="resources/loading.gif">
+            <div class=row>
+              <div class="col-md-9">
+                <h4>Load balancer</h4>
+              </div>
+              <div class="col-md-3 hvr-shrink">
+                  <img class="server-image" id="loadBalancerAnalytics" src="resources/analytics.png">
+              </div>
+            </div>
+            <div class="row">
+              <div id="loadbalancer-info">
+                <img class="loading-gif" src="resources/loading.gif">
+              </div>
             </div>
           </div>
         </div>
@@ -60,60 +71,52 @@
           <img class="server-image" src="resources/serverSearch.png">
         </div>
         <div class="col-md-9">
-          <h4>ECS</h4>
-          <div id="ecs-info">
-            <img class="loading-gif" src="resources/loading.gif">
+          <div class=row>
+            <div class="col-md-9">
+              <h4>ECS</h4>
+            </div>
+            <div class="col-md-3 hvr-shrink">
+                <img class="server-image" id="ecsAnalytics" src="resources/analytics.png">
+            </div>
+          </div>
+          <div class="row">
+            <div id="ecs-info">
+              <img class="loading-gif" src="resources/loading.gif">
+            </div>
           </div>
         </div>
-  </div>
+      </div>
     </div>
     <div class="row" id="storage">
       <h2 style="display: inline-block;">Storage</h2>
-      <a data-toggle="collapse" href="#storagePanel">
-          <span class="glyphicon glyphicon-chevron-down"  style="display: inline-block;"></span>
-      </a>
+      <div id="storagePanelIcon"  style="display: inline-block;">
+        <a data-toggle="collapse" href="#storagePanel">
+          <span class="glyphicon glyphicon-chevron-down"></span>
+        </a>
+      </div>
       <hr>
       <div id="storagePanel" class="panel-collapse collapse">
         <div class="panel-body">
-      <div class="row" id="repository">
-        <div class="row no-server-found">
-          <div class="col-md-12">
-            <center><h3>No Server Found</h3></center>
-          </div>
-        </div>
-        <div class="row no-server-found">
-          <div class="col-md-12">
-            <img class="searching-image" src="resources/searching.png">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-    </div>
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            ...
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+          <div class="row" id="repository">
+            <div class="row no-server-found">
+              <div class="col-md-12">
+                <center><h3>No Server Found</h3></center>
+              </div>
+            </div>
+            <div class="row no-server-found">
+              <div class="col-md-12">
+                <img class="searching-image" src="resources/searching.png">
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="modal fade" id="node-modal" tabindex="-1" role="dialog" aria-labelledby="node-modal-label" aria-hidden="true">
+    <div class="modal fade" id="loadBalancerModal" tabindex="-1" role="dialog" aria-labelledby="loadBalancerModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h3 class="modal-title" id="node-modal-label">Storage Node</h3>
+            <h3 class="modal-title" id="loadBalancerModalLabel">Load balancer</h3>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -122,21 +125,93 @@
             <div class="container-fluid">
               <form class="form-horizontal" role="form">
                 <div class="form-group">
-                  <label for="nodeName" class="col-sm-2 control-label">Name</label>
+                  <label for="loadBalancerName" class="col-sm-2 control-label">Name</label>
                   <div class="col-sm-9">
-                    <input type="text" id="nodeName"  class="form-control" readonly="true">
+                    <input type="text" id="loadBalancerName"  class="form-control" readonly="true">
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="nodeStatus" class="col-sm-2 control-label">Status</label>
+                  <label for="loadBalancerStatus" class="col-sm-2 control-label">Status</label>
                   <div class="col-sm-9">
-                    <input type="text" id="nodeStatus"  class="form-control" readonly="true">
+                    <input type="text" id="loadBalancerStatus"  class="form-control" readonly="true">
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="nodeIp" class="col-sm-2 control-label">Host</label>
+                  <label for="loadBalancerIp" class="col-sm-2 control-label">Host</label>
                   <div class="col-sm-9">
-                    <input type="text" id="nodeIp"  class="form-control" readonly="true">
+                    <input type="text" id="loadBalancerIp"  class="form-control" readonly="true">
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="node-modal" tabindex="-1" role="dialog" aria-labelledby="node-modal-label" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div id="nodeModalImage" style="display: inline-block;"></div>
+            <h3 class="modal-title" id="node-modal-label" style="display: inline-block;">Storage Node</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <form class="form-horizontal" role="form">
+                <div class="form-group">
+                  <h4>General</h4>
+                  <hr>
+                  <div class="form-group">
+                    <label for="nodeName" class="col-sm-2 control-label">Name</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="nodeName"  class="form-control" readonly="true">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="nodeStatus" class="col-sm-2 control-label">Status</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="nodeStatus"  class="form-control" readonly="true">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="nodeMetadataStatus" class="col-sm-2 control-label">Metadata</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="nodeMetadataStatus"  class="form-control" readonly="true">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="nodeIp" class="col-sm-2 control-label">Host</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="nodeIp"  class="form-control" readonly="true">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <h4>Hash informations</h4>
+                  <hr>
+                  <div class="form-group">
+                    <label for="nodeHashKey" class="col-sm-2 control-label">Hash key</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="nodeHashKey"  class="form-control" readonly="true">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="nodeHashStartValue" class="col-sm-2 control-label">Start</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="nodeHashStartValue"  class="form-control" readonly="true">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="nodeHashEndValue" class="col-sm-2 control-label">End</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="nodeHashEndValue"  class="form-control" readonly="true">
+                    </div>
                   </div>
                 </div>
               </form>
@@ -169,19 +244,28 @@
     <p><strong>Status:</strong> {{status}}</p>
   </script>
   <script id="node-tpl" type="text/template">
-    <a href="#" data-toggle="modal" data-target="#node-modal">
-      <div class="col-md-4 node-info threed" id="{{name}}">
+    <div class="col-md-4 node-info threed" id="{{name}}">
+      <a href="#" data-toggle="modal" data-target="#node-modal">
         <h4>Storage Node</h4>
-        <div class="col-md-3">
+        <div class="col-md-3 nodeImage">
           <img class="server-image" src="resources/database{{status}}.png">
         </div>
         <div class="col-md-9">
           <div class="nodeInformationLine"><strong>Name: </strong><div class="nodeName" style="display: inline-block;">{{name}}</div></div>
           <div class="nodeInformationLine"><strong>Status: </strong><div class="nodeStatus" style="display: inline-block;">{{status}}</div></div>
+          <div class="nodeInformationLine"><strong>Metadata: </strong><div class="nodeMetadataStatus" style="display: inline-block;">{{metadataStatus}}</div></div>
           <div class="nodeInformationLine"><strong>Host: </strong><div class="nodeIp" style="display: inline-block;">{{#connectionInfo}}{{ipAddress}}:{{port}}{{/connectionInfo}}</div></div>
+          <div id="hiddenNodeInfo" style="display: none;">
+            {{#hashRange}}
+            <div class="nodeHashStartValue">{{startValue}}</div>
+            <div class="nodeHashEndValue">{{endValue}}</div>
+            {{/hashRange}}
+            <div class="replicas">{{replicas}}</div>
+            <div class="nodeHashKey">{{#hashKey}}{{bytes}}{{/hashKey}}</div>
+          </div>
         </div>
-      </div>
-    </a>
+      </a>
+    </div>
   </script>
 </body>
 </html>

@@ -15,6 +15,7 @@ import static weloveclouds.ecs.models.repository.NodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.NodeStatus.REMOVED;
 import static weloveclouds.ecs.models.repository.NodeStatus.RUNNING;
+import static weloveclouds.ecs.models.repository.NodeStatus.UNSYNCHRONIZED;
 
 import java.io.File;
 import java.io.IOException;
@@ -354,6 +355,9 @@ public class ExternalConfigurationService implements Observer {
                 updateNodesWithMetadata();
                 break;
             case ADD_NODE:
+                for(StorageNode node: distributedServiceAccess.getParticipatingNodes()){
+                    node.setMetadataStatus(UNSYNCHRONIZED);
+                }
                 updateNodesWithMetadata();
                 break;
             case SHUTDOWN:

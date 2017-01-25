@@ -23,7 +23,7 @@ function fetchRepository(){
         url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/repository",
         type: "GET",
 
-        
+
         success: function(resultData) {
           $('.no-server-found').hide();
           $.each(resultData["repositoryNodes"], function(index, it){
@@ -46,3 +46,9 @@ function fetchRepository(){
         timeout: 12000000,
       })
 }
+
+$(document).ready(function() {
+  $('#ecsAnalytics').on('click', function (e) {
+    window.location.href = "http://weloveclouds-stats.com:3000/dashboard/db/weloveclouds-ECS";
+  });
+});
