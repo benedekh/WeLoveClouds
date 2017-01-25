@@ -12,8 +12,8 @@ body {
 }
 
 .node-info {
-  margin-left: 2%;
-  margin-right: 2%;
+  padding: 1%;
+  margin-right: 5%;
   margin-bottom: 2%;
   border-style: solid;
   border-width: medium;
@@ -75,4 +75,14 @@ a:hover {
     color: #F22613;
     margin-left: 5px;
     font-size: 25px;
+}
+
+.serverInfoSeparator {
+  background-color: #2980b9 !important;
+  border: solid 1px #2980b9 !important;
+}
+
+.storageNodeInfoSeparator {
+  background-color: #e74c3c !important;
+  border: solid 1px #e74c3c !important;
 }

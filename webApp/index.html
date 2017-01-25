@@ -53,6 +53,7 @@
             <div class=row>
               <div class="col-md-9">
                 <h4>Load balancer</h4>
+                <hr class="serverInfoSeparator">
               </div>
               <div class="col-md-3 hvr-shrink">
                   <img class="server-image" id="loadBalancerAnalytics" src="resources/analytics.png">
@@ -74,6 +75,7 @@
           <div class=row>
             <div class="col-md-9">
               <h4>ECS</h4>
+            <hr class="serverInfoSeparator">
             </div>
             <div class="col-md-3 hvr-shrink">
                 <img class="server-image" id="ecsAnalytics" src="resources/analytics.png">
@@ -239,18 +241,30 @@
   </script>
   <script id="loadbalancer-tpl" type="text/template">
     <p><strong>Status:</strong> {{status}}</p>
+    <p><strong>Host:</strong> weloveclouds-ecs.com</p>
   </script>
   <script id="ecs-tpl" type="text/template">
     <p><strong>Status:</strong> {{status}}</p>
+    <p><strong>Host:</strong> weloveclouds-lb.com</p>
   </script>
   <script id="node-tpl" type="text/template">
+    <a href="#" data-toggle="modal" data-target="#node-modal">
     <div class="col-md-4 node-info threed" id="{{name}}">
-      <a href="#" data-toggle="modal" data-target="#node-modal">
-        <h4>Storage Node</h4>
+
         <div class="col-md-3 nodeImage">
           <img class="server-image" src="resources/database{{status}}.png">
         </div>
         <div class="col-md-9">
+          <div class=row>
+            <div class="col-md-9">
+              <h4>Storage Node</h4>
+            <hr class="storageNodeInfoSeparator">
+            </div>
+            <div class="col-md-3 hvr-shrink">
+                <img class="server-image" id="storageAnalytics" src="resources/analytics.png">
+            </div>
+          </div>
+          <div class="row">
           <div class="nodeInformationLine"><strong>Name: </strong><div class="nodeName" style="display: inline-block;">{{name}}</div></div>
           <div class="nodeInformationLine"><strong>Status: </strong><div class="nodeStatus" style="display: inline-block;">{{status}}</div></div>
           <div class="nodeInformationLine"><strong>Metadata: </strong><div class="nodeMetadataStatus" style="display: inline-block;">{{metadataStatus}}</div></div>
@@ -264,8 +278,9 @@
             <div class="nodeHashKey">{{#hashKey}}{{bytes}}{{/hashKey}}</div>
           </div>
         </div>
+        </div>
+      </div>
       </a>
-    </div>
   </script>
 </body>
 </html>
