@@ -3,9 +3,11 @@ package weloveclouds.ecs.workers;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 
 import java.util.Observable;
 
+import weloveclouds.commons.retryer.ExponentialBackoffIntervalComputer;
 import weloveclouds.commons.retryer.IBackoffIntervalComputer;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.ecs.exceptions.task.RetryableException;
@@ -20,7 +22,6 @@ import static weloveclouds.ecs.workers.WorkerStatus.RUNNING;
  * Created by Benoit on 2016-11-18.
  */
 public class TaskWorker extends Observable implements Runnable {
-    @Inject
     private IBackoffIntervalComputer backoffIntervalComputer;
     private AbstractRetryableTask task;
     private WorkerStatus status;
@@ -28,6 +29,7 @@ public class TaskWorker extends Observable implements Runnable {
 
     public TaskWorker(AbstractRetryableTask task) {
         this.logger = Logger.getLogger(getClass());
+        this.backoffIntervalComputer = new ExponentialBackoffIntervalComputer(new Duration(300));
         this.task = task;
         status = WAITING;
     }

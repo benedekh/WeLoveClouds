@@ -63,6 +63,7 @@ public class EcsModule extends AbstractModule {
         install(new DnsModule());
         install(new SerializationModule());
         install(new NotificationServiceModule());
+        install(new TaskServiceModule());
         install(new JettyServletModule());
         install(new WebServiceModule());
     }
