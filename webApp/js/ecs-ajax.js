@@ -78,12 +78,12 @@ $(document).ready(function() {
   });
 
   $('#initializeServiceButton').on('click', function () {
-    $("#initServiceCommand.active").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
-    $('#initServiceCommand').addClass("ecsCommandInProgress").removeClass("threed active");
     var numberOfNodes = $("#numberOfNodesToInitialize").val();
     var cacheSize = $("#cacheSize").val();
     var displacementStrategy = $("#displacementStrategy").val();
-
+    if(!isNaN(numberOfNodes) && !isNaN(cacheSize)){
+      $("#initServiceCommand.active").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
+      $('#initServiceCommand').addClass("ecsCommandInProgress").removeClass("threed active");
     jQuery.ajax({
           url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/initService?numberOfNodes="+ numberOfNodes +"&cacheSize=" + cacheSize + "&displacementStrategy=" + displacementStrategy,
           type: "POST",
@@ -107,6 +107,10 @@ $(document).ready(function() {
 
           timeout: 12000000,
         })
+      }else{
+        $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
+          "<div class='alertWarningMessage'></div>Invalid parameters ! The number of nodes and the cache size should be integers.</div>");
+      }
   });
 
   $('#startNodeCommand').on('click', function () {

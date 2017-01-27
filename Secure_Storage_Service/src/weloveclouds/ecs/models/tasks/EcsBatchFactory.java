@@ -18,11 +18,10 @@ import weloveclouds.ecs.models.commands.internal.UpdateMetadata;
 import weloveclouds.ecs.models.commands.internal.ssh.LaunchJar;
 import weloveclouds.ecs.models.repository.LoadBalancer;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
 import weloveclouds.ecs.models.tasks.details.RemoveNodeTaskDetails;
 import weloveclouds.commons.hashing.models.RingMetadata;
-import weloveclouds.loadbalancer.services.DistributedSystemAccessService;
+import weloveclouds.loadbalancer.services.IDistributedSystemAccessService;
 
 import static weloveclouds.ecs.core.EcsStatus.ADDING_NODE;
 import static weloveclouds.ecs.core.EcsStatus.REMOVING_NODE;
@@ -51,11 +50,11 @@ public class EcsBatchFactory {
         this.ecsInternalCommandFactory = ecsInternalCommandFactory;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createServiceInitialisationBatchWith(
+    public AbstractBatchOfTasks<AbstractRetryableTask> createServiceInitialisationBatchWith(
             LoadBalancer loadbalancer, List<StorageNode> nodesToInitialize, int cacheSize, String
             displacementStrategy) {
-        AbstractBatchTasks<AbstractRetryableTask> serviceInitialisationBatch = new
-                BatchRetryableTasks(SERVICE_INITIALISATION);
+        AbstractBatchOfTasks<AbstractRetryableTask> serviceInitialisationBatch = new
+                BatchOfRetryableTasks(SERVICE_INITIALISATION);
 
         for (StorageNode storageNode : nodesToInitialize) {
             AbstractCommand taskCommand = ecsInternalCommandFactory
@@ -72,10 +71,10 @@ public class EcsBatchFactory {
         return serviceInitialisationBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createStartLoadBalancerBatchFor(LoadBalancer
+    public AbstractBatchOfTasks<AbstractRetryableTask> createStartLoadBalancerBatchFor(LoadBalancer
                                                                                              loadBalancer) {
-        AbstractBatchTasks<AbstractRetryableTask> startLoadBalancerBatch = new
-                BatchRetryableTasks(START_LOAD_BALANCER);
+        AbstractBatchOfTasks<AbstractRetryableTask> startLoadBalancerBatch = new
+                BatchOfRetryableTasks(START_LOAD_BALANCER);
         AbstractCommand loadBalancerInitialisation = ecsInternalCommandFactory
                 .createLaunchLoadBalancerJarCommandWith(loadBalancer,
                         ExternalConfigurationServiceConstants.LB_SERVER_JAR_PATH);
@@ -84,9 +83,9 @@ public class EcsBatchFactory {
         return startLoadBalancerBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createStartNodeBatchFor(List<StorageNode>
+    public AbstractBatchOfTasks<AbstractRetryableTask> createStartNodeBatchFor(List<StorageNode>
                                                                                      nodesToStart) {
-        AbstractBatchTasks<AbstractRetryableTask> nodeStartBatch = new BatchRetryableTasks(START_NODE);
+        AbstractBatchOfTasks<AbstractRetryableTask> nodeStartBatch = new BatchOfRetryableTasks(START_NODE);
 
         for (StorageNode storageNode : nodesToStart) {
             StartNode taskCommand = ecsInternalCommandFactory.createStartNodeCommandFor(storageNode);
@@ -96,8 +95,8 @@ public class EcsBatchFactory {
         return nodeStartBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createStopNodeBatchFor(List<StorageNode> nodesToStop) {
-        AbstractBatchTasks<AbstractRetryableTask> nodeStopBatch = new BatchRetryableTasks(STOP_NODE);
+    public AbstractBatchOfTasks<AbstractRetryableTask> createStopNodeBatchFor(List<StorageNode> nodesToStop) {
+        AbstractBatchOfTasks<AbstractRetryableTask> nodeStopBatch = new BatchOfRetryableTasks(STOP_NODE);
 
         for (StorageNode storageNode : nodesToStop) {
             StopNode taskCommand = ecsInternalCommandFactory.createStopNodeCommandFor(storageNode);
@@ -107,9 +106,9 @@ public class EcsBatchFactory {
         return nodeStopBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createShutdownNodeBatchFor
+    public AbstractBatchOfTasks<AbstractRetryableTask> createShutdownNodeBatchFor
             (List<StorageNode> nodesToShutdown) {
-        AbstractBatchTasks<AbstractRetryableTask> nodeShutdownBatch = new BatchRetryableTasks(SHUTDOWN);
+        AbstractBatchOfTasks<AbstractRetryableTask> nodeShutdownBatch = new BatchOfRetryableTasks(SHUTDOWN);
 
         for (StorageNode storageNode : nodesToShutdown) {
             ShutdownNode taskCommand = ecsInternalCommandFactory.createShutDownNodeCommandFor(storageNode);
@@ -118,9 +117,9 @@ public class EcsBatchFactory {
         return nodeShutdownBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createAddNodeBatchFrom(LoadBalancer loadbalancer, AddNodeTaskDetails
+    public AbstractBatchOfTasks<AbstractRetryableTask> createAddNodeBatchFrom(LoadBalancer loadbalancer, AddNodeTaskDetails
             addNodeTaskDetails, boolean withAutomaticStart) {
-        AbstractBatchTasks<AbstractRetryableTask> addNodeBatch = new BatchRetryableTasks(ADD_NODE);
+        AbstractBatchOfTasks<AbstractRetryableTask> addNodeBatch = new BatchOfRetryableTasks(ADD_NODE);
 
         LaunchJar taskCommand = ecsInternalCommandFactory
                 .createLaunchStorageNodesJarsCommandWith(loadbalancer, addNodeTaskDetails
@@ -149,9 +148,9 @@ public class EcsBatchFactory {
         return addNodeBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createRemoveNodeBatchFrom
+    public AbstractBatchOfTasks<AbstractRetryableTask> createRemoveNodeBatchFrom
             (RemoveNodeTaskDetails removeNodeTaskDetails) {
-        AbstractBatchTasks<AbstractRetryableTask> removeBatch = new BatchRetryableTasks(REMOVE_NODE);
+        AbstractBatchOfTasks<AbstractRetryableTask> removeBatch = new BatchOfRetryableTasks(REMOVE_NODE);
 
         SetWriteLock taskCommand = ecsInternalCommandFactory.createSetWriteLockCommandFor
                 (removeNodeTaskDetails.getNodetoRemove());
@@ -169,11 +168,11 @@ public class EcsBatchFactory {
         return removeBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createNodeMetadataInitialisationBatchWith
-            (List<StorageNode> nodesToInitialize, DistributedSystemAccessService
+    public AbstractBatchOfTasks<AbstractRetryableTask> createNodeMetadataInitialisationBatchWith
+            (List<StorageNode> nodesToInitialize, IDistributedSystemAccessService
                     distributedServiceAccess) {
-        AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch = new
-                BatchRetryableTasks(UPDATING_METADATA);
+        AbstractBatchOfTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch = new
+                BatchOfRetryableTasks(UPDATING_METADATA);
 
         for (StorageNode storageNode : nodesToInitialize) {
             InitNodeMetadata taskCommand = ecsInternalCommandFactory
@@ -185,10 +184,10 @@ public class EcsBatchFactory {
         return nodeMetadataInitialisationBatch;
     }
 
-    public AbstractBatchTasks<AbstractRetryableTask> createNodeMetadataUpdateBatchWith
+    public AbstractBatchOfTasks<AbstractRetryableTask> createNodeMetadataUpdateBatchWith
             (List<StorageNode> nodesToUpdate, RingMetadata ringMetadata, EcsStatus ecsStatus) {
-        AbstractBatchTasks<AbstractRetryableTask> nodeMetadataUpdateBatch = new
-                BatchRetryableTasks(UPDATING_METADATA);
+        AbstractBatchOfTasks<AbstractRetryableTask> nodeMetadataUpdateBatch = new
+                BatchOfRetryableTasks(UPDATING_METADATA);
 
         for (StorageNode storageNode : nodesToUpdate) {
             List<AbstractCommand> successCommands = new ArrayList<>();

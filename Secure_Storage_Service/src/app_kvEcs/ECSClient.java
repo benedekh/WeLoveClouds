@@ -49,20 +49,4 @@ public class ECSClient {
             LOGGER.fatal("No ecs configuration file path provided.");
         }
     }
-
-    static void initWebServer() throws Exception {
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.addFilter(GuiceFilter.class, "/*", EnumSet.allOf(DispatcherType.class));
-        Server server = new Server(8080);
-
-        ServletHolder holder = context.addServlet(ServletContainer.class, "/*");
-        holder.setInitOrder(0);
-        holder.setInitParameter("javax.ws.rs.Application", "weloveclouds.loadbalancer" +
-                ".configuration.JerseyConfig");
-        context.addServlet(holder, "/*");
-        context.setContextPath("/");
-        server.setHandler(context);
-        server.start();
-        server.join();
-    }
 }

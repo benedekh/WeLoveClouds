@@ -11,10 +11,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import weloveclouds.ecs.api.IKVEcsApi;
 import weloveclouds.ecs.rest.api.v1.models.responses.GetParticipatingNodesResponse;
-import weloveclouds.ecs.rest.api.v1.models.responses.GetStatusResponse;
-import weloveclouds.loadbalancer.services.DistributedSystemAccessService;
+import weloveclouds.loadbalancer.services.IDistributedSystemAccessService;
 
 /**
  * Created by Benoit on 2017-01-22.
@@ -23,10 +21,11 @@ import weloveclouds.loadbalancer.services.DistributedSystemAccessService;
 @Path("/rest/api/v1/service")
 public class DistributedServiceResource {
     private ObjectMapper objectMapper;
-    private DistributedSystemAccessService distributedSystemAccessService;
+    private IDistributedSystemAccessService distributedSystemAccessService;
 
     @Inject
-    public DistributedServiceResource(DistributedSystemAccessService distributedSystemAccessService) {
+    public DistributedServiceResource(IDistributedSystemAccessService
+                                                  distributedSystemAccessService) {
         this.distributedSystemAccessService = distributedSystemAccessService;
         this.objectMapper = new ObjectMapper();
     }

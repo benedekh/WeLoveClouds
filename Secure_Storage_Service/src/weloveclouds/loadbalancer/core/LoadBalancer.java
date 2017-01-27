@@ -6,11 +6,15 @@ import com.google.inject.Singleton;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.exceptions.ServerSideException;
+import weloveclouds.commons.jetty.IWebService;
 import weloveclouds.commons.status.ServerStatus;
 import weloveclouds.loadbalancer.services.ClientRequestInterceptorService;
 import weloveclouds.loadbalancer.services.EcsNotificationService;
 import weloveclouds.loadbalancer.services.HealthMonitoringService;
 import weloveclouds.commons.jetty.WebService;
+import weloveclouds.loadbalancer.services.IClientRequestInterceptorService;
+import weloveclouds.loadbalancer.services.IEcsNotificationService;
+import weloveclouds.loadbalancer.services.IHealthMonitoringService;
 
 import static weloveclouds.commons.status.ServerStatus.HALTED;
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
@@ -21,19 +25,19 @@ import static weloveclouds.commons.status.ServerStatus.RUNNING;
 @Singleton
 public class LoadBalancer implements ILoadBalancer {
     private static final Logger LOGGER = Logger.getLogger(LoadBalancer.class);
-    private ClientRequestInterceptorService clientRequestInterceptorService;
-    private HealthMonitoringService healthMonitoringService;
-    private EcsNotificationService ecsNotificationService;
-    private WebService webService;
+    private IClientRequestInterceptorService clientRequestInterceptorService;
+    private IHealthMonitoringService healthMonitoringService;
+    private IEcsNotificationService ecsNotificationService;
+    private IWebService webService;
     private ServerStatus status;
 
     @Inject
-    public LoadBalancer(ClientRequestInterceptorService clientRequestHandler,
-                        HealthMonitoringService healthMonitoringService,
-                        EcsNotificationService ecsNotificationService,
-                        WebService webService) {
+    public LoadBalancer(IClientRequestInterceptorService clientRequestInterceptorService,
+                        IHealthMonitoringService healthMonitoringService,
+                        IEcsNotificationService ecsNotificationService,
+                        IWebService webService) {
         this.status = HALTED;
-        this.clientRequestInterceptorService = clientRequestHandler;
+        this.clientRequestInterceptorService = clientRequestInterceptorService;
         this.healthMonitoringService = healthMonitoringService;
         this.ecsNotificationService = ecsNotificationService;
         this.webService = webService;

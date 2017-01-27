@@ -35,8 +35,8 @@ import static weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType
  * Created by Benoit on 2016-12-03.
  */
 @Singleton
-public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> {
-    private DistributedSystemAccessService distributedSystemAccessService;
+public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> implements IClientRequestInterceptorService {
+    private IDistributedSystemAccessService distributedSystemAccessService;
     private ICacheService<String, String> cacheService;
 
     @Inject
@@ -47,7 +47,7 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
                                            IMessageDeserializer<IKVMessage, SerializedMessage>
                                                    messageDeserializer,
                                            @ClientRequestsInterceptorPort int port,
-                                           DistributedSystemAccessService
+                                           IDistributedSystemAccessService
                                                    distributedSystemAccessService,
                                            ICacheService<String, String> cacheService)
             throws IOException {
@@ -82,7 +82,7 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
     }
 
     private class ConnectionHandler extends AbstractConnectionHandler<IKVMessage> {
-        private DistributedSystemAccessService distributedSystemAccessService;
+        private IDistributedSystemAccessService distributedSystemAccessService;
         private ICacheService<String, String> cacheService;
         private ICommunicationApi transferCommunicationApi;
 
@@ -90,7 +90,7 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
                           Connection connection,
                           IMessageSerializer<SerializedMessage, IKVMessage> messageSerializer,
                           IMessageDeserializer<IKVMessage, SerializedMessage> messageDeserializer,
-                          DistributedSystemAccessService distributedSystemAccessService,
+                          IDistributedSystemAccessService distributedSystemAccessService,
                           ICacheService<String, String> cacheService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());

@@ -20,7 +20,7 @@ import weloveclouds.commons.configuration.annotations.WebServicePort;
  * Created by Benoit on 2017-01-22.
  */
 @Singleton
-public class WebService extends Thread {
+public class WebService extends Thread implements IWebService {
     private static final Logger LOGGER = Logger.getLogger(WebService.class);
     private int port;
     private String jerseyResourcesConfigClass;
@@ -46,6 +46,7 @@ public class WebService extends Thread {
         jettyServer.setHandler(context);
     }
 
+    @Override
     public void run() {
         initialize();
         try {

@@ -14,7 +14,7 @@ import weloveclouds.commons.monitoring.models.Metric;
 import weloveclouds.commons.monitoring.statsd.IStatsdClient;
 import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
-import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
+import weloveclouds.ecs.models.tasks.AbstractBatchOfTasks;
 import weloveclouds.ecs.workers.TaskWorker;
 
 import static weloveclouds.commons.monitoring.models.Service.ECS;
@@ -22,7 +22,7 @@ import static weloveclouds.commons.monitoring.statsd.IStatsdClient.SINGLE_EVENT;
 import static weloveclouds.ecs.models.tasks.Status.RUNNING;
 import static weloveclouds.ecs.workers.WorkerStatus.ERROR;
 
-public class TaskService implements ITaskService, Observer {
+public class TaskService implements ITaskService {
     private static final Logger LOGGER = Logger.getLogger(TaskService.class);
     private static final IStatsdClient STATSD_CLIENT = StatsdClientFactory
             .createStatdClientFromEnvironment();
@@ -30,7 +30,7 @@ public class TaskService implements ITaskService, Observer {
     private Map<String, AbstractRetryableTask> runningTasks;
     private Map<String, AbstractRetryableTask> failedTasks;
     private Map<String, AbstractRetryableTask> succeededTasks;
-    private Map<String, AbstractBatchTasks<AbstractRetryableTask>> batch;
+    private Map<String, AbstractBatchOfTasks<AbstractRetryableTask>> batch;
 
     public TaskService() {
         this.runningTasks = new LinkedHashMap<>();
@@ -53,7 +53,7 @@ public class TaskService implements ITaskService, Observer {
     }
 
     @Override
-    public void launchBatchTasks(AbstractBatchTasks<AbstractRetryableTask> batchTasks) {
+    public void launchBatch(AbstractBatchOfTasks<AbstractRetryableTask> batchTasks) {
         batch.put(batchTasks.getId(), batchTasks);
 
         for (AbstractRetryableTask task : batchTasks.getTasks()) {

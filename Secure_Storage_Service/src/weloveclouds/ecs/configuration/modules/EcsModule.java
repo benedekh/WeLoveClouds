@@ -25,6 +25,8 @@ import weloveclouds.ecs.services.TaskService;
 import weloveclouds.ecs.utils.ConfigurationFileParser;
 import weloveclouds.ecs.utils.IParser;
 import weloveclouds.loadbalancer.configuration.LoadBalancerConfiguration;
+import weloveclouds.loadbalancer.services.DistributedSystemAccessService;
+import weloveclouds.loadbalancer.services.IDistributedSystemAccessService;
 
 /**
  * Created by Benoit on 2016-12-03.
@@ -53,6 +55,7 @@ public class EcsModule extends AbstractModule {
     protected void configure() {
         bind(ITaskService.class).to(TaskService.class);
         bind(IKVEcsApi.class).to(KVEcsApiV1.class);
+        bind(IDistributedSystemAccessService.class).to(DistributedSystemAccessService.class);
         bind(new TypeLiteral<INotificationService<IKVEcsNotificationMessage>>() {
         })
                 .to(new TypeLiteral<NotificationService>() {

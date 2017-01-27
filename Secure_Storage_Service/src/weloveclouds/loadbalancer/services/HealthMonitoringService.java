@@ -28,8 +28,8 @@ import static weloveclouds.commons.status.ServerStatus.RUNNING;
  * Created by Benoit on 2016-12-05.
  */
 @Singleton
-public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage> {
-    private DistributedSystemAccessService distributedSystemAccessService;
+public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage> implements IHealthMonitoringService {
+    private IDistributedSystemAccessService distributedSystemAccessService;
     private NodeHealthWatcher nodeHealthWatcher;
 
     @Inject
@@ -40,7 +40,7 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
                                    IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage>
                                            messageDeserializer,
                                    @HealthMonitoringServicePort int port,
-                                   DistributedSystemAccessService distributedSystemAccessService,
+                                   IDistributedSystemAccessService distributedSystemAccessService,
                                    NodeHealthWatcher nodeHealthWatcher)
             throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
@@ -75,14 +75,14 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
     }
 
     private class ConnectionHandler extends AbstractConnectionHandler<IKVHeartbeatMessage> {
-        private DistributedSystemAccessService distributedSystemAccessService;
+        private IDistributedSystemAccessService distributedSystemAccessService;
 
         ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection connection,
                           IMessageSerializer<SerializedMessage, IKVHeartbeatMessage>
                                   messageSerializer,
                           IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage>
                                   messageDeserializer,
-                          DistributedSystemAccessService distributedSystemAccessService) {
+                          IDistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;
