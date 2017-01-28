@@ -1,7 +1,7 @@
-package weloveclouds.commons.utils.ecryption;
+package weloveclouds.commons.utils.encryption;
 
-import weloveclouds.commons.utils.ecryption.exception.DecryptionException;
-import weloveclouds.commons.utils.ecryption.exception.EncryptionException;
+import weloveclouds.commons.utils.encryption.exception.DecryptionException;
+import weloveclouds.commons.utils.encryption.exception.EncryptionException;
 
 /**
  * Common methods to encrypt and decrypt a T-typed object.

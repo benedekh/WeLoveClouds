@@ -1,4 +1,4 @@
-package weloveclouds.commons.utils.ecryption.models;
+package weloveclouds.commons.utils.encryption.models;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collection;
@@ -10,9 +10,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.kvstore.models.KVEntry;
-import weloveclouds.commons.utils.ecryption.StringEncryptionUtil;
-import weloveclouds.commons.utils.ecryption.exception.DecryptionException;
-import weloveclouds.commons.utils.ecryption.exception.EncryptionException;
+import weloveclouds.commons.utils.encryption.StringEncryptionUtil;
+import weloveclouds.commons.utils.encryption.exception.DecryptionException;
+import weloveclouds.commons.utils.encryption.exception.EncryptionException;
 import weloveclouds.server.store.exceptions.StorageException;
 import weloveclouds.server.store.models.EncryptedPersistedStorageUnit;
 import weloveclouds.server.store.models.PersistedStorageUnit;

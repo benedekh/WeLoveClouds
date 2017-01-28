@@ -1,4 +1,4 @@
-package weloveclouds.commons.utils.ecryption.exception;
+package weloveclouds.commons.utils.encryption.exception;
 
 /**
  * Exception occurred during decryption.

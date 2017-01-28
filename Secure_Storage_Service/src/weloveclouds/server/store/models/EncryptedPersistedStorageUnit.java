@@ -3,8 +3,8 @@ package weloveclouds.server.store.models;
 import java.nio.file.Path;
 import java.util.Map;
 
-import weloveclouds.commons.utils.ecryption.StringEncryptionUtil;
-import weloveclouds.commons.utils.ecryption.models.EncryptedStringMap;
+import weloveclouds.commons.utils.encryption.StringEncryptionUtil;
+import weloveclouds.commons.utils.encryption.models.EncryptedStringMap;
 
 /**
  * A {@link PersistedStorageUnit} whose keys and values are encrypted.
