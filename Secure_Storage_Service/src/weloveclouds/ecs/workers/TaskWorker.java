@@ -1,7 +1,5 @@
 package weloveclouds.ecs.workers;
 
-import com.google.inject.Inject;
-
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 

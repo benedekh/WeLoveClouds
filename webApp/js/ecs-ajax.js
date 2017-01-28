@@ -16,6 +16,7 @@ function fetchEcsData(){
 
         timeout: 12000000,
       })
+      updateEcsCommandFromEcsStatus();
 }
 
 function fetchRepository(){
@@ -52,8 +53,9 @@ function fetchRepository(){
 
 
 $(document).ready(function() {
-  $('#startLoadBalancerCommand.active').on('click', function () {
-    $("#startLoadBalancerCommand.active").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
+  $('#startLoadBalancerCommand').on('click', function () {
+    if($('#startLoadBalancerCommand').hasClass("active")){
+    $("#startLoadBalancerCommand").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
     $('#startLoadBalancerCommand').addClass("ecsCommandInProgress").removeClass("threed active");
     jQuery.ajax({
           url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/startLoadBalancer",
@@ -61,9 +63,7 @@ $(document).ready(function() {
 
 
           success: function(resultData) {
-            $('#startLoadBalancerCommand').removeClass("ecsCommandInProgress").addClass("ecsCommandDisabled");
-            $("#startLoadBalancerCommand").html("<img class='ecsCommandImage' src='resources/startLoadBalancer.png'>");
-            $('#initServiceCommand').removeClass("ecsCommandDisabled").addClass("threed active");
+            $(".ecsStatus").html("Initializing load balancer");
           },
           error : function(errorThrown) {
             var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
@@ -75,6 +75,7 @@ $(document).ready(function() {
 
           timeout: 12000000,
         })
+      }
   });
 
   $('#initializeServiceButton').on('click', function () {
@@ -90,12 +91,7 @@ $(document).ready(function() {
 
 
           success: function(resultData) {
-            $('#initServiceCommand').removeClass("ecsCommandInProgress").addClass("ecsCommandDisabled");
-            $("#initServiceCommand").html("<img class='ecsCommandImage' src='resources/initService.png'>");
-            $('#addNodeCommand').removeClass("ecsCommandDisabled").addClass("threed active");
-            $('#removeNodeCommand').removeClass("ecsCommandDisabled").addClass("threed active");
-            $('#startNodeCommand').removeClass("ecsCommandDisabled").addClass("threed active");
-            $('#shutdownNodeCommand').removeClass("ecsCommandDisabled").addClass("threed active");
+            $(".ecsStatus").html("Initializing service");
           },
           error : function(errorThrown) {
             var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
@@ -114,105 +110,100 @@ $(document).ready(function() {
   });
 
   $('#startNodeCommand').on('click', function () {
-    $("#startNodeCommand.active").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
-    $('#startNodeCommand').addClass("ecsCommandInProgress").removeClass("threed active");
+    if($('#startNodeCommand').hasClass("active")){
+      $("#startNodeCommand").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
+      $('#startNodeCommand').addClass("ecsCommandInProgress").removeClass("threed active");
 
-    jQuery.ajax({
-          url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/startNode",
-          type: "POST",
+      jQuery.ajax({
+            url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/startNode",
+            type: "POST",
 
-          success: function(resultData) {
-            $('#startNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
-            $("#startNodeCommand").html("<img class='ecsCommandImage' src='resources/start.png'>");
-            $('#stopNodeCommand').removeClass("ecsCommandDisabled").addClass("threed active");
-          },
-          error : function(errorThrown) {
-            var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
-            $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
-              "<div class='alertWarningMessage'></div>" + errorMessage +"</div>");
-            $("#startNodeCommand").html("<img class='ecsCommandImage' src='resources/start.png'>");
-            $('#startNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
-          },
+            success: function(resultData) {
 
-          timeout: 12000000,
-        })
+            },
+            error : function(errorThrown) {
+              var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
+              $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
+                "<div class='alertWarningMessage'></div>" + errorMessage +"</div>");
+              $("#startNodeCommand").html("<img class='ecsCommandImage' src='resources/start.png'>");
+              $('#startNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
+            },
+
+            timeout: 12000000,
+          })
+      }
   });
 
   $('#stopNodeCommand').on('click', function () {
-    $("#stopNodeCommand.active").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
-    $('#stopNodeCommand').addClass("ecsCommandInProgress").removeClass("threed active");
+    if($('#stopNodeCommand').hasClass("active")){
+      $("#stopNodeCommand").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
+      $('#stopNodeCommand').addClass("ecsCommandInProgress").removeClass("threed active");
 
-    jQuery.ajax({
-          url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/stopNode",
-          type: "POST",
+      jQuery.ajax({
+            url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/stopNode",
+            type: "POST",
 
-          success: function(resultData) {
-            $('#stopNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
-            $("#stopNodeCommand").html("<img class='ecsCommandImage' src='resources/stop.png'>");
-          },
-          error : function(errorThrown) {
-            var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
-            $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
-              "<div class='alertWarningMessage'></div>" + errorMessage +"</div>");
-            $("#stopNodeCommand").html("<img class='ecsCommandImage' src='resources/stop.png'>");
-            $('#stopNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
-          },
+            success: function(resultData) {
+            },
+            error : function(errorThrown) {
+              var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
+              $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
+                "<div class='alertWarningMessage'></div>" + errorMessage +"</div>");
+              $("#stopNodeCommand").html("<img class='ecsCommandImage' src='resources/stop.png'>");
+              $('#stopNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
+            },
 
-          timeout: 12000000,
-        })
+            timeout: 12000000,
+          })
+      }
   });
 
   $('#shutdownNodeCommand').on('click', function () {
-    $("#shutdownNodeCommand.active").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
-    $('#shutdownNodeCommand').addClass("ecsCommandInProgress").removeClass("threed active");
+    if(  $('#shutdownNodeCommand').hasClass("active")){
+      $("#shutdownNodeCommand").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
+      $('#shutdownNodeCommand').addClass("ecsCommandInProgress").removeClass("threed active");
 
-    jQuery.ajax({
-          url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/shutdown",
-          type: "POST",
+      jQuery.ajax({
+            url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/shutdown",
+            type: "POST",
 
-          success: function(resultData) {
-            $('#shutdownNodeCommand').removeClass("ecsCommandInProgress").addClass("ecsCommandDisabled");
-            $("#shutdownNodeCommand").html("<img class='ecsCommandImage' src='resources/shutdown.png'>");
-            $("#initServiceCommand").removeClass("ecsCommandDisabled").addClass("threed active");
-            $('#addNodeCommand').addClass("ecsCommandDisabled").removeClass("threed active");
-            $('#removeNodeCommand').addClass("ecsCommandDisabled").removeClass("threed active");
-            $('#startNodeCommand').addClass("ecsCommandDisabled").removeClass("threed active");
-            $('#stopNodeCommand').addClass("ecsCommandDisabled").removeClass("threed active");
-          },
-          error : function(errorThrown) {
-            var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
-            $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
-              "<div class='alertWarningMessage'></div>" + errorMessage +"</div>");
-            $("#shutdownNodeCommand").html("<img class='ecsCommandImage' src='resources/shutdown.png'>");
-            $('#shutdownNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
-          },
+            success: function(resultData) {
+            },
+            error : function(errorThrown) {
+              var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
+              $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
+                "<div class='alertWarningMessage'></div>" + errorMessage +"</div>");
+              $("#shutdownNodeCommand").html("<img class='ecsCommandImage' src='resources/shutdown.png'>");
+              $('#shutdownNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
+            },
 
-          timeout: 12000000,
-        })
+            timeout: 12000000,
+          })
+      }
   });
 
   $('#removeNodeCommand').on('click', function () {
-    $("#removeNodeCommand.active").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
-    $('#removeNodeCommand').addClass("ecsCommandInProgress").removeClass("threed active");
+    if($('#removeNodeCommand').hasClass("active")){
+      $("#removeNodeCommand.active").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
+      $('#removeNodeCommand').addClass("ecsCommandInProgress").removeClass("threed active");
 
-    jQuery.ajax({
-          url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/removeNode",
-          type: "POST",
+      jQuery.ajax({
+            url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/removeNode",
+            type: "POST",
 
-          success: function(resultData) {
-            $('#removeNodeCommand').removeClass("ecsCommandInProgress").addClass("ecsCommandDisabled");
-            $("#removeNodeCommand").html("<img class='ecsCommandImage' src='resources/remove.png'>");
-          },
-          error : function(errorThrown) {
-            var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
-            $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
-              "<div class='alertWarningMessage'></div>" + errorMessage +"</div>");
-            $("#removeNodeCommand").html("<img class='ecsCommandImage' src='resources/remove.png'>");
-            $('#removeNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
-          },
+            success: function(resultData) {
+            },
+            error : function(errorThrown) {
+              var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
+              $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
+                "<div class='alertWarningMessage'></div>" + errorMessage +"</div>");
+              $("#removeNodeCommand").html("<img class='ecsCommandImage' src='resources/remove.png'>");
+              $('#removeNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
+            },
 
-          timeout: 12000000,
-        })
+            timeout: 12000000,
+          })
+      }
   });
 
 });
