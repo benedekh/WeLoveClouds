@@ -11,6 +11,7 @@ function fetchLoadBalancerData(){
           $("#loadBalancerStatus").html($(".loadBalancerStatus").html());
         },
         error : function(jqXHR, textStatus, errorThrown) {
+          $('#loadbalancer-info').html("<img class='loading-gif' src='resources/loading.gif'>");
            console.log(errorThrown);
         },
 

@@ -1,23 +1,25 @@
 function fetchEcsData(){
-  jQuery.ajax({
-        url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/status",
-        type: "GET",
+    jQuery.ajax({
+          url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/status",
+          type: "GET",
 
 
-        success: function(resultData) {
-          var template = $('#ecs-tpl').html();
-          var html = Mustache.to_html(template, resultData);
-          $('#ecs-info').html(html);
-          $('#ecs-image').html("<img class='server-image' src='resources/serverHealthy.png'>");
-          $("#ecsStatus").val($(".ecsStatus").html());
-          updateEcsCommandFromEcsStatus();
-        },
-        error : function(jqXHR, textStatus, errorThrown) {
-           console.log(errorThrown);
-        },
+          success: function(resultData) {
+            var template = $('#ecs-tpl').html();
+            var html = Mustache.to_html(template, resultData);
+            $('#ecs-info').html(html);
+            $('#ecs-image').html("<img class='server-image' src='resources/serverHealthy.png'>");
+            $("#ecsStatus").val($(".ecsStatus").html());
+            updateEcsCommandFromEcsStatus();
+          },
+          error : function(jqXHR, textStatus, errorThrown) {
+            $('#ecs-info').html("<img class='loading-gif' src='resources/loading.gif'>");
+            updateEcsCommandFromEcsStatus();
+             console.log(errorThrown);
+          },
 
-        timeout: 12000000,
-      });
+          timeout: 12000000,
+        });
 }
 
 function fetchRepository(){
@@ -45,6 +47,8 @@ function fetchRepository(){
           })
         },
         error : function(jqXHR, textStatus, errorThrown) {
+          $('.node-info').hide();
+          $('.no-server-found').show();
            console.log(errorThrown);
         },
 
