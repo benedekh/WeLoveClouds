@@ -157,12 +157,12 @@
                     <div class="col-sm-2 ecsCommand ecsCommandDisabled" id="startLoadBalancerCommand" style="background-color:#27ae60;">
                       <img class="ecsCommandImage" src="resources/startLoadBalancer.png">
                     </div>
-                    <a href="#" data-toggle="modal" data-target="#initServiceCommandModal">
+                    <a href="#" data-toggle="modal" data-target="#initServiceCommandModal" id="initServiceModalAnchor">
                       <div class="col-sm-2 ecsCommand ecsCommandDisabled" id="initServiceCommand" style="background-color:#16a085;">
                         <img class="ecsCommandImage" src="resources/initService.png">
                       </div>
                     </a>
-                    <a href="#" data-toggle="modal" data-target="#addNodeCommandModal">
+                    <a href="#" data-toggle="modal" data-target="#addNodeCommandModal" id="addNodeModalAnchor">
                       <div class="col-sm-2 ecsCommand ecsCommandDisabled" id="addNodeCommand" style="background-color:#2980b9;">
                         <img class="ecsCommandImage" src="resources/add.png">
                       </div>
@@ -194,7 +194,8 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h3 class="modal-title" id="loadBalancerModalLabel">Load balancer</h3>
+            <div id="loadBalancerModalImage" style="display: inline-block;"></div>
+            <h3 class="modal-title"  style="display: inline-block;" id="loadBalancerModalLabel">Load balancer</h3>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -205,12 +206,6 @@
                 <div class="form-group">
                   <h4>General</h4>
                   <hr>
-                  <div class="form-group">
-                    <label for="loadBalancerName" class="col-sm-2 control-label">Name</label>
-                    <div class="col-sm-9">
-                      <input type="text" id="loadBalancerName"  class="form-control" readonly="true">
-                    </div>
-                  </div>
                   <div class="form-group">
                     <label for="loadBalancerStatus" class="col-sm-2 control-label">Status</label>
                     <div class="col-sm-9">
@@ -276,6 +271,57 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" id="initializeServiceButton" data-dismiss="modal">Initialize</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="addNodeCommandModal" tabindex="-1" role="dialog" aria-labelledby="addNodeCommandModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title" id="addNodeCommandModalLabel">Service initialization</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <form class="form-horizontal" role="form">
+                <div class="form-group">
+                  <h4>Parameters</h4>
+                  <hr>
+                  <div class="form-group">
+                    <label for="cacheSize" class="col-sm-2 control-label">Cache size</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control cacheSize" id="addNodeCacheSize" placeholder="Ex: 200">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="displacementStrategy" class="col-sm-2 control-label">Displacement strategy</label>
+                    <div class="col-sm-9">
+                      <select class="form-control displacementStrategy" id="addNodeDisplacementStrategy">
+                        <option value="LFU">LFU</option>
+                        <option value="LRU">LRU</option>
+                        <option value="FIFO">FIFO</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="addNodeAutoStart" class="col-sm-2 control-label">Auto-start</label>
+                    <div class="col-sm-9">
+                      <select class="form-control autoStart" id="addNodeAutoStart">
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="addNodeButton" data-dismiss="modal">Add Node</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
@@ -364,13 +410,13 @@
     fetchEcsData();
     fetchRepository();
     setInterval(fetchLoadBalancerData, 5000);
-    setInterval(fetchEcsData, 2000);
+    setInterval(fetchEcsData, 500);
     setInterval(fetchRepository, 5000);
   }
   </script>
   <script id="loadbalancer-tpl" type="text/template">
-    <p><strong>Status:</strong> {{status}}</p>
-    <p><strong>Host:</strong> weloveclouds-lb.com</p>
+    <div class="nodeInformationLine"><strong>Status: </strong><div class="loadBalancerStatus" style="display: inline-block;">{{status}}</div></div>
+    <div class="nodeInformationLine"><strong>Host: </strong><div class="loadBalancerIp" style="display: inline-block;"> weloveclouds-lb.com</div></div>
   </script>
   <script id="ecs-tpl" type="text/template">
     <div class="nodeInformationLine"><strong>Status: </strong><div class="ecsStatus" style="display: inline-block;">{{status}}</div></div>

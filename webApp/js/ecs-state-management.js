@@ -1,3 +1,17 @@
+$(document).ready(function(){
+  $("#initServiceModalAnchor").on("click", function(e){
+    if(!$("#initServiceCommand").hasClass("active")){
+      e.stopPropagation();
+    }
+  });
+
+  $("#addNodeModalAnchor").on("click", function(e){
+    if(!$("#addNodeCommand").hasClass("active")){
+      e.stopPropagation();
+    }
+  });
+});
+
 function updateEcsCommandFromEcsStatus(){
   switch($(".ecsStatus").html()){
     case "Waiting for load balancer initialization":

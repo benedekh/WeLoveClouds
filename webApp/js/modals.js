@@ -17,4 +17,11 @@ $(document).ready(function() {
     $("#ecsIp").val(($(invoker).find($(".ecsIp")).html()));
     $("#ecsModalImage").html(($(invoker).find($("#ecs-image")).html()));
   });
+
+  $('#loadBalancerModal').on('show.bs.modal', function (e) {
+    var invoker = $(e.relatedTarget);
+    $("#loadBalancerModalImage").html(($(invoker).find($("#loadBalancer-image")).html()));
+    $("#loadBalancerStatus").html(($(invoker).find($(".loadBalancerStatus")).html()));
+    $("#loadBalancerIp").html(($(invoker).find($(".loadBalancerIp")).html()));
+  });  
 });

@@ -9,14 +9,15 @@ function fetchEcsData(){
           var html = Mustache.to_html(template, resultData);
           $('#ecs-info').html(html);
           $('#ecs-image').html("<img class='server-image' src='resources/serverHealthy.png'>");
+          $("#ecsStatus").val($(".ecsStatus").html());
+          updateEcsCommandFromEcsStatus();
         },
         error : function(jqXHR, textStatus, errorThrown) {
            console.log(errorThrown);
         },
 
         timeout: 12000000,
-      })
-      updateEcsCommandFromEcsStatus();
+      });
 }
 
 function fetchRepository(){
@@ -75,6 +76,37 @@ $(document).ready(function() {
 
           timeout: 12000000,
         })
+      }
+  });
+
+  $('#addNodeButton').on('click', function () {
+    var cacheSize = $("#addNodeCacheSize").val();
+    var displacementStrategy = $("#addNodeDisplacementStrategy").val();
+    var autoStart = $("#addNodeAutoStart").val();
+    if(!isNaN(cacheSize)){
+      $("#addNodeCommand").html("<img class='ecsCommandImage' src='resources/loading.gif'>");
+      $('#addNodeCommand').addClass("ecsCommandInProgress").removeClass("threed active");
+    jQuery.ajax({
+          url: "http://weloveclouds-ecs.com:8081/rest/api/v1/ecs/addNode?cacheSize=" + cacheSize + "&displacementStrategy=" + displacementStrategy + "&autoStart="+autoStart,
+          type: "POST",
+
+
+          success: function(resultData) {
+            $(".ecsStatus").html("Adding node");
+          },
+          error : function(errorThrown) {
+            var errorMessage = jQuery.parseJSON(errorThrown.responseText).errorMessage;
+            $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
+              "<div class='alertWarningMessage'></div>" + errorMessage +"</div>");
+            $("#addNodeCommand").html("<img class='ecsCommandImage' src='resources/add.png'>");
+            $('#addNodeCommand').removeClass("ecsCommandInProgress").addClass("threed active");
+          },
+
+          timeout: 12000000,
+        })
+      }else{
+        $("#errorMessageDanger").html("<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"+
+          "<div class='alertWarningMessage'></div>Invalid parameters ! The cache size should be an integer.</div>");
       }
   });
 

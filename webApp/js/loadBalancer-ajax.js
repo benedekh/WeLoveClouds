@@ -8,6 +8,7 @@ function fetchLoadBalancerData(){
           var html = Mustache.to_html(template, resultData);
           $('#loadbalancer-info').html(html);
           $('#loadBalancer-image').html("<img class='server-image' src='resources/serverHealthy.png'>");
+          $("#loadBalancerStatus").html($(".loadBalancerStatus").html());
         },
         error : function(jqXHR, textStatus, errorThrown) {
            console.log(errorThrown);

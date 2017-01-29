@@ -163,11 +163,16 @@ public class ExternalConfigurationServiceResource {
     @POST
     @Path("addNode")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response initService(@QueryParam("cacheSize") int cacheSize,
+    public Response addNode(@QueryParam("cacheSize") int cacheSize,
                                 @QueryParam("displacementStrategy") String displacementStrategy,
-                                @QueryParam("autoStart") boolean autoStart) throws Exception {
+                                @QueryParam("autoStart") String autoStart) throws Exception {
         try {
-            ecsApi.addNode(cacheSize, displacementStrategy, autoStart);
+            if(autoStart.equals("True")) {
+                ecsApi.addNode(cacheSize, displacementStrategy, true);
+            }else{
+                ecsApi.addNode(cacheSize, displacementStrategy, false);
+            }
+
             return Response.ok()
                     .header("Access-Control-Allow-Origin", "*")
                     .header("Access-Control-Allow-Methods", "POST")
