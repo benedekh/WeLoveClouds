@@ -252,10 +252,13 @@ public class ExternalConfigurationService implements Observer {
 
     public void removeUnresponsiveNodesWithName(String nodeName) throws ExternalConfigurationServiceException {
         StorageNode unresponsiveNode = distributedServiceAccess.getNodeFrom(nodeName);
-        unresponsiveNode.setStatus(ERROR);
-        unresponsiveNode.clearHashRange();
-        distributedServiceAccess.removeParticipatingNode(unresponsiveNode);
-        addNode(200, "LFU", true);
+        if (unresponsiveNode.getStatus() != IDLE) {
+            unresponsiveNode.setStatus(ERROR);
+            unresponsiveNode.setMetadataStatus(UNSYNCHRONIZED);
+            unresponsiveNode.clearHashRange();
+            distributedServiceAccess.removeParticipatingNode(unresponsiveNode);
+            addNode(200, "LFU", true);
+        }
     }
 
     private void initializeNodesWithMetadata() {
@@ -352,39 +355,39 @@ public class ExternalConfigurationService implements Observer {
                 status = EcsStatus.INITIALIZED;
                 break;
             case REMOVE_NODE:
-                if(!batch.hasFailed()) {
-                    for(StorageNode node: distributedServiceAccess.getParticipatingNodes()){
+                if (!batch.hasFailed()) {
+                    for (StorageNode node : distributedServiceAccess.getParticipatingNodes()) {
                         node.setMetadataStatus(UNSYNCHRONIZED);
                     }
                     updateNodesWithMetadata();
-                }else{
+                } else {
                     status = EcsStatus.INITIALIZED;
                 }
                 break;
             case ADD_NODE:
-                if(!batch.hasFailed()) {
-                    for(StorageNode node: distributedServiceAccess.getParticipatingNodes()){
+                if (!batch.hasFailed()) {
+                    for (StorageNode node : distributedServiceAccess.getParticipatingNodes()) {
                         node.setMetadataStatus(UNSYNCHRONIZED);
                     }
                     updateNodesWithMetadata();
-                }else{
+                } else {
                     status = EcsStatus.INITIALIZED;
                 }
                 break;
             case SHUTDOWN:
-                if(!batch.hasFailed()) {
-                    for(StorageNode node: distributedServiceAccess.getParticipatingNodes()){
+                if (!batch.hasFailed()) {
+                    for (StorageNode node : distributedServiceAccess.getParticipatingNodes()) {
                         node.setMetadataStatus(UNSYNCHRONIZED);
                     }
                     status = EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
-                }else{
+                } else {
                     status = EcsStatus.INITIALIZED;
                 }
                 break;
             case UPDATING_METADATA:
-                if(!batch.hasFailed()) {
+                if (!batch.hasFailed()) {
                     status = EcsStatus.INITIALIZED;
-                }else{
+                } else {
                     status = WAITING_FOR_SERVICE_INITIALIZATION;
                 }
                 break;

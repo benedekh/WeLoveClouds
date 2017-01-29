@@ -135,7 +135,7 @@ public class EcsBatchFactory {
                 (addNodeTaskDetails.getSuccessor()));
         successCommands.add(ecsInternalCommandFactory.createInvokeDataTransferCommandWith
                 (addNodeTaskDetails.getSuccessor(), addNodeTaskDetails.getNewStorageNode(),
-                        addNodeTaskDetails.getRingMetadata()));
+                        addNodeTaskDetails.getRingMetadata(),false));
 
         if (withAutomaticStart) {
             successCommands.add(ecsInternalCommandFactory.createStartNodeCommandFor
@@ -160,7 +160,7 @@ public class EcsBatchFactory {
                 (removeNodeTaskDetails.getSuccessor(), removeNodeTaskDetails.getRingMetadata()));
         successCommands.add(ecsInternalCommandFactory.createInvokeDataTransferCommandWith
                 (removeNodeTaskDetails.getNodetoRemove(), removeNodeTaskDetails.getSuccessor(),
-                        removeNodeTaskDetails.getRingMetadata()));
+                        removeNodeTaskDetails.getRingMetadata(),true));
 
         removeBatch.addTask(new SimpleRetryableTask(MAX_NUMBER_OF_NODE_SHUTDOWN_RETRIES,
                 taskCommand, successCommands));

@@ -3,6 +3,7 @@ package weloveclouds.ecs.models.commands.internal;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
+import weloveclouds.ecs.models.repository.NodeStatus;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.commons.hashing.models.RingMetadata;
 import weloveclouds.commons.serialization.IMessageDeserializer;
@@ -21,6 +22,7 @@ import static weloveclouds.commons.kvstore.models.messages.IKVAdminMessage.Statu
 public class InvokeDataTransfer extends AbstractEcsNetworkCommand<StorageNode, IKVAdminMessage> {
     private StorageNode newNode;
     private RingMetadata ringMetadata;
+    private boolean isNodeRemoval;
 
     protected InvokeDataTransfer(Builder invokeDataTransferBuilder) {
         this.communicationApi = invokeDataTransferBuilder.communicationApi;
@@ -29,6 +31,7 @@ public class InvokeDataTransfer extends AbstractEcsNetworkCommand<StorageNode, I
         this.messageDeserializer = invokeDataTransferBuilder.messageDeserializer;
         this.newNode = invokeDataTransferBuilder.newNode;
         this.ringMetadata = invokeDataTransferBuilder.ringMetadata;
+        this.isNodeRemoval = invokeDataTransferBuilder.isNodeRemoval;
         this.errorMessage =
                 StringUtils.join(" ", "Unable to invoke data transfer on node:", targetedNode);
     }
@@ -46,6 +49,9 @@ public class InvokeDataTransfer extends AbstractEcsNetworkCommand<StorageNode, I
             IKVAdminMessage response = messageDeserializer.deserialize(communicationApi.receive());
             if (response.getStatus() != RESPONSE_SUCCESS) {
                 throw new ClientSideException(errorMessage);
+            }else if(isNodeRemoval){
+                targetedNode.setStatus(NodeStatus.IDLE);
+                targetedNode.clearHashRange();
             }
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);
@@ -70,6 +76,16 @@ public class InvokeDataTransfer extends AbstractEcsNetworkCommand<StorageNode, I
         private IMessageDeserializer<IKVAdminMessage, SerializedMessage> messageDeserializer;
         private RingMetadata ringMetadata;
         private StorageNode newNode;
+        private boolean isNodeRemoval;
+
+        public Builder() {
+            isNodeRemoval = false;
+        }
+
+        public Builder isNodeRemoval(boolean isNodeRemoval) {
+            this.isNodeRemoval = isNodeRemoval;
+            return this;
+        }
 
         public Builder communicationApi(ICommunicationApi communicationApi) {
             this.communicationApi = communicationApi;
