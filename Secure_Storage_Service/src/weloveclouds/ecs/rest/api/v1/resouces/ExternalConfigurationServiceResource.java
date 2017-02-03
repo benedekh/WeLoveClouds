@@ -61,10 +61,11 @@ public class ExternalConfigurationServiceResource {
                     .allow("OPTIONS")
                     .build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return Response.ok()
+            ErrorResponse response = new ErrorResponse().withMessage(e.getMessage());
+            return Response.serverError()
+                    .entity(objectMapper.writeValueAsString(response))
                     .header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Methods", "GET")
+                    .header("Access-Control-Allow-Methods", "POST")
                     .allow("OPTIONS")
                     .build();
         }
