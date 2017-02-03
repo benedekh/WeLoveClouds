@@ -6,6 +6,7 @@ import static weloveclouds.commons.serialization.models.XMLTokens.WRITE_RANGE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.XML_NODE;
 import static weloveclouds.commons.serialization.utils.XMLPatternUtils.getRegexFromToken;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
@@ -64,11 +65,16 @@ public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataP
     }
 
     private Set<HashRange> deserializeReadRanges(String from) throws DeserializationException {
+        HashSet<HashRange> defaultReturnValue = new HashSet<>();
+
         Matcher readRangesMatcher = getRegexFromToken(READ_RANGES).matcher(from);
         if (readRangesMatcher.find()) {
-            return hashRangesDeserializer.deserialize(readRangesMatcher.group(XML_NODE));
+            Set<HashRange> deserialized =
+                    hashRangesDeserializer.deserialize(readRangesMatcher.group(XML_NODE));
+            return deserialized == null ? defaultReturnValue : deserialized;
         }
-        return null;
+
+        return defaultReturnValue;
     }
 
     private HashRange deserializeWriteRange(String from) throws DeserializationException {

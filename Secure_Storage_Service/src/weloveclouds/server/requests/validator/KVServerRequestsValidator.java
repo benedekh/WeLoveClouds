@@ -68,9 +68,9 @@ public class KVServerRequestsValidator {
      * 
      * @throws IllegalArgumentException if a validation error occurs
      */
-    public static void validateHashRanges(Set<HashRange> hashRanges)
+    private static void validateHashRanges(Set<HashRange> hashRanges)
             throws IllegalArgumentException {
-        if (hashRanges == null || hashRanges.isEmpty()) {
+        if (hashRanges == null) {
             throw new IllegalArgumentException();
         }
         for (HashRange range : hashRanges) {
@@ -139,6 +139,11 @@ public class KVServerRequestsValidator {
         if (ringMetadataPart == null) {
             throw new IllegalArgumentException();
         }
+        Set<HashRange> readRanges = ringMetadataPart.getReadRanges();
+        if (readRanges != null) {
+            validateHashRanges(readRanges);
+        }
+
         HashRange writeRange = ringMetadataPart.getWriteRange();
         if (writeRange != null) {
             validateHashRange(writeRange);
