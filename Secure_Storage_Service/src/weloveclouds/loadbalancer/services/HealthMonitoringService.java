@@ -1,12 +1,16 @@
 package weloveclouds.loadbalancer.services;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import static weloveclouds.commons.status.ServerStatus.RUNNING;
+
+import java.io.IOException;
+
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.net.ServerSocket;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
@@ -19,10 +23,9 @@ import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.models.SecureConnection;
 import weloveclouds.loadbalancer.configuration.annotations.HealthMonitoringServicePort;
 import weloveclouds.loadbalancer.models.IKVHeartbeatMessage;
-
-import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 /**
  * Created by Benoit on 2016-12-05.
@@ -54,15 +57,15 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
     public void run() {
         status = RUNNING;
         logger.info("Health monitoring service started with endpoint: " + serverSocket);
-        try (ServerSocket socket = serverSocket) {
+        try (SSLServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
             nodeHealthWatcher.start();
 
             while (status == RUNNING) {
                 ConnectionHandler connectionHandler = new ConnectionHandler(
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
-                        new Connection.Builder().socket(socket.accept()).build(), messageSerializer,
-                        messageDeserializer, distributedSystemAccessService);
+                        new SecureConnection.Builder().socket((SSLSocket) socket.accept()).build(),
+                        messageSerializer, messageDeserializer, distributedSystemAccessService);
                 connectionHandler.handleConnection();
             }
         } catch (IOException ex) {
@@ -77,11 +80,9 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
     private class ConnectionHandler extends AbstractConnectionHandler<IKVHeartbeatMessage> {
         private IDistributedSystemAccessService distributedSystemAccessService;
 
-        ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection connection,
-                          IMessageSerializer<SerializedMessage, IKVHeartbeatMessage>
-                                  messageSerializer,
-                          IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage>
-                                  messageDeserializer,
+        ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection<?> connection,
+                          IMessageSerializer<SerializedMessage, IKVHeartbeatMessage> messageSerializer,
+                          IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage> messageDeserializer,
                           IDistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());

@@ -6,6 +6,8 @@ import java.util.Map;
 
 /**
  * The type Value cleaner utility.
+ * 
+ * @author Benedek
  */
 public class ValueCleanerUtility {
 

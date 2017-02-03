@@ -55,7 +55,7 @@ public class NetworkPacketResender extends AbstractNetworkPacketResender {
 
     @Override
     public byte[] sendWith(IConcurrentCommunicationService concurrentCommunicationService,
-            Connection connection) throws IOException {
+            Connection<?> connection) throws IOException {
         while (numberOfAttemptsSoFar < maxNumberOfAttempts) {
             try {
                 try {

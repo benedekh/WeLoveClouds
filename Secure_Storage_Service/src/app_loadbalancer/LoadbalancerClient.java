@@ -2,17 +2,9 @@ package app_loadbalancer;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.servlet.GuiceFilter;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.server.DispatcherType;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.glassfish.jersey.servlet.ServletContainer;
-
-import java.util.EnumSet;
 
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.context.ExecutionContext;

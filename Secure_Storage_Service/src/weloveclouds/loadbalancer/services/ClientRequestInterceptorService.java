@@ -1,15 +1,21 @@
 package weloveclouds.loadbalancer.services;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import static weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
+import static weloveclouds.commons.status.ServerStatus.RUNNING;
+
+import java.io.IOException;
+
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.net.ServerSocket;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage;
+import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
 import weloveclouds.commons.networking.ServerSocketFactory;
@@ -21,15 +27,12 @@ import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
+import weloveclouds.communication.models.SecureConnection;
 import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForReadingException;
 import weloveclouds.ecs.exceptions.distributedSystem.UnableToFindServerResponsibleForWritingException;
 import weloveclouds.ecs.models.repository.StorageNode;
-import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.loadbalancer.configuration.annotations.ClientRequestsInterceptorPort;
 import weloveclouds.loadbalancer.exceptions.cache.UnableToFindRequestedKeyException;
-
-import static weloveclouds.commons.status.ServerStatus.*;
-import static weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType.GET_SUCCESS;
 
 /**
  * Created by Benoit on 2016-12-03.
@@ -42,15 +45,11 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
     @Inject
     public ClientRequestInterceptorService(CommunicationApiFactory communicationApiFactory,
                                            ServerSocketFactory serverSocketFactory,
-                                           IMessageSerializer<SerializedMessage, IKVMessage>
-                                                   messageSerializer,
-                                           IMessageDeserializer<IKVMessage, SerializedMessage>
-                                                   messageDeserializer,
+                                           IMessageSerializer<SerializedMessage, IKVMessage> messageSerializer,
+                                           IMessageDeserializer<IKVMessage, SerializedMessage> messageDeserializer,
                                            @ClientRequestsInterceptorPort int port,
-                                           IDistributedSystemAccessService
-                                                   distributedSystemAccessService,
-                                           ICacheService<String, String> cacheService)
-            throws IOException {
+                                           IDistributedSystemAccessService distributedSystemAccessService,
+                                           ICacheService<String, String> cacheService) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
         this.logger = Logger.getLogger(ClientRequestInterceptorService.class);
@@ -62,14 +61,17 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
     public void run() {
         status = RUNNING;
         logger.info("Client request interceptor started with endpoint: " + serverSocket);
-        try (ServerSocket socket = serverSocket) {
+        try (SSLServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
 
             while (status == RUNNING) {
-                ConnectionHandler connectionHandler = new ConnectionHandler(
-                        communicationApiFactory.createConcurrentCommunicationApiV1(),
-                        new Connection.Builder().socket(socket.accept()).build(), messageSerializer,
-                        messageDeserializer, distributedSystemAccessService, cacheService);
+                ConnectionHandler connectionHandler =
+                        new ConnectionHandler(
+                                communicationApiFactory.createConcurrentCommunicationApiV1(),
+                                new SecureConnection.Builder().socket((SSLSocket) socket.accept())
+                                        .build(),
+                                messageSerializer, messageDeserializer,
+                                distributedSystemAccessService, cacheService);
                 connectionHandler.handleConnection();
             }
         } catch (IOException ex) {
@@ -86,8 +88,7 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
         private ICacheService<String, String> cacheService;
         private ICommunicationApi transferCommunicationApi;
 
-        ConnectionHandler(IConcurrentCommunicationApi communicationApi,
-                          Connection connection,
+        ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection<?> connection,
                           IMessageSerializer<SerializedMessage, IKVMessage> messageSerializer,
                           IMessageDeserializer<IKVMessage, SerializedMessage> messageDeserializer,
                           IDistributedSystemAccessService distributedSystemAccessService,
@@ -163,15 +164,13 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
                         communicationApi.send(messageSerializer
                                 .serialize(new KVMessage.Builder()
                                         .status(IKVMessage.StatusType.GET_ERROR)
-                                        .key(deserializedMessage.getKey())
-                                        .build())
+                                        .key(deserializedMessage.getKey()).build())
                                 .getBytes(), connection);
                     } catch (UnableToFindServerResponsibleForWritingException e) {
                         communicationApi.send(messageSerializer
                                 .serialize(new KVMessage.Builder()
                                         .status(IKVMessage.StatusType.PUT_ERROR)
-                                        .key(deserializedMessage.getKey())
-                                        .build())
+                                        .key(deserializedMessage.getKey()).build())
                                 .getBytes(), connection);
                     }
                 }

@@ -2,7 +2,7 @@ package weloveclouds.server.services.datastore;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.utils.ecryption.StringEncryptionUtil;
+import weloveclouds.commons.utils.encryption.StringEncryptionUtil;
 import weloveclouds.server.services.datastore.models.DataAccessServiceInitializationContext;
 import weloveclouds.server.services.replication.ReplicationService;
 import weloveclouds.server.store.cache.KVCache;

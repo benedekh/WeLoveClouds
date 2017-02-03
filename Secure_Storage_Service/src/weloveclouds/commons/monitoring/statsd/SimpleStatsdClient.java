@@ -25,7 +25,7 @@ public class SimpleStatsdClient implements IStatsdClient {
     }
 
     @Override
-    public void incrementCounter(Metric metric, long value) {
+    public synchronized void incrementCounter(Metric metric, long value) {
         statsDClient.count(metric.toString(), value);
     }
 

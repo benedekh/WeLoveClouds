@@ -1,4 +1,4 @@
-package weloveclouds.commons.utils.ecryption.models;
+package weloveclouds.commons.utils.encryption.models;
 
 import java.io.Serializable;
 import java.util.AbstractMap.SimpleEntry;
@@ -12,9 +12,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.utils.ecryption.StringEncryptionUtil;
-import weloveclouds.commons.utils.ecryption.exception.DecryptionException;
-import weloveclouds.commons.utils.ecryption.exception.EncryptionException;
+import weloveclouds.commons.utils.encryption.StringEncryptionUtil;
+import weloveclouds.commons.utils.encryption.exception.DecryptionException;
+import weloveclouds.commons.utils.encryption.exception.EncryptionException;
 
 /**
  * Encapsulates a {@link Map<String, String>} whose keys and values will be encrypted.

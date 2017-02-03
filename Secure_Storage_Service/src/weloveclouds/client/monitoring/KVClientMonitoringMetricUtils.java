@@ -1,6 +1,6 @@
 package weloveclouds.client.monitoring;
 
-import static app_kvClient.KVClient.clientName;
+import static app_kvClient.KVClient.CLIENT_NAME;
 
 import java.util.Arrays;
 
@@ -28,7 +28,7 @@ public class KVClientMonitoringMetricUtils {
             Duration executionTime) {
         MONITORING_CLIENT.recordExecutionTime(
                 new Metric.Builder().service(Service.KV_CLIENT)
-                        .name(Arrays.asList(clientName, commandName, durationName)).build(),
+                        .name(Arrays.asList(CLIENT_NAME, commandName, durationName)).build(),
                 executionTime);
     }
 }

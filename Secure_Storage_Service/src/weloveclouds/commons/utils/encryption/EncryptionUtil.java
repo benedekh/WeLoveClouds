@@ -1,4 +1,4 @@
-package weloveclouds.commons.utils.ecryption;
+package weloveclouds.commons.utils.encryption;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -10,8 +10,8 @@ import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.log4j.Logger;
 
-import weloveclouds.commons.utils.ecryption.exception.DecryptionException;
-import weloveclouds.commons.utils.ecryption.exception.EncryptionException;
+import weloveclouds.commons.utils.encryption.exception.DecryptionException;
+import weloveclouds.commons.utils.encryption.exception.EncryptionException;
 
 /**
  * Utility class to encrypt or decrypt an object.

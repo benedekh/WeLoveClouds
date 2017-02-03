@@ -29,20 +29,20 @@ public class ConcurrentCommunicationApiV1 implements IConcurrentCommunicationApi
     }
 
     @Override
-    public void send(byte[] message, Connection connection) throws IOException {
+    public void send(byte[] message, Connection<?> connection) throws IOException {
         resenderFactory.createResenderWithExponentialBackoff(MAX_NUMBER_OF_RESEND_ATTEMPTS, message)
                 .sendWith(communicationService, connection);
     }
 
     @Override
-    public byte[] sendAndExpectForResponse(byte[] content, Connection connection)
+    public byte[] sendAndExpectForResponse(byte[] content, Connection<?> connection)
             throws IOException {
         return resenderFactory.createResenderWithResponseWithExponentialBackoff(
                 MAX_NUMBER_OF_RESEND_ATTEMPTS, content).sendWith(communicationService, connection);
     }
 
     @Override
-    public byte[] receiveFrom(Connection connection) throws IOException {
+    public byte[] receiveFrom(Connection<?> connection) throws IOException {
         return communicationService.receiveFrom(connection);
     }
 }

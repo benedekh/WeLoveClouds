@@ -1,7 +1,7 @@
 package weloveclouds.evaluation.preparation.transformer;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
-import static weloveclouds.evaluation.preparation.util.StringJoinerUtility.join;
+import static weloveclouds.evaluation.preparation.util.StringUtils.join;
 import static weloveclouds.evaluation.preparation.util.ValueCleanerUtility.cutValueIntoChunks;
 import static weloveclouds.evaluation.preparation.util.ValueCleanerUtility.removeIllegalCharactersFromValue;
 
@@ -22,6 +22,8 @@ import weloveclouds.evaluation.preparation.models.PreparedDataset;
 
 /**
  * The type Dataset transformer.
+ * 
+ * @author Benedek
  */
 public class DatasetTransformer extends SimpleFileVisitor<Path> {
 
@@ -101,7 +103,7 @@ public class DatasetTransformer extends SimpleFileVisitor<Path> {
      * method and an error occurs, an IOException is thrown.
      *
      * @param file the file
-     * @param exc  the exc
+     * @param exc the exc
      * @return the file visit result
      */
     @Override

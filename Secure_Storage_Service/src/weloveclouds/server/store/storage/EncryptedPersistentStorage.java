@@ -3,8 +3,8 @@ package weloveclouds.server.store.storage;
 import java.nio.file.Path;
 
 import weloveclouds.commons.utils.PathUtils;
-import weloveclouds.commons.utils.ecryption.StringEncryptionUtil;
-import weloveclouds.commons.utils.ecryption.models.EncryptedStorageUnitMap;
+import weloveclouds.commons.utils.encryption.StringEncryptionUtil;
+import weloveclouds.commons.utils.encryption.models.EncryptedStorageUnitMap;
 import weloveclouds.server.store.models.EncryptedPersistedStorageUnit;
 import weloveclouds.server.store.models.PersistedStorageUnit;
 

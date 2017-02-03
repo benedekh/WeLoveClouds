@@ -93,7 +93,7 @@ public class KVServerHandlingKVClientRequestTests {
 
         IKVMessage response = kvmessageDeserializer.deserialize(serverCommunication.receive());
         Assert.assertEquals(StatusType.GET_SUCCESS, response.getStatus());
-        Assert.assertEquals("hello", response.getValue());
+        Assert.assertEquals("world", response.getValue());
     }
 
 }

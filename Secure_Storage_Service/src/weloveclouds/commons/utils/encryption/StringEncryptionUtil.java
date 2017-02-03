@@ -1,10 +1,10 @@
-package weloveclouds.commons.utils.ecryption;
+package weloveclouds.commons.utils.encryption;
 
 import javax.crypto.SecretKey;
 import javax.xml.bind.DatatypeConverter;
 
-import weloveclouds.commons.utils.ecryption.exception.DecryptionException;
-import weloveclouds.commons.utils.ecryption.exception.EncryptionException;
+import weloveclouds.commons.utils.encryption.exception.DecryptionException;
+import weloveclouds.commons.utils.encryption.exception.EncryptionException;
 
 /**
  * Utility class which encrypts a String.
