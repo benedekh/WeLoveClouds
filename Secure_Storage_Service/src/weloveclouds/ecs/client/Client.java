@@ -15,7 +15,7 @@ import weloveclouds.ecs.models.commands.client.EcsClientCommandFactory;
 import weloveclouds.ecs.utils.EcsClientUserInputParser;
 
 /**
- * Created by Benoit on 2016-11-16.
+ * Created by Benoit, Hunton on 2016-11-16.
  */
 public class Client {
     private static final Logger LOGGER = Logger.getLogger(Client.class);

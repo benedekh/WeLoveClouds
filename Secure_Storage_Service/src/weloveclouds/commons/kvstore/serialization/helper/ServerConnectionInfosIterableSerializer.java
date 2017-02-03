@@ -14,7 +14,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
  * A serializer which converts a {@link Iterable<ServerConnectionInfo>} to a
  * {@link AbstractXMLNode}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class ServerConnectionInfosIterableSerializer
         implements ISerializer<AbstractXMLNode, Iterable<ServerConnectionInfo>> {

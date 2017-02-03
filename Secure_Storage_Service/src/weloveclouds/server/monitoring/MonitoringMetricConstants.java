@@ -3,7 +3,7 @@ package weloveclouds.server.monitoring;
 /**
  * Constants for metric monitoring.
  * 
- * @author Benedek
+ * @author Hunton
  */
 public class MonitoringMetricConstants {
     public static final String KVSTORE_MODULE_NAME = "kvstore";

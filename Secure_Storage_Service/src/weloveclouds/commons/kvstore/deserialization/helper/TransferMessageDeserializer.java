@@ -23,7 +23,7 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 /**
  * A deserializer which converts a {@link String} to a {@link IKVTransferMessage}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class TransferMessageDeserializer implements IDeserializer<IKVTransferMessage, String> {
 

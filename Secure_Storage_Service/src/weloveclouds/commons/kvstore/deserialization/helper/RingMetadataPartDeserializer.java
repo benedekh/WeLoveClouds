@@ -19,7 +19,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * A deserializer which converts a {@link String} to a {@link RingMetadataPart}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class RingMetadataPartDeserializer implements IDeserializer<RingMetadataPart, String> {
 

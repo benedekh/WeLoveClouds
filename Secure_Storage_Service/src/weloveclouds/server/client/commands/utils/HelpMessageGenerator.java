@@ -6,7 +6,7 @@ import weloveclouds.server.configuration.models.KVServerPortConstants;
 /**
  * Generates the help message for the application.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class HelpMessageGenerator {
 

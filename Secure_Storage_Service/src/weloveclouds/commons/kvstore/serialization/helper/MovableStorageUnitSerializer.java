@@ -16,7 +16,7 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 /**
  * A serializer which converts a {@link MovableStorageUnit} to a {@link AbstractXMLNode}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class MovableStorageUnitSerializer
         implements ISerializer<AbstractXMLNode, MovableStorageUnit> {
