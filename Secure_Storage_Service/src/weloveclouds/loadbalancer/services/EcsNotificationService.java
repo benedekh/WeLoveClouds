@@ -3,10 +3,8 @@ package weloveclouds.loadbalancer.services;
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.UnknownHostException;
-
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
 
 import org.apache.log4j.Logger;
 
@@ -44,15 +42,12 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
 
     @Inject
     public EcsNotificationService(CommunicationApiFactory communicationApiFactory,
-                                  ServerSocketFactory serverSocketFactory,
-                                  IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage>
-                                          messageSerializer,
-                                  IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage>
-                                          messageDeserializer,
-                                  @EcsNotificationServicePort int port,
-                                  @EcsDnsName String ecsDNS,
-                                  @EcsNotificationResponsePort int ecsRemotePort,
-                                  DistributedSystemAccessService distributedSystemAccessService) throws IOException {
+            ServerSocketFactory serverSocketFactory,
+            IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer,
+            IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage> messageDeserializer,
+            @EcsNotificationServicePort int port, @EcsDnsName String ecsDNS,
+            @EcsNotificationResponsePort int ecsRemotePort,
+            DistributedSystemAccessService distributedSystemAccessService) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
         this.ecsRemotePort = ecsRemotePort;
@@ -65,12 +60,12 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
     public void run() {
         status = RUNNING;
         logger.info("ECS notification service started with endpoint: " + serverSocket);
-        try (SSLServerSocket socket = serverSocket) {
+        try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
             while (status == RUNNING) {
                 ConnectionHandler connectionHandler = new ConnectionHandler(
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
-                        new SecureConnection.Builder().socket((SSLSocket) socket.accept()).build(),
+                        new SecureConnection.Builder().socket(socket.accept()).build(),
                         messageSerializer, messageDeserializer, distributedSystemAccessService);
                 connectionHandler.handleConnection();
             }
@@ -93,10 +88,8 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
         try {
             byte[] receivedMessage;
             ICommunicationApi communicationApi = communicationApiFactory.createCommunicationApiV1();
-            communicationApi.connectTo(new ServerConnectionInfo.Builder()
-                    .ipAddress(ecsDNS)
-                    .port(ecsRemotePort)
-                    .build());
+            communicationApi.connectTo(new ServerConnectionInfo.Builder().ipAddress(ecsDNS)
+                    .port(ecsRemotePort).build());
             communicationApi.send(messageSerializer.serialize(kvEcsNotificationMessage).getBytes());
             communicationApi.disconnect();
         } catch (ClientSideException | UnknownHostException e) {

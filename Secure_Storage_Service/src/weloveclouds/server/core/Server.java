@@ -3,9 +3,7 @@ package weloveclouds.server.core;
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 import java.io.IOException;
-
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
+import java.net.ServerSocket;
 
 import org.apache.log4j.Logger;
 
@@ -49,13 +47,12 @@ public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends Abstr
         status = RUNNING;
         serviceHealthMonitor.setServiceStatus(ServiceStatus.RUNNING);
 
-        try (SSLServerSocket socket = serverSocket) {
+        try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
 
             while (status == RUNNING) {
                 new SimpleConnectionHandler.Builder<M, R>()
-                        .connection(new SecureConnection.Builder()
-                                .socket((SSLSocket) socket.accept()).build())
+                        .connection(new SecureConnection.Builder().socket(socket.accept()).build())
                         .requestFactory(requestFactory)
                         .communicationApi(
                                 communicationApiFactory.createConcurrentCommunicationApiV1())

@@ -3,9 +3,7 @@ package weloveclouds.ecs.services;
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 import java.io.IOException;
-
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
+import java.net.ServerSocket;
 
 import org.apache.log4j.Logger;
 
@@ -36,8 +34,8 @@ import weloveclouds.ecs.models.tasks.SimpleRetryableTask;
  * Created by Benoit on 2016-12-21.
  */
 @Singleton
-public class NotificationService extends AbstractServer<IKVEcsNotificationMessage> implements
-        INotificationService<IKVEcsNotificationMessage> {
+public class NotificationService extends AbstractServer<IKVEcsNotificationMessage>
+        implements INotificationService<IKVEcsNotificationMessage> {
     private static final int DEFAULT_CACHE_SIZE = 200;
     private static final String DEEFAULT_CACHE_DISPLACEMENT_STRATEGY = "LFU";
     private IKVEcsApi ecsCoreApi;
@@ -47,16 +45,12 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
 
     @Inject
     public NotificationService(CommunicationApiFactory communicationApiFactory,
-                               ServerSocketFactory serverSocketFactory,
-                               IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage>
-                                       kvEcsNotificationMessageSerializer,
-                               IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage>
-                                       kvEcsNotificationMessageDeserializer,
-                               ITaskService taskService,
-                               EcsInternalCommandFactory ecsInternalCommandFactory,
-                               IKVEcsApi ecsCoreApi,
-                               @NotificationServicePort int port,
-                               @NotificationServiceMaxRetry int maximumNumberOfNotificationSendRetry)
+            ServerSocketFactory serverSocketFactory,
+            IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> kvEcsNotificationMessageSerializer,
+            IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage> kvEcsNotificationMessageDeserializer,
+            ITaskService taskService, EcsInternalCommandFactory ecsInternalCommandFactory,
+            IKVEcsApi ecsCoreApi, @NotificationServicePort int port,
+            @NotificationServiceMaxRetry int maximumNumberOfNotificationSendRetry)
             throws IOException {
         super(communicationApiFactory, serverSocketFactory, kvEcsNotificationMessageSerializer,
                 kvEcsNotificationMessageDeserializer, port);
@@ -78,15 +72,14 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
     public void run() {
         status = RUNNING;
         logger.info("Ecs notification service started with endpoint: " + serverSocket);
-        try (SSLServerSocket socket = serverSocket) {
+        try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
 
             while (status == RUNNING) {
                 NotificationService.ConnectionHandler connectionHandler =
                         new NotificationService.ConnectionHandler(
                                 communicationApiFactory.createConcurrentCommunicationApiV1(),
-                                new SecureConnection.Builder().socket((SSLSocket) socket.accept())
-                                        .build(),
+                                new SecureConnection.Builder().socket(socket.accept()).build(),
                                 messageSerializer, messageDeserializer);
                 connectionHandler.handleConnection();
             }
@@ -115,19 +108,19 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
 
         @Override
         public void run() {
-            //logger.info("Client is connected to server.");
+            // logger.info("Client is connected to server.");
             logger.info("Received message from load balancer");
             try {
                 while (connection.isConnected()) {
-                    IKVEcsNotificationMessage receivedMessage = messageDeserializer.deserialize
-                            (communicationApi.receiveFrom(connection));
+                    IKVEcsNotificationMessage receivedMessage = messageDeserializer
+                            .deserialize(communicationApi.receiveFrom(connection));
                     switch (receivedMessage.getStatus()) {
                         case UNRESPONSIVE_NODES_REPORTING:
-                            for (String unresponsiveNodeName : receivedMessage.getUnresponsiveNodeNames()) {
-                                UserOutputWriter.getInstance().appendToLine
-                                        (StringUtils.join(" ", "Notification service message:",
-                                                unresponsiveNodeName, "has failed. " +
-                                                        "Adding new node to service."));
+                            for (String unresponsiveNodeName : receivedMessage
+                                    .getUnresponsiveNodeNames()) {
+                                UserOutputWriter.getInstance().appendToLine(StringUtils.join(" ",
+                                        "Notification service message:", unresponsiveNodeName,
+                                        "has failed. " + "Adding new node to service."));
                                 ecsCoreApi.removeUnresponsiveNodesWithName(unresponsiveNodeName);
                             }
                             break;

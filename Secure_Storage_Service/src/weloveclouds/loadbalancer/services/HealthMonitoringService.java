@@ -3,9 +3,7 @@ package weloveclouds.loadbalancer.services;
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 import java.io.IOException;
-
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
+import java.net.ServerSocket;
 
 import org.apache.log4j.Logger;
 
@@ -36,15 +34,12 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
 
     @Inject
     public HealthMonitoringService(CommunicationApiFactory communicationApiFactory,
-                                   ServerSocketFactory serverSocketFactory,
-                                   IMessageSerializer<SerializedMessage, IKVHeartbeatMessage>
-                                           messageSerializer,
-                                   IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage>
-                                           messageDeserializer,
-                                   @HealthMonitoringServicePort int port,
-                                   DistributedSystemAccessService distributedSystemAccessService,
-                                   NodeHealthWatcher nodeHealthWatcher)
-            throws IOException {
+            ServerSocketFactory serverSocketFactory,
+            IMessageSerializer<SerializedMessage, IKVHeartbeatMessage> messageSerializer,
+            IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage> messageDeserializer,
+            @HealthMonitoringServicePort int port,
+            DistributedSystemAccessService distributedSystemAccessService,
+            NodeHealthWatcher nodeHealthWatcher) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
         this.logger = Logger.getLogger(this.getClass());
@@ -56,14 +51,14 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
     public void run() {
         status = RUNNING;
         logger.info("Health monitoring service started with endpoint: " + serverSocket);
-        try (SSLServerSocket socket = serverSocket) {
+        try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
             nodeHealthWatcher.start();
 
             while (status == RUNNING) {
                 ConnectionHandler connectionHandler = new ConnectionHandler(
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
-                        new SecureConnection.Builder().socket((SSLSocket) socket.accept()).build(),
+                        new SecureConnection.Builder().socket(socket.accept()).build(),
                         messageSerializer, messageDeserializer, distributedSystemAccessService);
                 connectionHandler.handleConnection();
             }

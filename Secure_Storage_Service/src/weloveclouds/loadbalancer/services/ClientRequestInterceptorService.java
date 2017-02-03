@@ -4,9 +4,7 @@ import static weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 import java.io.IOException;
-
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
+import java.net.ServerSocket;
 
 import org.apache.log4j.Logger;
 
@@ -61,17 +59,15 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
     public void run() {
         status = RUNNING;
         logger.info("Client request interceptor started with endpoint: " + serverSocket);
-        try (SSLServerSocket socket = serverSocket) {
+        try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
 
             while (status == RUNNING) {
-                ConnectionHandler connectionHandler =
-                        new ConnectionHandler(
-                                communicationApiFactory.createConcurrentCommunicationApiV1(),
-                                new SecureConnection.Builder().socket((SSLSocket) socket.accept())
-                                        .build(),
-                                messageSerializer, messageDeserializer,
-                                distributedSystemAccessService, cacheService);
+                ConnectionHandler connectionHandler = new ConnectionHandler(
+                        communicationApiFactory.createConcurrentCommunicationApiV1(),
+                        new SecureConnection.Builder().socket(socket.accept()).build(),
+                        messageSerializer, messageDeserializer, distributedSystemAccessService,
+                        cacheService);
                 connectionHandler.handleConnection();
             }
         } catch (IOException ex) {
@@ -114,8 +110,7 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
                 IKVMessage deserializedMessage;
                 while (connection.isConnected()) {
                     receivedMessage = communicationApi.receiveFrom(connection);
-                    deserializedMessage =
-                            messageDeserializer.deserialize(receivedMessage);
+                    deserializedMessage = messageDeserializer.deserialize(receivedMessage);
                     logger.debug(StringUtils.join(" ", "Message received:", deserializedMessage));
                     try {
                         switch (deserializedMessage.getStatus()) {
@@ -125,9 +120,8 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
                                             messageSerializer.serialize(
                                                     new KVMessage.Builder().status(GET_SUCCESS)
                                                             .key(deserializedMessage.getKey())
-                                                            .value(cacheService
-                                                                    .get(deserializedMessage.
-                                                                            getKey()))
+                                                            .value(cacheService.get(
+                                                                    deserializedMessage.getKey()))
                                                             .build())
                                                     .getBytes(),
                                             connection);
