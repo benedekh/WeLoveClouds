@@ -6,11 +6,11 @@ import weloveclouds.commons.utils.StringUtils;
 
 /**
  * The following properties should be held for the range:<br>
- * (1) {@link #end} >= {@link #start}, and<br>
- * (2) {@link #end} <= {@link Hash#MAX_VALUE} && {@link #start} >= {@link Hash#MIN_VALUE},
+ * (1) {@link #end} >= {@link #begin}, and<br>
+ * (2) {@link #end} <= {@link Hash#MAX_VALUE} && {@link #begin} >= {@link Hash#MIN_VALUE},
  * UNLESS<br>
- * (3) {@link #start} >= {@link #end}, because they wrap over. But in this case (2) should hold with
- * slight changes: {@link #start} <= {@link Hash#MAX_VALUE} && {@link #end} >=
+ * (3) {@link #begin} >= {@link #end}, because they wrap over. But in this case (2) should hold with
+ * slight changes: {@link #begin} <= {@link Hash#MAX_VALUE} && {@link #end} >=
  * {@link Hash#MIN_VALUE}.
  *
  * The ends of the range are inclusive.
@@ -61,7 +61,7 @@ public class HashRange {
 
     @Override
     public String toString() {
-        return StringUtils.join("", "(", begin, ",", end, ")");
+        return StringUtils.join("", "(", getStartValue(), ",", getEndValue(), ")");
     }
 
     @Override

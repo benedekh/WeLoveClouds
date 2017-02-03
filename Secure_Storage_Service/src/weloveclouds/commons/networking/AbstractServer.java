@@ -33,9 +33,9 @@ public abstract class AbstractServer<M> extends Thread {
     private ServerShutdownHook shutdownHook;
 
     protected AbstractServer(CommunicationApiFactory communicationApiFactory,
-            ServerSocketFactory serverSocketFactory,
-            IMessageSerializer<SerializedMessage, M> messageSerializer,
-            IMessageDeserializer<M, SerializedMessage> messageDeserializer, int port)
+                             ServerSocketFactory serverSocketFactory,
+                             IMessageSerializer<SerializedMessage, M> messageSerializer,
+                             IMessageDeserializer<M, SerializedMessage> messageDeserializer, int port)
             throws IOException {
         this.communicationApiFactory = communicationApiFactory;
         this.serverSocketFactory = serverSocketFactory;
@@ -44,6 +44,10 @@ public abstract class AbstractServer<M> extends Thread {
         this.port = port;
         this.serverSocket = serverSocketFactory.createSSLServerSocketFromPort(port);
         this.status = HALTED;
+    }
+
+    public ServerStatus getStatus() {
+        return status;
     }
 
     /**

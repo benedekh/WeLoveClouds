@@ -17,7 +17,7 @@ import weloveclouds.ecs.utils.EcsClientUserInputParser;
 /**
  * Created by Benoit on 2016-11-16.
  */
-public class Client {
+public class Client extends Thread {
     private static final Logger LOGGER = Logger.getLogger(Client.class);
 
     private EcsClientCommandFactory ecsCommandFactory;
@@ -25,6 +25,7 @@ public class Client {
 
     @Inject
     public Client(InputStream inputStream, EcsClientCommandFactory ecsCommandFactory) {
+        super();
         this.inputStream = inputStream;
         this.ecsCommandFactory = ecsCommandFactory;
     }

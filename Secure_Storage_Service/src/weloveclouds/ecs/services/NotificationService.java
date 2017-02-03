@@ -127,7 +127,7 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
                                 UserOutputWriter.getInstance().appendToLine
                                         (StringUtils.join(" ", "Notification service message:",
                                                 unresponsiveNodeName, "has failed. " +
-                                                        "Adding new node to service."));
+                                                        "Trying to recover."));
                                 ecsCoreApi.removeUnresponsiveNodesWithName(unresponsiveNodeName);
                             }
                             break;

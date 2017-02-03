@@ -12,8 +12,6 @@ import weloveclouds.ecs.configuration.providers.NotificationServiceConfiguration
 public class NotificationServiceModule extends AbstractModule {
     @Override
     protected void configure() {
-
-
         bind(Integer.class).annotatedWith(NotificationServicePort.class)
                 .toInstance(NotificationServiceConfigurationProvider.getNotificationServicePort());
 
