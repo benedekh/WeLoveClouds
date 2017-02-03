@@ -65,7 +65,7 @@ public class ExternalConfigurationServiceResource {
             return Response.serverError()
                     .entity(objectMapper.writeValueAsString(response))
                     .header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Methods", "POST")
+                    .header("Access-Control-Allow-Methods", "GET")
                     .allow("OPTIONS")
                     .build();
         }
