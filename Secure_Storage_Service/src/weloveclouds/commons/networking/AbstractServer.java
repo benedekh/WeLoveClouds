@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.networking.socket.server.IServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -30,7 +31,7 @@ public abstract class AbstractServer<M> extends Thread {
     private ServerShutdownHook shutdownHook;
 
     protected AbstractServer(CommunicationApiFactory communicationApiFactory,
-            ServerSocketFactory serverSocketFactory,
+            IServerSocketFactory serverSocketFactory,
             IMessageSerializer<SerializedMessage, M> messageSerializer,
             IMessageDeserializer<M, SerializedMessage> messageDeserializer, int port)
             throws IOException {
@@ -38,7 +39,7 @@ public abstract class AbstractServer<M> extends Thread {
         this.messageSerializer = messageSerializer;
         this.messageDeserializer = messageDeserializer;
         this.port = port;
-        this.serverSocket = serverSocketFactory.createSSLServerSocketFromPort(port);
+        this.serverSocket = serverSocketFactory.createServerSocketFromPort(port);
         this.status = HALTED;
     }
 

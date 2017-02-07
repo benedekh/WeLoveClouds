@@ -1,10 +1,8 @@
-package weloveclouds.commons.networking;
+package weloveclouds.commons.networking.socket;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -14,6 +12,8 @@ import java.security.cert.CertificateException;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.log4j.Logger;
@@ -61,11 +61,11 @@ public class SSLContextHelper {
      * 
      * @param host the server host
      * @param port the server port
-     * @return the {@link Socket}
+     * @return the {@link SSLSocket}
      * @throws IOException if an I/O error occurs when creating the socket
      */
-    public Socket createSocket(InetAddress host, int port) throws IOException {
-        return sslContext.getSocketFactory().createSocket(host, port);
+    public SSLSocket createSocket(InetAddress host, int port) throws IOException {
+        return (SSLSocket) sslContext.getSocketFactory().createSocket(host, port);
     }
 
     /**
@@ -75,11 +75,11 @@ public class SSLContextHelper {
      * is allowed. This could result in a SecurityException.
      * 
      * @param port the port to listen to
-     * @return the {@link ServerSocket}
+     * @return the {@link SSLServerSocket}
      * @throws IOException for networking errors
      */
-    public ServerSocket createServerSocket(int port) throws IOException {
-        return sslContext.getServerSocketFactory().createServerSocket(port);
+    public SSLServerSocket createServerSocket(int port) throws IOException {
+        return (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(port);
     }
 
     private SSLContextHelper loadKeystore() {

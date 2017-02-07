@@ -13,7 +13,7 @@ import com.google.inject.Singleton;
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
-import weloveclouds.commons.networking.ServerSocketFactory;
+import weloveclouds.commons.networking.socket.server.IServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -45,7 +45,7 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
 
     @Inject
     public NotificationService(CommunicationApiFactory communicationApiFactory,
-            ServerSocketFactory serverSocketFactory,
+            IServerSocketFactory serverSocketFactory,
             IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> kvEcsNotificationMessageSerializer,
             IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage> kvEcsNotificationMessageDeserializer,
             ITaskService taskService, EcsInternalCommandFactory ecsInternalCommandFactory,

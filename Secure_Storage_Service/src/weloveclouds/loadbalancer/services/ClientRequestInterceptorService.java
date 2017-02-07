@@ -16,7 +16,7 @@ import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
-import weloveclouds.commons.networking.ServerSocketFactory;
+import weloveclouds.commons.networking.socket.server.IServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -42,7 +42,7 @@ public class ClientRequestInterceptorService extends AbstractServer<IKVMessage> 
 
     @Inject
     public ClientRequestInterceptorService(CommunicationApiFactory communicationApiFactory,
-            ServerSocketFactory serverSocketFactory,
+            IServerSocketFactory serverSocketFactory,
             IMessageSerializer<SerializedMessage, IKVMessage> messageSerializer,
             IMessageDeserializer<IKVMessage, SerializedMessage> messageDeserializer,
             @ClientRequestsInterceptorPort int port,
