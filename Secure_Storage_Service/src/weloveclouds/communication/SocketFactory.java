@@ -1,10 +1,8 @@
 package weloveclouds.communication;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
-
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.log4j.Logger;
 
@@ -36,12 +34,11 @@ public class SocketFactory {
      * Creates an encrypted TCP Socket using server connection information
      * ({@link ServerConnectionInfo#getIpAddress()} and {@link ServerConnectionInfo#getPort()}).
      *
-     * @throws IOException see {@link SSLSocketFactory#createSocket(String, int)}
+     * @throws IOException see {@link SSLContextHelper#createSocket(InetAddress, int)}
      */
-    public SSLSocket createSSLSocketFromInfo(ServerConnectionInfo connectionInfo)
-            throws IOException {
+    public Socket createSSLSocketFromInfo(ServerConnectionInfo connectionInfo) throws IOException {
         LOGGER.debug(StringUtils.join(" ", "Creating SSL socket for", connectionInfo));
-        return (SSLSocket) SSLContextHelper.getInstance().getSSLSocketFactory()
-                .createSocket(connectionInfo.getIpAddress(), connectionInfo.getPort());
+        return SSLContextHelper.getInstance().createSocket(connectionInfo.getIpAddress(),
+                connectionInfo.getPort());
     }
 }
