@@ -8,7 +8,7 @@ import weloveclouds.commons.utils.StringUtils;
  * Different commands which are handled by
  * {@link weloveclouds.ecs.models.commands.client.EcsClientCommandFactory}.
  *
- * @author Benoit
+ * @author Benoit, Hunton
  */
 public enum EcsCommand {
     START("start"), STOP("stop"), INIT_SERVICE("initService"), SHUTDOWN("shutDown"),

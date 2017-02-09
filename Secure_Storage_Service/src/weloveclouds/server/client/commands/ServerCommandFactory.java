@@ -13,7 +13,7 @@ import weloveclouds.server.services.datastore.DataAccessServiceFactory;
  * handles several commands (see {@link ServerCommand} for the possible commands) by dispatching the
  * command to its respective handler.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class ServerCommandFactory {
 

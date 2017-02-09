@@ -37,7 +37,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link IKVAdminMessage}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class KVAdminMessageDeserializer
         implements IMessageDeserializer<IKVAdminMessage, SerializedMessage> {

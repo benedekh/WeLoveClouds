@@ -11,7 +11,7 @@ import weloveclouds.ecs.utils.ArgumentsValidator;
 
 /**
  * 
- * @author Benoit, hb
+ * @author Benoit, Hunton
  *
  */
 public class Quit extends AbstractEcsClientCommand {

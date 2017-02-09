@@ -14,7 +14,7 @@ import weloveclouds.commons.serialization.models.XMLRootNode.Builder;
 /**
  * A serializer which converts a {@link UUID} to a {@link AbstractXMLNode}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class UUIDSerializer implements ISerializer<AbstractXMLNode, UUID> {
 

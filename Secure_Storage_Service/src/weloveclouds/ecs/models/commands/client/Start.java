@@ -6,7 +6,7 @@ import weloveclouds.ecs.models.commands.ICommand;
 import weloveclouds.ecs.utils.ArgumentsValidator;
 
 /**
- * Created by Benoit on 2016-11-20.
+ * Created by Benoit, Hunton on 2016-11-20.
  */
 public class Start extends AbstractEcsClientCommand {
     public Start(IKVEcsApi externalCommunicationServiceApi, String[] arguments) {

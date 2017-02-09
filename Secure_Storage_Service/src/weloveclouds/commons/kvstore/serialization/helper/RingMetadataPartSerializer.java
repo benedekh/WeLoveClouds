@@ -17,7 +17,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * A serializer which converts a {@link RingMetadataPart} to a {@link AbstractXMLNode}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class RingMetadataPartSerializer implements ISerializer<AbstractXMLNode, RingMetadataPart> {
 

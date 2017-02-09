@@ -12,7 +12,7 @@ import weloveclouds.server.configuration.models.KVServerCLIContext;
 /**
  * The port on which the server is going to listen to ECS.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class EcsPort extends AbstractServerCommand {
 

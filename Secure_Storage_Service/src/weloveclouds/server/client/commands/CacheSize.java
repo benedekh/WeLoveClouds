@@ -13,7 +13,7 @@ import weloveclouds.server.store.cache.KVCache;
 /**
  * A cacheSize command which sets the size of the cache {@link KVCache}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class CacheSize extends AbstractServerCommand {
 

@@ -20,7 +20,7 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 /**
  * A serializer which converts a {@link IKVTransferMessage} to a {@link AbstractXMLNode}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class TransferMessageSerializer implements ISerializer<AbstractXMLNode, IKVTransferMessage> {
 
