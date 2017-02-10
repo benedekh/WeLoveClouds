@@ -5,6 +5,8 @@ import com.google.inject.AbstractModule;
 import weloveclouds.commons.configuration.modules.DnsModule;
 import weloveclouds.commons.jetty.IWebService;
 import weloveclouds.commons.jetty.WebService;
+import weloveclouds.commons.networking.socket.server.IServerSocketFactory;
+import weloveclouds.commons.networking.socket.server.SSLServerSocketFactory;
 import weloveclouds.commons.serialization.configuration.modules.SerializationModule;
 import weloveclouds.loadbalancer.configuration.annotations.ClientRequestsInterceptorPort;
 import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationResponsePort;
@@ -29,6 +31,7 @@ public class LoadBalancerModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(IServerSocketFactory.class).to(SSLServerSocketFactory.class);
         bind(ILoadBalancer.class).to(LoadBalancer.class);
         bind(IDistributedSystemAccessService.class).to(DistributedSystemAccessService.class);
         bind(IClientRequestInterceptorService.class).to(ClientRequestInterceptorService.class);

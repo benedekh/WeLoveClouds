@@ -7,9 +7,9 @@ import weloveclouds.commons.kvstore.deserialization.KVTransactionMessageDeserial
 import weloveclouds.commons.kvstore.models.messages.IKVTransactionMessage;
 import weloveclouds.commons.kvstore.serialization.KVTransactionMessageSerializer;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
+import weloveclouds.commons.networking.socket.client.SSLSocketFactory;
 import weloveclouds.communication.CommunicationApiFactory;
-import weloveclouds.communication.SocketFactory;
-import weloveclouds.communication.models.ConnectionFactory;
+import weloveclouds.communication.models.factory.SecureConnectionFactory;
 import weloveclouds.server.requests.kvserver.transaction.AbortRequest;
 import weloveclouds.server.requests.kvserver.transaction.CommitRequest;
 import weloveclouds.server.requests.kvserver.transaction.IKVTransactionRequest;
@@ -70,7 +70,7 @@ public class TransactionServiceFactory {
         return new TransactionSenderService.Builder()
                 .communicationApi(
                         new CommunicationApiFactory().createConcurrentCommunicationApiV1())
-                .connectionFactory(new ConnectionFactory(new SocketFactory()))
+                .connectionFactory(new SecureConnectionFactory(new SSLSocketFactory()))
                 .transactionExecutionFlow(executionFlow)
                 .transactionMessageDeserializer(new KVTransactionMessageDeserializer())
                 .transactionMessageSerializer(new KVTransactionMessageSerializer()).build();

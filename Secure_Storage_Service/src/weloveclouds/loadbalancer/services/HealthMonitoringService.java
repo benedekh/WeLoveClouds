@@ -12,7 +12,7 @@ import com.google.inject.Singleton;
 
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
-import weloveclouds.commons.networking.ServerSocketFactory;
+import weloveclouds.commons.networking.socket.server.IServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -34,15 +34,12 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
 
     @Inject
     public HealthMonitoringService(CommunicationApiFactory communicationApiFactory,
-                                   ServerSocketFactory serverSocketFactory,
-                                   IMessageSerializer<SerializedMessage, IKVHeartbeatMessage>
-                                           messageSerializer,
-                                   IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage>
-                                           messageDeserializer,
-                                   @HealthMonitoringServicePort int port,
-                                   IDistributedSystemAccessService distributedSystemAccessService,
-                                   NodeHealthWatcher nodeHealthWatcher)
-            throws IOException {
+            IServerSocketFactory serverSocketFactory,
+            IMessageSerializer<SerializedMessage, IKVHeartbeatMessage> messageSerializer,
+            IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage> messageDeserializer,
+            @HealthMonitoringServicePort int port,
+            IDistributedSystemAccessService distributedSystemAccessService,
+            NodeHealthWatcher nodeHealthWatcher) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
         this.logger = Logger.getLogger(this.getClass());
