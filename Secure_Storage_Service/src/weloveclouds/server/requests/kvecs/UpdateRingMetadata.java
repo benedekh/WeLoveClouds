@@ -66,13 +66,7 @@ public class UpdateRingMetadata implements IKVECSRequest {
         } catch (IllegalArgumentException ex) {
             String errorMessage = "Ring metadata is invalid.";
             LOGGER.error(errorMessage);
-            throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
-        }
-        try {
-            KVServerRequestsValidator.validateHashRanges(readRanges);
-        } catch (IllegalArgumentException ex) {
-            String errorMessage = "Read ranges are invalid.";
-            LOGGER.error(errorMessage);
+            LOGGER.error(ringMetadata);
             throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
         }
         return this;

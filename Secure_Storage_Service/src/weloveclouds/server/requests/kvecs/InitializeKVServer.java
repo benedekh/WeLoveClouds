@@ -24,7 +24,6 @@ import weloveclouds.server.services.datastore.IReplicableDataAccessService;
 public class InitializeKVServer implements IKVECSRequest {
 
     private static final Logger LOGGER = Logger.getLogger(InitializeKVServer.class);
-    private static final int SINGLE_NODE = 1;
 
     private IReplicableDataAccessService dataAccessService;
 
@@ -71,15 +70,7 @@ public class InitializeKVServer implements IKVECSRequest {
         } catch (IllegalArgumentException ex) {
             String errorMessage = "Ring metadata is invalid.";
             LOGGER.error(errorMessage);
-            throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
-        }
-        try {
-            if (ringMetadata.getMetadataParts().size() != SINGLE_NODE) {
-                KVServerRequestsValidator.validateHashRanges(readRanges);
-            }
-        } catch (IllegalArgumentException ex) {
-            String errorMessage = "Read ranges are invalid.";
-            LOGGER.error(errorMessage);
+            LOGGER.error(ringMetadata);
             throw new IllegalRequestException(createErrorKVAdminMessage(errorMessage));
         }
         return this;
