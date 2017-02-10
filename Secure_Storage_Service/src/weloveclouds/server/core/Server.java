@@ -8,10 +8,10 @@ import java.net.ServerSocket;
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.networking.AbstractServer;
-import weloveclouds.commons.networking.ServerSocketFactory;
 import weloveclouds.commons.networking.models.requests.IExecutable;
 import weloveclouds.commons.networking.models.requests.IRequestFactory;
 import weloveclouds.commons.networking.models.requests.IValidatable;
+import weloveclouds.commons.networking.socket.server.IServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -79,14 +79,14 @@ public class Server<M, R extends IExecutable<M> & IValidatable<R>> extends Abstr
      */
     public static class Builder<M, R extends IExecutable<M> & IValidatable<R>> {
         private CommunicationApiFactory communicationApiFactory;
-        private ServerSocketFactory serverSocketFactory;
+        private IServerSocketFactory serverSocketFactory;
         private IRequestFactory<M, R> requestFactory;
         private IMessageSerializer<SerializedMessage, M> messageSerializer;
         private IMessageDeserializer<M, SerializedMessage> messageDeserializer;
         private int port;
         private ServiceHealthMonitor serviceHealthMonitor;
 
-        public Builder<M, R> serverSocketFactory(ServerSocketFactory serverSocketFactory) {
+        public Builder<M, R> serverSocketFactory(IServerSocketFactory serverSocketFactory) {
             this.serverSocketFactory = serverSocketFactory;
             return this;
         }

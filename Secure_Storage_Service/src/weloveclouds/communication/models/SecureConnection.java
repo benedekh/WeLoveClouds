@@ -24,6 +24,9 @@ public class SecureConnection extends Connection<SecureConnection.Builder> {
      */
     public static class Builder extends Connection.Builder<Builder> {
 
+        /**
+         * @throws IllegalArgumentException if the socket is not a {@link SSLSocket}
+         */
         public Builder socket(Socket sslSocket) {
             if (!(sslSocket instanceof SSLSocket)) {
                 throw new IllegalArgumentException("Secure connection must contain secure socket.");

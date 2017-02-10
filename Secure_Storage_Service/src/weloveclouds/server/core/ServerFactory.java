@@ -15,7 +15,7 @@ import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.KVTransactionMessageSerializer;
 import weloveclouds.commons.kvstore.serialization.helper.RingMetadataSerializer;
 import weloveclouds.commons.networking.AbstractServer;
-import weloveclouds.commons.networking.ServerSocketFactory;
+import weloveclouds.commons.networking.socket.server.SSLServerSocketFactory;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.server.monitoring.heartbeat.ServiceHealthMonitor;
 import weloveclouds.server.requests.kvclient.IKVClientRequest;
@@ -52,7 +52,7 @@ public class ServerFactory {
             throws IOException {
         LOGGER.debug("Creating Server for KVClient requests.");
         return new Server.Builder<IKVMessage, IKVClientRequest>().port(port)
-                .serverSocketFactory(new ServerSocketFactory())
+                .serverSocketFactory(new SSLServerSocketFactory())
                 .requestFactory(
                         new KVClientRequestFactory(dataAccessService, new RingMetadataSerializer()))
                 .communicationApiFactory(new CommunicationApiFactory())
@@ -75,7 +75,7 @@ public class ServerFactory {
             throws IOException {
         LOGGER.debug("Creating Server for KVServer requests.");
         return new Server.Builder<IKVTransactionMessage, IKVTransactionRequest>().port(port)
-                .serverSocketFactory(new ServerSocketFactory())
+                .serverSocketFactory(new SSLServerSocketFactory())
                 .requestFactory(new TransactionServiceFactory()
                         .createTransactionReceiverService(dataAccessService))
                 .communicationApiFactory(new CommunicationApiFactory())
@@ -99,7 +99,7 @@ public class ServerFactory {
         LOGGER.debug("Creating Server for KVECS requests.");
         CommunicationApiFactory communicationApiFactory = new CommunicationApiFactory();
         return new Server.Builder<IKVAdminMessage, IKVECSRequest>().port(port)
-                .serverSocketFactory(new ServerSocketFactory())
+                .serverSocketFactory(new SSLServerSocketFactory())
                 .requestFactory(
                         new KVECSRequestFactory.Builder().dataAccessService(dataAccessService)
                                 .storageUnitsTransporterFactory(

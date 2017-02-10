@@ -9,11 +9,11 @@ import weloveclouds.commons.kvstore.models.messages.IKVMessage;
 import weloveclouds.commons.kvstore.models.messages.IKVMessage.StatusType;
 import weloveclouds.commons.kvstore.models.messages.KVMessage;
 import weloveclouds.commons.kvstore.serialization.KVMessageSerializer;
+import weloveclouds.commons.networking.socket.client.SSLSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
@@ -21,8 +21,8 @@ import weloveclouds.communication.exceptions.ConnectionClosedException;
 import weloveclouds.communication.exceptions.UnableToConnectException;
 import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
-import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.communication.models.factory.SecureConnectionFactory;
 import weloveclouds.communication.services.CommunicationService;
 import weloveclouds.communication.services.resend.NetworkPacketResenderFactory;
 import weloveclouds.server.api.IKVCommunicationApi;
@@ -51,7 +51,7 @@ public class KVCommunicationApiV1 implements IKVCommunicationApi {
      */
     public KVCommunicationApiV1(String address, int port) {
         this.serverCommunication = new CommunicationApiV1(
-                new CommunicationService(new ConnectionFactory(new SocketFactory())),
+                new CommunicationService(new SecureConnectionFactory(new SSLSocketFactory())),
                 new NetworkPacketResenderFactory());
 
         this.address = address;

@@ -1,10 +1,11 @@
 package weloveclouds.communication;
 
+import weloveclouds.commons.networking.socket.client.SSLSocketFactory;
 import weloveclouds.communication.api.ICommunicationApi;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.api.v1.CommunicationApiV1;
 import weloveclouds.communication.api.v1.ConcurrentCommunicationApiV1;
-import weloveclouds.communication.models.ConnectionFactory;
+import weloveclouds.communication.models.factory.SecureConnectionFactory;
 import weloveclouds.communication.services.CommunicationService;
 import weloveclouds.communication.services.ConcurrentCommunicationService;
 import weloveclouds.communication.services.resend.NetworkPacketResenderFactory;
@@ -22,7 +23,7 @@ public class CommunicationApiFactory {
      */
     public ICommunicationApi createCommunicationApiV1() {
         return new CommunicationApiV1(
-                new CommunicationService(new ConnectionFactory(new SocketFactory())),
+                new CommunicationService(new SecureConnectionFactory(new SSLSocketFactory())),
                 new NetworkPacketResenderFactory());
     }
 
