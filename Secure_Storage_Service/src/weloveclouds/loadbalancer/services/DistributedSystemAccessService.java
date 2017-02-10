@@ -25,7 +25,7 @@ import static weloveclouds.commons.status.ServiceStatus.INITIALIZED;
  * Created by Benoit on 2016-12-03.
  */
 @Singleton
-public class DistributedSystemAccessService {
+public class DistributedSystemAccessService implements IDistributedSystemAccessService {
     private static final Logger LOGGER = Logger.getLogger(DistributedSystemAccessService.class);
     private static final int FIRST = 0;
     private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
@@ -35,16 +35,44 @@ public class DistributedSystemAccessService {
         distributedService = new DistributedService();
     }
 
+    @Override
     public ServiceStatus getServiceStatus() {
         return distributedService.getStatus();
     }
 
+    @Override
+    public List<StorageNode> getParticipatingNodes() {
+        return distributedService.getParticipatingNodes();
+    }
+
+    @Override
+    public StorageNode getNodeFrom(String name) {
+        return distributedService.getNodeFrom(name);
+    }
+
+    @Override
+    public RingTopology<StorageNode> getTopology() {
+        return distributedService.getTopology();
+    }
+
+    @Override
+    public RingMetadata getRingMetadata() {
+        return distributedService.getRingMetadata();
+    }
+
+    @Override
+    public void removeParticipatingNode(StorageNode node) {
+        distributedService.removeParticipatingNode(node);
+    }
+
+    @Override
     public void updateServiceHealthWith(NodeHealthInfos nodeHealthInfos) {
         LOGGER.debug("Updating health infos of: " + nodeHealthInfos.getNodeName());
         distributedService.getNodeFrom(nodeHealthInfos.getNodeName())
                 .updateHealthInfos(nodeHealthInfos);
     }
 
+    @Override
     public void updateServiceTopologyWith(RingTopology<StorageNode> ringTopology) {
         try {
             if (distributedService.getStatus() != INITIALIZED) {
@@ -61,6 +89,7 @@ public class DistributedSystemAccessService {
         }
     }
 
+    @Override
     public void updateServiceRingMetadataWith(RingMetadata ringMetadata) {
         try {
             reentrantReadWriteLock.writeLock().lock();
@@ -70,6 +99,7 @@ public class DistributedSystemAccessService {
         }
     }
 
+    @Override
     public StorageNode getReadServerFor(String key)
             throws UnableToFindServerResponsibleForReadingException {
         LOGGER.debug("Getting read server for key: " + key);
@@ -80,6 +110,7 @@ public class DistributedSystemAccessService {
         return healthiestNode;
     }
 
+    @Override
     public StorageNode getWriteServerFor(String key) throws UnableToFindServerResponsibleForWritingException {
         LOGGER.debug("Getting write server for key: " + key);
         StorageNode writeServer = null;
@@ -101,5 +132,10 @@ public class DistributedSystemAccessService {
             reentrantReadWriteLock.readLock().unlock();
         }
         return storageNodes.get(FIRST);
+    }
+
+    @Override
+    public void initializeServiceWith(List<StorageNode> initialNodes) {
+        distributedService.initializeWith(initialNodes);
     }
 }

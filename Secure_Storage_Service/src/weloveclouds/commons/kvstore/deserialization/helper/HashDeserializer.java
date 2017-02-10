@@ -9,7 +9,7 @@ import weloveclouds.commons.utils.StringUtils;
 /**
  * A deserializer which converts a {@link String} to a {@link Hash}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class HashDeserializer implements IDeserializer<Hash, String> {
 

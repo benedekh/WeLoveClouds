@@ -15,7 +15,7 @@ import weloveclouds.server.store.cache.strategy.StrategyFactory;
 /**
  * The displacements strategy to be used in the {@link KVCache}.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class Strategy extends AbstractServerCommand {
 

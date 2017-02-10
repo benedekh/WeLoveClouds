@@ -28,8 +28,8 @@ import weloveclouds.loadbalancer.models.IKVHeartbeatMessage;
  * Created by Benoit on 2016-12-05.
  */
 @Singleton
-public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage> {
-    private DistributedSystemAccessService distributedSystemAccessService;
+public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage> implements IHealthMonitoringService {
+    private IDistributedSystemAccessService distributedSystemAccessService;
     private NodeHealthWatcher nodeHealthWatcher;
 
     @Inject
@@ -38,7 +38,7 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
             IMessageSerializer<SerializedMessage, IKVHeartbeatMessage> messageSerializer,
             IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage> messageDeserializer,
             @HealthMonitoringServicePort int port,
-            DistributedSystemAccessService distributedSystemAccessService,
+            IDistributedSystemAccessService distributedSystemAccessService,
             NodeHealthWatcher nodeHealthWatcher) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
@@ -72,12 +72,12 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
     }
 
     private class ConnectionHandler extends AbstractConnectionHandler<IKVHeartbeatMessage> {
-        private DistributedSystemAccessService distributedSystemAccessService;
+        private IDistributedSystemAccessService distributedSystemAccessService;
 
         ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection<?> connection,
-                IMessageSerializer<SerializedMessage, IKVHeartbeatMessage> messageSerializer,
-                IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage> messageDeserializer,
-                DistributedSystemAccessService distributedSystemAccessService) {
+                          IMessageSerializer<SerializedMessage, IKVHeartbeatMessage> messageSerializer,
+                          IMessageDeserializer<IKVHeartbeatMessage, SerializedMessage> messageDeserializer,
+                          IDistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;

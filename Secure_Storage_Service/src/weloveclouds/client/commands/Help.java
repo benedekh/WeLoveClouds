@@ -12,7 +12,7 @@ import weloveclouds.commons.exceptions.ClientSideException;
 /**
  * Help command which means a printing the help of the application.
  *
- * @author Benoit, Benedek
+ * @author Benoit, Benedek, Hunton
  */
 public class Help extends AbstractCommand {
 

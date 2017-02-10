@@ -8,7 +8,7 @@ import weloveclouds.commons.utils.StringUtils;
 /**
  * An unrecognized command.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class DefaultCommand extends AbstractServerCommand {
 

@@ -24,7 +24,7 @@ import weloveclouds.server.services.replication.ReplicationServiceFactory;
 /**
  * StartNode command which starts the {@link Server} based on the configuration in {@link #context}.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class Start extends AbstractServerCommand {
 

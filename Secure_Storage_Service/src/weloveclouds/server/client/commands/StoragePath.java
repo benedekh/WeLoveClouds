@@ -15,7 +15,7 @@ import weloveclouds.server.store.storage.KVPersistentStorage;
 /**
  * The path for the {@link KVPersistentStorage} where it can persist the records.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class StoragePath extends AbstractServerCommand {
 

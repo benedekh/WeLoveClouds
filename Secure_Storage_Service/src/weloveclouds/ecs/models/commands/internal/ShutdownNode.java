@@ -16,6 +16,7 @@ import weloveclouds.communication.exceptions.UnableToDisconnectException;
 import weloveclouds.ecs.models.repository.StorageNode;
 
 import static weloveclouds.ecs.models.repository.NodeStatus.IDLE;
+import static weloveclouds.ecs.models.repository.NodeStatus.UNSYNCHRONIZED;
 
 /**
  * Created by Benoit on 2016-11-20.
@@ -42,6 +43,9 @@ public class ShutdownNode extends AbstractEcsNetworkCommand<StorageNode, IKVAdmi
                 throw new ClientSideException(errorMessage);
             } else {
                 targetedNode.setStatus(IDLE);
+                targetedNode.setMetadataStatus(UNSYNCHRONIZED);
+                targetedNode.clearHashRange();
+                targetedNode.clearReplicas();
             }
         } catch (ClientSideException | DeserializationException ex) {
             throw new ClientSideException(errorMessage, ex);

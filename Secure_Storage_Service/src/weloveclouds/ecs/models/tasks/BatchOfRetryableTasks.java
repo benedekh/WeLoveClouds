@@ -1,20 +1,16 @@
 package weloveclouds.ecs.models.tasks;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Observable;
-import java.util.Set;
-import java.util.UUID;
 
 import static weloveclouds.ecs.models.tasks.Status.*;
 
 /**
  * Created by Benoit on 2016-11-19.
  */
-public class BatchRetryableTasks extends AbstractBatchTasks<AbstractRetryableTask> {
+public class BatchOfRetryableTasks extends AbstractBatchOfTasks<AbstractRetryableTask> {
 
-    public BatchRetryableTasks(BatchPurpose batchPurpose) {
+    public BatchOfRetryableTasks(BatchPurpose batchPurpose) {
         super(batchPurpose);
     }
 

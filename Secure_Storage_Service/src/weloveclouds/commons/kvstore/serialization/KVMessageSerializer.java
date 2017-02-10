@@ -22,7 +22,7 @@ import weloveclouds.commons.utils.StringUtils;
 /**
  * A serializer which converts a {@link IKVMessage} to a {@link SerializedMessage}.
  * 
- * @author Benoit
+ * @author Benoit, Hunton
  */
 public class KVMessageSerializer implements IMessageSerializer<SerializedMessage, IKVMessage> {
 

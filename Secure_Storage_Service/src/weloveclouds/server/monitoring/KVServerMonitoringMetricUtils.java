@@ -15,7 +15,7 @@ import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 /**
  * Metric monitoring utility class for KVServer.
  * 
- * @author Benedek
+ * @author Hunton
  */
 public class KVServerMonitoringMetricUtils {
 

@@ -43,6 +43,10 @@ public abstract class AbstractServer<M> extends Thread {
         this.status = HALTED;
     }
 
+    public ServerStatus getStatus() {
+        return status;
+    }
+
     /**
      * Registers a shutdown hook that will close the server socket upon JVM exit.
      */

@@ -13,11 +13,11 @@ public class RingTopology<T extends AbstractNode> {
     List<T> nodes;
 
     public RingTopology() {
-        nodes = new ArrayList<T>();
+        nodes = new ArrayList<>();
     }
 
     public RingTopology(List<T> nodes) {
-        this.nodes = new ArrayList<T>(nodes);
+        this.nodes = new ArrayList<>(nodes);
     }
 
     public RingTopology(RingTopology<T> ringTopology) {

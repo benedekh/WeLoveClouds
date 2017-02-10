@@ -12,12 +12,12 @@ import weloveclouds.commons.utils.StringUtils;
 /**
  * Created by Benoit on 2016-11-19.
  */
-public abstract class AbstractBatchTasks<T> extends Observable {
+public abstract class AbstractBatchOfTasks<T> extends Observable {
     protected BatchPurpose batchPurpose;
     protected String id;
     protected Set<T> tasks;
 
-    public AbstractBatchTasks(BatchPurpose batchPurpose) {
+    public AbstractBatchOfTasks(BatchPurpose batchPurpose) {
         this.batchPurpose = batchPurpose;
         this.id = UUID.randomUUID().toString();
         this.tasks = new LinkedHashSet<>();

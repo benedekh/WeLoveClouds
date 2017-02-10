@@ -2,9 +2,12 @@ package weloveclouds.ecs.api.v1;
 
 import com.google.inject.Inject;
 
+
 import weloveclouds.ecs.api.IKVEcsApi;
+import weloveclouds.ecs.core.EcsStatus;
 import weloveclouds.ecs.core.ExternalConfigurationService;
 import weloveclouds.ecs.exceptions.ExternalConfigurationServiceException;
+import weloveclouds.ecs.models.repository.EcsRepository;
 import weloveclouds.ecs.models.stats.EcsStatistics;
 
 /**
@@ -16,6 +19,16 @@ public class KVEcsApiV1 implements IKVEcsApi {
     @Inject
     public KVEcsApiV1(ExternalConfigurationService externalConfigurationService) {
         this.externalConfigurationService = externalConfigurationService;
+    }
+
+    @Override
+    public EcsStatus getStatus() {
+        return externalConfigurationService.getStatus();
+    }
+
+    @Override
+    public EcsRepository getRepository() {
+        return externalConfigurationService.getRepository();
     }
 
     @Override
