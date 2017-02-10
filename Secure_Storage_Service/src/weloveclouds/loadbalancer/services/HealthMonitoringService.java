@@ -3,9 +3,7 @@ package weloveclouds.loadbalancer.services;
 import static weloveclouds.commons.status.ServerStatus.RUNNING;
 
 import java.io.IOException;
-
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
+import java.net.ServerSocket;
 
 import org.apache.log4j.Logger;
 
@@ -18,7 +16,6 @@ import weloveclouds.commons.networking.ServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
-import weloveclouds.commons.status.ServiceStatus;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
@@ -57,14 +54,14 @@ public class HealthMonitoringService extends AbstractServer<IKVHeartbeatMessage>
     public void run() {
         status = RUNNING;
         logger.info("Health monitoring service started with endpoint: " + serverSocket);
-        try (SSLServerSocket socket = serverSocket) {
+        try (ServerSocket socket = serverSocket) {
             registerShutdownHookForSocket(socket);
             nodeHealthWatcher.start();
 
             while (status == RUNNING) {
                 ConnectionHandler connectionHandler = new ConnectionHandler(
                         communicationApiFactory.createConcurrentCommunicationApiV1(),
-                        new SecureConnection.Builder().socket((SSLSocket) socket.accept()).build(),
+                        new SecureConnection.Builder().socket(socket.accept()).build(),
                         messageSerializer, messageDeserializer, distributedSystemAccessService);
                 connectionHandler.handleConnection();
             }

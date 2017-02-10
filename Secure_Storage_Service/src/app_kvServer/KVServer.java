@@ -64,9 +64,9 @@ public class KVServer {
             initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
             startInteractiveCLIMode();
         } else {
-            logFileName = StringUtils.join("", args[SERVER_NAME_INDEX], ".log");
             initializeLoggerWithLevel(DEFAULT_LOG_LEVEL);
             startNonInteractiveMode(args);
+            logFileName = StringUtils.join("", args[SERVER_NAME_INDEX], ".log");
         }
     }
 

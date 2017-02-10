@@ -5,8 +5,6 @@ import static weloveclouds.commons.status.ServerStatus.HALTED;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import javax.net.ssl.SSLServerSocket;
-
 import org.apache.log4j.Logger;
 
 import weloveclouds.commons.serialization.IMessageDeserializer;
@@ -24,8 +22,7 @@ public abstract class AbstractServer<M> extends Thread {
     protected Logger logger;
     protected CommunicationApiFactory communicationApiFactory;
     protected ServerStatus status;
-    protected ServerSocketFactory serverSocketFactory;
-    protected SSLServerSocket serverSocket;
+    protected ServerSocket serverSocket;
     protected IMessageSerializer<SerializedMessage, M> messageSerializer;
     protected IMessageDeserializer<M, SerializedMessage> messageDeserializer;
     protected int port;
@@ -38,7 +35,6 @@ public abstract class AbstractServer<M> extends Thread {
                              IMessageDeserializer<M, SerializedMessage> messageDeserializer, int port)
             throws IOException {
         this.communicationApiFactory = communicationApiFactory;
-        this.serverSocketFactory = serverSocketFactory;
         this.messageSerializer = messageSerializer;
         this.messageDeserializer = messageDeserializer;
         this.port = port;
