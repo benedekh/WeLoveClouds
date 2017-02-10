@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Singleton;
+
 import weloveclouds.commons.utils.StringUtils;
 
 /**
@@ -12,6 +14,7 @@ import weloveclouds.commons.utils.StringUtils;
  * 
  * @author Benoit, Hunton, Benedek
  */
+@Singleton
 public class ServerSocketFactory implements IServerSocketFactory {
 
     private static final Logger LOGGER = Logger.getLogger(ServerSocketFactory.class);
