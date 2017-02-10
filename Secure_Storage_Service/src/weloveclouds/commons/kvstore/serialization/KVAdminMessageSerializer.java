@@ -31,7 +31,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * A serializer which converts a {@link IKVAdminMessage} to a {@link SerializedMessage}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class KVAdminMessageSerializer
         implements IMessageSerializer<SerializedMessage, IKVAdminMessage> {

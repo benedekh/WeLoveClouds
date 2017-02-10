@@ -146,10 +146,10 @@
       <attribute name="Class-Path" value="${project.classpath}"/>
     </manifest>
 
-    <jar destfile="${loadbalancerjar.file}" basedir="${build.dir}" 
-        manifest="${loadbalancermanifest.file}">
+    <jar destfile="${loadbalancerjar.file}" basedir="${build.dir}"
+         manifest="${loadbalancermanifest.file}">
       <fileset dir="${build.dir}" includes="**/*.class" />
-      <zipgroupfileset dir="${lib.dir}" includes="**/*.jar" />
+      <zipgroupfileset  dir="${lib.dir}" includes="**/*.jar"/>
     </jar>
   </target>
 

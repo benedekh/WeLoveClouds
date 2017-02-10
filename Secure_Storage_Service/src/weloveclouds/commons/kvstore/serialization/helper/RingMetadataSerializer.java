@@ -15,7 +15,7 @@ import weloveclouds.commons.serialization.models.XMLRootNode.Builder;
 /**
  * A serializer which converts a {@link RingMetadata} to a {@link AbstractXMLNode}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class RingMetadataSerializer implements ISerializer<AbstractXMLNode, RingMetadata> {
 

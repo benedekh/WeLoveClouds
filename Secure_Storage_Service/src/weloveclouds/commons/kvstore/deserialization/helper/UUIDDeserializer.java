@@ -18,7 +18,7 @@ import weloveclouds.commons.utils.StringUtils;
 /**
  * A deserializer which converts a {@link UUID} to a {@link IKVTransferMessage}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class UUIDDeserializer implements IDeserializer<UUID, String> {
 

@@ -3,7 +3,7 @@ package weloveclouds.client.commands.utils;
 /**
  * Generates the help message for the application.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class HelpMessageGenerator {
 

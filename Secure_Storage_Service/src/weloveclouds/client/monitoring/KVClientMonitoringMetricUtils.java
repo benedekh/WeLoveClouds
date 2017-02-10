@@ -14,7 +14,7 @@ import weloveclouds.commons.monitoring.statsd.StatsdClientFactory;
 /**
  * Metric monitoring utility class for KVClient.
  * 
- * @author Benedek
+ * @author Hunton
  */
 public class KVClientMonitoringMetricUtils {
     private static final IStatsdClient MONITORING_CLIENT =

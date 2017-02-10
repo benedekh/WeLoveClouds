@@ -116,11 +116,11 @@ public class NotificationService extends AbstractServer<IKVEcsNotificationMessag
                             .deserialize(communicationApi.receiveFrom(connection));
                     switch (receivedMessage.getStatus()) {
                         case UNRESPONSIVE_NODES_REPORTING:
-                            for (String unresponsiveNodeName : receivedMessage
-                                    .getUnresponsiveNodeNames()) {
-                                UserOutputWriter.getInstance().appendToLine(StringUtils.join(" ",
-                                        "Notification service message:", unresponsiveNodeName,
-                                        "has failed. " + "Adding new node to service."));
+                            for (String unresponsiveNodeName : receivedMessage.getUnresponsiveNodeNames()) {
+                                UserOutputWriter.getInstance().appendToLine
+                                        (StringUtils.join(" ", "Notification service message:",
+                                                unresponsiveNodeName, "has failed. " +
+                                                        "Trying to recover."));
                                 ecsCoreApi.removeUnresponsiveNodesWithName(unresponsiveNodeName);
                             }
                             break;

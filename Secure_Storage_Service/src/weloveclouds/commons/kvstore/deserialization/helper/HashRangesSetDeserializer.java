@@ -16,7 +16,7 @@ import weloveclouds.commons.utils.StringUtils;
 /**
  * A deserializer which converts a {@link String} to a {@link Set<HashRange>}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class HashRangesSetDeserializer implements IDeserializer<Set<HashRange>, String> {
 

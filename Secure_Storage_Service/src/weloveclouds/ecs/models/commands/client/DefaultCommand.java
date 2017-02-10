@@ -8,7 +8,7 @@ import weloveclouds.ecs.models.commands.ICommand;
 /**
  * Returned when an invalid command is parsed Created by Hunton on 2016-12-08
  * 
- * @author Benoit, hb
+ * @author Benoit, Hunton
  */
 public class DefaultCommand extends AbstractEcsClientCommand {
 

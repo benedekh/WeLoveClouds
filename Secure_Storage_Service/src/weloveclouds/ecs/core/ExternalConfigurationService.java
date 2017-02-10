@@ -15,6 +15,7 @@ import static weloveclouds.ecs.models.repository.NodeStatus.IDLE;
 import static weloveclouds.ecs.models.repository.NodeStatus.INITIALIZED;
 import static weloveclouds.ecs.models.repository.NodeStatus.REMOVED;
 import static weloveclouds.ecs.models.repository.NodeStatus.RUNNING;
+import static weloveclouds.ecs.models.repository.NodeStatus.UNSYNCHRONIZED;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 import weloveclouds.commons.monitoring.statsd.IStatsdClient;
@@ -43,9 +45,8 @@ import weloveclouds.ecs.models.repository.EcsRepository;
 import weloveclouds.ecs.models.repository.EcsRepositoryFactory;
 import weloveclouds.ecs.models.repository.StorageNode;
 import weloveclouds.ecs.models.repository.NodeStatus;
-import weloveclouds.ecs.models.services.DistributedService;
 import weloveclouds.ecs.models.stats.EcsStatistics;
-import weloveclouds.ecs.models.tasks.AbstractBatchTasks;
+import weloveclouds.ecs.models.tasks.AbstractBatchOfTasks;
 import weloveclouds.ecs.models.tasks.AbstractRetryableTask;
 import weloveclouds.ecs.models.tasks.EcsBatchFactory;
 import weloveclouds.ecs.models.tasks.details.AddNodeTaskDetails;
@@ -55,10 +56,12 @@ import weloveclouds.ecs.services.INotificationService;
 import weloveclouds.ecs.services.ITaskService;
 import weloveclouds.ecs.utils.RingMetadataHelper;
 import weloveclouds.loadbalancer.configuration.LoadBalancerConfiguration;
+import weloveclouds.loadbalancer.services.IDistributedSystemAccessService;
 
 /**
  * Created by Benoit on 2016-11-16.
  */
+@Singleton
 public class ExternalConfigurationService implements Observer {
     private static final Logger LOGGER = Logger.getLogger(ExternalConfigurationService.class);
     private static final IStatsdClient STATSD_CLIENT =
@@ -70,7 +73,7 @@ public class ExternalConfigurationService implements Observer {
     private ITaskService taskService;
     private INotificationService<IKVEcsNotificationMessage> notificationService;
     private EcsBatchFactory ecsBatchFactory;
-    private DistributedService distributedService;
+    private IDistributedSystemAccessService distributedServiceAccess;
 
     @Inject
     public ExternalConfigurationService(ITaskService taskService,
@@ -78,7 +81,7 @@ public class ExternalConfigurationService implements Observer {
                                         EcsBatchFactory ecsBatchFactory,
                                         INotificationService<IKVEcsNotificationMessage>
                                                 notificationService,
-                                        DistributedService distributedService,
+                                        IDistributedSystemAccessService distributedServiceAccess,
                                         LoadBalancerConfiguration loadBalancerConfiguration)
             throws ServiceBootstrapException {
         this.status = WAITING_FOR_LOAD_BALANCER_INITIALIZATION;
@@ -86,21 +89,29 @@ public class ExternalConfigurationService implements Observer {
         this.notificationService = notificationService;
         this.ecsRepositoryFactory = ecsRepositoryFactory;
         this.ecsBatchFactory = ecsBatchFactory;
-        this.distributedService = distributedService;
+        this.distributedServiceAccess = distributedServiceAccess;
 
         bootstrapConfiguration(EcsExecutionContext.getConfigurationFilePath(),
                 loadBalancerConfiguration);
         this.notificationService.start();
     }
 
+    public EcsStatus getStatus() {
+        return status;
+    }
+
+    public EcsRepository getRepository() {
+        return repository;
+    }
+
     public void startLoadBalancer() throws ExternalConfigurationServiceException {
         if (status == WAITING_FOR_LOAD_BALANCER_INITIALIZATION) {
             status = INITIALIZING_LOAD_BALANCER;
-            AbstractBatchTasks<AbstractRetryableTask> loadBalancerStartBatch;
+            AbstractBatchOfTasks<AbstractRetryableTask> loadBalancerStartBatch;
             loadBalancerStartBatch = ecsBatchFactory.createStartLoadBalancerBatchFor(repository
                     .getLoadbalancer());
             loadBalancerStartBatch.addObserver(this);
-            taskService.launchBatchTasks(loadBalancerStartBatch);
+            taskService.launchBatch(loadBalancerStartBatch);
         } else {
             throw new ExternalConfigurationServiceException("Operation <startLoadBalancer> is not "
                     + "permitted. The external configuration service (ECS) is : " + status.name());
@@ -113,7 +124,7 @@ public class ExternalConfigurationService implements Observer {
 
         if (status == WAITING_FOR_SERVICE_INITIALIZATION) {
             try {
-                AbstractBatchTasks<AbstractRetryableTask> serviceInitialisationBatch;
+                AbstractBatchOfTasks<AbstractRetryableTask> serviceInitialisationBatch;
 
                 List<StorageNode> storageNodesToInitialize =
                         (List<StorageNode>) ListUtils.getPreciseNumberOfRandomObjectsFrom(
@@ -124,7 +135,7 @@ public class ExternalConfigurationService implements Observer {
                         displacementStrategy);
 
                 serviceInitialisationBatch.addObserver(this);
-                taskService.launchBatchTasks(serviceInitialisationBatch);
+                taskService.launchBatch(serviceInitialisationBatch);
                 status = INITIALIZING_SERVICE;
             } catch (Exception e) {
                 throw new ExternalConfigurationServiceException("Unable to initialise service " +
@@ -139,11 +150,11 @@ public class ExternalConfigurationService implements Observer {
 
     public void start() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> nodeStartBatch = ecsBatchFactory
+            AbstractBatchOfTasks<AbstractRetryableTask> nodeStartBatch = ecsBatchFactory
                     .createStartNodeBatchFor(repository.getNodesWithStatus(INITIALIZED));
 
             nodeStartBatch.addObserver(this);
-            taskService.launchBatchTasks(nodeStartBatch);
+            taskService.launchBatch(nodeStartBatch);
             status = STARTING_NODE;
         } else {
             throw new ExternalConfigurationServiceException("Operation <start> is not permitted."
@@ -153,11 +164,11 @@ public class ExternalConfigurationService implements Observer {
 
     public void stop() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> nodeStopBatch = ecsBatchFactory
-                    .createStopNodeBatchFor(distributedService.getParticipatingNodes());
+            AbstractBatchOfTasks<AbstractRetryableTask> nodeStopBatch = ecsBatchFactory
+                    .createStopNodeBatchFor(distributedServiceAccess.getParticipatingNodes());
 
             nodeStopBatch.addObserver(this);
-            taskService.launchBatchTasks(nodeStopBatch);
+            taskService.launchBatch(nodeStopBatch);
             status = STOPPING_NODE;
         } else {
             throw new ExternalConfigurationServiceException("Operation <stop> is not permitted."
@@ -168,11 +179,11 @@ public class ExternalConfigurationService implements Observer {
     public void shutDown() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
             List<NodeStatus> activeNodeStatus = Arrays.asList(INITIALIZED, RUNNING);
-            AbstractBatchTasks<AbstractRetryableTask> nodeShutdownBatch = ecsBatchFactory
+            AbstractBatchOfTasks<AbstractRetryableTask> nodeShutdownBatch = ecsBatchFactory
                     .createShutdownNodeBatchFor(repository.getNodeWithStatus(activeNodeStatus));
 
             nodeShutdownBatch.addObserver(this);
-            taskService.launchBatchTasks(nodeShutdownBatch);
+            taskService.launchBatch(nodeShutdownBatch);
             status = SHUTTING_DOWN_NODE;
         } else {
             throw new ExternalConfigurationServiceException(
@@ -184,27 +195,27 @@ public class ExternalConfigurationService implements Observer {
     public void addNode(int cacheSize, String displacementStrategy, boolean withNodeAutomaticStart)
             throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> addNodeBatch;
+            AbstractBatchOfTasks<AbstractRetryableTask> addNodeBatch;
             StorageNode newStorageNode = (StorageNode) ListUtils
                     .getRandomObjectFrom(repository.getNodesWithStatus(IDLE));
 
-            List<StorageNode> nodes = distributedService.getParticipatingNodes();
+            List<StorageNode> nodes = distributedServiceAccess.getParticipatingNodes();
             nodes.add(newStorageNode);
             RingTopology<StorageNode> newTopology =
                     new RingTopology<>(RingMetadataHelper.computeRingOrder(nodes));
 
             StorageNode successorNode = RingMetadataHelper.getSuccessorFrom(
-                    distributedService.getTopology(), newTopology, newStorageNode);
-            distributedService.updateTopologyWith(newTopology);
+                    distributedServiceAccess.getTopology(), newTopology, newStorageNode);
+            distributedServiceAccess.updateServiceTopologyWith(newTopology);
 
             addNodeBatch = ecsBatchFactory
                     .createAddNodeBatchFrom(repository.getLoadbalancer(), new AddNodeTaskDetails(newStorageNode,
                             successorNode,
-                            distributedService.getRingMetadata(), displacementStrategy,
+                            distributedServiceAccess.getRingMetadata(), displacementStrategy,
                             cacheSize), withNodeAutomaticStart);
 
             addNodeBatch.addObserver(this);
-            taskService.launchBatchTasks(addNodeBatch);
+            taskService.launchBatch(addNodeBatch);
             status = ADDING_NODE;
         } else {
             throw new ExternalConfigurationServiceException("Operation <addNode> is not "
@@ -214,24 +225,24 @@ public class ExternalConfigurationService implements Observer {
 
     public void removeNode() throws ExternalConfigurationServiceException {
         if (status == EcsStatus.INITIALIZED) {
-            AbstractBatchTasks<AbstractRetryableTask> removeBatch;
+            AbstractBatchOfTasks<AbstractRetryableTask> removeBatch;
             StorageNode nodeToRemove = (StorageNode) ListUtils
-                    .getRandomObjectFrom(distributedService.getParticipatingNodes());
+                    .getRandomObjectFrom(distributedServiceAccess.getParticipatingNodes());
             nodeToRemove.setStatus(REMOVED);
 
             RingTopology<StorageNode> newTopology =
-                    new RingTopology<>(distributedService.getTopology());
+                    new RingTopology<>(distributedServiceAccess.getTopology());
             newTopology.removeNodes(nodeToRemove);
 
             StorageNode successorNode = RingMetadataHelper
-                    .getSuccessorFrom(distributedService.getTopology(), newTopology, nodeToRemove);
-            distributedService.updateTopologyWith(newTopology);
+                    .getSuccessorFrom(distributedServiceAccess.getTopology(), newTopology, nodeToRemove);
+            distributedServiceAccess.updateServiceTopologyWith(newTopology);
 
             removeBatch = ecsBatchFactory.createRemoveNodeBatchFrom(new RemoveNodeTaskDetails(
-                    nodeToRemove, successorNode, distributedService.getRingMetadata()));
+                    nodeToRemove, successorNode, distributedServiceAccess.getRingMetadata()));
 
             removeBatch.addObserver(this);
-            taskService.launchBatchTasks(removeBatch);
+            taskService.launchBatch(removeBatch);
             status = REMOVING_NODE;
         } else {
             throw new ExternalConfigurationServiceException("Operation <removeNode> is not "
@@ -240,32 +251,35 @@ public class ExternalConfigurationService implements Observer {
     }
 
     public void removeUnresponsiveNodesWithName(String nodeName) throws ExternalConfigurationServiceException {
-        StorageNode unresponsiveNode = distributedService.getNodeFrom(nodeName);
-        unresponsiveNode.setStatus(ERROR);
-        unresponsiveNode.clearHashRange();
-        distributedService.removeParticipatingNode(unresponsiveNode);
-        addNode(200, "LFU", true);
+        StorageNode unresponsiveNode = distributedServiceAccess.getNodeFrom(nodeName);
+        if (unresponsiveNode.getStatus() != IDLE) {
+            unresponsiveNode.setStatus(ERROR);
+            unresponsiveNode.setMetadataStatus(UNSYNCHRONIZED);
+            unresponsiveNode.clearHashRange();
+            distributedServiceAccess.removeParticipatingNode(unresponsiveNode);
+            addNode(200, "LFU", true);
+        }
     }
 
     private void initializeNodesWithMetadata() {
-        AbstractBatchTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch =
+        AbstractBatchOfTasks<AbstractRetryableTask> nodeMetadataInitialisationBatch =
                 ecsBatchFactory.createNodeMetadataInitialisationBatchWith(
-                        repository.getNodesWithStatus(INITIALIZED), distributedService);
+                        repository.getNodesWithStatus(INITIALIZED), distributedServiceAccess);
 
         nodeMetadataInitialisationBatch.addObserver(this);
-        taskService.launchBatchTasks(nodeMetadataInitialisationBatch);
+        taskService.launchBatch(nodeMetadataInitialisationBatch);
         status = EcsStatus.UPDATING_METADATA;
 
         notifyLoadBalancerForTopologyChanges();
     }
 
     private void updateNodesWithMetadata() {
-        AbstractBatchTasks<AbstractRetryableTask> nodeMetadataUpdateBatch = ecsBatchFactory
-                .createNodeMetadataUpdateBatchWith(distributedService.getParticipatingNodes(),
-                        distributedService.getRingMetadata(), status);
+        AbstractBatchOfTasks<AbstractRetryableTask> nodeMetadataUpdateBatch = ecsBatchFactory
+                .createNodeMetadataUpdateBatchWith(distributedServiceAccess.getParticipatingNodes(),
+                        distributedServiceAccess.getRingMetadata(), status);
 
         nodeMetadataUpdateBatch.addObserver(this);
-        taskService.launchBatchTasks(nodeMetadataUpdateBatch);
+        taskService.launchBatch(nodeMetadataUpdateBatch);
         status = EcsStatus.UPDATING_METADATA;
 
         notifyLoadBalancerForTopologyChanges();
@@ -277,7 +291,7 @@ public class ExternalConfigurationService implements Observer {
                 .target(repository.getLoadbalancer())
                 .notificationMessage(new KVEcsNotificationMessage.Builder()
                         .status(TOPOLOGY_UPDATE)
-                        .ringTopology(distributedService.getTopology()).build())
+                        .ringTopology(distributedServiceAccess.getTopology()).build())
                 .build());
     }
 
@@ -307,8 +321,8 @@ public class ExternalConfigurationService implements Observer {
     @Override
     @SuppressWarnings("unchecked")
     public void update(Observable obs, Object obj) {
-        AbstractBatchTasks<AbstractRetryableTask> batch =
-                (AbstractBatchTasks<AbstractRetryableTask>) obs;
+        AbstractBatchOfTasks<AbstractRetryableTask> batch =
+                (AbstractBatchOfTasks<AbstractRetryableTask>) obs;
         List<AbstractRetryableTask> failedTasks = (List<AbstractRetryableTask>) obj;
 
         if (failedTasks.isEmpty()) {
@@ -321,10 +335,10 @@ public class ExternalConfigurationService implements Observer {
         switch (batch.getPurpose()) {
             case SERVICE_INITIALISATION:
                 if (!batch.hasFailed()) {
-                    distributedService.initializeWith(repository.getNodesWithStatus(INITIALIZED));
+                    distributedServiceAccess.initializeServiceWith(repository.getNodesWithStatus(INITIALIZED));
                     initializeNodesWithMetadata();
                 } else {
-                    status = EcsStatus.WAITING_FOR_LOAD_BALANCER_INITIALIZATION;
+                    status = EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
                 }
                 break;
             case START_LOAD_BALANCER:
@@ -341,16 +355,41 @@ public class ExternalConfigurationService implements Observer {
                 status = EcsStatus.INITIALIZED;
                 break;
             case REMOVE_NODE:
-                updateNodesWithMetadata();
+                if (!batch.hasFailed()) {
+                    for (StorageNode node : distributedServiceAccess.getParticipatingNodes()) {
+                        node.setMetadataStatus(UNSYNCHRONIZED);
+                    }
+                    updateNodesWithMetadata();
+                } else {
+                    status = EcsStatus.INITIALIZED;
+                }
                 break;
             case ADD_NODE:
-                updateNodesWithMetadata();
+                if (!batch.hasFailed()) {
+                    for (StorageNode node : distributedServiceAccess.getParticipatingNodes()) {
+                        node.setMetadataStatus(UNSYNCHRONIZED);
+                    }
+                    updateNodesWithMetadata();
+                } else {
+                    status = EcsStatus.INITIALIZED;
+                }
                 break;
             case SHUTDOWN:
-                status = EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
+                if (!batch.hasFailed()) {
+                    for (StorageNode node : distributedServiceAccess.getParticipatingNodes()) {
+                        node.setMetadataStatus(UNSYNCHRONIZED);
+                    }
+                    status = EcsStatus.WAITING_FOR_SERVICE_INITIALIZATION;
+                } else {
+                    status = EcsStatus.INITIALIZED;
+                }
                 break;
             case UPDATING_METADATA:
-                status = EcsStatus.INITIALIZED;
+                if (!batch.hasFailed()) {
+                    status = EcsStatus.INITIALIZED;
+                } else {
+                    status = WAITING_FOR_SERVICE_INITIALIZATION;
+                }
                 break;
         }
     }

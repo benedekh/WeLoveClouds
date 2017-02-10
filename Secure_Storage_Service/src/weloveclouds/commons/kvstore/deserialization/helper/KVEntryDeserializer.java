@@ -15,7 +15,7 @@ import weloveclouds.commons.utils.StringUtils;
 /**
  * A deserializer which converts a {@link String} to a {@link KVEntry}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class KVEntryDeserializer implements IDeserializer<KVEntry, String> {
 

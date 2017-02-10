@@ -36,18 +36,22 @@ import weloveclouds.loadbalancer.configuration.annotations.EcsNotificationServic
 public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMessage>
         implements IEcsNotificationService {
     private static final Logger LOGGER = Logger.getLogger(EcsNotificationService.class);
-    private DistributedSystemAccessService distributedSystemAccessService;
+    private IDistributedSystemAccessService distributedSystemAccessService;
     private int ecsRemotePort;
     private String ecsDNS;
 
     @Inject
     public EcsNotificationService(CommunicationApiFactory communicationApiFactory,
-            ServerSocketFactory serverSocketFactory,
-            IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer,
-            IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage> messageDeserializer,
-            @EcsNotificationServicePort int port, @EcsDnsName String ecsDNS,
-            @EcsNotificationResponsePort int ecsRemotePort,
-            DistributedSystemAccessService distributedSystemAccessService) throws IOException {
+                                  ServerSocketFactory serverSocketFactory,
+                                  IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage>
+                                          messageSerializer,
+                                  IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage>
+                                          messageDeserializer,
+                                  @EcsNotificationServicePort int port,
+                                  @EcsDnsName String ecsDNS,
+                                  @EcsNotificationResponsePort int ecsRemotePort,
+                                  IDistributedSystemAccessService distributedSystemAccessService)
+            throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
         this.ecsRemotePort = ecsRemotePort;
@@ -98,12 +102,12 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
     }
 
     private class ConnectionHandler extends AbstractConnectionHandler<IKVEcsNotificationMessage> {
-        private DistributedSystemAccessService distributedSystemAccessService;
+        private IDistributedSystemAccessService distributedSystemAccessService;
 
         ConnectionHandler(IConcurrentCommunicationApi communicationApi, Connection<?> connection,
-                IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer,
-                IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage> messageDeserializer,
-                DistributedSystemAccessService distributedSystemAccessService) {
+                          IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer,
+                          IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage> messageDeserializer,
+                          IDistributedSystemAccessService distributedSystemAccessService) {
             super(communicationApi, connection, messageSerializer, messageDeserializer);
             this.logger = Logger.getLogger(this.getClass());
             this.distributedSystemAccessService = distributedSystemAccessService;

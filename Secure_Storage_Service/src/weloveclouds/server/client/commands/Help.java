@@ -11,7 +11,7 @@ import weloveclouds.server.client.commands.utils.HelpMessageGenerator;
 /**
  * Prints the help message of the server-side CLI.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class Help extends AbstractServerCommand {
 

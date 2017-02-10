@@ -16,7 +16,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * A deserializer which converts a {@link String} to a {@link Set<ServerConnectionInfo>}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class ServerConnectionInfosSetDeserializer
         implements IDeserializer<Set<ServerConnectionInfo>, String> {

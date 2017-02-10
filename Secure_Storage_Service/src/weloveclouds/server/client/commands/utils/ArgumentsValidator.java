@@ -20,7 +20,7 @@ import weloveclouds.server.store.cache.strategy.StrategyFactory;
 /**
  * Validates the arguments of the different commands {@link ServerCommand}.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class ArgumentsValidator {
 

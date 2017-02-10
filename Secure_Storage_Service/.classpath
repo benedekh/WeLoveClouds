@@ -5,7 +5,6 @@
 	<classpathentry kind="lib" path="libs/junit-4.10.jar"/>
 	<classpathentry kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="libs/apache-commons-lang.jar"/>
-	<classpathentry kind="lib" path="libs/com.google.guava_1.6.0.jar"/>
 	<classpathentry kind="lib" path="libs/fest-assert-1.3.jar"/>
 	<classpathentry kind="lib" path="libs/fest-test-2.1.0.jar"/>
 	<classpathentry kind="lib" path="libs/fest-util-1.1.6.jar"/>
@@ -16,5 +15,51 @@
 	<classpathentry kind="lib" path="libs/aopalliance.jar"/>
 	<classpathentry kind="lib" path="libs/guice-3.0.jar"/>
 	<classpathentry kind="lib" path="libs/javax.inject.jar"/>
+	<classpathentry kind="lib" path="libs/com.fasterxml.jackson.databind.jar"/>
+	<classpathentry kind="lib" path="libs/guava-20.0.jar"/>
+	<classpathentry kind="lib" path="libs/guice-bridge-2.5.0-b32.jar"/>
+	<classpathentry kind="lib" path="libs/jackson-all-1.9.0.jar"/>
+	<classpathentry kind="lib" path="libs/jersey-json.jar"/>
+	<classpathentry kind="lib" path="libs/jetty-all.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/api/javax.ws.rs-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/aopalliance-repackaged-2.5.0-b32.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/hk2-api-2.5.0-b32.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/hk2-locator-2.5.0-b32.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/hk2-utils-2.5.0-b32.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/javassist-3.20.0-GA.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/javax.annotation-api-1.2.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/javax.inject-2.5.0-b32.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/javax.servlet-api-3.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/jaxb-api-2.2.7.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/jersey-guava-2.25.1.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/org.osgi.core-4.2.0.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/osgi-resource-locator-1.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/persistence-api-1.0.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/ext/validation-api-1.1.0.Final.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/lib/jersey-client.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/lib/jersey-common.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/lib/jersey-container-servlet-core.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/lib/jersey-container-servlet.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/lib/jersey-media-jaxb.jar"/>
+	<classpathentry kind="lib" path="libs/jaxrs-ri/lib/jersey-server.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/aopalliance-repackaged-2.4.0-b10.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/guice-4.0.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/guice-multibindings-4.0.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/guice-servlet-4.0.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/javassist-3.18.1-GA.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/javax.annotation-api-1.2.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/javax.inject-1.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/javax.ws.rs-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/jersey-client-2.17.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/jersey-common-2.17.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/jersey-container-servlet-core-2.17.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/jersey-media-jaxb-2.17.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/jersey-server-2.17.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/jersey2-guice-0.10-fix.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/jsr305-3.0.0.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/osgi-resource-locator-1.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/slf4j-api-1.7.12.jar"/>
+	<classpathentry kind="lib" path="libs/Jersey2Guice/validation-api-1.1.0.Final.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
