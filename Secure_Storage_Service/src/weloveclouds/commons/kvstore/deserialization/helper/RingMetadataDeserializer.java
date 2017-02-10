@@ -17,7 +17,7 @@ import weloveclouds.commons.utils.StringUtils;;
 /**
  * A deserializer which converts a {@link String} to a {@link RingMetadata}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class RingMetadataDeserializer implements IDeserializer<RingMetadata, String> {
 

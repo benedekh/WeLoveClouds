@@ -14,7 +14,7 @@ import weloveclouds.ecs.utils.ArgumentsValidator;
 
 /**
  * 
- * @author Benedek, Benoit, hb
+ * @author Benedek, Benoit, Hunton
  *
  */
 public class LogLevel extends AbstractEcsClientCommand {

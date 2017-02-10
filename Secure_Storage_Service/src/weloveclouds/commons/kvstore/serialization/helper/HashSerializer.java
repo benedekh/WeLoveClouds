@@ -6,7 +6,7 @@ import weloveclouds.commons.serialization.ISerializer;
 /**
  * A serializer which converts a {@link Hash} to a {@link String}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class HashSerializer implements ISerializer<String, Hash> {
 

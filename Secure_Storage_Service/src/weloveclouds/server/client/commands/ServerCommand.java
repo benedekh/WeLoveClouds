@@ -7,7 +7,7 @@ import weloveclouds.commons.utils.StringUtils;
 /**
  * Different commands which are handled by {@link ServerCommandFactory}.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public enum ServerCommand {
     CACHESIZE("cacheSize"), HELP("help"), LOGLEVEL("logLevel"), CLIENT_PORT(

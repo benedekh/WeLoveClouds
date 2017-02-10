@@ -139,7 +139,8 @@ public class EcsInternalCommandFactory {
 
     public InvokeDataTransfer createInvokeDataTransferCommandWith(StorageNode targetedNode,
                                                                   StorageNode newNode,
-                                                                  RingMetadata ringMetadata) {
+                                                                  RingMetadata ringMetadata,
+                                                                  boolean isNodeRemoval) {
         return new InvokeDataTransfer.Builder()
                 .targetedNode(targetedNode)
                 .communicationApi(communicationApiFactory.createCommunicationApiV1())
@@ -147,6 +148,7 @@ public class EcsInternalCommandFactory {
                 .messageDeserializer(new KVAdminMessageDeserializer())
                 .newNode(newNode)
                 .ringMetadata(ringMetadata)
+                .isNodeRemoval(isNodeRemoval)
                 .build();
     }
 

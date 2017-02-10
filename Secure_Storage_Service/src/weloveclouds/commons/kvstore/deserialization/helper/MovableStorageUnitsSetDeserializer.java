@@ -16,7 +16,7 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 /**
  * A deserializer which converts a {@link String} to a {@link Set<MovableStorageUnit>}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class MovableStorageUnitsSetDeserializer
         implements IDeserializer<Set<MovableStorageUnit>, String> {

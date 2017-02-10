@@ -14,7 +14,7 @@ import weloveclouds.communication.models.ServerConnectionInfo;
 /**
  * Validates the arguments of the different commands ({@link ClientCommand}).
  *
- * @author Benoit, Benedek
+ * @author Benoit, Benedek, Hunton
  */
 public class ArgumentsValidator {
     private static final int KEY_SIZE_LIMIT_IN_BYTES = 20;

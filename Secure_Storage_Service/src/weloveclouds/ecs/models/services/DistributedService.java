@@ -58,11 +58,11 @@ public class DistributedService {
     }
 
     public RingTopology<StorageNode> getTopology() {
-        return this.topology;
+        return topology;
     }
 
     public List<StorageNode> getParticipatingNodes() {
-        return this.topology.getNodes();
+        return topology.getNodes();
     }
 
     public void removeParticipatingNode(StorageNode node){

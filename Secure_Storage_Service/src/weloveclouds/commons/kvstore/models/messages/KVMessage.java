@@ -8,7 +8,7 @@ import weloveclouds.commons.utils.StringUtils;
  * Represents a Key-value message that is transferred through the network (the entry and the message
  * type).
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class KVMessage implements IKVMessage {
 

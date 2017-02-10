@@ -45,6 +45,10 @@ public abstract class AbstractRetryableTask {
         numberOfRetries = getMaximumNumberOfRetries();
     }
 
+    public boolean isCompleted() {
+        return status == COMPLETED;
+    }
+
     public boolean isBatched() {
         return batchId != null;
     }

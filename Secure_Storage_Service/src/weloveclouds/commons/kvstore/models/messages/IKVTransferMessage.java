@@ -8,7 +8,7 @@ import weloveclouds.server.store.models.MovableStorageUnit;
 /**
  * Represents a message which transfers storage units between KVServers.
  * 
- * @author Benedek
+ * @author Hunton
  */
 public interface IKVTransferMessage {
 

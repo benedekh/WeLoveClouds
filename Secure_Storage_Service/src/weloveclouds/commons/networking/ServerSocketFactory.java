@@ -18,7 +18,7 @@ public class ServerSocketFactory {
 
     /**
      * Creates a new {@link ServerSocket} on the referred port.
-     * 
+     *
      * @throws IOException if the socket cannot be created
      */
     public ServerSocket createServerSocketFromPort(int port) throws IOException {
@@ -35,5 +35,4 @@ public class ServerSocketFactory {
         LOGGER.info(StringUtils.join(" ", "Creating SSL Server Socket on port", port));
         return SSLContextHelper.getInstance().createServerSocket(port);
     }
-
 }

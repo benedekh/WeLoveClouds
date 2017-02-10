@@ -1,4 +1,4 @@
-package weloveclouds.ecs.configuration.modules.client;
+package weloveclouds.ecs.configuration.modules;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;

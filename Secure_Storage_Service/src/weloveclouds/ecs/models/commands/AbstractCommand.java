@@ -7,7 +7,7 @@ import java.util.List;
 import weloveclouds.commons.cli.utils.UserOutputWriter;
 
 /**
- * Created by Benoit on 2016-11-19.
+ * Created by Benoit, Hunton on 2016-11-19.
  */
 public abstract class AbstractCommand<T> implements ICommand {
     protected List<T> arguments;

@@ -21,7 +21,7 @@ import weloveclouds.commons.utils.StringUtils;
 /**
  * A deserializer which converts a {@link SerializedMessage} to a {@link IKVTransferMessage}.
  * 
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public class KVTransferMessageDeserializer
         implements IMessageDeserializer<IKVTransferMessage, SerializedMessage> {

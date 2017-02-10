@@ -12,7 +12,7 @@ import weloveclouds.ecs.utils.ArgumentsValidator;
 
 /**
  * 
- * @author hb
+ * @author Hunton
  *
  */
 public class Help extends AbstractEcsClientCommand {

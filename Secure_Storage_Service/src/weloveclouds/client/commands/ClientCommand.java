@@ -7,7 +7,7 @@ import weloveclouds.commons.utils.StringUtils;
 /**
  * Different commands which are handled by {@link CommandFactory}.
  *
- * @author Benedek
+ * @author Benedek, Hunton
  */
 public enum ClientCommand {
     CONNECT("connect"), DISCONNECT("disconnect"), PUT("put"), GET("get"), LOGLEVEL(
