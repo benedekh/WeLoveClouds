@@ -2,12 +2,7 @@
 # Custom KV files
 #################
 **/*.ser
-/auth.properties
-/auth.properties.old
-/loadbalancer.properties
-/ecs.config
-/ecs.old2.config
-/keystore.jks
+
 
 ##################
 # Don't track logs
