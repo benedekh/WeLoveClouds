@@ -17,8 +17,8 @@ import weloveclouds.commons.utils.SetUtils;
 import weloveclouds.commons.utils.StringUtils;
 import weloveclouds.communication.api.IConcurrentCommunicationApi;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.communication.models.factory.AbstractConnectionFactory;
 import weloveclouds.server.services.replication.request.AbstractReplicationRequest;
 import weloveclouds.server.services.transaction.flow.ITransactionExecutionFlow;
 
@@ -35,7 +35,7 @@ public class TransactionSenderService implements ITransactionSenderService {
     private IMessageSerializer<SerializedMessage, IKVTransactionMessage> transactionMessageSerializer;
     private IMessageDeserializer<IKVTransactionMessage, SerializedMessage> transactionMessageDeserializer;
 
-    private ConnectionFactory connectionFactory;
+    private AbstractConnectionFactory connectionFactory;
     private ITransactionExecutionFlow transactionExecutionFlow;
 
     protected TransactionSenderService(Builder builder) {
@@ -61,7 +61,7 @@ public class TransactionSenderService implements ITransactionSenderService {
             for (ServerConnectionInfo connectionInfo : participantConnectionInfos) {
                 try {
                     Connection<?> connection =
-                            connectionFactory.createSecureConnectionFrom(connectionInfo);
+                            connectionFactory.createConnectionFrom(connectionInfo);
                     Set<ServerConnectionInfo> otherParticipants =
                             SetUtils.removeValueFromSet(participantConnectionInfos, connectionInfo);
                     transactions.add(createTransaction(connection, transactionId, transferMessage,
@@ -85,7 +85,7 @@ public class TransactionSenderService implements ITransactionSenderService {
             for (ServerConnectionInfo connectionInfo : participantConnectionInfos) {
                 try {
                     Connection<?> connection =
-                            connectionFactory.createSecureConnectionFrom(connectionInfo);
+                            connectionFactory.createConnectionFrom(connectionInfo);
                     transactions.add(createTransaction(connection, transactionId, null, null));
                 } catch (IOException ex) {
                     LOGGER.error(ex);
@@ -116,7 +116,7 @@ public class TransactionSenderService implements ITransactionSenderService {
         private IConcurrentCommunicationApi communicationApi;
         private IMessageSerializer<SerializedMessage, IKVTransactionMessage> transactionMessageSerializer;
         private IMessageDeserializer<IKVTransactionMessage, SerializedMessage> transactionMessageDeserializer;
-        private ConnectionFactory connectionFactory;
+        private AbstractConnectionFactory connectionFactory;
         private ITransactionExecutionFlow transactionExecutionFlow;
 
         public Builder communicationApi(IConcurrentCommunicationApi communicationApi) {
@@ -124,7 +124,7 @@ public class TransactionSenderService implements ITransactionSenderService {
             return this;
         }
 
-        public Builder connectionFactory(ConnectionFactory connectionFactory) {
+        public Builder connectionFactory(AbstractConnectionFactory connectionFactory) {
             this.connectionFactory = connectionFactory;
             return this;
         }

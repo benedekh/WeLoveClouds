@@ -7,16 +7,16 @@ import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 
+import weloveclouds.commons.networking.socket.client.SocketFactory;
 import weloveclouds.commons.utils.StringUtils;
-import weloveclouds.communication.SocketFactory;
 import weloveclouds.communication.exceptions.AlreadyConnectedException;
 import weloveclouds.communication.exceptions.AlreadyDisconnectedException;
 import weloveclouds.communication.exceptions.ClientNotConnectedException;
 import weloveclouds.communication.exceptions.UnableToSendContentToServerException;
 import weloveclouds.communication.models.Connection;
-import weloveclouds.communication.models.ConnectionFactory;
 import weloveclouds.communication.models.SecureConnection;
 import weloveclouds.communication.models.ServerConnectionInfo;
+import weloveclouds.communication.models.factory.AbstractConnectionFactory;
 import weloveclouds.communication.utils.MessageFramesDetector;
 
 /**
@@ -29,7 +29,7 @@ public class CommunicationService implements ICommunicationService {
     private static final int MAX_PACKET_SIZE_IN_BYTES = 65535;
     private static final Logger LOGGER = Logger.getLogger(CommunicationService.class);
 
-    private ConnectionFactory connectionFactory;
+    private AbstractConnectionFactory connectionFactory;
     private Connection<?> connectionToEndpoint;
 
     private Thread connectionShutdownHook;
@@ -39,7 +39,7 @@ public class CommunicationService implements ICommunicationService {
     /**
      * @param connectionFactory a factory to create connections
      */
-    public CommunicationService(ConnectionFactory connectionFactory) {
+    public CommunicationService(AbstractConnectionFactory connectionFactory) {
         this.connectionToEndpoint = new SecureConnection.Builder().build();
         this.connectionFactory = connectionFactory;
         this.messageDetector = new MessageFramesDetector();
@@ -78,7 +78,7 @@ public class CommunicationService implements ICommunicationService {
      *         {@link SocketFactory#createSecureConnectionFrom(ServerConnectionInfo)}
      */
     private void initializeConnection(ServerConnectionInfo remoteServer) throws IOException {
-        this.connectionToEndpoint = this.connectionFactory.createSecureConnectionFrom(remoteServer);
+        this.connectionToEndpoint = this.connectionFactory.createConnectionFrom(remoteServer);
         LOGGER.debug("SSL context instantiated and initialized");
         LOGGER.debug(StringUtils.join(" ", "Trying to connect to", remoteServer));
 

@@ -1,15 +1,17 @@
 package weloveclouds.ecs.configuration.modules;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import weloveclouds.commons.configuration.modules.DnsModule;
+import weloveclouds.commons.networking.socket.server.IServerSocketFactory;
+import weloveclouds.commons.networking.socket.server.SSLServerSocketFactory;
 import weloveclouds.commons.serialization.configuration.modules.SerializationModule;
 import weloveclouds.communication.CommunicationApiFactory;
 import weloveclouds.ecs.api.IKVEcsApi;
@@ -53,6 +55,7 @@ public class EcsModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(IServerSocketFactory.class).to(SSLServerSocketFactory.class);
         bind(ITaskService.class).to(TaskService.class);
         bind(IKVEcsApi.class).to(KVEcsApiV1.class);
         bind(IDistributedSystemAccessService.class).to(DistributedSystemAccessService.class);

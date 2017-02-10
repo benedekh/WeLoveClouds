@@ -15,7 +15,7 @@ import weloveclouds.commons.configuration.annotations.EcsDnsName;
 import weloveclouds.commons.exceptions.ClientSideException;
 import weloveclouds.commons.networking.AbstractConnectionHandler;
 import weloveclouds.commons.networking.AbstractServer;
-import weloveclouds.commons.networking.ServerSocketFactory;
+import weloveclouds.commons.networking.socket.server.IServerSocketFactory;
 import weloveclouds.commons.serialization.IMessageDeserializer;
 import weloveclouds.commons.serialization.IMessageSerializer;
 import weloveclouds.commons.serialization.models.SerializedMessage;
@@ -42,16 +42,12 @@ public class EcsNotificationService extends AbstractServer<IKVEcsNotificationMes
 
     @Inject
     public EcsNotificationService(CommunicationApiFactory communicationApiFactory,
-                                  ServerSocketFactory serverSocketFactory,
-                                  IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage>
-                                          messageSerializer,
-                                  IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage>
-                                          messageDeserializer,
-                                  @EcsNotificationServicePort int port,
-                                  @EcsDnsName String ecsDNS,
-                                  @EcsNotificationResponsePort int ecsRemotePort,
-                                  IDistributedSystemAccessService distributedSystemAccessService)
-            throws IOException {
+            IServerSocketFactory serverSocketFactory,
+            IMessageSerializer<SerializedMessage, IKVEcsNotificationMessage> messageSerializer,
+            IMessageDeserializer<IKVEcsNotificationMessage, SerializedMessage> messageDeserializer,
+            @EcsNotificationServicePort int port, @EcsDnsName String ecsDNS,
+            @EcsNotificationResponsePort int ecsRemotePort,
+            IDistributedSystemAccessService distributedSystemAccessService) throws IOException {
         super(communicationApiFactory, serverSocketFactory, messageSerializer, messageDeserializer,
                 port);
         this.ecsRemotePort = ecsRemotePort;
