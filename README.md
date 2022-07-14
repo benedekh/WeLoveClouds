@@ -16,19 +16,19 @@ Repository for submissions on the CloudDB course.
 ##### Feature branch
 > feature/ [Short feature description]
 
-#####Bug branch
+##### Bug branch
 > fix/ [Short fix description]
 
 #### Commits syntax:
 
-#####Adding code:
+##### Adding code:
 > \+ Added [Short Description]
 
-#####Deleting code:
+##### Deleting code:
 > \- Deleted [Short Description]
 
-#####Modifying code:
+##### Modifying code:
 > \* Changed [Short Description]
 
-#####Merging code:
+##### Merging code:
 > Y Merged [Short Description]
